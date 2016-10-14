@@ -25,23 +25,26 @@ export abstract class Cli<
     protected binPath: string;
 
     @inject(BINDINGS.CONFIG)
-    protected _config: IConfig
-    get config(): IConfig { return this._config }
+    config: IConfig
+    //get config(): IConfig { return this._config }
 
     @inject(BINDINGS.LOG)
-    protected _log: ILog;
-    get log(): ILog { return this._log }
+    log: ILog;
+    //get log(): ILog { return this._log }
 
     @inject(BINDINGS.ROOT_DEFINITION)
-    protected _definition: T;
-    get definition(): T { return this._definition }
+    definition: T;
+    // get definition(): T { return this._definition }
 
     @inject(BINDINGS.OUTPUT)
-    protected _out:IOutput;
-    get out() : IOutput { return this._out }
+    out:IOutput;
+    // get out() : IOutput { return this._out }
 
     @inject(BINDINGS.ROOT_DEFINITION_PARSER_FACTORY)
     protected definitionParserFactory: (definition: T, args: IParsedArgv) => Z
+
+    @inject(BINDINGS.DESCRIPTOR)
+    protected _descriptor:IDescriptor
 
     constructor() {
         super()
@@ -71,7 +74,7 @@ export abstract class Cli<
     }
 
     fail(msg?: string) {
-        if (msg) this._log.error(msg)
+        if (msg) this.log.error(msg)
         this.exit(true);
     }
 
@@ -111,11 +114,7 @@ export class ArgumentsCli extends Cli<IArgumentsDefinition, IParsedArgumentsDefi
 export class CommandsCli extends Cli<ICommandsDefinition, IParsedCommandsDefinition, ICommandsDefinitionParser>
 {
     @inject(BINDINGS.GLOBAL_DEFINITION)
-    protected _globalDefinition: IOptionsDefinition;
-
-    get globalDefinition(): IOptionsDefinition {
-        return this._globalDefinition
-    }
+    globalDefinition: IOptionsDefinition;
 
     @inject(BINDINGS.OPTIONS_DEFINITION_PARSER_FACTORY)
     protected globalDefinitionParserFactory: (definition: IOptionsDefinition, args: IParsedArgv) => IOptionsDefinitionParser

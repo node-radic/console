@@ -192,4 +192,32 @@ var JenkinsGroup = (function (_super) {
     return JenkinsGroup;
 }(src_1.Group));
 exports.JenkinsGroup = JenkinsGroup;
+var DataCommand = (function (_super) {
+    __extends(DataCommand, _super);
+    function DataCommand() {
+        _super.apply(this, arguments);
+        this.options = {};
+    }
+    DataCommand.prototype.handle = function () { this.out.writeln('This is the data command'); };
+    DataCommand = __decorate([
+        src_1.command('data', 'Show important data'), 
+        __metadata('design:paramtypes', [])
+    ], DataCommand);
+    return DataCommand;
+}(src_1.Command));
+exports.DataCommand = DataCommand;
+var DumpCommand = (function (_super) {
+    __extends(DumpCommand, _super);
+    function DumpCommand() {
+        _super.apply(this, arguments);
+        this.options = {};
+    }
+    DumpCommand.prototype.handle = function () { this.out.writeln('This is the data command'); };
+    DumpCommand = __decorate([
+        src_1.command('dump', 'Dump debug values'), 
+        __metadata('design:paramtypes', [])
+    ], DumpCommand);
+    return DumpCommand;
+}(src_1.Command));
+exports.DumpCommand = DumpCommand;
 //# sourceMappingURL=commands.js.map

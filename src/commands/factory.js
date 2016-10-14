@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var Promise = require('bluebird');
 var core_1 = require("../core");
 var _ = require("lodash");
 var groups = [];
@@ -28,6 +29,29 @@ function group(name, desc, parent) {
     };
 }
 exports.group = group;
+var BaseCommandRegistration = (function () {
+    function BaseCommandRegistration() {
+        this.asyncMode = false;
+    }
+    BaseCommandRegistration.prototype.fire = function () {
+        this.defer = Promise.defer();
+        this.parse();
+        this['handle'].apply(this);
+        if (false === this.asyncMode) {
+            this.done();
+        }
+        return this.defer.promise;
+    };
+    BaseCommandRegistration.prototype.async = function () {
+        this.asyncMode = true;
+        return this.done;
+    };
+    BaseCommandRegistration.prototype.done = function () { this.defer.resolve(this); };
+    BaseCommandRegistration.prototype.fail = function (reason) { this.defer.reject(reason); };
+    BaseCommandRegistration.prototype.parse = function () { };
+    return BaseCommandRegistration;
+}());
+exports.BaseCommandRegistration = BaseCommandRegistration;
 var CommandFactory = (function () {
     function CommandFactory() {
     }

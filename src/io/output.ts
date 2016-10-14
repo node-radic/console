@@ -3,16 +3,18 @@ import * as Table from "cli-table2";
 import { kindOf } from "@radic/util";
 import { merge } from "lodash";
 import { Parser } from "@radic/console-colors";
-import * as archy from 'archy'
+import * as archy from "archy";
 
 export interface IOutput
 {
-    tree(label:string, nodex:any[] ) : this
+    parser: Parser
+    tree(label: string, nodex: any[]): this
     writeln(text?: string): this
     line(text?: string): this
     write(text: string): this
     success(text: string): this
     title(text: string): this
+    description(text: string): this
     error(text: string): this
     header(text: string): this
     subtitle(text: string): this
@@ -47,8 +49,8 @@ export class Output implements IOutput
     useParser: boolean     = true
     colorsEnabled: boolean = true
 
-    tree(label:string, nodes:any[]) : this {
-        let tree = archy(<archy.Data> {label,nodes});
+    tree(label: string, nodes: any[]): this {
+        let tree = archy(<archy.Data> { label, nodes });
         return this.line(tree)
     }
 
@@ -85,6 +87,11 @@ export class Output implements IOutput
 
     protected configColorString(color, text) {
         this.writeln(`{${this.config('colors.' + color)}}${text}`)
+    }
+
+    description(text: string): this {
+        this.configColorString('description', text)
+        return this
     }
 
     title(text: string): this {

@@ -5,21 +5,50 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var util = require("@radic/util");
+var defaults = {
+    app: {
+        title: undefined,
+        description: undefined,
+        version: undefined,
+    },
+    colors: {
+        enabled: true,
+        title: 'green bold',
+        subtitle: 'yellow',
+        header: 'darkorange bold',
+        group: 'steelblue bold',
+        command: 'skyblue',
+        description: 'grey',
+        argument: 'yellow darken 50'
+    },
+    descriptor: {
+        cli: {
+            showTitle: true,
+            showVersion: true,
+            showDescription: true,
+        },
+        text: {
+            commands: 'Commands',
+            options: 'Options',
+            globalOptions: 'Global Options'
+        }
+    }
+};
 var Config = (function (_super) {
     __extends(Config, _super);
     function Config() {
         _super.apply(this, arguments);
     }
     Config.prototype.title = function (title) {
-        this.set('title', title);
+        this.set('app.title', title);
         return this;
     };
     Config.prototype.version = function (title) {
-        this.set('version', title);
+        this.set('app.version', title);
         return this;
     };
     Config.prototype.description = function (title) {
-        this.set('version', title);
+        this.set('app.description', title);
         return this;
     };
     Config.prototype.dump = function () {
@@ -44,29 +73,6 @@ var Config = (function (_super) {
     return Config;
 }(util.Config));
 exports.Config = Config;
-var defaults = {
-    app: {
-        title: null,
-        description: null,
-        version: null,
-    },
-    colors: {
-        enabled: true,
-        header: 'cyan',
-        title: 'green bold',
-        subtitle: 'yellow',
-        group: 'magenta bold',
-        command: 'magenta',
-        description: 'magenta lighten 40 bold',
-        argument: 'yellow darken 50'
-    },
-    descriptor: {
-        cli: {
-            showTitle: true,
-            showVersion: true
-        }
-    }
-};
 var _config = new Config(defaults);
 exports.config = Config.makeProperty(_config);
 //# sourceMappingURL=config.js.map

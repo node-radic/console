@@ -1,3 +1,4 @@
+import * as Promise from 'bluebird'
 import { injectable, app, CommandsCli, BINDINGS } from "../core";
 import { Command, ICommandConstructor } from "./command";
 import { Group, IGroupConstructor } from "./group";
@@ -8,9 +9,11 @@ export interface ICommandRegistration<T>
 {
     name: string
     desc: string
-    parent: IGroupConstructor
-    cls: T
-    type: 'group' | 'command'
+    parent?: IGroupConstructor
+    cls?: T
+    type?: 'group' | 'command'
+    showHelp ?:() => void
+    toString ?:() => string
 }
 
 export interface IResolvedRegistration<T> extends ICommandRegistration<T>
@@ -62,6 +65,36 @@ export interface ICommandFactory
     getTree(parent?: any): any[]
     resolveFromArray(arr: string[]): IResolvedRegistration<IGroupConstructor|ICommandConstructor>
     resolveFromString(str:string):IResolvedRegistration<IGroupConstructor|ICommandConstructor>
+}
+
+export abstract class BaseCommandRegistration {
+
+
+    private defer: Promise.Resolver<any>;
+    protected asyncMode: boolean = false;
+
+    fire() {
+        this.defer = Promise.defer();
+        this.parse();
+        // let handle = this.handler || this['handle'];
+        this[ 'handle' ].apply(this);
+        if ( false === this.asyncMode ) {
+            this.done();
+        }
+        return this.defer.promise;
+    }
+
+    protected async() {
+        this.asyncMode = true;
+        return this.done;
+    }
+
+    protected done() { this.defer.resolve(this); }
+
+    protected fail(reason?: string) { this.defer.reject(reason); }
+
+    protected parse(){}
+
 }
 
 @injectable()

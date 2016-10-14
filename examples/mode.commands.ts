@@ -1,6 +1,8 @@
 import "reflect-metadata";
 import { app } from "../src";
 import "./commands";
+import { BINDINGS } from "../src/core/bindings";
+import { IDescriptor } from "../src/io/descriptor";
 
 
 let cli = app.commandsCli();
@@ -34,7 +36,9 @@ if ( parsed.opt('d') ) {
 }
 
 if(parsed.opt('t')){
-
+    let descriptor = app.get<IDescriptor>(BINDINGS.DESCRIPTOR)
+    descriptor.commandTree('Command Tree')
+    cli.exit()
 }
 
 if ( parsed.opt('v') ) {
@@ -47,6 +51,9 @@ if ( parsed.isCommand ) {
         cli.exit();
     });
 } else if ( parsed.isGroup ) {
+    parsed.group.fire().then(() => {
+        cli.exit();
+    });
     parsed.group.showHelp();
 } else if ( parsed.isRoot ) {
     cli.showHelp()

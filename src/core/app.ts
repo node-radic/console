@@ -1,19 +1,12 @@
-import {Kernel, decorate, injectable, interfaces as inversifyInterfaces} from "inversify";
+import { Kernel, decorate, injectable, interfaces as inversifyInterfaces } from "inversify";
+import { makeProvideDecorator } from "inversify-binding-decorators";
+import getDecorators from "inversify-inject-decorators";
 import BINDINGS from "./bindings";
-import {} from "../definitions";
-import {CommandsCli, ArgumentsCli} from "./cli";
-import {ILog, Log} from "./log";
-import {IConfig, Config, config} from './config'
-import {IDescriptor, IInput, IOutput, Descriptor, Input, Output} from "../io";
-import {
-    // Definitions
-    IOptionsDefinition, ICommandsDefinition, IArgumentsDefinition, OptionsDefinition, CommandsDefinition, ArgumentsDefinition,
-    // Definition parsers
-    IOptionsDefinitionParser, OptionsDefinitionParser, ParsedOptionsDefinition, IParsedOptionsDefinition,
-    IArgumentsDefinitionParser, ArgumentsDefinitionParser, IParsedArgumentsDefinition, ParsedArgumentsDefinition,
-    ICommandsDefinitionParser, CommandsDefinitionParser, IParsedCommandsDefinition, ParsedCommandsDefinition,
-    DefinitionSignatureParser
-} from "../definitions";
+import { CommandsCli, ArgumentsCli } from "./cli";
+import { ILog, Log } from "./log";
+import { IConfig, config } from "./config";
+import { IDescriptor, IInput, IOutput, Descriptor, Input, Output } from "../io";
+import { IOptionsDefinition, ICommandsDefinition, IArgumentsDefinition, OptionsDefinition, CommandsDefinition, ArgumentsDefinition, IOptionsDefinitionParser, OptionsDefinitionParser, ParsedOptionsDefinition, IParsedOptionsDefinition, IArgumentsDefinitionParser, ArgumentsDefinitionParser, IParsedArgumentsDefinition, ParsedArgumentsDefinition, ICommandsDefinitionParser, CommandsDefinitionParser, IParsedCommandsDefinition, ParsedCommandsDefinition, DefinitionSignatureParser } from "../definitions";
 import { ICommandFactory, CommandFactory } from "../commands";
 
 // import {kindOf} from '@radic/util'
@@ -22,7 +15,12 @@ import Context = inversifyInterfaces.Context
 
 class App extends Kernel
 {
-    make<T>(cls: any): T {
+    /**
+     * Create an instance of a class using the container, making it injectable at runtime and able to @inject on the fly
+     * @param cls
+     * @returns {T}
+     */
+    build<T>(cls: any): T {
         decorate(injectable(), cls);
         let k = 'temporary.kernel.binding'
         this.bind(k).to(cls);
@@ -31,17 +29,36 @@ class App extends Kernel
         return instance;
     }
 
-    commandsCli(): CommandsCli {
-        if (this.isBound(BINDINGS.CLI)) throw Error('cli already created')
+    /**
+     * make binds the class in the IoC container if not already bound. then returns the bound instance
+     *
+     * @param cls
+     * @returns {T}
+     */
+    make<T>(cls: any): T {
+        decorate(injectable(), cls);
+        let binding = cls.toString()
+        if ( this.isBound(binding) ) {
+            return this.get<T>(binding)
+        }
+        this.bind(binding).to(cls);
+        return this.get<T>(binding)
+    }
+
+    Cli<CLS,DEF,DEFPARSER extends IOptionsDefinitionParser>(cls: any, def: any, defparser: any): CLS {
         this.bindKernel(this);
-        this.bind<ICommandsDefinition>(BINDINGS.ROOT_DEFINITION).to(CommandsDefinition).inSingletonScope();
-        this.bindParserFactory<ICommandsDefinitionParser>(BINDINGS.ROOT_DEFINITION_PARSER_FACTORY, BINDINGS.COMMANDS_DEFINITION_PARSER)
-        this.bind<CommandsCli>(BINDINGS.CLI).to(CommandsCli).inSingletonScope();
-        return this.get<CommandsCli>(BINDINGS.CLI);
+        this.bind<DEF>(BINDINGS.ROOT_DEFINITION).to(def).inSingletonScope()
+        this.bindParserFactory<DEFPARSER>(BINDINGS.ROOT_DEFINITION_PARSER_FACTORY, defparser)
+        this.bind<CLS>(BINDINGS.CLI).to(cls).inSingletonScope();
+        return this.get<CLS>(BINDINGS.CLI);
+    }
+
+    commandsCli(): CommandsCli {
+        return this.Cli<CommandsCli,ICommandsDefinition, ICommandsDefinitionParser>(CommandsCli, CommandsDefinition, BINDINGS.COMMANDS_DEFINITION_PARSER)
     }
 
     argumentsCli(): ArgumentsCli {
-        if (this.isBound(BINDINGS.CLI)) throw Error('cli already created')
+        if ( this.isBound(BINDINGS.CLI) ) throw Error('cli already created')
         this.bindKernel(this);
         this.bind<IArgumentsDefinition>(BINDINGS.ROOT_DEFINITION).to(ArgumentsDefinition).inSingletonScope();
         this.bindParserFactory<IArgumentsDefinitionParser>(BINDINGS.ROOT_DEFINITION_PARSER_FACTORY, BINDINGS.ARGUMENTS_DEFINITION_PARSER)
@@ -52,6 +69,7 @@ class App extends Kernel
     bindKernel(kernel: App) {
 
         // @TODO use kernel modules instead: https://github.com/inversify/InversifyJS/blob/master/wiki/kernel_modules.md
+        // @TODO might want to use @provide for some of these
 
         kernel.bind<IOptionsDefinition>(BINDINGS.GLOBAL_DEFINITION).to(OptionsDefinition).inSingletonScope();
         kernel.bind<ILog>(BINDINGS.LOG).to(Log).inSingletonScope();
@@ -104,7 +122,7 @@ class App extends Kernel
 
     }
 
-    private bindParserFactory<T2 extends IOptionsDefinitionParser>(binding, parserBinding){
+    private bindParserFactory<T2 extends IOptionsDefinitionParser>(binding, parserBinding) {
         this.bind<Factory<T2>>(binding).toFactory<any>((context: Context) => {
             return (definition: any, argv: any[]) => {
                 let parser        = context.kernel.get<T2>(parserBinding);
@@ -117,8 +135,14 @@ class App extends Kernel
 
 }
 
-let app = new App;
+let app              = new App;
+let { lazyInject }   = getDecorators(app);
+let provide          = makeProvideDecorator(app);
+let provideSingleton = function (identifier) {
+    return provide(identifier)
+        [ 'inSingletonScope' ]()
+        .done();
+};
 
-
-export {app, App}
+export { app, App, provide, lazyInject, provideSingleton }
 

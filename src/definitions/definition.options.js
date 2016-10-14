@@ -70,12 +70,6 @@ var OptionsDefinition = (function () {
     OptionsDefinition.prototype.isHelpEnabled = function () {
         return typeof this.helpKey === 'string';
     };
-    OptionsDefinition.prototype.showHelp = function () {
-        var without = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            without[_i - 0] = arguments[_i];
-        }
-    };
     OptionsDefinition.prototype._push = function (option, value) {
         this._options[option].push.apply(this._options[option], [].concat(value));
         return this;

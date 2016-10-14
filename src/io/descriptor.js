@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var console_colors_1 = require("@radic/console-colors");
 var core_1 = require("../core");
 var Descriptor = (function () {
     function Descriptor() {
@@ -29,17 +30,20 @@ var Descriptor = (function () {
                 return ("{" + c.command + "}" + node.name + "{reset}") + (keys.length > 0 ? "{" + c.argument + "}" + keys.map(function (name) { return args_1[name]; }).join('{reset ') + "{reset}" : '');
             }
         };
-        return tree = tree.map(mapNode);
+        return tree.map(mapNode);
     };
     Descriptor.prototype.commandTree = function (label, from) {
         if (label === void 0) { label = 'Overview'; }
         this.out.tree("{" + this.config('colors.header') + "}" + label + "{reset}", this.getCommandTree());
+        return this;
     };
     Descriptor.prototype.getGroup = function (group) {
+        var _this = this;
         var children = this.factory.getGroupChildren(group ? group.name : null, group ? group.parent : undefined);
         var table = this.out.columns();
         children.forEach(function (child) {
-            table.push([child.name, child.desc]);
+            var nameColor = console_colors_1.colors.getTrucolorColor(_this.config('colors.' + child.type)), name = nameColor.in + child.name + nameColor.out, descColor = console_colors_1.colors.getTrucolorColor(_this.config('colors.description')), desc = descColor.in + child.desc + descColor.out;
+            table.push([name, desc]);
         });
         return table;
     };
@@ -91,23 +95,22 @@ var Descriptor = (function () {
     Descriptor.prototype.argumentsCli = function (cli) {
     };
     Descriptor.prototype.commandsCli = function (cli) {
-        var c = this.config.get.bind(this.config);
-        if (c('version') && c('descriptor.cli.showVersion'))
-            this.out.subtitle(c('version'));
-        this.out.writeln();
+        var c = this.config;
+        if (c('app.title') && c('descriptor.cli.showTitle') === true)
+            this.out.write("{" + c('colors.title') + "}" + c('app.title') + "{reset} ");
+        if (c('app.version') && c('descriptor.cli.showVersion'))
+            this.out.write("{" + c('colors.subtitle') + "}" + c('app.version') + "{reset} ");
+        if (c('app.description') && c('descriptor.cli.showDescription'))
+            this.out.line().description(c('app.description'));
         var group = this.getGroup(null);
         var options = this.getOptions(cli.definition);
         var globalOptions = this.getOptions(cli.globalDefinition);
         var tree = this.getCommandTree();
-        this.out.line().header('Commands').line(group.toString());
-        this.out.line().header('Options').line(options.toString());
-        this.out.line().header('Global Options').line(globalOptions.toString());
+        this.out.line().header(c('descriptor.text.commands')).line(group.toString());
+        this.out.line().header(c('descriptor.text.options')).line(options.toString());
+        this.out.line().header(c('descriptor.text.globalOptions')).line(globalOptions.toString());
     };
     Descriptor.prototype.cli = function (cli) {
-        var c = this.config.get.bind(this.config);
-        if (c('title') && c('descriptor.cli.showTitle') === true) {
-            this.out.writeln("{green.bold}" + c('title') + "{reset}");
-        }
         if (cli instanceof core_1.ArgumentsCli) {
             this.argumentsCli(cli);
         }

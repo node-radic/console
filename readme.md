@@ -9,6 +9,14 @@ The library is NOT a yargs clone but written from scratch in Typescript. Using I
 - Arguments, Options, Long options, aliases, types, etc
 - Using the decorators is optional. May also use the 'old fashioned way' 
 
+
+cli.definition = ICommandsDefinition
+cli.globalDefinition = IOptionsDefinition
+cli.parse > ICommandsDefinitionParser & IOptionsDefinitionParser
+cli.parsed = IParsedCommandsDefinition
+cli.parsed.global = IParsedOptionsDefinition
+
+
 `index.ts`
 ```typescript
 import {app as container,CommandsCli,Command,Group,command,group} from './src' // src = @radic/console
@@ -140,6 +148,28 @@ cli.config.set('output.colors.header', 'cyan')
 ```typescript
 import {app, BINDINGS, Descriptor, IDescriptor,IOptionsDefinition} from './src'  
 let cli = container.commandsCli()
+class MyDescriptor extends Descriptor {
+    options(definition:IOptionsDefinition){
+        super.options(definition)
+        this.out.line('{bold}Total{reset}:' + definition.getOptions().length)
+    }
+}
+app.bind<IDescriptor>(BINDINGS.DESCRIPTOR).to(MyDescriptor)
+```
+
+
+### Modify/extend the CLI                       
+```typescript
+import {app, BINDINGS, Descriptor, CommandsCli, IDescriptor,IOptionsDefinition} from './src'
+class MyCommandsCli extends CommandsCli {
+    parse(argv:any[]){
+        super.parse(argv)
+    }
+    fire(){
+        this.parsed.command.fire();
+    }
+}
+let cli = app.commandsCli<MyCommandsCli>(MyCommandsCli)
 class MyDescriptor extends Descriptor {
     options(definition:IOptionsDefinition){
         super.options(definition)

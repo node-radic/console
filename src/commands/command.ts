@@ -5,6 +5,7 @@ import { IArgumentsDefinitionParser, ICommandsDefinition, ICommandsDefinitionPar
 import { IInput, IOutput } from "../io";
 import { Cli } from "../core/cli";
 import { IGroupConstructor } from "./group";
+import { BaseCommandRegistration, ICommandRegistration } from "./factory";
 
 
 export interface ICommandHelper
@@ -12,10 +13,7 @@ export interface ICommandHelper
     name: string
 }
 
-export interface ICommand
-{
-    name: string
-    desc: string
+export interface ICommand extends ICommandRegistration<ICommand> {
     arguments: any
     options: any
     parsed: IParsedArgumentsDefinition
@@ -28,7 +26,7 @@ export interface ICommandConstructor
 
 
 @injectable()
-export class Command implements ICommand
+export class Command extends BaseCommandRegistration implements ICommand
 {
     // filled by createCommand
     name: string;
@@ -62,36 +60,14 @@ export class Command implements ICommand
 
     helpers: {[name: string]: ICommandHelper}
 
-    private defer: Promise.Resolver<any>;
-    protected asyncMode: boolean = false;
-
 
     constructor() {
+        super()
     }
 
-    fire() {
-        this.defer = Promise.defer();
-        this.parse();
-        // let handle = this.handler || this['handle'];
-        this[ 'handle' ].apply(this);
-        if ( false === this.asyncMode ) {
-            this.done();
-        }
-        return this.defer.promise;
-    }
-
-    private parse() {
+    protected parse() {
         this.parsed = this.definitionParserFactory(this.definition, this.argv).parse();
     }
-
-    protected async() {
-        this.asyncMode = true;
-        return this.done;
-    }
-
-    protected done() { this.defer.resolve(this); }
-
-    protected fail(reason?: string) { this.defer.reject(reason); }
 
     // parser
 
@@ -106,7 +82,9 @@ export class Command implements ICommand
 
     // definition
 
-    showHelp() { this.definition.showHelp() }
+    showHelp() {
+
+    }
 
     setArguments(args: {[name: string]: {}}) { this.definition.arguments(args); }
 

@@ -2,6 +2,7 @@
 require("reflect-metadata");
 var src_1 = require("../src");
 require("./commands");
+var bindings_1 = require("../src/core/bindings");
 var cli = src_1.app.commandsCli();
 cli.globalDefinition
     .options({
@@ -23,6 +24,9 @@ if (parsed.opt('d')) {
     cli.log.setLevel('debug');
 }
 if (parsed.opt('t')) {
+    var descriptor = src_1.app.get(bindings_1.BINDINGS.DESCRIPTOR);
+    descriptor.commandTree('Command Tree');
+    cli.exit();
 }
 if (parsed.opt('v')) {
     cli.out.line(cli.config('app.version'));
@@ -34,6 +38,9 @@ if (parsed.isCommand) {
     });
 }
 else if (parsed.isGroup) {
+    parsed.group.fire().then(function () {
+        cli.exit();
+    });
     parsed.group.showHelp();
 }
 else if (parsed.isRoot) {

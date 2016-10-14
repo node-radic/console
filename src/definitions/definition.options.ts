@@ -23,7 +23,7 @@ export interface IOptionsDefinition
     help(key: string, alias: string, fn?: Function): this
     help(key: string, fn?: Function): this
     isHelpEnabled(): boolean
-    showHelp(...without: string[]): void
+    // showHelp(...without: string[]): void
 }
 export interface IJoinedOptions {
     [key:string]:IJoinedOption
@@ -102,10 +102,6 @@ export class OptionsDefinition implements IOptionsDefinition
     isHelpEnabled() {
         return typeof this.helpKey === 'string'
     }
-
-    showHelp(...without: string[]): void {
-    }
-
 
     // options
 

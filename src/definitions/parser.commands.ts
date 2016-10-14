@@ -42,6 +42,7 @@ export class CommandsDefinitionParser extends OptionsDefinitionParser implements
 {
     @inject(BINDINGS.PARSED_COMMANDS_DEFINITION)
     public parsed: IParsedCommandsDefinition
+
     public definition: ICommandsDefinition
 
     @inject(BINDINGS.COMMANDS_FACTORY)

@@ -24,26 +24,6 @@ var Cli = (function (_super) {
     function Cli() {
         _super.call(this);
     }
-    Object.defineProperty(Cli.prototype, "config", {
-        get: function () { return this._config; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Cli.prototype, "log", {
-        get: function () { return this._log; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Cli.prototype, "definition", {
-        get: function () { return this._definition; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Cli.prototype, "out", {
-        get: function () { return this._out; },
-        enumerable: true,
-        configurable: true
-    });
     Cli.prototype.parse = function (argv) {
         if (this.argv)
             return;
@@ -68,7 +48,7 @@ var Cli = (function (_super) {
     };
     Cli.prototype.fail = function (msg) {
         if (msg)
-            this._log.error(msg);
+            this.log.error(msg);
         this.exit(true);
     };
     Cli.prototype.profile = function (id, msg, meta, callback) {
@@ -77,23 +57,27 @@ var Cli = (function (_super) {
     __decorate([
         _1.inject(bindings_1.BINDINGS.CONFIG), 
         __metadata('design:type', Function)
-    ], Cli.prototype, "_config", void 0);
+    ], Cli.prototype, "config", void 0);
     __decorate([
         _1.inject(bindings_1.BINDINGS.LOG), 
         __metadata('design:type', Object)
-    ], Cli.prototype, "_log", void 0);
+    ], Cli.prototype, "log", void 0);
     __decorate([
         _1.inject(bindings_1.BINDINGS.ROOT_DEFINITION), 
         __metadata('design:type', Object)
-    ], Cli.prototype, "_definition", void 0);
+    ], Cli.prototype, "definition", void 0);
     __decorate([
         _1.inject(bindings_1.BINDINGS.OUTPUT), 
         __metadata('design:type', Object)
-    ], Cli.prototype, "_out", void 0);
+    ], Cli.prototype, "out", void 0);
     __decorate([
         _1.inject(bindings_1.BINDINGS.ROOT_DEFINITION_PARSER_FACTORY), 
         __metadata('design:type', Function)
     ], Cli.prototype, "definitionParserFactory", void 0);
+    __decorate([
+        _1.inject(bindings_1.BINDINGS.DESCRIPTOR), 
+        __metadata('design:type', Object)
+    ], Cli.prototype, "_descriptor", void 0);
     Cli = __decorate([
         _1.injectable(), 
         __metadata('design:paramtypes', [])
@@ -123,13 +107,6 @@ var CommandsCli = (function (_super) {
     function CommandsCli() {
         _super.apply(this, arguments);
     }
-    Object.defineProperty(CommandsCli.prototype, "globalDefinition", {
-        get: function () {
-            return this._globalDefinition;
-        },
-        enumerable: true,
-        configurable: true
-    });
     CommandsCli.prototype.parse = function (argv) {
         _super.prototype.parse.call(this, argv);
         var parser = this.definitionParserFactory(this.definition, this.argv);
@@ -147,7 +124,7 @@ var CommandsCli = (function (_super) {
     __decorate([
         _1.inject(bindings_1.BINDINGS.GLOBAL_DEFINITION), 
         __metadata('design:type', Object)
-    ], CommandsCli.prototype, "_globalDefinition", void 0);
+    ], CommandsCli.prototype, "globalDefinition", void 0);
     __decorate([
         _1.inject(bindings_1.BINDINGS.OPTIONS_DEFINITION_PARSER_FACTORY), 
         __metadata('design:type', Function)

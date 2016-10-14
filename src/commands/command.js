@@ -1,4 +1,9 @@
 "use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,40 +13,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var Promise = require("bluebird");
 var inversify_1 = require("inversify");
 var core_1 = require("../core");
 var cli_1 = require("../core/cli");
-var Command = (function () {
+var factory_1 = require("./factory");
+var Command = (function (_super) {
+    __extends(Command, _super);
     function Command() {
+        _super.call(this);
         this.argv = [];
         this.arguments = {};
         this.options = {};
-        this.asyncMode = false;
     }
-    Command.prototype.fire = function () {
-        this.defer = Promise.defer();
-        this.parse();
-        this['handle'].apply(this);
-        if (false === this.asyncMode) {
-            this.done();
-        }
-        return this.defer.promise;
-    };
     Command.prototype.parse = function () {
         this.parsed = this.definitionParserFactory(this.definition, this.argv).parse();
     };
-    Command.prototype.async = function () {
-        this.asyncMode = true;
-        return this.done;
-    };
-    Command.prototype.done = function () { this.defer.resolve(this); };
-    Command.prototype.fail = function (reason) { this.defer.reject(reason); };
     Command.prototype.hasArg = function (n) { return this.parsed.hasArg(n); };
     Command.prototype.arg = function (n) { return this.parsed.arg(n); };
     Command.prototype.hasOpt = function (n) { return this.parsed.hasOpt(n); };
     Command.prototype.opt = function (n) { return this.parsed.opt(n); };
-    Command.prototype.showHelp = function () { this.definition.showHelp(); };
+    Command.prototype.showHelp = function () {
+    };
     Command.prototype.setArguments = function (args) { this.definition.arguments(args); };
     Command.prototype.setOptions = function (options) { this.definition.options(options); };
     Command.prototype.line = function (text) { this.out.writeln(text); };
@@ -79,7 +71,7 @@ var Command = (function () {
         __metadata('design:paramtypes', [])
     ], Command);
     return Command;
-}());
+}(factory_1.BaseCommandRegistration));
 exports.Command = Command;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Command;

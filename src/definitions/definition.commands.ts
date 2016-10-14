@@ -5,6 +5,7 @@ import { inject, BINDINGS } from "../core";
 
 export interface ICommandsDefinition extends IOptionsDefinition
 {
+    factory: ICommandFactory;
     getCommands(): ICommandRegistration<ICommandConstructor>[]
     getGroups(): ICommandRegistration<IGroupConstructor>[]
 }

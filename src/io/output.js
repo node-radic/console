@@ -13,7 +13,7 @@ var Table = require("cli-table2");
 var util_1 = require("@radic/util");
 var lodash_1 = require("lodash");
 var console_colors_1 = require("@radic/console-colors");
-var archy = require('archy');
+var archy = require("archy");
 exports.TABLE_STYLE = {
     FAT: {
         'top': '═', 'top-mid': '╤', 'top-left': '╔', 'top-right': '╗',
@@ -65,6 +65,10 @@ var Output = (function () {
     };
     Output.prototype.configColorString = function (color, text) {
         this.writeln("{" + this.config('colors.' + color) + "}" + text);
+    };
+    Output.prototype.description = function (text) {
+        this.configColorString('description', text);
+        return this;
     };
     Output.prototype.title = function (text) {
         this.configColorString('title', text);

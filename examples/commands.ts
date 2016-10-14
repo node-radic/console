@@ -98,3 +98,16 @@ export class JiraProjectsListCommand extends Command
 export class JenkinsGroup extends Group
 {
 }
+
+
+@command('data', 'Show important data')
+export class DataCommand extends Command {
+    options = {};
+    handle() { this.out.writeln('This is the data command') }
+}
+
+@command('dump', 'Dump debug values')
+export class DumpCommand extends Command {
+    options = {};
+    handle() { this.out.writeln('This is the data command') }
+}

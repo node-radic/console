@@ -1,6 +1,38 @@
 import * as util from "@radic/util";
 
 
+let defaults               = {
+    app: {
+        title      : undefined,
+        description: undefined,
+        version    : undefined,
+    },
+    colors    : {
+        enabled    : true,
+        title      : 'green bold',
+        subtitle   : 'yellow',
+
+        header     : 'darkorange bold',
+        group      : 'steelblue bold',
+        command    : 'skyblue',
+        description: 'grey',
+        argument   : 'yellow darken 50'
+        //etc
+    },
+    descriptor: {
+        cli: {
+            showTitle  : true,
+            showVersion: true,
+            showDescription: true,
+        },
+        text: {
+            commands: 'Commands',
+            options: 'Options',
+            globalOptions: 'Global Options'
+        }
+    }
+}
+
 export interface IBaseConfig extends util.IConfig
 {
     title(val: string): this
@@ -19,16 +51,16 @@ export class Config extends util.Config implements IBaseConfig
 
 
     title(title: string): this {
-        this.set('title', title);
+        this.set('app.title', title);
         return this;
     }
 
     version(title: string): this {
-        this.set('version', title);
+        this.set('app.version', title);
         return this;
     }
     description(title: string): this {
-        this.set('version', title);
+        this.set('app.description', title);
         return this;
     }
 
@@ -56,31 +88,6 @@ export class Config extends util.Config implements IBaseConfig
         return cf;
     }
 
-}
-
-let defaults               = {
-    app: {
-        title      : null,
-        description: null,
-        version    : null,
-    },
-    colors    : {
-        enabled    : true,
-        header     : 'cyan',
-        title      : 'green bold',
-        subtitle   : 'yellow',
-        group      : 'magenta bold',
-        command    : 'magenta',
-        description: 'magenta lighten 40 bold',
-        argument   : 'yellow darken 50'
-        //etc
-    },
-    descriptor: {
-        cli: {
-            showTitle  : true,
-            showVersion: true
-        }
-    }
 }
 let _config: IBaseConfig   = new Config(defaults);
 export let config: IConfig = Config.makeProperty(_config)
