@@ -13,7 +13,7 @@ cli.globalDefinition
         v: { alias: 'version', desc: 'Show the version of this app', boolean: true },
         d: { alias: 'debug', desc: 'Show debugging output', boolean: true }
     })
-    .help('h', 'help');
+
 
 cli.definition
     .options({
@@ -23,8 +23,8 @@ cli.definition
 cli.config
     .title('Radic Console Preview')
     .description('A preview of a command based CLI')
-    .version('1.0.1');
-
+    .version('1.0.1')
+    .help('h', 'help');
 
 // parse
 cli.parse(process.argv)
@@ -46,20 +46,23 @@ if ( parsed.opt('v') ) {
     cli.exit();
 }
 
-if ( parsed.isCommand ) {
-    parsed.command.fire().then(() => {
-        cli.exit();
-    });
-} else if ( parsed.isGroup ) {
-    parsed.group.fire().then(() => {
-        cli.exit();
-    });
-    parsed.group.showHelp();
-} else if ( parsed.isRoot ) {
-    cli.showHelp()
-} else {
-    cli.fail('No options or arguments provided.  Use the -h or --help option to show what can be done')
-}
+// let the other stuff be handled automaticly
+cli.handle();
+
+// if ( parsed.isCommand ) {
+//     parsed.command.fire().then(() => {
+//         cli.exit();
+//     });
+// } else if ( parsed.isGroup ) {
+//     parsed.group.fire().then(() => {
+//         cli.exit();
+//     });
+//     parsed.group.showHelp();
+// } else if ( parsed.isRoot ) {
+//     cli.showHelp()
+// } else {
+//     cli.fail('No options or arguments provided.  Use the -h or --help option to show what can be done')
+// }
 
 
 

@@ -19,14 +19,26 @@ let defaults               = {
         argument   : 'yellow darken 50'
         //etc
     },
+    help: {
+        enabled: false,
+        key: undefined,
+        command: undefined
+    },
     descriptor: {
         cli: {
             showTitle  : true,
             showVersion: true,
             showDescription: true,
+            showHelpAsDefault: true // When no args/opts are provided, should i display the help?
+        },
+        group: {
+            showHelpAsDefault: true // When no args/opts are provided, should i display the help?
+        },
+        command: {
+            showHelpAsDefault: false // When no args/opts are provided, should i display the help?
         },
         text: {
-            commands: 'Commands',
+            commands: 'Commands & Groups',
             options: 'Options',
             globalOptions: 'Global Options'
         }
@@ -38,6 +50,7 @@ export interface IBaseConfig extends util.IConfig
     title(val: string): this
     description(val: string): this
     version(val: string): this
+    help(key:string, command?:string):this
     dump()
 }
 
@@ -63,11 +76,23 @@ export class Config extends util.Config implements IBaseConfig
         this.set('app.description', title);
         return this;
     }
+    help(key:string, command?:string):this{
+        this.merge('help', {
+            enabled: true,
+            key: key,
+            command: command
+        })
+        return this
+    }
 
     dump() {
         console.dir(this.data, { colors: true, showHidden: true });
     }
 
+
+    public get(prop?: any, def?: any): any {
+        return super.get(prop, def);
+    }
 
     public static makeProperty(config: IBaseConfig): IConfig {
         var cf: any = function (prop?: any): any {

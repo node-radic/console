@@ -44,7 +44,7 @@ export class ParsedOptionsDefinition implements IParsedOptionsDefinition
     args: IParsedArgv
 
     hasOpt(n: string): boolean {
-        return typeof this.options[n] !== "undefined"
+        return this.options[n] !== undefined
     }
     /** The number of options given */
     get nopts() :number {

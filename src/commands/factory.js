@@ -36,7 +36,8 @@ var BaseCommandRegistration = (function () {
     BaseCommandRegistration.prototype.fire = function () {
         this.defer = Promise.defer();
         this.parse();
-        this['handle'].apply(this);
+        if (this['handle'])
+            this['handle'].apply(this);
         if (false === this.asyncMode) {
             this.done();
         }
@@ -76,7 +77,7 @@ var CommandFactory = (function () {
         if (argv === void 0) { argv = []; }
         var command = core_1.app.make(commandRegistration.cls);
         command.argv = argv;
-        command.definition.mergeOptions(core_1.app.get(core_1.BINDINGS.CLI).getGlobalDefinition());
+        command.definition.mergeOptions(core_1.app.get(core_1.BINDINGS.CLI).globalDefinition);
         command.definition.arguments(command.arguments);
         command.definition.options(command.options);
         command.name = commandRegistration.name;

@@ -80,18 +80,6 @@ var Descriptor = (function () {
         this.out.writeln(this.getArguments(definition).toString());
         return this;
     };
-    Descriptor.prototype.title = function (title) {
-        this.out.title(title);
-        return this;
-    };
-    Descriptor.prototype.subtitle = function (title) {
-        this.out.subtitle(title);
-        return this;
-    };
-    Descriptor.prototype.header = function (header) {
-        this.out.header(header);
-        return this;
-    };
     Descriptor.prototype.argumentsCli = function (cli) {
     };
     Descriptor.prototype.commandsCli = function (cli) {

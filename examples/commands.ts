@@ -1,4 +1,32 @@
-import {Command, Group, command, group} from "../src";
+import {Command, Group, command, group, IArgument} from "../src";
+import { IOption } from "../src/definitions/definition.options";
+
+
+
+@command('test', 'Testing command with a lot of opts and args')
+export class TestCommand extends Command {
+    options = {
+        f: <IOption> {alias: 'file', desc: 'Path to a .json file', string: true },
+        z: <IOption> {alias: 'with-handler', desc: 'Path to a .json file', string: true },
+    };
+    handle() { this.out.writeln('This is the data command') }
+}
+
+@command('data', 'Show important data')
+export class DataCommand extends Command {
+    arguments = {}
+    options = {};
+    handle() { this.out.writeln('This is the data command') }
+}
+
+
+
+@command('dump', 'Dump debug values')
+export class DumpCommand extends Command {
+    options = {};
+    handle() { this.out.writeln('This is the data command') }
+}
+
 
 @group('git', 'Collection of git related commands')
 export class GitGroup extends Group
@@ -97,17 +125,4 @@ export class JiraProjectsListCommand extends Command
 @group('jenkins', 'Discover and control a Jenkins server')
 export class JenkinsGroup extends Group
 {
-}
-
-
-@command('data', 'Show important data')
-export class DataCommand extends Command {
-    options = {};
-    handle() { this.out.writeln('This is the data command') }
-}
-
-@command('dump', 'Dump debug values')
-export class DumpCommand extends Command {
-    options = {};
-    handle() { this.out.writeln('This is the data command') }
 }

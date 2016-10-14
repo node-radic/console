@@ -9,6 +9,21 @@ The library is NOT a yargs clone but written from scratch in Typescript. Using I
 - Arguments, Options, Long options, aliases, types, etc
 - Using the decorators is optional. May also use the 'old fashioned way' 
 
+| Class          | Description                                   |
+|:---------------|:----------------------------------------------|
+| App            | The IoC Kernel. Contains all bindings         |
+| Config         | Configuration class holding all configuration |
+| Log            | Log class                                     |
+| Cli            | Abstract base Cli                             |
+| CommandsCli    |                                               |
+| ArgumentsCli   |                                               |
+| Command        |                                               |
+| Group          |                                               |
+| CommandFactory |                                               |
+| Descriptor     |                                               |
+| Input          |                                               |
+| Output         |                                               |
+
 
 cli.definition = ICommandsDefinition
 cli.globalDefinition = IOptionsDefinition

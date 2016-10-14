@@ -20,7 +20,7 @@ var App = (function (_super) {
         _super.apply(this, arguments);
     }
     App.prototype.build = function (cls) {
-        inversify_1.decorate(inversify_1.injectable(), cls);
+        this.ensureInjectable(cls);
         var k = 'temporary.kernel.binding';
         this.bind(k).to(cls);
         var instance = this.get(k);
@@ -28,13 +28,19 @@ var App = (function (_super) {
         return instance;
     };
     App.prototype.make = function (cls) {
-        inversify_1.decorate(inversify_1.injectable(), cls);
+        this.ensureInjectable(cls);
         var binding = cls.toString();
         if (this.isBound(binding)) {
             return this.get(binding);
         }
         this.bind(binding).to(cls);
         return this.get(binding);
+    };
+    App.prototype.ensureInjectable = function (cls) {
+        try {
+            inversify_1.decorate(inversify_1.injectable(), cls);
+        }
+        catch (err) { }
     };
     App.prototype.Cli = function (cls, def, defparser) {
         this.bindKernel(this);

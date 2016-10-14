@@ -1,13 +1,12 @@
-import {EventEmitter} from "events";
-import {existsSync} from "fs-extra";
-import {BINDINGS} from "./bindings";
-import {injectable, decorate, inject} from "./";
-import {IOptionsDefinition, IArgumentsDefinition, ICommandsDefinition, IParsedOptionsDefinition, IOptionsDefinitionParser, IArgumentsDefinitionParser, IParsedArgumentsDefinition, IParsedCommandsDefinition, ICommandsDefinitionParser, IParsedArgv} from "../definitions";
-import {ILog} from "./log";
-import {IConfig} from "./config";
-import {app} from "./app";
-import {IDescriptor} from "../io/descriptor";
-import {IOutput} from "../io/output";
+import { EventEmitter } from "events";
+import { existsSync } from "fs-extra";
+import { BINDINGS } from "./bindings";
+import { injectable, decorate, inject } from "./";
+import { IOptionsDefinition, IArgumentsDefinition, ICommandsDefinition, IParsedOptionsDefinition, IOptionsDefinitionParser, IArgumentsDefinitionParser, IParsedArgumentsDefinition, IParsedCommandsDefinition, ICommandsDefinitionParser, IParsedArgv } from "../definitions";
+import { ILog } from "./log";
+import { IConfig } from "./config";
+import { app } from "./app";
+import { IDescriptor, IOutput } from "../io";
 
 decorate(injectable(), EventEmitter);
 @injectable()
@@ -26,45 +25,69 @@ export abstract class Cli<
 
     @inject(BINDINGS.CONFIG)
     config: IConfig
-    //get config(): IConfig { return this._config }
 
     @inject(BINDINGS.LOG)
     log: ILog;
-    //get log(): ILog { return this._log }
 
     @inject(BINDINGS.ROOT_DEFINITION)
     definition: T;
-    // get definition(): T { return this._definition }
 
     @inject(BINDINGS.OUTPUT)
-    out:IOutput;
-    // get out() : IOutput { return this._out }
+    out: IOutput;
 
     @inject(BINDINGS.ROOT_DEFINITION_PARSER_FACTORY)
     protected definitionParserFactory: (definition: T, args: IParsedArgv) => Z
 
     @inject(BINDINGS.DESCRIPTOR)
-    protected _descriptor:IDescriptor
+    protected _descriptor: IDescriptor
 
     constructor() {
         super()
     }
 
+    handle() {
+        Object.keys(this.definition.getJoinedOptions())
+            .filter(this.parsed.hasOpt.bind(this.parsed))
+            // .map(this.parsed.opt)
+            .forEach((name: string) => {
+                let handler = this.definition.getOptions().handler[ name ];
+                if ( handler ) handler.call(this)
+            })
+
+    }
+
     parse(argv: any[]) {
-        if (this.argv) return;
+        if ( this.argv ) return;
         this.emit('parse');
 
         // strip node and file path first if needed
-        if (existsSync(argv[0])) {
+        if ( existsSync(argv[ 0 ]) ) {
             this.nodePath = argv.shift();
             this.binPath  = argv.shift();
         }
 
         this.argv = argv;
+
+        if ( this.help.enabled ) {
+            this.defineHelp()
+        }
+
+        let parser  = this.definitionParserFactory(this.definition, this.argv);
+        this.parsed = <Y> parser.parse();
+    }
+
+    protected defineHelp() {
+        this.definition.boolean(this.help.key)
+        if(this.help.command) this.definition.alias(this.help.command)
+    }
+
+    protected get help(): {enabled: boolean,key: string,command?: string} {
+        return this.config('help');
     }
 
 
     showHelp(...without: string[]) {
+
         let descriptor = app.get<IDescriptor>(BINDINGS.DESCRIPTOR);
         descriptor.cli(this);
     }
@@ -74,7 +97,7 @@ export abstract class Cli<
     }
 
     fail(msg?: string) {
-        if (msg) this.log.error(msg)
+        if ( msg ) this.log.error(msg)
         this.exit(true);
     }
 
@@ -87,27 +110,6 @@ export class ArgumentsCli extends Cli<IArgumentsDefinition, IParsedArgumentsDefi
 {
     parse(argv: any[]): any {
         super.parse(argv);
-        let definitionParser = this.definitionParserFactory(this.definition, this.argv);
-        this.parsed          = definitionParser.parse();
-        if (this.definition.isHelpEnabled() && this.parsed.opt(this.definition.helpKey) === true) {
-            this.showHelp();
-            this.exit();
-        }
-        // re-apply "nested" options defaults
-        // this.definition.getOptions().nested.forEach((key:string) => {
-        //     let defaults = this.definition.getOptions().default[key];
-        //     let aliases = this._args.aliases[key];
-        //     this._args.argv[key] = merge({}, defaults, this._args.argv[key]);
-        //     aliases.forEach((alias) => this._args.argv[alias] = merge({}, defaults, this._args.argv[alias]))
-        // })
-        // let dp     = new DefinitionParser(this.definition, this._args);
-        // let parsed = dp.parseArguments();
-        // if (parsed.errors.length > 0) {
-        //     parsed.errors.forEach((error: any, i: number) => {
-        //         console.error(`Error [${i+1}/${parsed.errors.length}] parsing argument [${error.argument}]: ${error.message}`)
-        //     })
-        // }
-        // return parsed;
     }
 }
 
@@ -126,19 +128,40 @@ export class CommandsCli extends Cli<ICommandsDefinition, IParsedCommandsDefinit
         // The root definition will resolve the command/group and put it into this.parsed.
         // When the command is fired (parsed.command.fire()), the command will parse it's own definition (options&arguments) (thus ignoring the root definition's options)
         // However, the global definition (options) will be merged into the command definition
-        let parser  = this.definitionParserFactory(this.definition, this.argv);
-        this.parsed = parser.parse();
+
 
         let gparser        = this.globalDefinitionParserFactory(this.globalDefinition, this.argv);
         this.parsed.global = gparser.parse();
+    }
 
-        if (this.definition.isHelpEnabled() && this.parsed.opt(this.definition.helpKey) === true) {
-            this.showHelp();
-            this.exit();
+
+    protected checkHelp(): any {
+        let help = this.config('help');
+        if ( help.enabled ) {
+            this.globalDefinition.option(help.key, { alias: help.command })
         }
     }
 
-    getGlobalDefinition(): IOptionsDefinition {
-        return this.globalDefinition;
+    handle(): any {
+
+        if ( this.parsed.isRoot ) {
+            // let showHelp = && this.parsed.opt(this.config('help.key')) === true
+            if ( this.config('help.enabled') && this.config('descriptor.cli.showHelpAsDefault') ? this.showHelp() : super.handle()
+                return this.exit();
+        }
+
+        if ( this.parsed.isCommand ) {
+            return this.parsed.command.fire().then(() => {
+                this.exit();
+            });
+        }
+
+        if ( this.parsed.isGroup ) {
+            return this.parsed.group.fire().then(() => {
+                this.exit();
+            });
+        }
+
+        this.fail('No options or arguments provided.  Use the -h or --help option to show what can be done')
     }
 }

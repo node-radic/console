@@ -76,8 +76,7 @@ export abstract class BaseCommandRegistration {
     fire() {
         this.defer = Promise.defer();
         this.parse();
-        // let handle = this.handler || this['handle'];
-        this[ 'handle' ].apply(this);
+        if(this['handle']) this[ 'handle' ].apply(this);
         if ( false === this.asyncMode ) {
             this.done();
         }
@@ -117,7 +116,7 @@ export class CommandFactory implements ICommandFactory
         let command: Command = app.make<Command>(commandRegistration.cls);
 
         command.argv = argv
-        command.definition.mergeOptions(app.get<CommandsCli>(BINDINGS.CLI).getGlobalDefinition());
+        command.definition.mergeOptions(app.get<CommandsCli>(BINDINGS.CLI).globalDefinition);
         command.definition.arguments(command.arguments);
         command.definition.options(command.options);
 

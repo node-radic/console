@@ -26,7 +26,8 @@ var OptionsDefinition = (function () {
             number: [],
             string: [],
             nested: [],
-            desc: {}
+            desc: {},
+            handler: {}
         };
     };
     OptionsDefinition.prototype.getJoinedOptions = function () {
@@ -45,30 +46,11 @@ var OptionsDefinition = (function () {
                     desc: opts.desc[key] || '',
                     default: opts.default[key] || false,
                     narg: opts.narg[key] || 0,
+                    handler: opts.handler[key] || undefined
                 });
             });
         });
         return joined;
-    };
-    OptionsDefinition.prototype.help = function (key) {
-        var _this = this;
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        this.helpKey = key;
-        this.boolean(key);
-        args.forEach(function (arg) {
-            if (typeof arg === 'string') {
-                _this.alias(key, arg);
-            }
-            else {
-            }
-        });
-        return this;
-    };
-    OptionsDefinition.prototype.isHelpEnabled = function () {
-        return typeof this.helpKey === 'string';
     };
     OptionsDefinition.prototype._push = function (option, value) {
         this._options[option].push.apply(this._options[option], [].concat(value));
@@ -111,6 +93,10 @@ var OptionsDefinition = (function () {
     };
     OptionsDefinition.prototype.describe = function (k, val) {
         this._options.desc[k] = val;
+        return this;
+    };
+    OptionsDefinition.prototype.handler = function (k, v) {
+        this._options.handler[k] = v;
         return this;
     };
     OptionsDefinition.prototype.option = function (k, o) {

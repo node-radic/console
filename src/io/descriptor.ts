@@ -21,9 +21,6 @@ export interface IDescriptor
     getCommandTree(from?: string): any[]
     commandTree(label?: string, from?: string): this
 
-    title(title: string): this
-    subtitle(title: string): this
-    header(header: string): this
 }
 
 
@@ -70,6 +67,7 @@ export class Descriptor implements IDescriptor
         return this
     }
 
+
     getGroup(group: IGroup | null): CliTable {
         let children = this.factory.getGroupChildren(group ? group.name : null, group ? group.parent : undefined)
         let table    = this.out.columns();
@@ -90,6 +88,7 @@ export class Descriptor implements IDescriptor
         this.out.writeln(this.getGroup(group).toString());
         return this
     }
+
 
     getCommand(command): string {
         return '';
@@ -118,6 +117,7 @@ export class Descriptor implements IDescriptor
         return this
     }
 
+
     getArguments(definition: IArgumentsDefinition): CliTable {
         return
     }
@@ -126,22 +126,6 @@ export class Descriptor implements IDescriptor
         this.out.writeln(this.getArguments(definition).toString());
         return this
     }
-
-    title(title: string): this {
-        this.out.title(title);
-        return this
-    }
-
-    subtitle(title: string): this {
-        this.out.subtitle(title)
-        return this
-    }
-
-    header(header: string): this {
-        this.out.header(header);
-        return this
-    }
-
 
     protected argumentsCli(cli: ArgumentsCli) {
 

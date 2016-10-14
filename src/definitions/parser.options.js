@@ -17,7 +17,7 @@ var ParsedOptionsDefinition = (function () {
         this.errors = [];
     }
     ParsedOptionsDefinition.prototype.hasOpt = function (n) {
-        return typeof this.options[n] !== "undefined";
+        return this.options[n] !== undefined;
     };
     Object.defineProperty(ParsedOptionsDefinition.prototype, "nopts", {
         get: function () {

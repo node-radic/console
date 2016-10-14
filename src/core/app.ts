@@ -21,7 +21,7 @@ class App extends Kernel
      * @returns {T}
      */
     build<T>(cls: any): T {
-        decorate(injectable(), cls);
+        this.ensureInjectable(cls);
         let k = 'temporary.kernel.binding'
         this.bind(k).to(cls);
         let instance = this.get<T>(k)
@@ -36,13 +36,17 @@ class App extends Kernel
      * @returns {T}
      */
     make<T>(cls: any): T {
-        decorate(injectable(), cls);
+        this.ensureInjectable(cls);
         let binding = cls.toString()
         if ( this.isBound(binding) ) {
             return this.get<T>(binding)
         }
         this.bind(binding).to(cls);
         return this.get<T>(binding)
+    }
+
+    protected ensureInjectable(cls:Function){
+        try { decorate(injectable(), cls); } catch ( err ) {}
     }
 
     Cli<CLS,DEF,DEFPARSER extends IOptionsDefinitionParser>(cls: any, def: any, defparser: any): CLS {

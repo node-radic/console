@@ -21,14 +21,26 @@ var defaults = {
         description: 'grey',
         argument: 'yellow darken 50'
     },
+    help: {
+        enabled: false,
+        key: undefined,
+        command: undefined
+    },
     descriptor: {
         cli: {
             showTitle: true,
             showVersion: true,
             showDescription: true,
+            showHelpAsDefault: true
+        },
+        group: {
+            showHelpAsDefault: true
+        },
+        command: {
+            showHelpAsDefault: false
         },
         text: {
-            commands: 'Commands',
+            commands: 'Commands & Groups',
             options: 'Options',
             globalOptions: 'Global Options'
         }
@@ -51,8 +63,19 @@ var Config = (function (_super) {
         this.set('app.description', title);
         return this;
     };
+    Config.prototype.help = function (key, command) {
+        this.merge('help', {
+            enabled: true,
+            key: key,
+            command: command
+        });
+        return this;
+    };
     Config.prototype.dump = function () {
         console.dir(this.data, { colors: true, showHidden: true });
+    };
+    Config.prototype.get = function (prop, def) {
+        return _super.prototype.get.call(this, prop, def);
     };
     Config.makeProperty = function (config) {
         var cf = function (prop) {

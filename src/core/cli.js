@@ -24,6 +24,16 @@ var Cli = (function (_super) {
     function Cli() {
         _super.call(this);
     }
+    Cli.prototype.handle = function () {
+        var _this = this;
+        Object.keys(this.definition.getJoinedOptions())
+            .filter(this.parsed.hasOpt.bind(this.parsed))
+            .forEach(function (name) {
+            var handler = _this.definition.getOptions().handler[name];
+            if (handler)
+                handler.call(_this);
+        });
+    };
     Cli.prototype.parse = function (argv) {
         if (this.argv)
             return;
@@ -33,7 +43,24 @@ var Cli = (function (_super) {
             this.binPath = argv.shift();
         }
         this.argv = argv;
+        if (this.help.enabled) {
+            this.defineHelp();
+        }
+        var parser = this.definitionParserFactory(this.definition, this.argv);
+        this.parsed = parser.parse();
     };
+    Cli.prototype.defineHelp = function () {
+        this.definition.boolean(this.help.key);
+        if (this.help.command)
+            this.definition.alias(this.help.command);
+    };
+    Object.defineProperty(Cli.prototype, "help", {
+        get: function () {
+            return this.config('help');
+        },
+        enumerable: true,
+        configurable: true
+    });
     Cli.prototype.showHelp = function () {
         var without = [];
         for (var _i = 0; _i < arguments.length; _i++) {
@@ -92,12 +119,6 @@ var ArgumentsCli = (function (_super) {
     }
     ArgumentsCli.prototype.parse = function (argv) {
         _super.prototype.parse.call(this, argv);
-        var definitionParser = this.definitionParserFactory(this.definition, this.argv);
-        this.parsed = definitionParser.parse();
-        if (this.definition.isHelpEnabled() && this.parsed.opt(this.definition.helpKey) === true) {
-            this.showHelp();
-            this.exit();
-        }
     };
     return ArgumentsCli;
 }(Cli));
@@ -109,17 +130,32 @@ var CommandsCli = (function (_super) {
     }
     CommandsCli.prototype.parse = function (argv) {
         _super.prototype.parse.call(this, argv);
-        var parser = this.definitionParserFactory(this.definition, this.argv);
-        this.parsed = parser.parse();
         var gparser = this.globalDefinitionParserFactory(this.globalDefinition, this.argv);
         this.parsed.global = gparser.parse();
-        if (this.definition.isHelpEnabled() && this.parsed.opt(this.definition.helpKey) === true) {
-            this.showHelp();
-            this.exit();
+    };
+    CommandsCli.prototype.checkHelp = function () {
+        var help = this.config('help');
+        if (help.enabled) {
+            this.globalDefinition.option(help.key, { alias: help.command });
         }
     };
-    CommandsCli.prototype.getGlobalDefinition = function () {
-        return this.globalDefinition;
+    CommandsCli.prototype.handle = function () {
+        var _this = this;
+        if (this.parsed.isRoot) {
+            if (this.config('help.enabled') && this.config('descriptor.cli.showHelpAsDefault') ? this.showHelp() : _super.prototype.handle.call(this))
+                return this.exit();
+        }
+        if (this.parsed.isCommand) {
+            return this.parsed.command.fire().then(function () {
+                _this.exit();
+            });
+        }
+        if (this.parsed.isGroup) {
+            return this.parsed.group.fire().then(function () {
+                _this.exit();
+            });
+        }
+        this.fail('No options or arguments provided.  Use the -h or --help option to show what can be done');
     };
     __decorate([
         _1.inject(bindings_1.BINDINGS.GLOBAL_DEFINITION), 
