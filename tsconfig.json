@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "removeComments": true,
+        "declaration": false,
+        "noLib": false,
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "target": "es5",
+        "lib": ["es6", "es7"],
+        "typeRoots": [
+            "./node_modules/@types"
+        ],
+        "types": [
+            "reflect-metadata",
+            "lodash",
+            "@radic/util",
+            "@radic/console-colors"
+        ]
+    },
+    "exclude": [
+        "node_modules",
+        "lib/interface.ts",
+        "gulpfile.ts"
+    ]
+}

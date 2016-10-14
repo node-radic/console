@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "removeComments": true,
+        "noLib": false,
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "target": "es5"
+    },
+    "exclude": [
+        "gulpfile.ts"
+    ]
+}
