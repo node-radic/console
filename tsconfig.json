@@ -1,8 +1,7 @@
 {
     "compilerOptions": {
+        "declaration": true,
         "removeComments": true,
-        "declaration": false,
-        "noLib": false,
         "noImplicitAny": false,
         "sourceMap": true,
         "experimentalDecorators": true,
@@ -13,18 +12,19 @@
         "target": "es5",
         "lib": ["es6", "es7"],
         "typeRoots": [
-            "./node_modules/@types"
+            "./node_modules/@types",
+            "./types"
         ],
         "types": [
-            "reflect-metadata",
             "lodash",
+            "jasmine",
             "@radic/util",
             "@radic/console-colors"
         ]
     },
     "exclude": [
         "node_modules",
-        "lib/interface.ts",
+        "console.d.ts",
         "gulpfile.ts"
     ]
 }

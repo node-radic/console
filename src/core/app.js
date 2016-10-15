@@ -96,11 +96,10 @@ var App = (function (_super) {
     return App;
 }(inversify_1.Kernel));
 exports.App = App;
-var app = new App;
-exports.app = app;
-var lazyInject = inversify_inject_decorators_1.default(app).lazyInject;
+exports.app = new App;
+var lazyInject = inversify_inject_decorators_1.default(exports.app).lazyInject;
 exports.lazyInject = lazyInject;
-var provide = inversify_binding_decorators_1.makeProvideDecorator(app);
+var provide = inversify_binding_decorators_1.makeProvideDecorator(exports.app);
 exports.provide = provide;
 var provideSingleton = function (identifier) {
     return provide(identifier)['inSingletonScope']()

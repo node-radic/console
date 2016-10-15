@@ -1,4 +1,21 @@
-import { Command, Group } from "../lib/commands";
+import { Command, Group } from "../src";
+import { IOption } from "../src/definitions/definition.options";
+export declare class TestCommand extends Command {
+    options: {
+        f: IOption;
+        z: IOption;
+    };
+    handle(): void;
+}
+export declare class DataCommand extends Command {
+    arguments: {};
+    options: {};
+    handle(): void;
+}
+export declare class DumpCommand extends Command {
+    options: {};
+    handle(): void;
+}
 export declare class GitGroup extends Group {
 }
 export declare class GitCloneCommand extends Command {

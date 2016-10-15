@@ -63,7 +63,7 @@ var Descriptor = (function () {
         var table = this.out.columns();
         Object.keys(opts).forEach(function (key) {
             var keys = ['-' + key];
-            var aliases = definition.getOptions().alias[key];
+            var aliases = definition.getOptions().alias[key] || [];
             keys = keys.concat(aliases.map(function (alias) { return alias.length === 1 ? '-' + alias : '--' + alias; }));
             table.push([keys.join('|'), opts[key].desc, ("[{yellow}" + opts[key].type + "{/yellow}]")]);
         });

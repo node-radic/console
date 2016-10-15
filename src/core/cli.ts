@@ -1,4 +1,4 @@
-import { EventEmitter } from "events";
+import { EventEmitter2 } from "eventemitter2";
 import { existsSync } from "fs-extra";
 import { BINDINGS } from "./bindings";
 import { injectable, decorate, inject } from "./";
@@ -8,12 +8,12 @@ import { IConfig } from "./config";
 import { app } from "./app";
 import { IDescriptor, IOutput } from "../io";
 
-decorate(injectable(), EventEmitter);
+decorate(injectable(), EventEmitter2);
 @injectable()
 export abstract class Cli<
     T extends IOptionsDefinition,
     Y extends IParsedOptionsDefinition,
-    Z extends IOptionsDefinitionParser> extends EventEmitter
+    Z extends IOptionsDefinitionParser> extends EventEmitter2
 {
 
     /** The original argv */
@@ -146,7 +146,7 @@ export class CommandsCli extends Cli<ICommandsDefinition, IParsedCommandsDefinit
 
         if ( this.parsed.isRoot ) {
             // let showHelp = && this.parsed.opt(this.config('help.key')) === true
-            if ( this.config('help.enabled') && this.config('descriptor.cli.showHelpAsDefault') ? this.showHelp() : super.handle()
+           this.config('help.enabled') && this.config('descriptor.cli.showHelpAsDefault') ? this.showHelp() : super.handle()
                 return this.exit();
         }
 

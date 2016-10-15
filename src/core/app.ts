@@ -13,7 +13,8 @@ import { ICommandFactory, CommandFactory } from "../commands";
 import Factory = inversifyInterfaces.Factory
 import Context = inversifyInterfaces.Context
 
-class App extends Kernel
+
+export class App extends Kernel
 {
     /**
      * Create an instance of a class using the container, making it injectable at runtime and able to @inject on the fly
@@ -139,7 +140,7 @@ class App extends Kernel
 
 }
 
-let app              = new App;
+export let app              = new App;
 let { lazyInject }   = getDecorators(app);
 let provide          = makeProvideDecorator(app);
 let provideSingleton = function (identifier) {
@@ -148,5 +149,5 @@ let provideSingleton = function (identifier) {
         .done();
 };
 
-export { app, App, provide, lazyInject, provideSingleton }
+export { provide, lazyInject, provideSingleton }
 

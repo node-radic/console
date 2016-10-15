@@ -13,12 +13,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var events_1 = require("events");
+var eventemitter2_1 = require("eventemitter2");
 var fs_extra_1 = require("fs-extra");
 var bindings_1 = require("./bindings");
 var _1 = require("./");
 var app_1 = require("./app");
-_1.decorate(_1.injectable(), events_1.EventEmitter);
+_1.decorate(_1.injectable(), eventemitter2_1.EventEmitter2);
 var Cli = (function (_super) {
     __extends(Cli, _super);
     function Cli() {
@@ -110,7 +110,7 @@ var Cli = (function (_super) {
         __metadata('design:paramtypes', [])
     ], Cli);
     return Cli;
-}(events_1.EventEmitter));
+}(eventemitter2_1.EventEmitter2));
 exports.Cli = Cli;
 var ArgumentsCli = (function (_super) {
     __extends(ArgumentsCli, _super);
@@ -142,8 +142,8 @@ var CommandsCli = (function (_super) {
     CommandsCli.prototype.handle = function () {
         var _this = this;
         if (this.parsed.isRoot) {
-            if (this.config('help.enabled') && this.config('descriptor.cli.showHelpAsDefault') ? this.showHelp() : _super.prototype.handle.call(this))
-                return this.exit();
+            this.config('help.enabled') && this.config('descriptor.cli.showHelpAsDefault') ? this.showHelp() : _super.prototype.handle.call(this);
+            return this.exit();
         }
         if (this.parsed.isCommand) {
             return this.parsed.command.fire().then(function () {

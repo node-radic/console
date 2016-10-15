@@ -1,3 +1,6 @@
+/// <reference path="winston.d.ts" />
+///<reference path="underscore.string.d.ts"/>
+
 interface YargsParserOptions
 {
     alias: {[key: string]: string[]}

@@ -105,7 +105,7 @@ export class Descriptor implements IDescriptor
         let table = this.out.columns();
         Object.keys(opts).forEach((key: string) => {
             let keys    = [ '-' + key ]
-            let aliases = definition.getOptions().alias[ key ]
+            let aliases = definition.getOptions().alias[ key ] || []
             keys        = keys.concat(aliases.map((alias: string) => alias.length === 1 ? '-' + alias : '--' + alias))
             table.push([ keys.join('|'), opts[ key ].desc, `[{yellow}${opts[ key ].type}{/yellow}]` ])
         })
