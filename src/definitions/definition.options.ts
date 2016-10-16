@@ -32,7 +32,7 @@ export interface IOptionsDefinition
     default(k: string, val: any): this
     handler(k: string, val: Function): this
     option(k: string, o: IOption): this
-    options(options: {[k:string]:IOption}): this
+    options(options: {[k: string]: IOption}): this
     getOptions(): IArgvParserOptions
     getJoinedOptions(): IJoinedOptions
     mergeOptions(definition: IOptionsDefinition): this
@@ -59,12 +59,14 @@ export class OptionsDefinition implements IOptionsDefinition
     // helpWriter: IHelpWriter
     helpKey: string
     protected _options: IArgvParserOptions
+    protected _keys: {[name: string]: boolean}
 
     constructor() {
         this.reset()
     }
 
     reset() {
+        this._keys = {}
         this._options = {
             alias  : {},
             array  : [],
@@ -109,8 +111,18 @@ export class OptionsDefinition implements IOptionsDefinition
     // options
 
     private _push(option, value): this {
+        [].concat(value).forEach((key: string) => this.registerOption(key))
         this._options[ option ].push.apply(this._options[ option ], [].concat(value));
         return this;
+    }
+
+    get keys(): string[] { return Object.keys(this._keys) }
+
+    hasOption(key): boolean { return this._keys[ key ] !== undefined && this._keys[ key ] === true }
+
+    protected registerOption(key, force : boolean = false) : this {
+        if ( false === this.hasOption(key) || force ) this._keys[ key ] = true
+        return this
     }
 
     mergeOptions(definition: this): this {
@@ -120,13 +132,11 @@ export class OptionsDefinition implements IOptionsDefinition
             }
         }
         mergeWith(this._options, definition.getOptions(), customizer);
-
+        definition.keys.forEach((key) => this.hasOption(key) === false ? this.registerOption(key) : this)
         return this;
     }
 
-    getOptions(): IArgvParserOptions {
-        return this._options;
-    }
+    getOptions(): IArgvParserOptions { return this._options; }
 
     array(bools: string|string[]): this { return this._push('array', bools) }
 
@@ -170,8 +180,9 @@ export class OptionsDefinition implements IOptionsDefinition
 
 
     option(k: string, o: any): this {
+        this.registerOption(k)
         if ( o.boolean ) this.boolean(k);
-        if ( o.count ) this.count(k);
+        if ( o.getCountRecords ) this.count(k);
         if ( o.number ) this.number(k);
         if ( o.string ) this.string(k);
         if ( o.nested ) this.nested(k);

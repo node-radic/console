@@ -1,9 +1,7 @@
 import * as Promise from "bluebird";
-import { inject, injectable } from "inversify";
-import { BINDINGS, ILog } from "../core";
+import { Cli, inject, injectable,BINDINGS, ILog } from "../core";
 import { IArgumentsDefinitionParser, ICommandsDefinition, ICommandsDefinitionParser, IParsedCommandsDefinition, IParsedArgv, IArgumentsDefinition, IParsedArgumentsDefinition } from "../definitions";
 import { IInput, IOutput } from "../io";
-import { Cli } from "../core/cli";
 import { IGroupConstructor } from "./group";
 import { BaseCommandRegistration, ICommandRegistration } from "./factory";
 

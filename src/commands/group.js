@@ -20,6 +20,9 @@ var Group = (function (_super) {
     function Group() {
         _super.apply(this, arguments);
     }
+    Group.prototype.handle = function () {
+        this.showHelp();
+    };
     Group.prototype.showHelp = function () {
         this.out
             .title(this.name)

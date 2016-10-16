@@ -15,6 +15,7 @@ var OptionsDefinition = (function () {
         this.reset();
     }
     OptionsDefinition.prototype.reset = function () {
+        this._keys = {};
         this._options = {
             alias: {},
             array: [],
@@ -53,21 +54,35 @@ var OptionsDefinition = (function () {
         return joined;
     };
     OptionsDefinition.prototype._push = function (option, value) {
+        var _this = this;
+        [].concat(value).forEach(function (key) { return _this.registerOption(key); });
         this._options[option].push.apply(this._options[option], [].concat(value));
         return this;
     };
+    Object.defineProperty(OptionsDefinition.prototype, "keys", {
+        get: function () { return Object.keys(this._keys); },
+        enumerable: true,
+        configurable: true
+    });
+    OptionsDefinition.prototype.hasOption = function (key) { return this._keys[key] !== undefined && this._keys[key] === true; };
+    OptionsDefinition.prototype.registerOption = function (key, force) {
+        if (force === void 0) { force = false; }
+        if (false === this.hasOption(key) || force)
+            this._keys[key] = true;
+        return this;
+    };
     OptionsDefinition.prototype.mergeOptions = function (definition) {
+        var _this = this;
         var customizer = function (objValue, srcValue, key, object, source, stack) {
             if (lodash_1.isArray(objValue)) {
                 return objValue.concat(srcValue);
             }
         };
         lodash_1.mergeWith(this._options, definition.getOptions(), customizer);
+        definition.keys.forEach(function (key) { return _this.hasOption(key) === false ? _this.registerOption(key) : _this; });
         return this;
     };
-    OptionsDefinition.prototype.getOptions = function () {
-        return this._options;
-    };
+    OptionsDefinition.prototype.getOptions = function () { return this._options; };
     OptionsDefinition.prototype.array = function (bools) { return this._push('array', bools); };
     OptionsDefinition.prototype.boolean = function (bools) { return this._push('boolean', bools); };
     OptionsDefinition.prototype.count = function (bools) { return this._push('count', bools); };
@@ -100,9 +115,10 @@ var OptionsDefinition = (function () {
         return this;
     };
     OptionsDefinition.prototype.option = function (k, o) {
+        this.registerOption(k);
         if (o.boolean)
             this.boolean(k);
-        if (o.count)
+        if (o.getCountRecords)
             this.count(k);
         if (o.number)
             this.number(k);

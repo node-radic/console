@@ -17,7 +17,7 @@ var eventemitter2_1 = require("eventemitter2");
 var fs_extra_1 = require("fs-extra");
 var bindings_1 = require("./bindings");
 var _1 = require("./");
-var app_1 = require("./app");
+var kernel_1 = require("./kernel");
 _1.decorate(_1.injectable(), eventemitter2_1.EventEmitter2);
 var Cli = (function (_super) {
     __extends(Cli, _super);
@@ -66,7 +66,7 @@ var Cli = (function (_super) {
         for (var _i = 0; _i < arguments.length; _i++) {
             without[_i - 0] = arguments[_i];
         }
-        var descriptor = app_1.app.get(bindings_1.BINDINGS.DESCRIPTOR);
+        var descriptor = kernel_1.kernel.get(bindings_1.BINDINGS.DESCRIPTOR);
         descriptor.cli(this);
     };
     Cli.prototype.exit = function (fail) {

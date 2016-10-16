@@ -13,9 +13,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var inversify_1 = require("inversify");
 var core_1 = require("../core");
-var cli_1 = require("../core/cli");
 var factory_1 = require("./factory");
 var Command = (function (_super) {
     __extends(Command, _super);
@@ -43,31 +41,31 @@ var Command = (function (_super) {
     Command.prototype.addHelper = function (name, helper) { this.helpers[name] = helper; };
     Command.prototype.getHelper = function (name) { return this.helpers[name]; };
     __decorate([
-        inversify_1.inject(core_1.BINDINGS.ARGUMENTS_DEFINITION), 
+        core_1.inject(core_1.BINDINGS.ARGUMENTS_DEFINITION), 
         __metadata('design:type', Object)
     ], Command.prototype, "definition", void 0);
     __decorate([
-        inversify_1.inject(core_1.BINDINGS.INPUT), 
+        core_1.inject(core_1.BINDINGS.INPUT), 
         __metadata('design:type', Object)
     ], Command.prototype, "input", void 0);
     __decorate([
-        inversify_1.inject(core_1.BINDINGS.OUTPUT), 
+        core_1.inject(core_1.BINDINGS.OUTPUT), 
         __metadata('design:type', Object)
     ], Command.prototype, "out", void 0);
     __decorate([
-        inversify_1.inject(core_1.BINDINGS.LOG), 
+        core_1.inject(core_1.BINDINGS.LOG), 
         __metadata('design:type', Object)
     ], Command.prototype, "log", void 0);
     __decorate([
-        inversify_1.inject(core_1.BINDINGS.CLI), 
-        __metadata('design:type', cli_1.Cli)
+        core_1.inject(core_1.BINDINGS.CLI), 
+        __metadata('design:type', core_1.Cli)
     ], Command.prototype, "cli", void 0);
     __decorate([
-        inversify_1.inject(core_1.BINDINGS.OPTIONS_DEFINITION_PARSER_FACTORY), 
+        core_1.inject(core_1.BINDINGS.OPTIONS_DEFINITION_PARSER_FACTORY), 
         __metadata('design:type', Function)
     ], Command.prototype, "definitionParserFactory", void 0);
     Command = __decorate([
-        inversify_1.injectable(), 
+        core_1.injectable(), 
         __metadata('design:paramtypes', [])
     ], Command);
     return Command;

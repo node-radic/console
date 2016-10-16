@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird'
-import { injectable, app, CommandsCli, BINDINGS } from "../core";
+import { injectable, kernel, CommandsCli, BINDINGS } from "../core";
 import { Command, ICommandConstructor } from "./command";
 import { Group, IGroupConstructor } from "./group";
 import * as _ from "lodash";
@@ -113,10 +113,10 @@ export class CommandFactory implements ICommandFactory
     }
 
     createCommand(commandRegistration, argv=[]): Command {
-        let command: Command = app.make<Command>(commandRegistration.cls);
+        let command: Command = kernel.make<Command>(commandRegistration.cls);
 
         command.argv = argv
-        command.definition.mergeOptions(app.get<CommandsCli>(BINDINGS.CLI).globalDefinition);
+        command.definition.mergeOptions(kernel.get<CommandsCli>(BINDINGS.CLI).globalDefinition);
         command.definition.arguments(command.arguments);
         command.definition.options(command.options);
 
@@ -128,7 +128,7 @@ export class CommandFactory implements ICommandFactory
     }
 
     createGroup(groupRegistration): Group {
-        let group  = app.make<Group>(groupRegistration.cls);
+        let group  = kernel.make<Group>(groupRegistration.cls);
         group.name = groupRegistration.name
         group.desc = groupRegistration.desc
         group.parent = groupRegistration.parent ? groupRegistration.parent : null

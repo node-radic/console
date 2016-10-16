@@ -75,9 +75,9 @@ var CommandFactory = (function () {
     };
     CommandFactory.prototype.createCommand = function (commandRegistration, argv) {
         if (argv === void 0) { argv = []; }
-        var command = core_1.app.make(commandRegistration.cls);
+        var command = core_1.kernel.make(commandRegistration.cls);
         command.argv = argv;
-        command.definition.mergeOptions(core_1.app.get(core_1.BINDINGS.CLI).globalDefinition);
+        command.definition.mergeOptions(core_1.kernel.get(core_1.BINDINGS.CLI).globalDefinition);
         command.definition.arguments(command.arguments);
         command.definition.options(command.options);
         command.name = commandRegistration.name;
@@ -86,7 +86,7 @@ var CommandFactory = (function () {
         return command;
     };
     CommandFactory.prototype.createGroup = function (groupRegistration) {
-        var group = core_1.app.make(groupRegistration.cls);
+        var group = core_1.kernel.make(groupRegistration.cls);
         group.name = groupRegistration.name;
         group.desc = groupRegistration.desc;
         group.parent = groupRegistration.parent ? groupRegistration.parent : null;

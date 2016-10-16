@@ -34,7 +34,7 @@ cli.parsed.global = IParsedOptionsDefinition
 
 `index.ts`
 ```typescript
-import {app as container,CommandsCli,Command,Group,command,group} from './src' // src = @radic/console
+import {kernel as container,CommandsCli,Command,Group,command,group} from './src' // src = @radic/console
 import './commands'
 // app is the IoC container (kernel from inversify)
 let cli = container.commandsCli()
@@ -134,7 +134,7 @@ export class ListCommand extends Command {
 ## Some examples
 ### Output
 ```typescript
-import {app} from './src' // src = @radic/console
+import {kernel} from './src' // src = @radic/console
 let cli = container.commandsCli()
 cli.out.line(`
 {f:#333.b:#FFAA00}Background and foreground colored 
@@ -147,7 +147,7 @@ cli.out.line(`
 
 ### Configure (output)
 ```typescript
-import {app} from './src' // src = @radic/console
+import {kernel} from './src' // src = @radic/console
 let cli = container.commandsCli()
 cli.config()
 // equals
@@ -161,7 +161,7 @@ cli.config.set('output.colors.header', 'cyan')
 
 ### Modify/extend help output using IoC                       
 ```typescript
-import {app, BINDINGS, Descriptor, IDescriptor,IOptionsDefinition} from './src'  
+import {kernel, BINDINGS, Descriptor, IDescriptor,IOptionsDefinition} from './src'  
 let cli = container.commandsCli()
 class MyDescriptor extends Descriptor {
     options(definition:IOptionsDefinition){
@@ -169,13 +169,13 @@ class MyDescriptor extends Descriptor {
         this.out.line('{bold}Total{reset}:' + definition.getOptions().length)
     }
 }
-app.bind<IDescriptor>(BINDINGS.DESCRIPTOR).to(MyDescriptor)
+kernel.bind<IDescriptor>(BINDINGS.DESCRIPTOR).to(MyDescriptor)
 ```
 
 
 ### Modify/extend the CLI                       
 ```typescript
-import {app, BINDINGS, Descriptor, CommandsCli, IDescriptor,IOptionsDefinition} from './src'
+import {kernel, BINDINGS, Descriptor, CommandsCli, IDescriptor,IOptionsDefinition} from './src'
 class MyCommandsCli extends CommandsCli {
     parse(argv:any[]){
         super.parse(argv)
@@ -184,12 +184,12 @@ class MyCommandsCli extends CommandsCli {
         this.parsed.command.fire();
     }
 }
-let cli = app.commandsCli<MyCommandsCli>(MyCommandsCli)
+let cli = kernel.commandsCli<MyCommandsCli>(MyCommandsCli)
 class MyDescriptor extends Descriptor {
     options(definition:IOptionsDefinition){
         super.options(definition)
         this.out.line('{bold}Total{reset}:' + definition.getOptions().length)
     }
 }
-app.bind<IDescriptor>(BINDINGS.DESCRIPTOR).to(MyDescriptor)
+kernel.bind<IDescriptor>(BINDINGS.DESCRIPTOR).to(MyDescriptor)
 ```

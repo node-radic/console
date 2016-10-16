@@ -1,5 +1,5 @@
-import { Kernel, decorate, injectable, interfaces as inversifyInterfaces } from "inversify";
-import { makeProvideDecorator } from "inversify-binding-decorators";
+import { inject, Kernel as BaseKernel, decorate, injectable, interfaces as inversifyInterfaces } from "inversify";
+import { makeProvideDecorator,makeFluentProvideDecorator } from "inversify-binding-decorators";
 import getDecorators from "inversify-inject-decorators";
 import BINDINGS from "./bindings";
 import { CommandsCli, ArgumentsCli } from "./cli";
@@ -14,7 +14,7 @@ import Factory = inversifyInterfaces.Factory
 import Context = inversifyInterfaces.Context
 
 
-export class App extends Kernel
+export class ConsoleKernel extends BaseKernel
 {
     /**
      * Create an instance of a class using the container, making it injectable at runtime and able to @inject on the fly
@@ -71,7 +71,7 @@ export class App extends Kernel
         return this.get<ArgumentsCli>(BINDINGS.CLI);
     }
 
-    bindKernel(kernel: App) {
+    bindKernel(kernel: ConsoleKernel) {
 
         // @TODO use kernel modules instead: https://github.com/inversify/InversifyJS/blob/master/wiki/kernel_modules.md
         // @TODO might want to use @provide for some of these
@@ -140,14 +140,13 @@ export class App extends Kernel
 
 }
 
-export let app              = new App;
-let { lazyInject }   = getDecorators(app);
-let provide          = makeProvideDecorator(app);
+let kernel    = new ConsoleKernel;
+let { lazyInject }   = getDecorators(kernel);
+let provide          = makeProvideDecorator(kernel);
+let fprovide = makeFluentProvideDecorator(kernel)
 let provideSingleton = function (identifier) {
-    return provide(identifier)
-        [ 'inSingletonScope' ]()
-        .done();
+    return fprovide(identifier).inSingletonScope().done()
 };
 
-export { provide, lazyInject, provideSingleton }
+export { kernel, lazyInject, provide, provideSingleton, inject, injectable, decorate}
 

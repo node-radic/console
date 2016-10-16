@@ -1,2 +1,3 @@
 #!/usr/bin/env node
-require('../examples/mode.commands')
+// require('../examples/mode.commands')
+require('../commando')

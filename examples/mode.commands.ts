@@ -1,11 +1,9 @@
 import "reflect-metadata";
-import { app } from "../src";
+import { kernel, BINDINGS, IDescriptor } from "../src";
 import "./commands";
-import { BINDINGS } from "../src/core/bindings";
-import { IDescriptor } from "../src/io/descriptor";
 
 
-let cli = app.commandsCli();
+let cli = kernel.commandsCli();
 
 // define
 cli.globalDefinition
@@ -36,7 +34,7 @@ if ( parsed.opt('d') ) {
 }
 
 if(parsed.opt('t')){
-    let descriptor = app.get<IDescriptor>(BINDINGS.DESCRIPTOR)
+    let descriptor = kernel.get<IDescriptor>(BINDINGS.DESCRIPTOR)
     descriptor.commandTree('Command Tree')
     cli.exit()
 }

@@ -2,8 +2,7 @@
 require("reflect-metadata");
 var src_1 = require("../src");
 require("./commands");
-var bindings_1 = require("../src/core/bindings");
-var cli = src_1.app.commandsCli();
+var cli = src_1.kernel.commandsCli();
 cli.globalDefinition
     .options({
     v: { alias: 'version', desc: 'Show the version of this app', boolean: true },
@@ -24,7 +23,7 @@ if (parsed.opt('d')) {
     cli.log.setLevel('debug');
 }
 if (parsed.opt('t')) {
-    var descriptor = src_1.app.get(bindings_1.BINDINGS.DESCRIPTOR);
+    var descriptor = src_1.kernel.get(src_1.BINDINGS.DESCRIPTOR);
     descriptor.commandTree('Command Tree');
     cli.exit();
 }

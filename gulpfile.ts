@@ -1,7 +1,10 @@
+///<reference path="types/index.d.ts"/>
+
 import * as gulp from "gulp";
 // import * as karma from "karma";
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as path from 'path'
+
 
 //import * as gulp from 'gulp'
 

@@ -5,7 +5,7 @@ import { injectable, decorate, inject } from "./";
 import { IOptionsDefinition, IArgumentsDefinition, ICommandsDefinition, IParsedOptionsDefinition, IOptionsDefinitionParser, IArgumentsDefinitionParser, IParsedArgumentsDefinition, IParsedCommandsDefinition, ICommandsDefinitionParser, IParsedArgv } from "../definitions";
 import { ILog } from "./log";
 import { IConfig } from "./config";
-import { app } from "./app";
+import { kernel } from "./kernel";
 import { IDescriptor, IOutput } from "../io";
 
 decorate(injectable(), EventEmitter2);
@@ -88,7 +88,7 @@ export abstract class Cli<
 
     showHelp(...without: string[]) {
 
-        let descriptor = app.get<IDescriptor>(BINDINGS.DESCRIPTOR);
+        let descriptor = kernel.get<IDescriptor>(BINDINGS.DESCRIPTOR);
         descriptor.cli(this);
     }
 

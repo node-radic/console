@@ -1,7 +1,5 @@
-import { inject, injectable, BINDINGS } from "../core";
-import { IOutput } from "../io";
-import { IDescriptor } from "../io/descriptor";
-import { IConfig } from "../core/config";
+import { IConfig, inject, injectable, BINDINGS } from "../core";
+import { IOutput,IDescriptor } from "../io";
 import { ICommandFactory, ICommandRegistration, BaseCommandRegistration } from "./factory";
 import { ICommandConstructor } from "./command";
 
@@ -35,6 +33,10 @@ export class Group extends BaseCommandRegistration implements IGroup
 
     @inject(BINDINGS.COMMANDS_FACTORY)
     protected factory: ICommandFactory
+
+    handle(){
+        this.showHelp()
+    }
 
     showHelp() {
         this.out

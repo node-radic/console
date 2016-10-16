@@ -5,6 +5,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var inversify_1 = require("inversify");
+exports.inject = inversify_1.inject;
+exports.decorate = inversify_1.decorate;
+exports.injectable = inversify_1.injectable;
 var inversify_binding_decorators_1 = require("inversify-binding-decorators");
 var inversify_inject_decorators_1 = require("inversify-inject-decorators");
 var bindings_1 = require("./bindings");
@@ -14,12 +17,12 @@ var config_1 = require("./config");
 var io_1 = require("../io");
 var definitions_1 = require("../definitions");
 var commands_1 = require("../commands");
-var App = (function (_super) {
-    __extends(App, _super);
-    function App() {
+var ConsoleKernel = (function (_super) {
+    __extends(ConsoleKernel, _super);
+    function ConsoleKernel() {
         _super.apply(this, arguments);
     }
-    App.prototype.build = function (cls) {
+    ConsoleKernel.prototype.build = function (cls) {
         this.ensureInjectable(cls);
         var k = 'temporary.kernel.binding';
         this.bind(k).to(cls);
@@ -27,7 +30,7 @@ var App = (function (_super) {
         this.unbind(k);
         return instance;
     };
-    App.prototype.make = function (cls) {
+    ConsoleKernel.prototype.make = function (cls) {
         this.ensureInjectable(cls);
         var binding = cls.toString();
         if (this.isBound(binding)) {
@@ -36,23 +39,23 @@ var App = (function (_super) {
         this.bind(binding).to(cls);
         return this.get(binding);
     };
-    App.prototype.ensureInjectable = function (cls) {
+    ConsoleKernel.prototype.ensureInjectable = function (cls) {
         try {
             inversify_1.decorate(inversify_1.injectable(), cls);
         }
         catch (err) { }
     };
-    App.prototype.Cli = function (cls, def, defparser) {
+    ConsoleKernel.prototype.Cli = function (cls, def, defparser) {
         this.bindKernel(this);
         this.bind(bindings_1.default.ROOT_DEFINITION).to(def).inSingletonScope();
         this.bindParserFactory(bindings_1.default.ROOT_DEFINITION_PARSER_FACTORY, defparser);
         this.bind(bindings_1.default.CLI).to(cls).inSingletonScope();
         return this.get(bindings_1.default.CLI);
     };
-    App.prototype.commandsCli = function () {
+    ConsoleKernel.prototype.commandsCli = function () {
         return this.Cli(cli_1.CommandsCli, definitions_1.CommandsDefinition, bindings_1.default.COMMANDS_DEFINITION_PARSER);
     };
-    App.prototype.argumentsCli = function () {
+    ConsoleKernel.prototype.argumentsCli = function () {
         if (this.isBound(bindings_1.default.CLI))
             throw Error('cli already created');
         this.bindKernel(this);
@@ -61,7 +64,7 @@ var App = (function (_super) {
         this.bind(bindings_1.default.CLI).to(cli_1.ArgumentsCli).inSingletonScope();
         return this.get(bindings_1.default.CLI);
     };
-    App.prototype.bindKernel = function (kernel) {
+    ConsoleKernel.prototype.bindKernel = function (kernel) {
         kernel.bind(bindings_1.default.GLOBAL_DEFINITION).to(definitions_1.OptionsDefinition).inSingletonScope();
         kernel.bind(bindings_1.default.LOG).to(log_1.Log).inSingletonScope();
         kernel.bind(bindings_1.default.DESCRIPTOR).to(io_1.Descriptor).inSingletonScope();
@@ -83,7 +86,7 @@ var App = (function (_super) {
         this.bindParserFactory(bindings_1.default.ARGUMENTS_DEFINITION_PARSER_FACTORY, bindings_1.default.ARGUMENTS_DEFINITION_PARSER);
         this.bindParserFactory(bindings_1.default.COMMANDS_DEFINITION_PARSER_FACTORY, bindings_1.default.COMMANDS_DEFINITION_PARSER);
     };
-    App.prototype.bindParserFactory = function (binding, parserBinding) {
+    ConsoleKernel.prototype.bindParserFactory = function (binding, parserBinding) {
         this.bind(binding).toFactory(function (context) {
             return function (definition, argv) {
                 var parser = context.kernel.get(parserBinding);
@@ -93,17 +96,18 @@ var App = (function (_super) {
             };
         });
     };
-    return App;
+    return ConsoleKernel;
 }(inversify_1.Kernel));
-exports.App = App;
-exports.app = new App;
-var lazyInject = inversify_inject_decorators_1.default(exports.app).lazyInject;
+exports.ConsoleKernel = ConsoleKernel;
+var kernel = new ConsoleKernel;
+exports.kernel = kernel;
+var lazyInject = inversify_inject_decorators_1.default(kernel).lazyInject;
 exports.lazyInject = lazyInject;
-var provide = inversify_binding_decorators_1.makeProvideDecorator(exports.app);
+var provide = inversify_binding_decorators_1.makeProvideDecorator(kernel);
 exports.provide = provide;
+var fprovide = inversify_binding_decorators_1.makeFluentProvideDecorator(kernel);
 var provideSingleton = function (identifier) {
-    return provide(identifier)['inSingletonScope']()
-        .done();
+    return fprovide(identifier).inSingletonScope().done();
 };
 exports.provideSingleton = provideSingleton;
-//# sourceMappingURL=app.js.map
+//# sourceMappingURL=kernel.js.map

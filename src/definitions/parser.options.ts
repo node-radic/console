@@ -1,10 +1,8 @@
-
-import {merge, clone} from "lodash";
-import {inject, injectable, BINDINGS} from "../core";
-import {defined} from "@radic/util";
-import {IOptionsDefinition} from "./definition.options";
-import {IParsedArgv, parseArgv} from "./parser.argv";
-import {app} from "../core/app";
+import { merge, clone } from "lodash";
+import { inject, injectable, BINDINGS } from "../core";
+import { defined } from "@radic/util";
+import { IOptionsDefinition } from "./definition.options";
+import { IParsedArgv, parseArgv } from "./parser.argv";
 
 
 export interface IParsedOptionsDefinition
@@ -36,24 +34,25 @@ export interface IOptionsDefinitionParser
 @injectable()
 export class ParsedOptionsDefinition implements IParsedOptionsDefinition
 {
-    options: {[name: string]: any}   = {};
+    options: {[name: string]: any} = {};
     argv: any[]
-    errors: string[]                 = [];
+    errors: string[]               = [];
 
     definition: IOptionsDefinition
     args: IParsedArgv
 
     hasOpt(n: string): boolean {
-        return this.options[n] !== undefined
+        return this.options[ n ] !== undefined
     }
+
     /** The number of options given */
-    get nopts() :number {
+    get nopts(): number {
         return Object.keys(this.options).length
     }
 
     opt(n: string): any {
-        if (false === this.hasOpt(n)) return false;
-        return this.options[n];
+        if ( false === this.hasOpt(n) ) return false;
+        return this.options[ n ];
     }
 
     hasErrors(): boolean {
@@ -79,7 +78,6 @@ export class OptionsDefinitionParser implements IOptionsDefinitionParser
     protected options: {[name: string]: any}
 
 
-
     parse(): IParsedOptionsDefinition {
         // first let yargs-parser make sense of it
         this.args = parseArgv(this.argv, this.definition.getOptions());
@@ -101,10 +99,10 @@ export class OptionsDefinitionParser implements IOptionsDefinitionParser
     protected parseOptions() {
         // re-apply "nested" options defaults
         this.definition.getOptions().nested.forEach((key: string) => {
-            let defaults        = this.definition.getOptions().default[key];
-            let aliases         = this.args.aliases[key];
-            this.args.argv[key] = merge({}, defaults, this.args.argv[key]);
-            aliases.forEach((alias) => this.args.argv[alias] = merge({}, defaults, this.args.argv[alias]))
+            let defaults          = this.definition.getOptions().default[ key ];
+            let aliases           = this.args.aliases[ key ];
+            this.args.argv[ key ] = merge({}, defaults, this.args.argv[ key ]);
+            aliases.forEach((alias) => this.args.argv[ alias ] = merge({}, defaults, this.args.argv[ alias ]))
         })
 
         // clone the argv and remove the arguments from it, resulting in all the options

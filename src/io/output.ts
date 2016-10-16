@@ -23,6 +23,7 @@ export interface IOutput
 }
 
 
+
 export const TABLE_STYLE = {
     FAT : {
         'top'     : '═', 'top-mid': '╤', 'top-left': '╔', 'top-right': '╗'
