@@ -1,13 +1,12 @@
-import * as Promise from "bluebird";
-import { Cli, inject, injectable,BINDINGS, ILog } from "../core";
-import { IArgumentsDefinitionParser, ICommandsDefinition, ICommandsDefinitionParser, IParsedCommandsDefinition, IParsedArgv, IArgumentsDefinition, IParsedArgumentsDefinition } from "../definitions";
-import { IInput, IOutput } from "../io";
+import * as Promise from 'bluebird';
+import { inject, injectable, BINDINGS } from "../core";
+import { IArgumentsDefinitionParser, IOptionsDefinition , IOptionsDefinitionParser, IParsedArgv, IArgumentsDefinition, IParsedArgumentsDefinition } from "../definitions";
+import { IInput } from "../io";
 import { IGroupConstructor } from "./group";
 import { BaseCommandRegistration, ICommandRegistration } from "./factory";
 
 
-export interface ICommandHelper
-{
+export interface ICommandHelper {
     name: string
 }
 
@@ -17,15 +16,13 @@ export interface ICommand extends ICommandRegistration<ICommand> {
     parsed: IParsedArgumentsDefinition
 }
 
-export interface ICommandConstructor
-{
+export interface ICommandConstructor {
     new (): ICommand
 }
 
 
 @injectable()
-export class Command extends BaseCommandRegistration implements ICommand
-{
+export class Command extends BaseCommandRegistration implements ICommand {
     // filled by createCommand
     name: string;
     desc: string;
@@ -36,25 +33,23 @@ export class Command extends BaseCommandRegistration implements ICommand
     arguments: any = {}
     options: any   = {}
 
-    @inject(BINDINGS.ARGUMENTS_DEFINITION)
-    public definition: IArgumentsDefinition; // filled by createCommand
-
-    @inject(BINDINGS.INPUT)
-    public input: IInput;
-
-    @inject(BINDINGS.OUTPUT)
-    public out: IOutput;
-
-    @inject(BINDINGS.LOG)
-    public log: ILog;
-
-    @inject(BINDINGS.CLI)
-    public cli: Cli<ICommandsDefinition, IParsedCommandsDefinition, ICommandsDefinitionParser>
-
     parsed: IParsedArgumentsDefinition
 
+    @inject(BINDINGS.INPUT)
+    input: IInput;
+
+    @inject(BINDINGS.ARGUMENTS_DEFINITION)
+    definition: IArgumentsDefinition; // filled by createCommand
+
+    @inject(BINDINGS.ARGUMENTS_DEFINITION_PARSER_FACTORY)
+    protected definitionParserFactory: (definition: IArgumentsDefinition, args: IParsedArgv) => IArgumentsDefinitionParser
+
+    @inject(BINDINGS.GLOBAL_DEFINITION)
+    globalDefinition: IOptionsDefinition
+
     @inject(BINDINGS.OPTIONS_DEFINITION_PARSER_FACTORY)
-    private definitionParserFactory: (definition: IArgumentsDefinition, args: IParsedArgv) => IArgumentsDefinitionParser
+    protected globalDefinitionParserFactory: (definition: IOptionsDefinition, args: IParsedArgv) => IOptionsDefinitionParser
+
 
     helpers: {[name: string]: ICommandHelper}
 
@@ -65,11 +60,29 @@ export class Command extends BaseCommandRegistration implements ICommand
 
     protected parse() {
         this.parsed = this.definitionParserFactory(this.definition, this.argv).parse();
+
+        this.parsed.global = this.globalDefinitionParserFactory(this.globalDefinition, this.argv).parse();
+
+        // handle errors
+        if ( this.parsed.hasErrors() ) {
+            let len  = this.parsed.errors.length;
+            let text = len === 1 ? '1 error:' : len + ' errors:'
+            this.out.subtitle('The command failed because of ' + text)
+            this.parsed.errors.forEach((err: string, i: number) => {
+                this.log.error(err)
+            })
+        }
     }
 
     // parser
 
     hasArg(n) { return this.parsed.hasArg(n) }
+
+    getOrAskArg(name:string, type:string, ){
+        // Promise.
+        if(this.hasArg(name)) return this.arg;
+        // return this.input.ask(name + '?').catch((reason) => this.fail(reason))
+    }
 
     arg(n) { return this.parsed.arg(n) }
 

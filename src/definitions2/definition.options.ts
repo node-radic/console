@@ -4,8 +4,7 @@ import { IArgvParserOptions } from "./parser.argv";
 // import {IHelpWriter} from "../core/help.writer";
 
 
-export interface IOption
-{
+export interface IOption {
     alias  ?: string,
     array  ?: boolean,
     boolean?: boolean,
@@ -20,8 +19,7 @@ export interface IOption
     handler?: Function
 }
 
-export interface IOptionsDefinition
-{
+export interface IOptionsDefinition {
     reset()
     array(v: string|string[]): this
     boolean(v: string|string[]): this
@@ -37,14 +35,15 @@ export interface IOptionsDefinition
     getJoinedOptions(): IJoinedOptions
     mergeOptions(definition: IOptionsDefinition): this
 
+    hasHelp(): boolean
+    getHelpKey(): string
+    help(k: string, a?: string): this
     // showHelp(...without: string[]): void
 }
-export interface IJoinedOptions
-{
+export interface IJoinedOptions {
     [key: string]: IJoinedOption
 }
-export interface IJoinedOption
-{
+export interface IJoinedOption {
     type?: string
     alias?: string[]
     desc?: string
@@ -53,20 +52,27 @@ export interface IJoinedOption
     handler?: Function
 }
 @injectable()
-export class OptionsDefinition implements IOptionsDefinition
-{
+export class OptionsDefinition implements IOptionsDefinition {
     //@inject(BINDINGS.HELP_WRITER)
     // helpWriter: IHelpWriter
-    helpKey: string
     protected _options: IArgvParserOptions
     protected _keys: {[name: string]: boolean}
+              _help: {enabled: boolean, key?: string } = { enabled: false, key: undefined }
+
+    hasHelp(): boolean {
+        return this._help.enabled;
+    }
+
+    getHelpKey(): string {
+        return this._help.key;
+    }
 
     constructor() {
         this.reset()
     }
 
     reset() {
-        this._keys = {}
+        this._keys    = {}
         this._options = {
             alias  : {},
             array  : [],
@@ -107,6 +113,17 @@ export class OptionsDefinition implements IOptionsDefinition
         return joined;
     }
 
+    help(k, alias) :this {
+        this._help.enabled = true;
+        this._help.key     = k;
+
+        this.option(k, {
+            alias, desc: '', handler: (...args: any[]) => {
+                console.log('handler')
+            }
+        })
+        return this;
+    }
 
     // options
 
@@ -120,7 +137,7 @@ export class OptionsDefinition implements IOptionsDefinition
 
     hasOption(key): boolean { return this._keys[ key ] !== undefined && this._keys[ key ] === true }
 
-    protected registerOption(key, force : boolean = false) : this {
+    protected registerOption(key, force: boolean = false): this {
         if ( false === this.hasOption(key) || force ) this._keys[ key ] = true
         return this
     }

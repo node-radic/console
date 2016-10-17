@@ -24,9 +24,23 @@ var Command = (function (_super) {
         this.options = {};
     }
     Command.prototype.parse = function () {
+        var _this = this;
         this.parsed = this.definitionParserFactory(this.definition, this.argv).parse();
+        this.parsed.global = this.globalDefinitionParserFactory(this.globalDefinition, this.argv).parse();
+        if (this.parsed.hasErrors()) {
+            var len = this.parsed.errors.length;
+            var text = len === 1 ? '1 error:' : len + ' errors:';
+            this.out.subtitle('The command failed because of ' + text);
+            this.parsed.errors.forEach(function (err, i) {
+                _this.log.error(err);
+            });
+        }
     };
     Command.prototype.hasArg = function (n) { return this.parsed.hasArg(n); };
+    Command.prototype.getOrAskArg = function (name, type) {
+        if (this.hasArg(name))
+            return this.arg;
+    };
     Command.prototype.arg = function (n) { return this.parsed.arg(n); };
     Command.prototype.hasOpt = function (n) { return this.parsed.hasOpt(n); };
     Command.prototype.opt = function (n) { return this.parsed.opt(n); };
@@ -41,29 +55,25 @@ var Command = (function (_super) {
     Command.prototype.addHelper = function (name, helper) { this.helpers[name] = helper; };
     Command.prototype.getHelper = function (name) { return this.helpers[name]; };
     __decorate([
-        core_1.inject(core_1.BINDINGS.ARGUMENTS_DEFINITION), 
-        __metadata('design:type', Object)
-    ], Command.prototype, "definition", void 0);
-    __decorate([
         core_1.inject(core_1.BINDINGS.INPUT), 
         __metadata('design:type', Object)
     ], Command.prototype, "input", void 0);
     __decorate([
-        core_1.inject(core_1.BINDINGS.OUTPUT), 
+        core_1.inject(core_1.BINDINGS.ARGUMENTS_DEFINITION), 
         __metadata('design:type', Object)
-    ], Command.prototype, "out", void 0);
+    ], Command.prototype, "definition", void 0);
     __decorate([
-        core_1.inject(core_1.BINDINGS.LOG), 
+        core_1.inject(core_1.BINDINGS.ARGUMENTS_DEFINITION_PARSER_FACTORY), 
+        __metadata('design:type', Function)
+    ], Command.prototype, "definitionParserFactory", void 0);
+    __decorate([
+        core_1.inject(core_1.BINDINGS.GLOBAL_DEFINITION), 
         __metadata('design:type', Object)
-    ], Command.prototype, "log", void 0);
-    __decorate([
-        core_1.inject(core_1.BINDINGS.CLI), 
-        __metadata('design:type', core_1.Cli)
-    ], Command.prototype, "cli", void 0);
+    ], Command.prototype, "globalDefinition", void 0);
     __decorate([
         core_1.inject(core_1.BINDINGS.OPTIONS_DEFINITION_PARSER_FACTORY), 
         __metadata('design:type', Function)
-    ], Command.prototype, "definitionParserFactory", void 0);
+    ], Command.prototype, "globalDefinitionParserFactory", void 0);
     Command = __decorate([
         core_1.injectable(), 
         __metadata('design:paramtypes', [])

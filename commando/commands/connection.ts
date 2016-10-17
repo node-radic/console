@@ -28,6 +28,7 @@ export class AddConnectionCommand extends ConnectionCommand {
         name: {description: 'The name of the connection', required: true}
     }
     handle(){
+        super.handle();
 
     }
 }

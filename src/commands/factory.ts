@@ -1,23 +1,23 @@
-import * as Promise from 'bluebird'
-import { injectable, kernel, CommandsCli, BINDINGS } from "../core";
+import * as Promise from "bluebird";
+import { IConfig, ILog, Cli, inject, injectable, kernel, CommandsCli, BINDINGS } from "../core";
 import { Command, ICommandConstructor } from "./command";
 import { Group, IGroupConstructor } from "./group";
 import * as _ from "lodash";
+import { ICommandsDefinition, ICommandsDefinitionParser, IParsedCommandsDefinition } from "../definitions";
+import { IOutput, IDescriptor } from "../io";
 
 
-export interface ICommandRegistration<T>
-{
+export interface ICommandRegistration<T> {
     name: string
     desc: string
     parent?: IGroupConstructor
     cls?: T
     type?: 'group' | 'command'
-    showHelp ?:() => void
-    toString ?:() => string
+    showHelp ?: () => void
+    toString ?: () => string
 }
 
-export interface IResolvedRegistration<T> extends ICommandRegistration<T>
-{
+export interface IResolvedRegistration<T> extends ICommandRegistration<T> {
     arguments: string[]
     hasArguments: boolean
     tree: any
@@ -37,8 +37,7 @@ export function group(name: string, desc: string = '', parent: IGroupConstructor
         groups.push({ name, cls, desc, parent, type: 'group' })
     }
 }
-export interface ICommandFactory
-{
+export interface ICommandFactory {
 
     groups: ICommandRegistration<IGroupConstructor>[]
     commands: ICommandRegistration<ICommandConstructor>[]
@@ -64,11 +63,28 @@ export interface ICommandFactory
 
     getTree(parent?: any): any[]
     resolveFromArray(arr: string[]): IResolvedRegistration<IGroupConstructor|ICommandConstructor>
-    resolveFromString(str:string):IResolvedRegistration<IGroupConstructor|ICommandConstructor>
+    resolveFromString(str: string): IResolvedRegistration<IGroupConstructor|ICommandConstructor>
 }
 
 export abstract class BaseCommandRegistration {
 
+    @inject(BINDINGS.DESCRIPTOR)
+    protected descriptor: IDescriptor;
+
+    @inject(BINDINGS.CONFIG)
+    protected config: IConfig
+
+    @inject(BINDINGS.COMMANDS_FACTORY)
+    protected factory: ICommandFactory
+
+    @inject(BINDINGS.OUTPUT)
+    protected out: IOutput;
+
+    @inject(BINDINGS.LOG)
+    protected log: ILog;
+
+    @inject(BINDINGS.CLI)
+    protected cli: Cli<ICommandsDefinition, IParsedCommandsDefinition, ICommandsDefinitionParser>
 
     private defer: Promise.Resolver<any>;
     protected asyncMode: boolean = false;
@@ -76,7 +92,7 @@ export abstract class BaseCommandRegistration {
     fire() {
         this.defer = Promise.defer();
         this.parse();
-        if(this['handle']) this[ 'handle' ].apply(this);
+        if ( this[ 'handle' ] ) this[ 'handle' ].apply(this);
         if ( false === this.asyncMode ) {
             this.done();
         }
@@ -90,15 +106,16 @@ export abstract class BaseCommandRegistration {
 
     protected done() { this.defer.resolve(this); }
 
-    protected fail(reason?: string) { this.defer.reject(reason); }
+    protected fail(reason?: string) {
+        this.defer.reject(reason);
+    }
 
-    protected parse(){}
+    protected parse() {}
 
 }
 
 @injectable()
-export class CommandFactory implements ICommandFactory
-{
+export class CommandFactory implements ICommandFactory {
     get groups() { return groups }
 
     get commands() { return commands }
@@ -112,7 +129,7 @@ export class CommandFactory implements ICommandFactory
             })
     }
 
-    createCommand(commandRegistration, argv=[]): Command {
+    createCommand(commandRegistration, argv = []): Command {
         let command: Command = kernel.make<Command>(commandRegistration.cls);
 
         command.argv = argv
@@ -120,17 +137,17 @@ export class CommandFactory implements ICommandFactory
         command.definition.arguments(command.arguments);
         command.definition.options(command.options);
 
-        command.name = commandRegistration.name;
-        command.desc = commandRegistration.desc
+        command.name   = commandRegistration.name;
+        command.desc   = commandRegistration.desc
         command.parent = commandRegistration.parent ? commandRegistration.parent : null
 
         return command;
     }
 
     createGroup(groupRegistration): Group {
-        let group  = kernel.make<Group>(groupRegistration.cls);
-        group.name = groupRegistration.name
-        group.desc = groupRegistration.desc
+        let group    = kernel.make<Group>(groupRegistration.cls);
+        group.name   = groupRegistration.name
+        group.desc   = groupRegistration.desc
         group.parent = groupRegistration.parent ? groupRegistration.parent : null
         return group
     }

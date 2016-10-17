@@ -38,22 +38,6 @@ var Group = (function (_super) {
     Group.prototype.toString = function () {
         return this.name;
     };
-    __decorate([
-        core_1.inject(core_1.BINDINGS.OUTPUT), 
-        __metadata('design:type', Object)
-    ], Group.prototype, "out", void 0);
-    __decorate([
-        core_1.inject(core_1.BINDINGS.DESCRIPTOR), 
-        __metadata('design:type', Object)
-    ], Group.prototype, "descriptor", void 0);
-    __decorate([
-        core_1.inject(core_1.BINDINGS.CONFIG), 
-        __metadata('design:type', Function)
-    ], Group.prototype, "config", void 0);
-    __decorate([
-        core_1.inject(core_1.BINDINGS.COMMANDS_FACTORY), 
-        __metadata('design:type', Object)
-    ], Group.prototype, "factory", void 0);
     Group = __decorate([
         core_1.injectable(), 
         __metadata('design:paramtypes', [])

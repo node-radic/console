@@ -15,9 +15,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var eventemitter2_1 = require("eventemitter2");
 var fs_extra_1 = require("fs-extra");
-var bindings_1 = require("./bindings");
 var _1 = require("./");
-var kernel_1 = require("./kernel");
 _1.decorate(_1.injectable(), eventemitter2_1.EventEmitter2);
 var Cli = (function (_super) {
     __extends(Cli, _super);
@@ -25,13 +23,24 @@ var Cli = (function (_super) {
         _super.call(this);
     }
     Cli.prototype.handle = function () {
+        this.handleHelp();
+        this.handleHandlerOptions();
+    };
+    Cli.prototype.handleHelp = function () {
+        if (this.parsed.help.show) {
+            this.showHelp();
+            return this.exit();
+        }
+    };
+    Cli.prototype.handleHandlerOptions = function () {
         var _this = this;
         Object.keys(this.definition.getJoinedOptions())
             .filter(this.parsed.hasOpt.bind(this.parsed))
             .forEach(function (name) {
             var handler = _this.definition.getOptions().handler[name];
-            if (handler)
-                handler.call(_this);
+            if (handler && handler.call(_this) === false) {
+                _this.exit();
+            }
         });
     };
     Cli.prototype.parse = function (argv) {
@@ -43,30 +52,15 @@ var Cli = (function (_super) {
             this.binPath = argv.shift();
         }
         this.argv = argv;
-        if (this.help.enabled) {
-            this.defineHelp();
-        }
         var parser = this.definitionParserFactory(this.definition, this.argv);
         this.parsed = parser.parse();
     };
-    Cli.prototype.defineHelp = function () {
-        this.definition.boolean(this.help.key);
-        if (this.help.command)
-            this.definition.alias(this.help.command);
-    };
-    Object.defineProperty(Cli.prototype, "help", {
-        get: function () {
-            return this.config('help');
-        },
-        enumerable: true,
-        configurable: true
-    });
     Cli.prototype.showHelp = function () {
         var without = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             without[_i - 0] = arguments[_i];
         }
-        var descriptor = kernel_1.kernel.get(bindings_1.BINDINGS.DESCRIPTOR);
+        var descriptor = _1.kernel.get(_1.BINDINGS.DESCRIPTOR);
         descriptor.cli(this);
     };
     Cli.prototype.exit = function (fail) {
@@ -82,29 +76,33 @@ var Cli = (function (_super) {
         this.log.profile.apply(this.log, arguments);
     };
     __decorate([
-        _1.inject(bindings_1.BINDINGS.CONFIG), 
+        _1.inject(_1.BINDINGS.CONFIG), 
         __metadata('design:type', Function)
     ], Cli.prototype, "config", void 0);
     __decorate([
-        _1.inject(bindings_1.BINDINGS.LOG), 
+        _1.inject(_1.BINDINGS.LOG), 
         __metadata('design:type', Object)
     ], Cli.prototype, "log", void 0);
     __decorate([
-        _1.inject(bindings_1.BINDINGS.ROOT_DEFINITION), 
+        _1.inject(_1.BINDINGS.ROOT_DEFINITION), 
         __metadata('design:type', Object)
     ], Cli.prototype, "definition", void 0);
     __decorate([
-        _1.inject(bindings_1.BINDINGS.OUTPUT), 
+        _1.inject(_1.BINDINGS.OUTPUT), 
         __metadata('design:type', Object)
     ], Cli.prototype, "out", void 0);
     __decorate([
-        _1.inject(bindings_1.BINDINGS.ROOT_DEFINITION_PARSER_FACTORY), 
+        _1.inject(_1.BINDINGS.INPUT), 
+        __metadata('design:type', Object)
+    ], Cli.prototype, "in", void 0);
+    __decorate([
+        _1.inject(_1.BINDINGS.ROOT_DEFINITION_PARSER_FACTORY), 
         __metadata('design:type', Function)
     ], Cli.prototype, "definitionParserFactory", void 0);
     __decorate([
-        _1.inject(bindings_1.BINDINGS.DESCRIPTOR), 
+        _1.inject(_1.BINDINGS.DESCRIPTOR), 
         __metadata('design:type', Object)
-    ], Cli.prototype, "_descriptor", void 0);
+    ], Cli.prototype, "descriptor", void 0);
     Cli = __decorate([
         _1.injectable(), 
         __metadata('design:paramtypes', [])
@@ -130,21 +128,10 @@ var CommandsCli = (function (_super) {
     }
     CommandsCli.prototype.parse = function (argv) {
         _super.prototype.parse.call(this, argv);
-        var gparser = this.globalDefinitionParserFactory(this.globalDefinition, this.argv);
-        this.parsed.global = gparser.parse();
-    };
-    CommandsCli.prototype.checkHelp = function () {
-        var help = this.config('help');
-        if (help.enabled) {
-            this.globalDefinition.option(help.key, { alias: help.command });
-        }
     };
     CommandsCli.prototype.handle = function () {
         var _this = this;
-        if (this.parsed.isRoot) {
-            this.config('help.enabled') && this.config('descriptor.cli.showHelpAsDefault') ? this.showHelp() : _super.prototype.handle.call(this);
-            return this.exit();
-        }
+        _super.prototype.handle.call(this);
         if (this.parsed.isCommand) {
             return this.parsed.command.fire().then(function () {
                 _this.exit();
@@ -158,13 +145,9 @@ var CommandsCli = (function (_super) {
         this.fail('No options or arguments provided.  Use the -h or --help option to show what can be done');
     };
     __decorate([
-        _1.inject(bindings_1.BINDINGS.GLOBAL_DEFINITION), 
+        _1.inject(_1.BINDINGS.GLOBAL_DEFINITION), 
         __metadata('design:type', Object)
     ], CommandsCli.prototype, "globalDefinition", void 0);
-    __decorate([
-        _1.inject(bindings_1.BINDINGS.OPTIONS_DEFINITION_PARSER_FACTORY), 
-        __metadata('design:type', Function)
-    ], CommandsCli.prototype, "globalDefinitionParserFactory", void 0);
     return CommandsCli;
 }(Cli));
 exports.CommandsCli = CommandsCli;

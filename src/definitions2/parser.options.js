@@ -13,6 +13,7 @@ var core_1 = require("../core");
 var parser_argv_1 = require("./parser.argv");
 var ParsedOptionsDefinition = (function () {
     function ParsedOptionsDefinition() {
+        this.help = { enabled: false, show: false, key: undefined };
         this.options = {};
         this.errors = [];
     }
@@ -53,6 +54,9 @@ var OptionsDefinitionParser = (function () {
         this.parsed.errors = this.errors;
         this.parsed.definition = this.definition;
         this.parsed.options = this.options;
+        this.parsed.help.enabled = this.definition.hasHelp();
+        this.parsed.help.key = this.definition.getHelpKey();
+        this.parsed.help.show = this.parsed.opt(this.parsed.help.key) === true;
         return this.parsed;
     };
     OptionsDefinitionParser.prototype.parseOptions = function () {

@@ -6,6 +6,8 @@ import { upperFirst, clone } from "lodash";
 import { Config } from "@radic/util";
 import { Command, Group, ICommandFactory, ICommandRegistration } from "../commands";
 import { ICommandConstructor } from "../commands/command";
+import { IConfig } from "../core/config";
+import { IOptionsDefinition } from "./definition.options";
 
 export interface IParsedCommandsDefinition extends IParsedOptionsDefinition
 {
@@ -45,8 +47,14 @@ export class CommandsDefinitionParser extends OptionsDefinitionParser implements
 
     public definition: ICommandsDefinition
 
+    @inject(BINDINGS.GLOBAL_DEFINITION)
+    globalDefinition: IOptionsDefinition
+
     @inject(BINDINGS.COMMANDS_FACTORY)
     factory: ICommandFactory
+
+    @inject(BINDINGS.CONFIG)
+    config : IConfig
 
     /** The full command and arguments that we need to resolve */
     protected query: string[];
@@ -60,11 +68,17 @@ export class CommandsDefinitionParser extends OptionsDefinitionParser implements
         this.parsed.definition = this.definition;
         this.parsed.isRoot = this.query.length === 0;
 
+        if ( this.parsed.help.enabled && this.parsed.isRoot && this.config('descriptor.cli.showHelpAsDefault') ) {
+            this.parsed.help.show = true
+        }
         let resolved = this.factory.resolveFromArray(this.query);
         if(resolved){
             this.parsed.isCommand = resolved.type === 'command'
             this.parsed.isGroup = resolved.type === 'group'
             this.parsed[resolved.type] = this.factory['create' + upperFirst(resolved.type)](resolved);
+            if(this.parsed.isCommand){
+                this.parsed.command.argv = this.query
+            }
         }
 
         return this.parsed;

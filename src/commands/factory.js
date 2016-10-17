@@ -8,7 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var Promise = require('bluebird');
+var Promise = require("bluebird");
 var core_1 = require("../core");
 var _ = require("lodash");
 var groups = [];
@@ -48,8 +48,34 @@ var BaseCommandRegistration = (function () {
         return this.done;
     };
     BaseCommandRegistration.prototype.done = function () { this.defer.resolve(this); };
-    BaseCommandRegistration.prototype.fail = function (reason) { this.defer.reject(reason); };
+    BaseCommandRegistration.prototype.fail = function (reason) {
+        this.defer.reject(reason);
+    };
     BaseCommandRegistration.prototype.parse = function () { };
+    __decorate([
+        core_1.inject(core_1.BINDINGS.DESCRIPTOR), 
+        __metadata('design:type', Object)
+    ], BaseCommandRegistration.prototype, "descriptor", void 0);
+    __decorate([
+        core_1.inject(core_1.BINDINGS.CONFIG), 
+        __metadata('design:type', Function)
+    ], BaseCommandRegistration.prototype, "config", void 0);
+    __decorate([
+        core_1.inject(core_1.BINDINGS.COMMANDS_FACTORY), 
+        __metadata('design:type', Object)
+    ], BaseCommandRegistration.prototype, "factory", void 0);
+    __decorate([
+        core_1.inject(core_1.BINDINGS.OUTPUT), 
+        __metadata('design:type', Object)
+    ], BaseCommandRegistration.prototype, "out", void 0);
+    __decorate([
+        core_1.inject(core_1.BINDINGS.LOG), 
+        __metadata('design:type', Object)
+    ], BaseCommandRegistration.prototype, "log", void 0);
+    __decorate([
+        core_1.inject(core_1.BINDINGS.CLI), 
+        __metadata('design:type', core_1.Cli)
+    ], BaseCommandRegistration.prototype, "cli", void 0);
     return BaseCommandRegistration;
 }());
 exports.BaseCommandRegistration = BaseCommandRegistration;

@@ -46,11 +46,17 @@ var CommandsDefinitionParser = (function (_super) {
         var tree = this.factory.getTree();
         this.parsed.definition = this.definition;
         this.parsed.isRoot = this.query.length === 0;
+        if (this.parsed.help.enabled && this.parsed.isRoot && this.config('descriptor.cli.showHelpAsDefault')) {
+            this.parsed.help.show = true;
+        }
         var resolved = this.factory.resolveFromArray(this.query);
         if (resolved) {
             this.parsed.isCommand = resolved.type === 'command';
             this.parsed.isGroup = resolved.type === 'group';
             this.parsed[resolved.type] = this.factory['create' + lodash_1.upperFirst(resolved.type)](resolved);
+            if (this.parsed.isCommand) {
+                this.parsed.command.argv = this.query;
+            }
         }
         return this.parsed;
     };
@@ -59,9 +65,17 @@ var CommandsDefinitionParser = (function (_super) {
         __metadata('design:type', Object)
     ], CommandsDefinitionParser.prototype, "parsed", void 0);
     __decorate([
+        core_1.inject(bindings_1.BINDINGS.GLOBAL_DEFINITION), 
+        __metadata('design:type', Object)
+    ], CommandsDefinitionParser.prototype, "globalDefinition", void 0);
+    __decorate([
         core_1.inject(bindings_1.BINDINGS.COMMANDS_FACTORY), 
         __metadata('design:type', Object)
     ], CommandsDefinitionParser.prototype, "factory", void 0);
+    __decorate([
+        core_1.inject(bindings_1.BINDINGS.CONFIG), 
+        __metadata('design:type', Function)
+    ], CommandsDefinitionParser.prototype, "config", void 0);
     CommandsDefinitionParser = __decorate([
         core_1.injectable(), 
         __metadata('design:paramtypes', [])

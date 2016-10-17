@@ -2,12 +2,9 @@
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
-__export(require('./definition.options'));
-__export(require('./definition.commands'));
-__export(require('./definition.arguments'));
-__export(require('./parser.options'));
-__export(require('./parser.commands'));
-__export(require('./parser.arguments'));
-__export(require('./parser.argv'));
-__export(require('./parser.signature'));
+__export(require('./argv'));
+__export(require('./definitions'));
+__export(require('./parsed'));
+__export(require('./parsers'));
+__export(require('./signature'));
 //# sourceMappingURL=index.js.map

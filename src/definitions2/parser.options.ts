@@ -5,8 +5,7 @@ import { IOptionsDefinition } from "./definition.options";
 import { IParsedArgv, parseArgv } from "./parser.argv";
 
 
-export interface IParsedOptionsDefinition
-{
+export interface IParsedOptionsDefinition {
     argv: any[]
     definition: IOptionsDefinition
     args: IParsedArgv
@@ -21,10 +20,11 @@ export interface IParsedOptionsDefinition
 
     hasErrors(): boolean
 
+    help: {enabled: boolean, show: boolean, key: string}
+
     global?: IParsedOptionsDefinition
 }
-export interface IOptionsDefinitionParser
-{
+export interface IOptionsDefinitionParser {
     definition: IOptionsDefinition
     argv: any[]
 
@@ -32,11 +32,11 @@ export interface IOptionsDefinitionParser
 }
 
 @injectable()
-export class ParsedOptionsDefinition implements IParsedOptionsDefinition
-{
-    options: {[name: string]: any} = {};
+export class ParsedOptionsDefinition implements IParsedOptionsDefinition {
+    help: {enabled: boolean; show: boolean; key: string} = { enabled: false, show: false, key: undefined }
+    options: {[name: string]: any}                       = {};
     argv: any[]
-    errors: string[]               = [];
+    errors: string[]                                     = [];
 
     definition: IOptionsDefinition
     args: IParsedArgv
@@ -65,8 +65,7 @@ export class ParsedOptionsDefinition implements IParsedOptionsDefinition
  * Parses a Definition and Argv and produces a ParsedDefinition
  * @
  */
-export class OptionsDefinitionParser implements IOptionsDefinitionParser
-{
+export class OptionsDefinitionParser implements IOptionsDefinitionParser {
     @inject(BINDINGS.PARSED_OPTIONS_DEFINITION)
     public parsed: IParsedOptionsDefinition
     public definition: IOptionsDefinition
@@ -91,6 +90,11 @@ export class OptionsDefinitionParser implements IOptionsDefinitionParser
         this.parsed.errors     = this.errors;
         this.parsed.definition = this.definition;
         this.parsed.options    = this.options;
+
+        // and the help stuff
+        this.parsed.help.enabled = this.definition.hasHelp()
+        this.parsed.help.key     = this.definition.getHelpKey();
+        this.parsed.help.show    = this.parsed.opt(this.parsed.help.key) === true
 
         // and return it :)
         return this.parsed;

@@ -12,8 +12,15 @@ var lodash_1 = require("lodash");
 var core_1 = require("../core");
 var OptionsDefinition = (function () {
     function OptionsDefinition() {
+        this._help = { enabled: false, key: undefined };
         this.reset();
     }
+    OptionsDefinition.prototype.hasHelp = function () {
+        return this._help.enabled;
+    };
+    OptionsDefinition.prototype.getHelpKey = function () {
+        return this._help.key;
+    };
     OptionsDefinition.prototype.reset = function () {
         this._keys = {};
         this._options = {
@@ -52,6 +59,20 @@ var OptionsDefinition = (function () {
             });
         });
         return joined;
+    };
+    OptionsDefinition.prototype.help = function (k, alias) {
+        this._help.enabled = true;
+        this._help.key = k;
+        this.option(k, {
+            alias: alias, desc: '', handler: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                console.log('handler');
+            }
+        });
+        return this;
     };
     OptionsDefinition.prototype._push = function (option, value) {
         var _this = this;

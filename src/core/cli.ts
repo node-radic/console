@@ -1,20 +1,15 @@
 import { EventEmitter2 } from "eventemitter2";
 import { existsSync } from "fs-extra";
-import { BINDINGS } from "./bindings";
-import { injectable, decorate, inject } from "./";
+import { BINDINGS, ILog, IConfig, kernel, injectable, decorate, inject } from "./";
 import { IOptionsDefinition, IArgumentsDefinition, ICommandsDefinition, IParsedOptionsDefinition, IOptionsDefinitionParser, IArgumentsDefinitionParser, IParsedArgumentsDefinition, IParsedCommandsDefinition, ICommandsDefinitionParser, IParsedArgv } from "../definitions";
-import { ILog } from "./log";
-import { IConfig } from "./config";
-import { kernel } from "./kernel";
-import { IDescriptor, IOutput } from "../io";
+import { IDescriptor, IOutput, IInput } from "../io";
 
 decorate(injectable(), EventEmitter2);
 @injectable()
 export abstract class Cli<
     T extends IOptionsDefinition,
     Y extends IParsedOptionsDefinition,
-    Z extends IOptionsDefinitionParser> extends EventEmitter2
-{
+    Z extends IOptionsDefinitionParser> extends EventEmitter2 {
 
     /** The original argv */
     public argv: any[]
@@ -35,25 +30,41 @@ export abstract class Cli<
     @inject(BINDINGS.OUTPUT)
     out: IOutput;
 
+    @inject(BINDINGS.INPUT)
+    in: IInput;
+
     @inject(BINDINGS.ROOT_DEFINITION_PARSER_FACTORY)
     protected definitionParserFactory: (definition: T, args: IParsedArgv) => Z
 
     @inject(BINDINGS.DESCRIPTOR)
-    protected _descriptor: IDescriptor
+    descriptor: IDescriptor
 
     constructor() {
         super()
     }
 
     handle() {
+        this.handleHelp();
+        this.handleHandlerOptions();
+    }
+
+    protected handleHelp() {
+        if ( this.parsed.help.show ) {
+            this.showHelp()
+            return this.exit()
+        }
+    }
+
+    protected handleHandlerOptions() {
         Object.keys(this.definition.getJoinedOptions())
             .filter(this.parsed.hasOpt.bind(this.parsed))
             // .map(this.parsed.opt)
             .forEach((name: string) => {
                 let handler = this.definition.getOptions().handler[ name ];
-                if ( handler ) handler.call(this)
+                if ( handler && handler.call(this) === false ) {
+                    this.exit();
+                }
             })
-
     }
 
     parse(argv: any[]) {
@@ -68,23 +79,9 @@ export abstract class Cli<
 
         this.argv = argv;
 
-        if ( this.help.enabled ) {
-            this.defineHelp()
-        }
-
         let parser  = this.definitionParserFactory(this.definition, this.argv);
         this.parsed = <Y> parser.parse();
     }
-
-    protected defineHelp() {
-        this.definition.boolean(this.help.key)
-        if(this.help.command) this.definition.alias(this.help.command)
-    }
-
-    protected get help(): {enabled: boolean,key: string,command?: string} {
-        return this.config('help');
-    }
-
 
     showHelp(...without: string[]) {
 
@@ -106,20 +103,15 @@ export abstract class Cli<
     }
 }
 
-export class ArgumentsCli extends Cli<IArgumentsDefinition, IParsedArgumentsDefinition, IArgumentsDefinitionParser>
-{
+export class ArgumentsCli extends Cli<IArgumentsDefinition, IParsedArgumentsDefinition, IArgumentsDefinitionParser> {
     parse(argv: any[]): any {
         super.parse(argv);
     }
 }
 
-export class CommandsCli extends Cli<ICommandsDefinition, IParsedCommandsDefinition, ICommandsDefinitionParser>
-{
+export class CommandsCli extends Cli<ICommandsDefinition, IParsedCommandsDefinition, ICommandsDefinitionParser> {
     @inject(BINDINGS.GLOBAL_DEFINITION)
     globalDefinition: IOptionsDefinition;
-
-    @inject(BINDINGS.OPTIONS_DEFINITION_PARSER_FACTORY)
-    protected globalDefinitionParserFactory: (definition: IOptionsDefinition, args: IParsedArgv) => IOptionsDefinitionParser
 
     parse(argv: any[]): any {
         super.parse(argv);
@@ -129,26 +121,18 @@ export class CommandsCli extends Cli<ICommandsDefinition, IParsedCommandsDefinit
         // When the command is fired (parsed.command.fire()), the command will parse it's own definition (options&arguments) (thus ignoring the root definition's options)
         // However, the global definition (options) will be merged into the command definition
 
-
-        let gparser        = this.globalDefinitionParserFactory(this.globalDefinition, this.argv);
-        this.parsed.global = gparser.parse();
+        // let gparser        = this.globalDefinitionParserFactory(this.globalDefinition, this.argv);
+        // this.parsed.global = gparser.parse();
     }
 
-
-    protected checkHelp(): any {
-        let help = this.config('help');
-        if ( help.enabled ) {
-            this.globalDefinition.option(help.key, { alias: help.command })
-        }
-    }
 
     handle(): any {
+        super.handle();
 
-        if ( this.parsed.isRoot ) {
-            // let showHelp = && this.parsed.opt(this.config('help.key')) === true
-           this.config('help.enabled') && this.config('descriptor.cli.showHelpAsDefault') ? this.showHelp() : super.handle()
-                return this.exit();
-        }
+        // if ( this.parsed.help.enabled && this.parsed.isRoot && this.config('descriptor.cli.showHelpAsDefault') ) {
+        //     this.showHelp()
+        //     return this.exit();
+        // }
 
         if ( this.parsed.isCommand ) {
             return this.parsed.command.fire().then(() => {

@@ -5,6 +5,7 @@ import './commando/index'
 let cli = kernel.commandsCli();
 
 cli.globalDefinition
+    .help('h', 'help')
     .options({
         v: { alias: 'verbose', desc: 'Increase output verbosity', count: true}
     })
@@ -18,8 +19,7 @@ cli.definition.options({
 cli.config
     .title('Commando')
     .description('General all-round super duper cli')
-    .version('1.0.1')
-    .help('h', 'help');
+    .version('1.0.1');
 
 // parse
 cli.parse(process.argv)
@@ -41,7 +41,7 @@ if ( parsed.opt('V') ) {
     cli.exit();
 }
 
-if(parsed.global.hasOpt('v')){
+if(parsed.hasOpt('v')){
     console.log('verbosity level: ', parsed.global.opt('v'))
 }
 

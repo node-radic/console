@@ -1,40 +1,24 @@
-import { IConfig, inject, injectable, BINDINGS } from "../core";
-import { IOutput,IDescriptor } from "../io";
-import { ICommandFactory, ICommandRegistration, BaseCommandRegistration } from "./factory";
+import { injectable } from "../core";
+import { ICommandRegistration, BaseCommandRegistration } from "./factory";
 import { ICommandConstructor } from "./command";
 
 
-export interface IGroup extends ICommandRegistration<IGroup>
-{
+export interface IGroup extends ICommandRegistration<IGroup> {
     getChildren(): ICommandRegistration<IGroupConstructor|ICommandConstructor>[]
 }
 
-export interface IGroupConstructor
-{
+export interface IGroupConstructor {
     new (): IGroup
 }
 
 @injectable()
-export class Group extends BaseCommandRegistration implements IGroup
-{
+export class Group extends BaseCommandRegistration implements IGroup {
 
     name: string;
     desc: string;
     parent?: IGroupConstructor
 
-    @inject(BINDINGS.OUTPUT)
-    protected out: IOutput;
-
-    @inject(BINDINGS.DESCRIPTOR)
-    protected descriptor: IDescriptor;
-
-    @inject(BINDINGS.CONFIG)
-    protected config: IConfig
-
-    @inject(BINDINGS.COMMANDS_FACTORY)
-    protected factory: ICommandFactory
-
-    handle(){
+    handle() {
         this.showHelp()
     }
 
