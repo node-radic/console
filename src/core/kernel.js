@@ -45,24 +45,17 @@ var ConsoleKernel = (function (_super) {
         }
         catch (err) { }
     };
-    ConsoleKernel.prototype.Cli = function (cls, def, defparser) {
+    ConsoleKernel.prototype.Cli = function (cls, def) {
         this.bindKernel(this);
         this.bind(bindings_1.default.ROOT_DEFINITION).to(def).inSingletonScope();
-        this.bindParserFactory(bindings_1.default.ROOT_DEFINITION_PARSER_FACTORY, defparser);
         this.bind(bindings_1.default.CLI).to(cls).inSingletonScope();
         return this.get(bindings_1.default.CLI);
     };
     ConsoleKernel.prototype.commandsCli = function () {
-        return this.Cli(cli_1.CommandsCli, definitions_1.CommandsDefinition, bindings_1.default.COMMANDS_DEFINITION_PARSER);
+        return this.Cli(cli_1.CommandsCli, definitions_1.CommandsDefinition);
     };
     ConsoleKernel.prototype.argumentsCli = function () {
-        if (this.isBound(bindings_1.default.CLI))
-            throw Error('cli already created');
-        this.bindKernel(this);
-        this.bind(bindings_1.default.ROOT_DEFINITION).to(definitions_1.ArgumentsDefinition).inSingletonScope();
-        this.bindParserFactory(bindings_1.default.ROOT_DEFINITION_PARSER_FACTORY, bindings_1.default.ARGUMENTS_DEFINITION_PARSER);
-        this.bind(bindings_1.default.CLI).to(cli_1.ArgumentsCli).inSingletonScope();
-        return this.get(bindings_1.default.CLI);
+        return this.Cli(cli_1.ArgumentsCli, definitions_1.CommandsDefinition);
     };
     ConsoleKernel.prototype.bindKernel = function (kernel) {
         kernel.bind(bindings_1.default.GLOBAL_DEFINITION).to(definitions_1.OptionsDefinition).inSingletonScope();
@@ -82,19 +75,6 @@ var ConsoleKernel = (function (_super) {
         kernel.bind(bindings_1.default.PARSED_ARGUMENTS_DEFINITION).to(definitions_1.ParsedArgumentsDefinition);
         kernel.bind(bindings_1.default.PARSED_COMMANDS_DEFINITION).to(definitions_1.ParsedCommandsDefinition);
         kernel.bind(bindings_1.default.DEFINITION_SIGNATURE_PARSER).to(definitions_1.DefinitionSignatureParser);
-        this.bindParserFactory(bindings_1.default.OPTIONS_DEFINITION_PARSER_FACTORY, bindings_1.default.OPTIONS_DEFINITION_PARSER);
-        this.bindParserFactory(bindings_1.default.ARGUMENTS_DEFINITION_PARSER_FACTORY, bindings_1.default.ARGUMENTS_DEFINITION_PARSER);
-        this.bindParserFactory(bindings_1.default.COMMANDS_DEFINITION_PARSER_FACTORY, bindings_1.default.COMMANDS_DEFINITION_PARSER);
-    };
-    ConsoleKernel.prototype.bindParserFactory = function (binding, parserBinding) {
-        this.bind(binding).toFactory(function (context) {
-            return function (definition, argv) {
-                var parser = context.kernel.get(parserBinding);
-                parser.definition = definition;
-                parser.argv = argv;
-                return parser;
-            };
-        });
     };
     return ConsoleKernel;
 }(inversify_1.Kernel));

@@ -50,25 +50,26 @@ export class ConsoleKernel extends BaseKernel
         try { decorate(injectable(), cls); } catch ( err ) {}
     }
 
-    Cli<CLS,DEF,DEFPARSER extends IOptionsDefinitionParser>(cls: any, def: any, defparser: any): CLS {
+    Cli<CLS,DEF,DEFPARSER extends IOptionsDefinitionParser>(cls: any, def: any): CLS {
         this.bindKernel(this);
         this.bind<DEF>(BINDINGS.ROOT_DEFINITION).to(def).inSingletonScope()
-        this.bindParserFactory<DEFPARSER>(BINDINGS.ROOT_DEFINITION_PARSER_FACTORY, defparser)
+        // this.bindParserFactory<DEFPARSER>(BINDINGS.ROOT_DEFINITION_PARSER_FACTORY, defparser)
         this.bind<CLS>(BINDINGS.CLI).to(cls).inSingletonScope();
         return this.get<CLS>(BINDINGS.CLI);
     }
 
     commandsCli(): CommandsCli {
-        return this.Cli<CommandsCli,ICommandsDefinition, ICommandsDefinitionParser>(CommandsCli, CommandsDefinition, BINDINGS.COMMANDS_DEFINITION_PARSER)
+        return this.Cli<CommandsCli,ICommandsDefinition, ICommandsDefinitionParser>(CommandsCli, CommandsDefinition)
     }
 
     argumentsCli(): ArgumentsCli {
-        if ( this.isBound(BINDINGS.CLI) ) throw Error('cli already created')
-        this.bindKernel(this);
-        this.bind<IArgumentsDefinition>(BINDINGS.ROOT_DEFINITION).to(ArgumentsDefinition).inSingletonScope();
-        this.bindParserFactory<IArgumentsDefinitionParser>(BINDINGS.ROOT_DEFINITION_PARSER_FACTORY, BINDINGS.ARGUMENTS_DEFINITION_PARSER)
-        this.bind<ArgumentsCli>(BINDINGS.CLI).to(ArgumentsCli).inSingletonScope();
-        return this.get<ArgumentsCli>(BINDINGS.CLI);
+        return this.Cli<ArgumentsCli ,ICommandsDefinition, ICommandsDefinitionParser>(ArgumentsCli , CommandsDefinition)
+        // if ( this.isBound(BINDINGS.CLI) ) throw Error('cli already created')
+        // this.bindKernel(this);
+        // this.bind<IArgumentsDefinition>(BINDINGS.ROOT_DEFINITION).to(ArgumentsDefinition).inSingletonScope();
+        // this.bindParserFactory<IArgumentsDefinitionParser>(BINDINGS.ROOT_DEFINITION_PARSER_FACTORY, BINDINGS.ARGUMENTS_DEFINITION_PARSER)
+        // this.bind<ArgumentsCli>(BINDINGS.CLI).to(ArgumentsCli).inSingletonScope();
+        // return this.get<ArgumentsCli>(BINDINGS.CLI);
     }
 
     bindKernel(kernel: ConsoleKernel) {
@@ -80,7 +81,6 @@ export class ConsoleKernel extends BaseKernel
         kernel.bind<ILog>(BINDINGS.LOG).to(Log).inSingletonScope();
         kernel.bind<IDescriptor>(BINDINGS.DESCRIPTOR).to(Descriptor).inSingletonScope();
         kernel.bind<IConfig>(BINDINGS.CONFIG).toConstantValue(config);
-
         kernel.bind<ICommandFactory>(BINDINGS.COMMANDS_FACTORY).to(CommandFactory).inSingletonScope();
 
         kernel.bind<IInput>(BINDINGS.INPUT).to(Input);
@@ -119,24 +119,31 @@ export class ConsoleKernel extends BaseKernel
         //         parser.argv       = argv;
         //         return parser;
         //     }
+        // // });
+        // this.bindParserFactory<IOptionsDefinitionParser>(BINDINGS.OPTIONS_DEFINITION_PARSER_FACTORY, BINDINGS.OPTIONS_DEFINITION_PARSER)
+        // // this.bindParserFactory<IArgumentsDefinitionParser>(BINDINGS.ARGUMENTS_DEFINITION_PARSER_FACTORY, BINDINGS.ARGUMENTS_DEFINITION_PARSER)
+        // this.bindParserFactory<ICommandsDefinitionParser>(BINDINGS.COMMANDS_DEFINITION_PARSER_FACTORY, BINDINGS.COMMANDS_DEFINITION_PARSER)
+        // this.bind<Factory<IArgumentsDefinitionParser>>(BINDINGS.ARGUMENTS_DEFINITION_PARSER_FACTORY).toFactory<IArgumentsDefinitionParser>((context: Context) => {
+        //     return (definition: any, argv: any[]) : IArgumentsDefinitionParser => {
+        //         let parser        = context.kernel.build<IArgumentsDefinitionParser>(BINDINGS.ARGUMENTS_DEFINITION_PARSER);
+        //         parser.definition = definition;
+        //         parser.argv       = argv;
+        //         return parser;
+        //     }
         // });
-        this.bindParserFactory<IOptionsDefinitionParser>(BINDINGS.OPTIONS_DEFINITION_PARSER_FACTORY, BINDINGS.OPTIONS_DEFINITION_PARSER)
-        this.bindParserFactory<IArgumentsDefinitionParser>(BINDINGS.ARGUMENTS_DEFINITION_PARSER_FACTORY, BINDINGS.ARGUMENTS_DEFINITION_PARSER)
-        this.bindParserFactory<ICommandsDefinitionParser>(BINDINGS.COMMANDS_DEFINITION_PARSER_FACTORY, BINDINGS.COMMANDS_DEFINITION_PARSER)
-
 
     }
 
-    private bindParserFactory<T2 extends IOptionsDefinitionParser>(binding, parserBinding) {
-        this.bind<Factory<T2>>(binding).toFactory<any>((context: Context) => {
-            return (definition: any, argv: any[]) => {
-                let parser        = context.kernel.get<T2>(parserBinding);
-                parser.definition = definition;
-                parser.argv       = argv;
-                return parser;
-            }
-        });
-    }
+    // private bindParserFactory<T2 extends IOptionsDefinitionParser>(binding, parserBinding) {
+    //     this.bind<Factory<T2>>(binding).toFactory<any>((context: Context) => {
+    //         return (definition: any, argv: any[]) => {
+    //             let parser        = context.kernel.get<T2>(parserBinding);
+    //             parser.definition = definition;
+    //             parser.argv       = argv;
+    //             return parser;
+    //         }
+    //     });
+    // }
 
 }
 

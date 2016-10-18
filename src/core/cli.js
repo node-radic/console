@@ -52,8 +52,7 @@ var Cli = (function (_super) {
             this.binPath = argv.shift();
         }
         this.argv = argv;
-        var parser = this.definitionParserFactory(this.definition, this.argv);
-        this.parsed = parser.parse();
+        this.parsed = this.definition.parse(this.argv);
     };
     Cli.prototype.showHelp = function () {
         var without = [];
@@ -96,10 +95,6 @@ var Cli = (function (_super) {
         __metadata('design:type', Object)
     ], Cli.prototype, "in", void 0);
     __decorate([
-        _1.inject(_1.BINDINGS.ROOT_DEFINITION_PARSER_FACTORY), 
-        __metadata('design:type', Function)
-    ], Cli.prototype, "definitionParserFactory", void 0);
-    __decorate([
         _1.inject(_1.BINDINGS.DESCRIPTOR), 
         __metadata('design:type', Object)
     ], Cli.prototype, "descriptor", void 0);
@@ -124,23 +119,26 @@ exports.ArgumentsCli = ArgumentsCli;
 var CommandsCli = (function (_super) {
     __extends(CommandsCli, _super);
     function CommandsCli() {
-        _super.apply(this, arguments);
+        _super.call(this);
     }
     CommandsCli.prototype.parse = function (argv) {
         _super.prototype.parse.call(this, argv);
+        this.parsed.global = this.globalDefinition.parse(this.argv);
+    };
+    CommandsCli.prototype.handleHelp = function () {
+        _super.prototype.handleHelp.call(this);
+        if (this.parsed.global.help.enabled && this.parsed.isRoot && this.config('descriptor.cli.showHelpAsDefault')) {
+            this.showHelp();
+            return this.exit();
+        }
     };
     CommandsCli.prototype.handle = function () {
-        var _this = this;
         _super.prototype.handle.call(this);
         if (this.parsed.isCommand) {
-            return this.parsed.command.fire().then(function () {
-                _this.exit();
-            });
+            return this.parsed.command.fire();
         }
         if (this.parsed.isGroup) {
-            return this.parsed.group.fire().then(function () {
-                _this.exit();
-            });
+            return this.parsed.group.fire();
         }
         this.fail('No options or arguments provided.  Use the -h or --help option to show what can be done');
     };

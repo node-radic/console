@@ -5,6 +5,7 @@ import { IOptionsDefinition, IArgumentsDefinition, ICommandsDefinition, Commands
 import { IParsedArgv, parseArgv } from "./argv";
 import { ICommandFactory } from "../commands";
 import { IParsedOptionsDefinition, IParsedArgumentsDefinition, IParsedCommandsDefinition } from "./parsed";
+import { kernel } from "../core/kernel";
 
 
 export interface IOptionsDefinitionParser {
@@ -29,8 +30,10 @@ export interface ICommandsDefinitionParser extends IOptionsDefinitionParser {
  * @
  */
 export class OptionsDefinitionParser implements IOptionsDefinitionParser {
-    @inject(BINDINGS.PARSED_OPTIONS_DEFINITION)
-    public parsed: IParsedOptionsDefinition
+    // @inject(BINDINGS.PARSED_OPTIONS_DEFINITION)
+    // public parsed: IParsedOptionsDefinition
+    constructor(@inject(BINDINGS.PARSED_OPTIONS_DEFINITION) public parsed) {}
+
     public definition: IOptionsDefinition
     public argv: any[]
     //public _: string[]
@@ -39,8 +42,8 @@ export class OptionsDefinitionParser implements IOptionsDefinitionParser {
     protected errors: string[] = [];
     protected options: {[name: string]: any}
 
-
     parse(): IParsedOptionsDefinition {
+
         // first let yargs-parser make sense of it
         this.args = parseArgv(this.argv, this.definition.getOptions());
 
@@ -85,8 +88,9 @@ export class OptionsDefinitionParser implements IOptionsDefinitionParser {
  * Parses a Definition and Argv and produces a ParsedDefinition
  */
 export class ArgumentsDefinitionParser extends OptionsDefinitionParser implements IArgumentsDefinitionParser {
-    @inject(BINDINGS.PARSED_ARGUMENTS_DEFINITION)
-    public parsed: IParsedArgumentsDefinition
+    // @inject(BINDINGS.PARSED_ARGUMENTS_DEFINITION)
+    // public parsed: IParsedArgumentsDefinition
+    constructor(@inject(BINDINGS.PARSED_ARGUMENTS_DEFINITION) public parsed) {super(parsed)}
     public definition: IArgumentsDefinition
     protected arguments: {[name: string]: any}
 
@@ -129,13 +133,13 @@ export class ArgumentsDefinitionParser extends OptionsDefinitionParser implement
  * Parses a Definition and Argv and produces a ParsedDefinition
  */
 export class CommandsDefinitionParser extends OptionsDefinitionParser implements ICommandsDefinitionParser {
-    @inject(BINDINGS.PARSED_COMMANDS_DEFINITION)
-    public parsed: IParsedCommandsDefinition
+
+    // @inject(BINDINGS.PARSED_COMMANDS_DEFINITION)
+    // public parsed: IParsedCommandsDefinition
+
+    constructor(@inject(BINDINGS.PARSED_COMMANDS_DEFINITION) public parsed) {super(parsed)}
 
     public definition: ICommandsDefinition
-
-    @inject(BINDINGS.GLOBAL_DEFINITION)
-    globalDefinition: IOptionsDefinition
 
     @inject(BINDINGS.COMMANDS_FACTORY)
     factory: ICommandFactory
@@ -149,20 +153,22 @@ export class CommandsDefinitionParser extends OptionsDefinitionParser implements
     parse(): IParsedCommandsDefinition {
         super.parse();
         if ( this.definition instanceof CommandsDefinition === false ) return this.parsed
-        this.query = clone(this.args.argv._);
 
-        let tree               = this.factory.getTree();
+        this.query             = clone(this.args.argv._);
         this.parsed.definition = this.definition;
         this.parsed.isRoot     = this.query.length === 0;
 
         if ( this.parsed.help.enabled && this.parsed.isRoot && this.config('descriptor.cli.showHelpAsDefault') ) {
             this.parsed.help.show = true
         }
+
         let resolved = this.factory.resolveFromArray(this.query);
         if ( resolved ) {
-            this.parsed.isCommand        = resolved.type === 'command'
-            this.parsed.isGroup          = resolved.type === 'group'
-            this.parsed[ resolved.type ] = this.factory[ 'create' + upperFirst(resolved.type) ](resolved);
+            this.parsed.isCommand               = resolved.type === 'command'
+            this.parsed.isGroup                 = resolved.type === 'group'
+            this.parsed[ resolved.type ]        = this.factory[ 'create' + upperFirst(resolved.type) ](resolved);
+            this.parsed[ resolved.type ].parent = resolved.parent;
+
             if ( this.parsed.isCommand ) {
                 this.parsed.command.argv = this.query
             }

@@ -33,8 +33,8 @@ export abstract class Cli<
     @inject(BINDINGS.INPUT)
     in: IInput;
 
-    @inject(BINDINGS.ROOT_DEFINITION_PARSER_FACTORY)
-    protected definitionParserFactory: (definition: T, args: IParsedArgv) => Z
+    // @inject(BINDINGS.ROOT_DEFINITION_PARSER_FACTORY)
+    // protected definitionParserFactory: (definition: T, args: IParsedArgv) => Z
 
     @inject(BINDINGS.DESCRIPTOR)
     descriptor: IDescriptor
@@ -79,8 +79,7 @@ export abstract class Cli<
 
         this.argv = argv;
 
-        let parser  = this.definitionParserFactory(this.definition, this.argv);
-        this.parsed = <Y> parser.parse();
+        this.parsed = <Y> this.definition.parse(this.argv)
     }
 
     showHelp(...without: string[]) {
@@ -110,8 +109,15 @@ export class ArgumentsCli extends Cli<IArgumentsDefinition, IParsedArgumentsDefi
 }
 
 export class CommandsCli extends Cli<ICommandsDefinition, IParsedCommandsDefinition, ICommandsDefinitionParser> {
+    // @inject(BINDINGS.COMMANDS_DEFINITION)
+    // definition: ICommandsDefinition
+
     @inject(BINDINGS.GLOBAL_DEFINITION)
     globalDefinition: IOptionsDefinition;
+
+    constructor(){
+        super()
+    }
 
     parse(argv: any[]): any {
         super.parse(argv);
@@ -121,29 +127,28 @@ export class CommandsCli extends Cli<ICommandsDefinition, IParsedCommandsDefinit
         // When the command is fired (parsed.command.fire()), the command will parse it's own definition (options&arguments) (thus ignoring the root definition's options)
         // However, the global definition (options) will be merged into the command definition
 
-        // let gparser        = this.globalDefinitionParserFactory(this.globalDefinition, this.argv);
-        // this.parsed.global = gparser.parse();
+        this.parsed.global = this.globalDefinition.parse(this.argv);
+
+
     }
 
+    protected handleHelp(){
+        super.handleHelp();
+        if ( this.parsed.global.help.enabled && this.parsed.isRoot && this.config('descriptor.cli.showHelpAsDefault') ) {
+            this.showHelp()
+            return this.exit();
+        }
+    }
 
     handle(): any {
         super.handle();
 
-        // if ( this.parsed.help.enabled && this.parsed.isRoot && this.config('descriptor.cli.showHelpAsDefault') ) {
-        //     this.showHelp()
-        //     return this.exit();
-        // }
-
         if ( this.parsed.isCommand ) {
-            return this.parsed.command.fire().then(() => {
-                this.exit();
-            });
+            return this.parsed.command.fire()
         }
 
         if ( this.parsed.isGroup ) {
-            return this.parsed.group.fire().then(() => {
-                this.exit();
-            });
+            return this.parsed.group.fire()
         }
 
         this.fail('No options or arguments provided.  Use the -h or --help option to show what can be done')

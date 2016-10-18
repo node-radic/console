@@ -1,10 +1,10 @@
-import * as Promise from "bluebird";
 import { IConfig, ILog, Cli, inject, injectable, kernel, CommandsCli, BINDINGS } from "../core";
 import { Command, ICommandConstructor } from "./command";
 import { Group, IGroupConstructor } from "./group";
 import * as _ from "lodash";
 import { ICommandsDefinition, ICommandsDefinitionParser, IParsedCommandsDefinition } from "../definitions";
 import { IOutput, IDescriptor } from "../io";
+import { IInput } from "../io/input";
 
 
 export interface ICommandRegistration<T> {
@@ -71,32 +71,36 @@ export abstract class BaseCommandRegistration {
     @inject(BINDINGS.DESCRIPTOR)
     protected descriptor: IDescriptor;
 
-    @inject(BINDINGS.CONFIG)
-    protected config: IConfig
-
     @inject(BINDINGS.COMMANDS_FACTORY)
     protected factory: ICommandFactory
 
-    @inject(BINDINGS.OUTPUT)
-    protected out: IOutput;
 
-    @inject(BINDINGS.LOG)
-    protected log: ILog;
+    private _in;
+    get in() : IInput { return this._in ? this._in : this._in = kernel.get<IInput>(BINDINGS.INPUT) }
+
+    private _out;
+    get out() : IOutput { return this._out ? this._out : this._out = kernel.get<IOutput>(BINDINGS.OUTPUT) }
+
+    private _log;
+    get log() : ILog { return this._log ? this._log : this._log = kernel.get<ILog>(BINDINGS.LOG) }
+
+    private _config;
+    get config() : IConfig { return this._config ? this._config : this._config = kernel.get<IConfig>(BINDINGS.CONFIG) }
 
     @inject(BINDINGS.CLI)
     protected cli: Cli<ICommandsDefinition, IParsedCommandsDefinition, ICommandsDefinitionParser>
 
-    private defer: Promise.Resolver<any>;
+    private failed: boolean = false
     protected asyncMode: boolean = false;
 
     fire() {
-        this.defer = Promise.defer();
+        // this.defer = Promise.defer();
         this.parse();
         if ( this[ 'handle' ] ) this[ 'handle' ].apply(this);
-        if ( false === this.asyncMode ) {
-            this.done();
-        }
-        return this.defer.promise;
+        // if ( false === this.asyncMode ) {
+        //     this.done();
+        // }
+        // return this.defer.promise;
     }
 
     protected async() {
@@ -104,10 +108,10 @@ export abstract class BaseCommandRegistration {
         return this.done;
     }
 
-    protected done() { this.defer.resolve(this); }
+    protected done() { }
 
     protected fail(reason?: string) {
-        this.defer.reject(reason);
+        this.failed = true;
     }
 
     protected parse() {}

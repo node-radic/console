@@ -1,4 +1,5 @@
 import { injectable, inject, BINDINGS, IConfig } from "../core";
+import {inspect} from 'util'
 import * as Table from "cli-table2";
 import { kindOf } from "@radic/util";
 import { merge } from "lodash";
@@ -20,6 +21,7 @@ export interface IOutput
     subtitle(text: string): this
     table(options?: any): CliTable
     columns(options?: any): CliTable
+    dump(...args: any[]): void;
 }
 
 
@@ -43,6 +45,10 @@ export const TABLE_STYLE = {
 @injectable()
 export class Output implements IOutput
 {
+    dump(...args: any[]): void {
+        args.forEach((arg) => process.stdout.write(inspect(arg, {colors: this.colorsEnabled, depth: 5, showHidden: true })))
+    }
+
     @inject(BINDINGS.CONFIG)
     config: IConfig;
 

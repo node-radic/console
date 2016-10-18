@@ -9,8 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("../core");
+var util_1 = require('util');
 var Table = require("cli-table2");
-var util_1 = require("@radic/util");
+var util_2 = require("@radic/util");
 var lodash_1 = require("lodash");
 var console_colors_1 = require("@radic/console-colors");
 var archy = require("archy");
@@ -35,6 +36,14 @@ var Output = (function () {
         this.useParser = true;
         this.colorsEnabled = true;
     }
+    Output.prototype.dump = function () {
+        var _this = this;
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i - 0] = arguments[_i];
+        }
+        args.forEach(function (arg) { return process.stdout.write(util_1.inspect(arg, { colors: _this.colorsEnabled, depth: 5, showHidden: true })); });
+    };
     Output.prototype.tree = function (label, nodes) {
         var tree = archy({ label: label, nodes: nodes });
         return this.line(tree);
@@ -84,12 +93,12 @@ var Output = (function () {
     };
     Output.prototype.table = function (options) {
         if (options === void 0) { options = {}; }
-        return new Table(util_1.kindOf(options) === 'array' ? { head: options } : options);
+        return new Table(util_2.kindOf(options) === 'array' ? { head: options } : options);
     };
     Output.prototype.columns = function (options) {
         if (options === void 0) { options = {}; }
         var chars = exports.TABLE_STYLE.NONE;
-        return new Table(util_1.kindOf(options) === 'array' ? lodash_1.merge({ head: options }, { chars: chars }) : lodash_1.merge(options, { chars: chars }));
+        return new Table(util_2.kindOf(options) === 'array' ? lodash_1.merge({ head: options }, { chars: chars }) : lodash_1.merge(options, { chars: chars }));
     };
     Output.prototype.setUseParser = function (use) {
         this.useParser = use;

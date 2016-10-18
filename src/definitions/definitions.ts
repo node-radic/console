@@ -2,6 +2,7 @@ import { merge, mergeWith, isArray } from "lodash";
 import { IArgvParserOptions } from "./argv";
 import { ICommandFactory, ICommandRegistration, IGroupConstructor, ICommandConstructor } from "../commands";
 import { injectable, inject, BINDINGS } from "../core";
+import { IParsedOptionsDefinition, IParsedArgumentsDefinition, IParsedCommandsDefinition } from "./parsed";
 
 
 export interface IOption {
@@ -57,6 +58,8 @@ export interface IOptionsDefinition {
     hasHelp(): boolean
     getHelpKey(): string
     help(k: string, a?: string): this
+
+    parse(argv: string[]): IParsedOptionsDefinition
     // showHelp(...without: string[]): void
 }
 export interface IArgumentsDefinition extends IOptionsDefinition {
@@ -65,46 +68,48 @@ export interface IArgumentsDefinition extends IOptionsDefinition {
     getArguments(): {[name: string]: IArgument}
     mergeArguments(definition: this): this
     hasArguments(): boolean
+    parse(argv: string[]): IParsedArgumentsDefinition
 }
 export interface ICommandsDefinition extends IOptionsDefinition {
     factory: ICommandFactory;
     getCommands(): ICommandRegistration<ICommandConstructor>[]
     getGroups(): ICommandRegistration<IGroupConstructor>[]
+    parse(argv: string[]): IParsedCommandsDefinition
 }
 
 @injectable()
 export class OptionsDefinition implements IOptionsDefinition {
     //@inject(BINDINGS.HELP_WRITER)
     // helpWriter: IHelpWriter
+
+    parse(argv: string[]): IParsedOptionsDefinition {
+        this.parser.definition = this
+        this.parser.argv       = argv;
+        return this.parser.parse();
+    }
+
     protected _options: IArgvParserOptions
     protected _keys: {[name: string]: boolean}
               _help: {enabled: boolean, key?: string } = { enabled: false, key: undefined }
 
-    hasHelp(): boolean {
-        return this._help.enabled;
-    }
-
-    getHelpKey(): string {
-        return this._help.key;
-    }
-
-    constructor() {
+    constructor(@inject(BINDINGS.OPTIONS_DEFINITION_PARSER) public parser) {
         this.reset()
     }
 
     reset() {
         this._keys    = {}
         this._options = {
-            alias  : {},
             array  : [],
             boolean: [],
             count  : [],
-            coerce : {},
-            default: {},
-            narg   : {},
             number : [],
             string : [],
             nested : [],
+
+            alias  : {},
+            coerce : {},
+            default: {},
+            narg   : {},
             desc   : {},
             handler: {}
         }
@@ -134,12 +139,23 @@ export class OptionsDefinition implements IOptionsDefinition {
         return joined;
     }
 
+    hasHelp(): boolean {
+        return this._help.enabled;
+    }
+
+    getHelpKey(): string {
+        return this._help.key;
+    }
+
     help(k, alias): this {
         this._help.enabled = true;
         this._help.key     = k;
 
         this.option(k, {
-            alias, desc: '', handler: (...args: any[]) => {
+            alias,
+            desc   : '',
+            boolean: true,
+            handler: (...args: any[]) => {
                 console.log('handler')
             }
         })
@@ -154,6 +170,11 @@ export class OptionsDefinition implements IOptionsDefinition {
         return this;
     }
 
+    private _set(option: string, key: string, value: any): this {
+        this._options[ option ][ key ] = value;
+        return this;
+    }
+
     get keys(): string[] { return Object.keys(this._keys) }
 
     hasOption(key): boolean { return this._keys[ key ] !== undefined && this._keys[ key ] === true }
@@ -163,6 +184,9 @@ export class OptionsDefinition implements IOptionsDefinition {
         return this
     }
 
+    getOptions(): IArgvParserOptions { return this._options; }
+
+
     mergeOptions(definition: this): this {
         let customizer = (objValue: any, srcValue: any, key: any, object: any, source: any, stack: any) => {
             if ( isArray(objValue) ) {
@@ -171,10 +195,21 @@ export class OptionsDefinition implements IOptionsDefinition {
         }
         mergeWith(this._options, definition.getOptions(), customizer);
         definition.keys.forEach((key) => this.hasOption(key) === false ? this.registerOption(key) : this)
+
+        // merge external help.
+        if ( definition.hasHelp() ) {
+            if ( ! this.hasHelp() ) {
+                this._help.enabled = true;
+                this._help.key     = definition.getHelpKey();
+            } else {
+                this._help.key = definition.getHelpKey();
+            }
+        }
         return this;
     }
 
-    getOptions(): IArgvParserOptions { return this._options; }
+
+    types: string[] = [ 'array', 'boolean', 'count', 'number', 'string', 'nested' ]
 
     array(bools: string|string[]): this { return this._push('array', bools) }
 
@@ -188,6 +223,16 @@ export class OptionsDefinition implements IOptionsDefinition {
 
     nested(bools: string|string[]): this { return this._push('nested', bools)}
 
+    setters: string[] = [ 'default', 'desc', 'narg', 'handler', 'alias' ];
+
+    default(k: string, v: any): this { return this._set('default', k, v) }
+
+    desc(k: string, v: string): this { return this._set('desc', k, v) }
+
+    narg(k: string, v: number): this { return this._set('narg', k, v) }
+
+    handler(k: string, v: Function): this { return this._set('handler', k, v) }
+
     alias(x: any, y?: string): this {
         if ( typeof x === 'object' ) {
             Object.keys(x).forEach((key) => this.alias(key, x[ key ]));
@@ -197,37 +242,24 @@ export class OptionsDefinition implements IOptionsDefinition {
         return this
     }
 
-    coerce(): this {
-        return this
-    }
-
-    default(k: string, val: any): this {
-        this._options.default[ k ] = val;
-        return this
-    }
-
-    describe(k: string, val: string): this {
-        this._options.desc[ k ] = val;
-        return this
-    }
-
-    handler(k: string, v: Function): this {
-        this._options.handler[ k ] = v;
-        return this
-    }
+    coerce(): this { return this }
 
 
-    option(k: string, o: any): this {
+    option(k: string, o: IOption): this {
         this.registerOption(k)
+        // types first
         if ( o.boolean ) this.boolean(k);
-        if ( o.getCountRecords ) this.count(k);
         if ( o.number ) this.number(k);
         if ( o.string ) this.string(k);
         if ( o.nested ) this.nested(k);
+        if ( o.count ) this.count(k);
+
         if ( o.alias ) this.alias(k, o.alias);
-        if ( o.coerce ) this.coerce();
+        //if ( o.coerce ) this.coerce();
         if ( o.default ) this.default(k, o.default);
-        if ( o.desc ) this.describe(k, o.desc)
+        if ( o.desc ) this.desc(k, o.desc)
+        if ( o.narg ) this.narg(k, o.narg);
+        if ( o.handler ) this.handler(k, o.handler);
         return this;
     }
 
@@ -243,6 +275,16 @@ export class OptionsDefinition implements IOptionsDefinition {
 
 @injectable()
 export class ArgumentsDefinition extends OptionsDefinition implements IArgumentsDefinition {
+
+    constructor(@inject(BINDINGS.ARGUMENTS_DEFINITION_PARSER) public parser) {
+        super(parser)
+    }
+
+    parse(argv: string[]): IParsedArgumentsDefinition {
+        this.parser.definition = this
+        this.parser.argv       = argv;
+        return this.parser.parse();
+    }
 
     protected _arguments: {[name: string]: IArgument}
 
@@ -288,6 +330,16 @@ export class ArgumentsDefinition extends OptionsDefinition implements IArguments
 export class CommandsDefinition extends OptionsDefinition implements ICommandsDefinition {
     @inject(BINDINGS.COMMANDS_FACTORY)
     factory: ICommandFactory;
+
+    constructor(@inject(BINDINGS.COMMANDS_DEFINITION_PARSER) public parser) {
+        super(parser)
+    }
+
+    parse(argv: string[]): IParsedCommandsDefinition {
+        this.parser.definition = this
+        this.parser.argv       = argv;
+        return this.parser.parse();
+    }
 
     getCommands() {
         return this.factory.commands;

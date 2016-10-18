@@ -8,7 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var Promise = require("bluebird");
 var core_1 = require("../core");
 var _ = require("lodash");
 var groups = [];
@@ -31,25 +30,41 @@ function group(name, desc, parent) {
 exports.group = group;
 var BaseCommandRegistration = (function () {
     function BaseCommandRegistration() {
+        this.failed = false;
         this.asyncMode = false;
     }
+    Object.defineProperty(BaseCommandRegistration.prototype, "in", {
+        get: function () { return this._in ? this._in : this._in = core_1.kernel.get(core_1.BINDINGS.INPUT); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseCommandRegistration.prototype, "out", {
+        get: function () { return this._out ? this._out : this._out = core_1.kernel.get(core_1.BINDINGS.OUTPUT); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseCommandRegistration.prototype, "log", {
+        get: function () { return this._log ? this._log : this._log = core_1.kernel.get(core_1.BINDINGS.LOG); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BaseCommandRegistration.prototype, "config", {
+        get: function () { return this._config ? this._config : this._config = core_1.kernel.get(core_1.BINDINGS.CONFIG); },
+        enumerable: true,
+        configurable: true
+    });
     BaseCommandRegistration.prototype.fire = function () {
-        this.defer = Promise.defer();
         this.parse();
         if (this['handle'])
             this['handle'].apply(this);
-        if (false === this.asyncMode) {
-            this.done();
-        }
-        return this.defer.promise;
     };
     BaseCommandRegistration.prototype.async = function () {
         this.asyncMode = true;
         return this.done;
     };
-    BaseCommandRegistration.prototype.done = function () { this.defer.resolve(this); };
+    BaseCommandRegistration.prototype.done = function () { };
     BaseCommandRegistration.prototype.fail = function (reason) {
-        this.defer.reject(reason);
+        this.failed = true;
     };
     BaseCommandRegistration.prototype.parse = function () { };
     __decorate([
@@ -57,21 +72,9 @@ var BaseCommandRegistration = (function () {
         __metadata('design:type', Object)
     ], BaseCommandRegistration.prototype, "descriptor", void 0);
     __decorate([
-        core_1.inject(core_1.BINDINGS.CONFIG), 
-        __metadata('design:type', Function)
-    ], BaseCommandRegistration.prototype, "config", void 0);
-    __decorate([
         core_1.inject(core_1.BINDINGS.COMMANDS_FACTORY), 
         __metadata('design:type', Object)
     ], BaseCommandRegistration.prototype, "factory", void 0);
-    __decorate([
-        core_1.inject(core_1.BINDINGS.OUTPUT), 
-        __metadata('design:type', Object)
-    ], BaseCommandRegistration.prototype, "out", void 0);
-    __decorate([
-        core_1.inject(core_1.BINDINGS.LOG), 
-        __metadata('design:type', Object)
-    ], BaseCommandRegistration.prototype, "log", void 0);
     __decorate([
         core_1.inject(core_1.BINDINGS.CLI), 
         __metadata('design:type', core_1.Cli)

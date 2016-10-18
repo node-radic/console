@@ -99,16 +99,16 @@ export class Config extends util.Config implements IBaseConfig
             return config.get(prop);
         };
 
-        cf.title   = config.title.bind(config);
-        cf.version = config.version.bind(config);
-        cf.get     = config.get.bind(config);
-        cf.set     = config.set.bind(config);
-        cf.unset   = config.unset.bind(config);
-        cf.merge   = config.merge.bind(config);
-        cf.raw     = config.raw.bind(config);
-        cf.process = config.process.bind(config);
-        cf.has     = config.has.bind(config);
-        cf.dump    = config.dump.bind(config)
+        cf.title        = config.title.bind(config);
+        cf.version      = config.version.bind(config);
+        cf.get          = config.get.bind(config);
+        cf.set          = config.set.bind(config);
+        cf.unset        = config.unset.bind(config);
+        cf.mergeOptions = config.merge.bind(config);
+        cf.raw          = config.raw.bind(config);
+        cf.process      = config.process.bind(config);
+        cf.has          = config.has.bind(config);
+        cf.dump         = config.dump.bind(config)
 
         return cf;
     }

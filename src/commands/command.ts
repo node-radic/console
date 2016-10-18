@@ -1,9 +1,12 @@
-import * as Promise from 'bluebird';
+import * as inquirer from "inquirer";
+import * as _ from 'lodash';
+import * as BB from "bluebird";
+import { kindOf } from "@radic/util";
 import { inject, injectable, BINDINGS } from "../core";
-import { IArgumentsDefinitionParser, IOptionsDefinition , IOptionsDefinitionParser, IParsedArgv, IArgumentsDefinition, IParsedArgumentsDefinition } from "../definitions";
-import { IInput } from "../io";
+import { IOptionsDefinition, IArgumentsDefinition, IParsedArgumentsDefinition } from "../definitions";
 import { IGroupConstructor } from "./group";
 import { BaseCommandRegistration, ICommandRegistration } from "./factory";
+import * as async from "async";
 
 
 export interface ICommandHelper {
@@ -35,20 +38,11 @@ export class Command extends BaseCommandRegistration implements ICommand {
 
     parsed: IParsedArgumentsDefinition
 
-    @inject(BINDINGS.INPUT)
-    input: IInput;
-
     @inject(BINDINGS.ARGUMENTS_DEFINITION)
     definition: IArgumentsDefinition; // filled by createCommand
 
-    @inject(BINDINGS.ARGUMENTS_DEFINITION_PARSER_FACTORY)
-    protected definitionParserFactory: (definition: IArgumentsDefinition, args: IParsedArgv) => IArgumentsDefinitionParser
-
     @inject(BINDINGS.GLOBAL_DEFINITION)
     globalDefinition: IOptionsDefinition
-
-    @inject(BINDINGS.OPTIONS_DEFINITION_PARSER_FACTORY)
-    protected globalDefinitionParserFactory: (definition: IOptionsDefinition, args: IParsedArgv) => IOptionsDefinitionParser
 
 
     helpers: {[name: string]: ICommandHelper}
@@ -59,9 +53,9 @@ export class Command extends BaseCommandRegistration implements ICommand {
     }
 
     protected parse() {
-        this.parsed = this.definitionParserFactory(this.definition, this.argv).parse();
+        this.parsed = this.definition.mergeOptions(this.globalDefinition).parse(this.argv);
+        // this.parsed.global = this.definition.parse(this.argv);
 
-        this.parsed.global = this.globalDefinitionParserFactory(this.globalDefinition, this.argv).parse();
 
         // handle errors
         if ( this.parsed.hasErrors() ) {
@@ -71,17 +65,61 @@ export class Command extends BaseCommandRegistration implements ICommand {
             this.parsed.errors.forEach((err: string, i: number) => {
                 this.log.error(err)
             })
+            this.fail()
         }
+    }
+
+    protected checkHelp(help: {enabled: boolean, key: string}) {
+
     }
 
     // parser
 
     hasArg(n) { return this.parsed.hasArg(n) }
 
-    getOrAskArg(name:string, type:string, ){
-        // Promise.
-        if(this.hasArg(name)) return this.arg;
-        // return this.input.ask(name + '?').catch((reason) => this.fail(reason))
+    askArg(name: string, opts: any = {}) {
+        let defer = BB.defer();
+
+        if ( this.hasArg(name) )
+            defer.resolve(this.arg(name));
+        else
+            this.in.ask(name + '?', opts)
+                .then((answer: string) => defer.resolve(answer))
+
+
+        return defer.promise;
+    }
+
+    askArgs(questions:{[name:string]:inquirer.Question}, argv:any) {
+        var defer = BB.defer();
+        let names = Object.keys(questions)
+        if (argv.noInteraction) {
+            defer.resolve(_.pick(argv, names)); //['name', 'remote', 'method', 'key', 'secret', 'extra']))
+            return defer.promise;
+        }
+
+        let pm = (name: string, opts: any) => _.merge({
+            name     : name,
+            // 'default': defaults && defaults[ name ] ? defaults[ name ] : null,
+            when     : (answers: any) => ! argv[ name ]
+        }, opts)
+
+        let prompts:any[] = names.map((name:string) => {
+            return pm(name, questions[name])
+        })
+
+        return (<any> inquirer.prompt(prompts)).then((args:any) => {
+            args = _.chain(argv)
+                .pick(names)
+                .merge(args)
+                .value();
+
+            defer.resolve(args);
+            return defer.promise
+        })
+
+
+
     }
 
     arg(n) { return this.parsed.arg(n) }
