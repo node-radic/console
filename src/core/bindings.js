@@ -6,6 +6,7 @@ exports.BINDINGS = {
     COMMANDS_FACTORY: Symbol('CommandsFactory'),
     LOG: Symbol('Log'),
     CONFIG: Symbol('Config'),
+    HELPERS: Symbol('Helpers'),
     INPUT: Symbol('Input'),
     OUTPUT: Symbol('Output'),
     DESCRIPTOR: Symbol('Descriptor'),

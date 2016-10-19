@@ -1,15 +1,20 @@
 import { EventEmitter2 } from "eventemitter2";
 import { existsSync } from "fs-extra";
 import { BINDINGS, ILog, IConfig, kernel, injectable, decorate, inject } from "./";
-import { IOptionsDefinition, IArgumentsDefinition, ICommandsDefinition, IParsedOptionsDefinition, IOptionsDefinitionParser, IArgumentsDefinitionParser, IParsedArgumentsDefinition, IParsedCommandsDefinition, ICommandsDefinitionParser, IParsedArgv } from "../definitions";
+import { IOptionsDefinition, IArgumentsDefinition, ICommandsDefinition, IOptionsParser, IArgumentsParser, ICommandsParser, IParsedOptions, IParsedArguments, IParsedCommands } from "../definitions";
 import { IDescriptor, IOutput, IInput } from "../io";
+import { IHelpers,IHelper  } from "./helpers";
+
+export interface ICliHelper extends IHelper {
+
+}
 
 decorate(injectable(), EventEmitter2);
 @injectable()
 export abstract class Cli<
     T extends IOptionsDefinition,
-    Y extends IParsedOptionsDefinition,
-    Z extends IOptionsDefinitionParser> extends EventEmitter2 {
+    Y extends IParsedOptions,
+    Z extends IOptionsParser> extends EventEmitter2 {
 
     /** The original argv */
     public argv: any[]
@@ -35,6 +40,9 @@ export abstract class Cli<
 
     // @inject(BINDINGS.ROOT_DEFINITION_PARSER_FACTORY)
     // protected definitionParserFactory: (definition: T, args: IParsedArgv) => Z
+
+    @inject(BINDINGS.HELPERS)
+    helpers: IHelpers<ICliHelper>
 
     @inject(BINDINGS.DESCRIPTOR)
     descriptor: IDescriptor
@@ -102,37 +110,27 @@ export abstract class Cli<
     }
 }
 
-export class ArgumentsCli extends Cli<IArgumentsDefinition, IParsedArgumentsDefinition, IArgumentsDefinitionParser> {
+export class ArgumentsCli extends Cli<IArgumentsDefinition, IParsedArguments, IArgumentsParser> {
     parse(argv: any[]): any {
         super.parse(argv);
     }
 }
 
-export class CommandsCli extends Cli<ICommandsDefinition, IParsedCommandsDefinition, ICommandsDefinitionParser> {
-    // @inject(BINDINGS.COMMANDS_DEFINITION)
-    // definition: ICommandsDefinition
+export class CommandsCli extends Cli<ICommandsDefinition, IParsedCommands, ICommandsParser> {
 
     @inject(BINDINGS.GLOBAL_DEFINITION)
     globalDefinition: IOptionsDefinition;
 
-    constructor(){
+    constructor() {
         super()
     }
 
     parse(argv: any[]): any {
         super.parse(argv);
-        // This works as follow
-        // The root definition (options) will only work when a command has NOT been provided, eg: cli -h, cli -v
-        // The root definition will resolve the command/group and put it into this.parsed.
-        // When the command is fired (parsed.command.fire()), the command will parse it's own definition (options&arguments) (thus ignoring the root definition's options)
-        // However, the global definition (options) will be merged into the command definition
-
         this.parsed.global = this.globalDefinition.parse(this.argv);
-
-
     }
 
-    protected handleHelp(){
+    protected handleHelp() {
         super.handleHelp();
         if ( this.parsed.global.help.enabled && this.parsed.isRoot && this.config('descriptor.cli.showHelpAsDefault') ) {
             this.showHelp()

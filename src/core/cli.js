@@ -95,6 +95,10 @@ var Cli = (function (_super) {
         __metadata('design:type', Object)
     ], Cli.prototype, "in", void 0);
     __decorate([
+        _1.inject(_1.BINDINGS.HELPERS), 
+        __metadata('design:type', Object)
+    ], Cli.prototype, "helpers", void 0);
+    __decorate([
         _1.inject(_1.BINDINGS.DESCRIPTOR), 
         __metadata('design:type', Object)
     ], Cli.prototype, "descriptor", void 0);

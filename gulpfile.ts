@@ -39,7 +39,7 @@ let c = {
 
 gulp.task('clean', ['clean:src', 'clean:build'])
 gulp.task('clean:build', () => gulp.src(['dist', 'dts', 'es', 'lib', 'umd', 'coverage']).pipe(clean()))
-gulp.task('clean:src', () => gulp.src(['{src,spec}/**/*.{js,js.map,d.ts}', '*.{js,js.map,d.ts}', '!types.d.ts']).pipe(clean()))
+gulp.task('clean:src', () => gulp.src(['{src,spec,commando}/**/*.{js,js.map,d.ts}', '*.{js,js.map,d.ts}', '!types.d.ts']).pipe(clean()))
 
 //******************************************************************************
 //* LINT
@@ -86,7 +86,7 @@ gulp.task("build-es", function () {
         .js.pipe(gulp.dest("es/"));
 });
 
-var tsDtsProject = tsc.createProject("tsconfig.json", _.mergeOptions(require('./tsconfig.json').compilerOptions, {
+var tsDtsProject = tsc.createProject("tsconfig.json", _.merge(require('./tsconfig.json').compilerOptions, {
     declaration: true,
     typescript : require("typescript")
 }));

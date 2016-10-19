@@ -22,10 +22,10 @@ export class Group extends BaseCommandRegistration implements IGroup {
         this.showHelp()
     }
 
-    showHelp() {
+    showHelp(title?:string, desc?:string) {
         this.out
-            .title(this.name)
-            .description(this.desc)
+            .title(title || this.name)
+            .description(desc || this.desc)
             .line()
             .header(this.config('descriptor.text.commands'));
 

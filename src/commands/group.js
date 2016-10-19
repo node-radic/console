@@ -23,10 +23,10 @@ var Group = (function (_super) {
     Group.prototype.handle = function () {
         this.showHelp();
     };
-    Group.prototype.showHelp = function () {
+    Group.prototype.showHelp = function (title, desc) {
         this.out
-            .title(this.name)
-            .description(this.desc)
+            .title(title || this.name)
+            .description(desc || this.desc)
             .line()
             .header(this.config('descriptor.text.commands'));
         this.descriptor.group(this);

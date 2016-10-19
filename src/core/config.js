@@ -13,11 +13,12 @@ var defaults = {
     },
     colors: {
         enabled: true,
-        title: 'green bold',
+        title: 'yellow bold',
         subtitle: 'yellow',
+        success: 'green lighten 20 bold',
         header: 'darkorange bold',
         group: 'steelblue bold',
-        command: 'skyblue',
+        command: 'purple',
         description: 'grey',
         argument: 'yellow darken 50'
     },

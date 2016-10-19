@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
-        "declaration": false,
         "removeComments": true,
+        "declaration": false,
+        "noLib": false,
         "noImplicitAny": false,
         "sourceMap": true,
         "experimentalDecorators": true,
@@ -10,7 +11,8 @@
         "module": "commonjs",
         "moduleResolution": "node",
         "target": "es5",
-        "lib": ["es6", "es7"],
+        "lib": ["es6", "es2015"],
+        "noResolve": false,
         "typeRoots": [
             "./node_modules/@types",
             "./types"
@@ -18,13 +20,11 @@
         "types": [
             "lodash",
             "jasmine",
-            "@radic/util",
-            "@radic/console-colors"
+            "node"
         ]
     },
     "exclude": [
         "node_modules",
-        "console.d.ts",
         "gulpfile.ts"
     ]
 }

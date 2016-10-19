@@ -2,7 +2,7 @@ import { IConfig, ILog, Cli, inject, injectable, kernel, CommandsCli, BINDINGS }
 import { Command, ICommandConstructor } from "./command";
 import { Group, IGroupConstructor } from "./group";
 import * as _ from "lodash";
-import { ICommandsDefinition, ICommandsDefinitionParser, IParsedCommandsDefinition } from "../definitions";
+import { ICommandsDefinition, ICommandsParser, IParsedCommands } from "../definitions";
 import { IOutput, IDescriptor } from "../io";
 import { IInput } from "../io/input";
 
@@ -88,7 +88,7 @@ export abstract class BaseCommandRegistration {
     get config() : IConfig { return this._config ? this._config : this._config = kernel.get<IConfig>(BINDINGS.CONFIG) }
 
     @inject(BINDINGS.CLI)
-    protected cli: Cli<ICommandsDefinition, IParsedCommandsDefinition, ICommandsDefinitionParser>
+    protected cli: Cli<ICommandsDefinition, IParsedCommands, ICommandsParser>
 
     private failed: boolean = false
     protected asyncMode: boolean = false;

@@ -9,6 +9,22 @@ The library is NOT a yargs clone but written from scratch in Typescript. Using I
 - Arguments, Options, Long options, aliases, types, etc
 - Using the decorators is optional. May also use the 'old fashioned way' 
 
+Because of this approach, it's like:
+"I'm not satisfied with the tree output"
+```typescript
+import {kernel,IOutput,Output,BINDINGS} from './src' // src = @radic/console
+class MyOutput extends Output {
+    tree(label:string, nodes:any[]) : this {
+        // return super.tree(label, nodes);
+        // My own implementation of tree output
+        return this;
+    }
+}
+kernel.bind<IOutput>(BINDINGS.OUTPUT).to(MyOutput);
+```
+
+
+
 | Class          | Description                                   |
 |:---------------|:----------------------------------------------|
 | App            | The IoC Kernel. Contains all bindings         |

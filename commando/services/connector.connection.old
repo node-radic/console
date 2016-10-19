@@ -1,0 +1,207 @@
+
+import {merge} from "lodash";
+import * as Promise from "bluebird";
+
+import * as rp from "request-promise";
+import {injectable, inject} from '../core'
+import {ILog, BINDINGS} from '../../src'
+export {RequestPromise, Options as RequestOptions} from "request-promise";
+export {StatusCodeError} from "request-promise/errors";
+
+
+export interface IConnection
+{
+    supportedAuthMethods: any[]
+}
+
+@injectable()
+export abstract class Connection
+{
+    abstract getSupportedAuthMethods(): string[];
+
+    @inject(BINDINGS.LOG)
+    log: ILog
+
+    //abstract validate(): boolean | string[];
+
+    validate(): boolean | string[] {
+        return true;
+    }
+
+    protected defaultRequestOptions: rp.Options = <any> {
+        baseUrl: '',
+        uri    : '',
+        auth   : {
+            user    : null,
+            password: null
+        },
+        method : 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        json   : true
+    };
+
+    constructor(public connection: Auth, protected options: any = {}) {
+        this.init()
+    }
+
+    protected init() {
+
+    }
+
+    request(options: rp.Options): rp.RequestPromise {
+        var request: rp.RequestPromise = rp(merge(this.defaultRequestOptions, options));
+        request.catch((reason) => {
+            this.log.error(reason);
+        })
+        return request;
+    }
+
+    get(endpoint: string, params: any = {}): rp.RequestPromise {
+        return this.request({uri: endpoint, qs: params});
+    }
+
+    put(endpoint: string, payload: any = {}): rp.RequestPromise {
+        return this.request({method: 'PUT', uri: endpoint, body: payload, json: true})
+    }
+
+    patch(endpoint: string, payload: any = {}): rp.RequestPromise {
+        return this.request({method: 'PATCH', uri: endpoint, body: payload, json: true})
+    }
+
+    post(endpoint: string, payload: any = {}): rp.RequestPromise {
+        return this.request({method: 'POST', uri: endpoint, body: payload, json: true})
+    }
+
+    delete(endpoint: string, params: any = {}): rp.RequestPromise {
+        return this.request({method: 'DELETE', uri: endpoint, qs: params});
+    }
+}
+
+
+export abstract class GitConnection extends Connection
+{
+    abstract getUserRepositories(username: string)
+    abstract getUserTeams(username: string)
+    abstract deleteRepository(owner:string, repo:string)
+    // abstract createRepository(owner:string, repo:string, options?:any)
+    // abstract editRepository(owner:string, repo:string, options?:any)
+}
+
+
+export class BitbucketConnection extends GitConnection
+{
+    deleteRepository(owner: string, repo: string) {
+    }
+
+    getUserTeams(username: string) {
+    }
+    getUserRepositories(username: string) {
+    }
+
+    getSupportedAuthMethods(): any {
+        return [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth];
+    }
+
+    protected init() {
+        merge(this.defaultRequestOptions, {
+            baseUrl: 'https://api.bitbucket.org/2.0',
+            auth   : {username: this.auth.key, password: this.auth.secret}
+        })
+    }
+}
+
+export class BitbucketServerConnection extends BitbucketConnection
+{
+    getSupportedAuthMethods(): any {
+        return [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth];
+    }
+
+    protected init() {
+        merge(this.defaultRequestOptions, {
+            baseUrl: this.auth.extra,
+            auth   : {username: this.auth.key, password: this.auth.secret}
+        })
+    }
+}
+
+export class GithubConnection extends GitConnection
+{
+    deleteRepository(owner: string, repo: string):rp.RequestPromise {
+        return this.delete(`repos/${owner}/${repo}`);
+    }
+    getUserTeams(username: string) {
+        return this.get(`users/${username}/orgs`).then((data:any) => {
+            return data;
+        });
+    }
+    getUserRepositories(username: string) {
+        return this.get(`users/${username}/repos`).then((data: any) => {
+            let defer = Promise.defer();
+            defer.resolve(data);
+            return defer.promise;
+        })
+    }
+
+    getSupportedAuthMethods(): any {
+        return [AuthMethod.basic, AuthMethod.oauth, AuthMethod.token];
+    }
+
+    protected init() {
+        merge(this.defaultRequestOptions, {
+            baseUrl: 'https://api.github.com/',
+            auth   : {username: this.auth.key, password: this.auth.secret},
+            headers: {
+                'User-Agent': 'Commando',
+                //'Accept': 'application/vnd.github.v3+json'
+            }
+        })
+    }
+}
+
+export class JenkinsConnection extends Connection
+{
+
+    getSupportedAuthMethods(): any {
+        return [AuthMethod.basic];
+    }
+
+
+    protected init() {
+        merge(this.defaultRequestOptions, {
+            baseUrl: this.auth.extra,
+            auth   : {username: this.auth.key, password: this.auth.secret}
+        })
+    }
+
+    request(options: rp.Options): rp.RequestPromise {
+        options['uri'] += '/api/json'
+
+        return super.request(options);
+    }
+}
+
+export class JiraConnection extends Connection
+{
+
+    getSupportedAuthMethods(): any {
+        return [AuthMethod.basic, AuthMethod.oauth2];
+    }
+
+    protected init() {
+        merge(this.defaultRequestOptions, {
+            baseUrl: this.auth.extra + '/rest/api/2/',
+
+            auth: {username: this.auth.key, password: this.auth.secret}
+        })
+    }
+}
+
+export class PackagistConnection extends Connection
+{
+
+    getSupportedAuthMethods(): any {
+        return [AuthMethod.basic, AuthMethod.token];
+    }
+}

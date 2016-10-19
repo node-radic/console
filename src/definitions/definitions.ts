@@ -2,7 +2,7 @@ import { merge, mergeWith, isArray } from "lodash";
 import { IArgvParserOptions } from "./argv";
 import { ICommandFactory, ICommandRegistration, IGroupConstructor, ICommandConstructor } from "../commands";
 import { injectable, inject, BINDINGS } from "../core";
-import { IParsedOptionsDefinition, IParsedArgumentsDefinition, IParsedCommandsDefinition } from "./parsed";
+import { IParsedOptions, IParsedArguments, IParsedCommands } from "./parsed";
 
 
 export interface IOption {
@@ -59,7 +59,7 @@ export interface IOptionsDefinition {
     getHelpKey(): string
     help(k: string, a?: string): this
 
-    parse(argv: string[]): IParsedOptionsDefinition
+    parse(argv: string[]): IParsedOptions
     // showHelp(...without: string[]): void
 }
 export interface IArgumentsDefinition extends IOptionsDefinition {
@@ -68,13 +68,13 @@ export interface IArgumentsDefinition extends IOptionsDefinition {
     getArguments(): {[name: string]: IArgument}
     mergeArguments(definition: this): this
     hasArguments(): boolean
-    parse(argv: string[]): IParsedArgumentsDefinition
+    parse(argv: string[]): IParsedArguments
 }
 export interface ICommandsDefinition extends IOptionsDefinition {
     factory: ICommandFactory;
     getCommands(): ICommandRegistration<ICommandConstructor>[]
     getGroups(): ICommandRegistration<IGroupConstructor>[]
-    parse(argv: string[]): IParsedCommandsDefinition
+    parse(argv: string[]): IParsedCommands
 }
 
 @injectable()
@@ -82,7 +82,7 @@ export class OptionsDefinition implements IOptionsDefinition {
     //@inject(BINDINGS.HELP_WRITER)
     // helpWriter: IHelpWriter
 
-    parse(argv: string[]): IParsedOptionsDefinition {
+    parse(argv: string[]): IParsedOptions {
         this.parser.definition = this
         this.parser.argv       = argv;
         return this.parser.parse();
@@ -280,7 +280,7 @@ export class ArgumentsDefinition extends OptionsDefinition implements IArguments
         super(parser)
     }
 
-    parse(argv: string[]): IParsedArgumentsDefinition {
+    parse(argv: string[]): IParsedArguments {
         this.parser.definition = this
         this.parser.argv       = argv;
         return this.parser.parse();
@@ -335,7 +335,7 @@ export class CommandsDefinition extends OptionsDefinition implements ICommandsDe
         super(parser)
     }
 
-    parse(argv: string[]): IParsedCommandsDefinition {
+    parse(argv: string[]): IParsedCommands {
         this.parser.definition = this
         this.parser.argv       = argv;
         return this.parser.parse();

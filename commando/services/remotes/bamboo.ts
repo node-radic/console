@@ -2,8 +2,8 @@ import {remote, RemoteExtra, Remote } from "../connection.remote";
 import { AuthMethod } from "../connection";
 
 
-@remote('bitbucket', 'Bitbucket')
-export class BitbucketRemote extends Remote {
+@remote('bamboo', 'Bamboo')
+export class BambooRemote extends Remote {
     authMethods    = [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth]
     usesExtra = false
 

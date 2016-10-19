@@ -1,66 +1,65 @@
 import * as util from "@radic/util";
 
 
-let defaults               = {
-    app: {
+
+let defaults = {
+    app       : {
         title      : undefined,
         description: undefined,
         version    : undefined,
     },
     colors    : {
-        enabled    : true,
-        title      : 'green bold',
-        subtitle   : 'yellow',
+        enabled : true,
+        title   : 'yellow bold',
+        subtitle: 'yellow',
 
+        success    : 'green lighten 20 bold',
         header     : 'darkorange bold',
         group      : 'steelblue bold',
-        command    : 'skyblue',
+        command    : 'purple',
         description: 'grey',
         argument   : 'yellow darken 50'
         //etc
     },
-    help: {
+    help      : {
         enabled: false,
-        key: undefined,
+        key    : undefined,
         command: undefined
     },
     descriptor: {
-        cli: {
-            showTitle  : true,
-            showVersion: true,
-            showDescription: true,
+        cli    : {
+            showTitle        : true,
+            showVersion      : true,
+            showDescription  : true,
             showHelpAsDefault: true // When no args/opts are provided, should i display the help?
         },
-        group: {
+        group  : {
             showHelpAsDefault: true // When no args/opts are provided, should i display the help?
         },
         command: {
             showHelpAsDefault: false // When no args/opts are provided, should i display the help?
         },
-        text: {
-            commands: 'Commands & Groups',
-            options: 'Options',
+        text   : {
+            commands     : 'Commands & Groups',
+            options      : 'Options',
             globalOptions: 'Global Options'
         }
     }
 }
 
-export interface IBaseConfig extends util.IConfig
-{
+export interface IBaseConfig extends util.IConfig {
     title(val: string): this
     description(val: string): this
     version(val: string): this
-    help(key:string, command?:string):this
+    help(key: string, command?: string): this
     dump()
 }
 
-export interface IConfig extends IBaseConfig
-{
+export interface IConfig extends IBaseConfig {
     (args?: any): any;
 }
 
-export class Config extends util.Config implements IBaseConfig
-{
+export class Config extends util.Config implements IBaseConfig {
 
 
     title(title: string): this {
@@ -72,14 +71,16 @@ export class Config extends util.Config implements IBaseConfig
         this.set('app.version', title);
         return this;
     }
+
     description(title: string): this {
         this.set('app.description', title);
         return this;
     }
-    help(key:string, command?:string):this{
+
+    help(key: string, command?: string): this {
         this.merge('help', {
             enabled: true,
-            key: key,
+            key    : key,
             command: command
         })
         return this

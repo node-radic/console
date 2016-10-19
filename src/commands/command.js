@@ -14,7 +14,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var inquirer = require("inquirer");
-var _ = require('lodash');
+var _ = require("lodash");
 var BB = require("bluebird");
 var core_1 = require("../core");
 var factory_1 = require("./factory");
@@ -27,17 +27,29 @@ var Command = (function (_super) {
         this.options = {};
     }
     Command.prototype.parse = function () {
-        var _this = this;
         this.parsed = this.definition.mergeOptions(this.globalDefinition).parse(this.argv);
+        this.log.warn('ok');
         if (this.parsed.hasErrors()) {
-            var len = this.parsed.errors.length;
-            var text = len === 1 ? '1 error:' : len + ' errors:';
-            this.out.subtitle('The command failed because of ' + text);
-            this.parsed.errors.forEach(function (err, i) {
-                _this.log.error(err);
-            });
-            this.fail();
+            this.handleParseErrors();
         }
+        this.handleHelp();
+    };
+    Command.prototype.handleHelp = function () {
+        if (this.parsed.help.enabled && this.parsed.help.show) {
+            this.showHelp();
+            this.cli.exit();
+        }
+    };
+    Command.prototype.handleParseErrors = function () {
+        var _this = this;
+        var len = this.parsed.errors.length;
+        var text = len === 1 ? '1 error:' : len + ' errors:';
+        this.out.subtitle('The command failed because of ' + text);
+        this.parsed.errors.forEach(function (err, i) {
+            _this.log.error(err);
+        });
+        this.fail();
+        this.cli.exit();
     };
     Command.prototype.checkHelp = function (help) {
     };
@@ -78,7 +90,12 @@ var Command = (function (_super) {
     Command.prototype.arg = function (n) { return this.parsed.arg(n); };
     Command.prototype.hasOpt = function (n) { return this.parsed.hasOpt(n); };
     Command.prototype.opt = function (n) { return this.parsed.opt(n); };
-    Command.prototype.showHelp = function () {
+    Command.prototype.showHelp = function (title, desc) {
+        this.out
+            .title(title || this.name)
+            .line()
+            .line(desc || this.desc);
+        this.descriptor.command(this);
     };
     Command.prototype.setArguments = function (args) { this.definition.arguments(args); };
     Command.prototype.setOptions = function (options) { this.definition.options(options); };
@@ -96,6 +113,10 @@ var Command = (function (_super) {
         core_1.inject(core_1.BINDINGS.GLOBAL_DEFINITION), 
         __metadata('design:type', Object)
     ], Command.prototype, "globalDefinition", void 0);
+    __decorate([
+        core_1.inject(core_1.BINDINGS.HELPERS), 
+        __metadata('design:type', Object)
+    ], Command.prototype, "helpers", void 0);
     Command = __decorate([
         core_1.injectable(), 
         __metadata('design:paramtypes', [])

@@ -1,14 +1,15 @@
-import {Logger, transports, LoggerInstance, QueryOptions, LogCallback} from "winston";
-import {injectable} from "../core";
+import { Logger, transports, LoggerInstance, QueryOptions, LogCallback, ConsoleTransportOptions} from "winston";
+import * as Winston from 'winston';
+import { injectable } from "../core";
 import * as moment from "moment";
+import { inspect } from "util";
 
 
 export const LogLevel = {
-    ERROR: 0, WARN: 1, INFO: 2, VERBOSE: 3, DEBUG: 4, SILLY: 5
+    error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5
 }
 
-export interface ILog
-{
+export interface ILog {
     getTransports(): string[]
     getTransport(transport: string): any
     setLevel(transport: string, level?: string): this
@@ -37,20 +38,27 @@ export interface ILog
 }
 
 @injectable()
-export class Log implements ILog
-{
+export class Log implements ILog {
     protected winston: LoggerInstance
 
     constructor() {
         this.winston = new (Logger)(<any> {
             transports : [
-                new transports.Console({
+                new transports.Console(<ConsoleTransportOptions> {
                     handleExceptions: false,
                     //json            : true,
                     timestamp       : function () {
                         return moment().format('h:mm:ss')
                     },
-                    colorize        : true
+                    prettyPrint: true,
+                    formatter: (options:any) => {
+                        let level = Winston['config'].colorize(options.level, options.level.toUpperCase())
+                        let timestamp = options.level === 'error' || options.level === 'debug' ? `[${options.timestamp()}] ` : ''
+                        let out = `${timestamp}${level} ::  ${options.message ? options.message : ''}`
+                        if(options.meta && Object.keys(options.meta).length )
+                            out += '\n '+ inspect(options.meta, {colors:true, depth: 5, showHidden: true })
+                        return out;
+                    }
                 })
             ],
             // rewriters   : [
@@ -63,67 +71,55 @@ export class Log implements ILog
         })
     }
 
-    getTransports(): string[] {
-        return Object.keys(this.winston.transports);
-    }
 
-    getTransport(transport: string): any {
-        return this.winston.transports[transport]
+    private _log(name: string, args: any[]): this {
+        this.winston.log.apply(this.winston, [ name ].concat(args))
+        return this
     }
 
     setLevel(transport: string, level?: string): this {
-        if (level) {
-            this.winston.transports[transport].level = level;
+        if ( level ) {
+            this.winston.transports[ transport ].level = this.parseLevel(level);
         } else {
-            this.getTransports().forEach((transport: string) => this.setLevel(transport, level))
+            level = this.parseLevel(transport);
+            this.getTransports().forEach((name: string) => this.winston.transports[ name ].level = level)
         }
         return this;
     }
 
-    getWinston(): any {
-        return this.winston;
+    protected parseLevel(level:any):string{
+        let levels = Object.keys(LogLevel);
+        if(typeof level === 'number') return levels[level]
+        if(isFinite(level)) return levels[parseInt(level)]
+        return level
     }
 
-    log(...args: any[]) {
-        return this._log('log', args);
-    }
+    getTransports(): string[] { return Object.keys(this.winston.transports); }
 
-    query(options: QueryOptions, callback?: (err: Error, results: any) => void) {
-        this.winston.query(options, callback);
-    }
+    getTransport(transport: string): any { return this.winston.transports[ transport ] }
 
-    private _log(name: string, ...args: any[]): this {
-        this.winston[name].apply(this.winston, args);
-        return this
-    }
+    getLevel() { return this.winston.level}
 
-    error(...args: any[]): this {
-        return this._log('error', args);
-    }
+    getWinston(): any { return this.winston; }
 
-    warn(...args: any[]) {
-        return this._log('warn', args);
-    }
+    log(...args: any[]) { return this._log('log', args); }
 
-    info(...args: any[]) {
-        return this._log('info', args);
-    }
+    query(options: QueryOptions, callback?: (err: Error, results: any) => void) { this.winston.query(options, callback); }
 
-    verbose(...args: any[]) {
-        return this.winston.log.apply(this.winston, ['verbose'].concat(args));
-    }
+    error(...args: any[]): this { return this._log('error', args); }
 
-    debug(...args: any[]) {
-        return this._log('debug', args);
-    }
+    warn(...args: any[]) { return this._log('warn', args); }
 
-    silly(...args: any[]) {
-        return this._log('silly', args);
-    }
+    info(...args: any[]) { return this._log('info', args); }
 
-    on(event, handler) {
-        this.winston.on.apply(event, handler)
-    }
+    // verbose(...args: any[]) { return this.winston.log.apply(this.winston, [ 'verbose' ].concat(args)); }
+    verbose(...args: any[]) { return this._log('verbose', args); }
+
+    debug(...args: any[]) { return this._log('debug', args); }
+
+    silly(...args: any[]) { return this._log('silly', args); }
+
+    on(event, handler) {this.winston.on.apply(event, handler) }
 
     profile(...args: any[]) {
         this.winston.profile.apply(this.winston, args);

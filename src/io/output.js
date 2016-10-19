@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("../core");
-var util_1 = require('util');
+var util_1 = require("util");
 var Table = require("cli-table2");
 var util_2 = require("@radic/util");
 var lodash_1 = require("lodash");
@@ -43,6 +43,11 @@ var Output = (function () {
             args[_i - 0] = arguments[_i];
         }
         args.forEach(function (arg) { return process.stdout.write(util_1.inspect(arg, { colors: _this.colorsEnabled, depth: 5, showHidden: true })); });
+    };
+    Output.prototype.macro = function (name, fn) {
+        if (fn)
+            return fn.apply(this, [this]);
+        this.macros[name] = fn;
     };
     Output.prototype.tree = function (label, nodes) {
         var tree = archy({ label: label, nodes: nodes });

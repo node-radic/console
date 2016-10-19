@@ -1,11 +1,18 @@
+
 import {remote, RemoteExtra, Remote } from "../connection.remote";
 import { AuthMethod } from "../connection";
 
 
-@remote('bitbucket', 'Bitbucket')
-export class BitbucketRemote extends Remote {
+export class BitbucketServerExtra extends RemoteExtra {
+    name = 'url'
+    prettyName = 'Bitbucket Server Base URL'
+}
+
+@remote('bitbucket_server', 'Bitbucket Server')
+export class BitbucketServerRemote extends Remote {
     authMethods    = [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth]
-    usesExtra = false
+    usesExtra = true
+    extraDefinition = new BitbucketServerExtra()
 
     protected init() {
         _.merge(this.defaultRequestOptions, {

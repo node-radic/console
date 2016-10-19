@@ -19,6 +19,9 @@ var InitCommand = (function (_super) {
     function InitCommand() {
         _super.apply(this, arguments);
     }
+    InitCommand.prototype.handle = function () {
+        this.out.success('Success');
+    };
     InitCommand = __decorate([
         src_1.command('init', 'Give the current working directory a bit of R.'), 
         __metadata('design:paramtypes', [])

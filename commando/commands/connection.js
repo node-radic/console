@@ -15,18 +15,31 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var src_1 = require("../../src");
 var core_1 = require("../core");
-var connections_1 = require("../services/connections");
-var remote_1 = require("../services/remotes/remote");
+var services_1 = require("../services");
+var connection_remote_1 = require("../services/connection.remote");
 var ConnectionGroup = (function (_super) {
     __extends(ConnectionGroup, _super);
     function ConnectionGroup() {
         _super.apply(this, arguments);
     }
     ConnectionGroup.prototype.handle = function () {
-        this.showHelp();
+        this.showHelp('Connection Manager');
+        this.out.header('Available Remotes');
+        var table = this.out.columns();
+        this.remotes.all().forEach(function (remote) {
+            table.push([
+                ("{skyblue}" + remote.prettyName + "{/skyblue}"),
+                ("{grey}" + remote.name + "{/grey}")
+            ]);
+        });
+        this.out.writeln(table.toString());
     };
+    __decorate([
+        core_1.inject(core_1.COMMANDO.REMOTES), 
+        __metadata('design:type', connection_remote_1.RemoteFactory)
+    ], ConnectionGroup.prototype, "remotes", void 0);
     ConnectionGroup = __decorate([
-        src_1.group('con', 'Connection manager. Connect to jenkins, jira, git, etc'), 
+        src_1.group('con', 'Define connections to remote jenkins, jira, git, etc'), 
         __metadata('design:paramtypes', [])
     ], ConnectionGroup);
     return ConnectionGroup;
@@ -71,9 +84,8 @@ var AddConnectionCommand = (function (_super) {
             name: { type: 'input', message: 'name' },
             remote: { type: 'list', message: 'remote', choices: ['first', 'second'] },
             method: { type: 'list', message: 'authentication method', choices: function (answers) { return ['basic', 'oauth2', 'oauth', 'token']; } },
-            key: { type: 'input', message: function (answers) { return connections_1.AuthMethod.getKeyName(answers.method || _this.argv.method); } },
-            secret: { type: 'password', message: function (answers) { return connections_1.AuthMethod.getSecretName(answers.method || _this.argv.method); } },
-            extra: { type: 'input', message: 'Enter URL', when: function (answers) { return [remote_1.Remote.bitbucket_server.toString(), remote_1.Remote.packagist.toString(), remote_1.Remote.jira.toString(), remote_1.Remote.jenkins.toString()].indexOf(answers.remote || _this.argv.remote) !== -1; } }
+            key: { type: 'input', message: function (answers) { return services_1.AuthMethod.getKeyName(answers.method || _this.parsed.arg('method')); } },
+            secret: { type: 'password', message: function (answers) { return services_1.AuthMethod.getSecretName(answers.method || _this.parsed.arg('method')); } },
         }, this.argv).then(function (args) {
             _this.out.dump(args);
         });
@@ -91,7 +103,7 @@ var ListConnectionCommand = (function (_super) {
         _super.apply(this, arguments);
     }
     ListConnectionCommand = __decorate([
-        src_1.command('list', 'List all connections', ConnectionGroup), 
+        src_1.command('list', 'List connections or remotes', ConnectionGroup), 
         __metadata('design:paramtypes', [])
     ], ListConnectionCommand);
     return ListConnectionCommand;

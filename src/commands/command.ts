@@ -1,22 +1,22 @@
 import * as inquirer from "inquirer";
-import * as _ from 'lodash';
+import * as _ from "lodash";
 import * as BB from "bluebird";
 import { kindOf } from "@radic/util";
 import { inject, injectable, BINDINGS } from "../core";
-import { IOptionsDefinition, IArgumentsDefinition, IParsedArgumentsDefinition } from "../definitions";
+import { IOptionsDefinition, IArgumentsDefinition, IParsedArguments } from "../definitions";
 import { IGroupConstructor } from "./group";
 import { BaseCommandRegistration, ICommandRegistration } from "./factory";
-import * as async from "async";
+import { IHelper, IHelpers } from "../core/helpers";
 
 
-export interface ICommandHelper {
-    name: string
+export interface ICommandHelper extends IHelper {
+
 }
 
 export interface ICommand extends ICommandRegistration<ICommand> {
     arguments: any
     options: any
-    parsed: IParsedArgumentsDefinition
+    parsed: IParsedArguments
 }
 
 export interface ICommandConstructor {
@@ -36,7 +36,7 @@ export class Command extends BaseCommandRegistration implements ICommand {
     arguments: any = {}
     options: any   = {}
 
-    parsed: IParsedArgumentsDefinition
+    parsed: IParsedArguments
 
     @inject(BINDINGS.ARGUMENTS_DEFINITION)
     definition: IArgumentsDefinition; // filled by createCommand
@@ -44,8 +44,8 @@ export class Command extends BaseCommandRegistration implements ICommand {
     @inject(BINDINGS.GLOBAL_DEFINITION)
     globalDefinition: IOptionsDefinition
 
-
-    helpers: {[name: string]: ICommandHelper}
+    @inject(BINDINGS.HELPERS)
+    helpers: IHelpers<ICommandHelper>
 
 
     constructor() {
@@ -56,17 +56,31 @@ export class Command extends BaseCommandRegistration implements ICommand {
         this.parsed = this.definition.mergeOptions(this.globalDefinition).parse(this.argv);
         // this.parsed.global = this.definition.parse(this.argv);
 
-
+        this.log.warn('ok')
         // handle errors
         if ( this.parsed.hasErrors() ) {
-            let len  = this.parsed.errors.length;
-            let text = len === 1 ? '1 error:' : len + ' errors:'
-            this.out.subtitle('The command failed because of ' + text)
-            this.parsed.errors.forEach((err: string, i: number) => {
-                this.log.error(err)
-            })
-            this.fail()
+            this.handleParseErrors();
         }
+
+        this.handleHelp()
+    }
+
+    protected handleHelp() {
+        if ( this.parsed.help.enabled && this.parsed.help.show ) {
+            this.showHelp()
+            this.cli.exit();
+        }
+    }
+
+    protected handleParseErrors() {
+        let len  = this.parsed.errors.length;
+        let text = len === 1 ? '1 error:' : len + ' errors:'
+        this.out.subtitle('The command failed because of ' + text)
+        this.parsed.errors.forEach((err: string, i: number) => {
+            this.log.error(err)
+        })
+        this.fail()
+        this.cli.exit()
     }
 
     protected checkHelp(help: {enabled: boolean, key: string}) {
@@ -90,25 +104,25 @@ export class Command extends BaseCommandRegistration implements ICommand {
         return defer.promise;
     }
 
-    askArgs(questions:{[name:string]:inquirer.Question}, argv:any) {
+    askArgs(questions: {[name: string]: inquirer.Question}, argv: any) {
         var defer = BB.defer();
         let names = Object.keys(questions)
-        if (argv.noInteraction) {
+        if ( argv.noInteraction ) {
             defer.resolve(_.pick(argv, names)); //['name', 'remote', 'method', 'key', 'secret', 'extra']))
             return defer.promise;
         }
 
         let pm = (name: string, opts: any) => _.merge({
-            name     : name,
+            name: name,
             // 'default': defaults && defaults[ name ] ? defaults[ name ] : null,
-            when     : (answers: any) => ! argv[ name ]
+            when: (answers: any) => ! argv[ name ]
         }, opts)
 
-        let prompts:any[] = names.map((name:string) => {
-            return pm(name, questions[name])
+        let prompts: any[] = names.map((name: string) => {
+            return pm(name, questions[ name ])
         })
 
-        return (<any> inquirer.prompt(prompts)).then((args:any) => {
+        return (<any> inquirer.prompt(prompts)).then((args: any) => {
             args = _.chain(argv)
                 .pick(names)
                 .merge(args)
@@ -117,7 +131,6 @@ export class Command extends BaseCommandRegistration implements ICommand {
             defer.resolve(args);
             return defer.promise
         })
-
 
 
     }
@@ -131,8 +144,13 @@ export class Command extends BaseCommandRegistration implements ICommand {
 
     // definition
 
-    showHelp() {
+    showHelp(title?: string, desc?: string) {
+        this.out
+            .title(title || this.name)
+            .line()
+            .line(desc || this.desc)
 
+        this.descriptor.command(this);
     }
 
     setArguments(args: {[name: string]: {}}) { this.definition.arguments(args); }

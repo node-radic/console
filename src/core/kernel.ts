@@ -6,8 +6,9 @@ import { CommandsCli, ArgumentsCli } from "./cli";
 import { ILog, Log } from "./log";
 import { IConfig, config } from "./config";
 import { IDescriptor, IInput, IOutput, Descriptor, Input, Output } from "../io";
-import { IOptionsDefinition, ICommandsDefinition, IArgumentsDefinition, OptionsDefinition, CommandsDefinition, ArgumentsDefinition, IOptionsDefinitionParser, OptionsDefinitionParser, ParsedOptionsDefinition, IParsedOptionsDefinition, IArgumentsDefinitionParser, ArgumentsDefinitionParser, IParsedArgumentsDefinition, ParsedArgumentsDefinition, ICommandsDefinitionParser, CommandsDefinitionParser, IParsedCommandsDefinition, ParsedCommandsDefinition, DefinitionSignatureParser } from "../definitions";
+import { IOptionsDefinition, ICommandsDefinition, IArgumentsDefinition, OptionsDefinition, CommandsDefinition, ArgumentsDefinition, IOptionsParser, OptionsDefinitionParser, ParsedOptionsDefinition, IParsedOptions, IArgumentsParser, ArgumentsDefinitionParser, IParsedArguments, ParsedArgumentsDefinition, ICommandsParser, CommandsDefinitionParser, IParsedCommands, ParsedCommandsDefinition, DefinitionSignatureParser } from "../definitions";
 import { ICommandFactory, CommandFactory } from "../commands";
+import { IHelpers, Helpers } from "./helpers";
 
 // import {kindOf} from '@radic/util'
 import Factory = inversifyInterfaces.Factory
@@ -50,7 +51,7 @@ export class ConsoleKernel extends BaseKernel
         try { decorate(injectable(), cls); } catch ( err ) {}
     }
 
-    Cli<CLS,DEF,DEFPARSER extends IOptionsDefinitionParser>(cls: any, def: any): CLS {
+    Cli<CLS,DEF,DEFPARSER extends IOptionsParser>(cls: any, def: any): CLS {
         this.bindKernel(this);
         this.bind<DEF>(BINDINGS.ROOT_DEFINITION).to(def).inSingletonScope()
         // this.bindParserFactory<DEFPARSER>(BINDINGS.ROOT_DEFINITION_PARSER_FACTORY, defparser)
@@ -59,11 +60,11 @@ export class ConsoleKernel extends BaseKernel
     }
 
     commandsCli(): CommandsCli {
-        return this.Cli<CommandsCli,ICommandsDefinition, ICommandsDefinitionParser>(CommandsCli, CommandsDefinition)
+        return this.Cli<CommandsCli,ICommandsDefinition, ICommandsParser>(CommandsCli, CommandsDefinition)
     }
 
     argumentsCli(): ArgumentsCli {
-        return this.Cli<ArgumentsCli ,ICommandsDefinition, ICommandsDefinitionParser>(ArgumentsCli , CommandsDefinition)
+        return this.Cli<ArgumentsCli ,ICommandsDefinition, ICommandsParser>(ArgumentsCli , CommandsDefinition)
         // if ( this.isBound(BINDINGS.CLI) ) throw Error('cli already created')
         // this.bindKernel(this);
         // this.bind<IArgumentsDefinition>(BINDINGS.ROOT_DEFINITION).to(ArgumentsDefinition).inSingletonScope();
@@ -85,6 +86,8 @@ export class ConsoleKernel extends BaseKernel
 
         kernel.bind<IInput>(BINDINGS.INPUT).to(Input);
         kernel.bind<IOutput>(BINDINGS.OUTPUT).to(Output);
+        kernel.bind<IHelpers>(BINDINGS.HELPERS).to(Helpers);
+
 
 
         kernel.bind<IOptionsDefinition>(BINDINGS.OPTIONS_DEFINITION).to(OptionsDefinition);
@@ -92,14 +95,14 @@ export class ConsoleKernel extends BaseKernel
         kernel.bind<ICommandsDefinition>(BINDINGS.COMMANDS_DEFINITION).to(CommandsDefinition);
 
 
-        kernel.bind<IOptionsDefinitionParser>(BINDINGS.OPTIONS_DEFINITION_PARSER).to(OptionsDefinitionParser);
-        kernel.bind<IArgumentsDefinitionParser>(BINDINGS.ARGUMENTS_DEFINITION_PARSER).to(ArgumentsDefinitionParser);
-        kernel.bind<ICommandsDefinitionParser>(BINDINGS.COMMANDS_DEFINITION_PARSER).to(CommandsDefinitionParser);
+        kernel.bind<IOptionsParser>(BINDINGS.OPTIONS_DEFINITION_PARSER).to(OptionsDefinitionParser);
+        kernel.bind<IArgumentsParser>(BINDINGS.ARGUMENTS_DEFINITION_PARSER).to(ArgumentsDefinitionParser);
+        kernel.bind<ICommandsParser>(BINDINGS.COMMANDS_DEFINITION_PARSER).to(CommandsDefinitionParser);
 
 
-        kernel.bind<IParsedOptionsDefinition>(BINDINGS.PARSED_OPTIONS_DEFINITION).to(ParsedOptionsDefinition);
-        kernel.bind<IParsedArgumentsDefinition>(BINDINGS.PARSED_ARGUMENTS_DEFINITION).to(ParsedArgumentsDefinition);
-        kernel.bind<IParsedCommandsDefinition>(BINDINGS.PARSED_COMMANDS_DEFINITION).to(ParsedCommandsDefinition);
+        kernel.bind<IParsedOptions>(BINDINGS.PARSED_OPTIONS_DEFINITION).to(ParsedOptionsDefinition);
+        kernel.bind<IParsedArguments>(BINDINGS.PARSED_ARGUMENTS_DEFINITION).to(ParsedArgumentsDefinition);
+        kernel.bind<IParsedCommands>(BINDINGS.PARSED_COMMANDS_DEFINITION).to(ParsedCommandsDefinition);
 
         kernel.bind<DefinitionSignatureParser>(BINDINGS.DEFINITION_SIGNATURE_PARSER).to(DefinitionSignatureParser);
 

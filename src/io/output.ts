@@ -1,5 +1,5 @@
 import { injectable, inject, BINDINGS, IConfig } from "../core";
-import {inspect} from 'util'
+import { inspect } from "util";
 import * as Table from "cli-table2";
 import { kindOf } from "@radic/util";
 import { merge } from "lodash";
@@ -43,10 +43,9 @@ export const TABLE_STYLE = {
 }
 
 @injectable()
-export class Output implements IOutput
-{
+export class Output implements IOutput {
     dump(...args: any[]): void {
-        args.forEach((arg) => process.stdout.write(inspect(arg, {colors: this.colorsEnabled, depth: 5, showHidden: true })))
+        args.forEach((arg) => process.stdout.write(inspect(arg, { colors: this.colorsEnabled, depth: 5, showHidden: true })))
     }
 
     @inject(BINDINGS.CONFIG)
@@ -55,6 +54,13 @@ export class Output implements IOutput
     parser: Parser         = new Parser;
     useParser: boolean     = true
     colorsEnabled: boolean = true
+
+    macros: {[name: string]: Function}
+
+    macro(name: string, fn?: Function) {
+        if ( fn ) return fn.apply(this, [ this ]);
+        this.macros[ name ] = fn
+    }
 
     tree(label: string, nodes: any[]): this {
         let tree = archy(<archy.Data> { label, nodes });

@@ -1,26 +1,26 @@
-import { upperFirst, merge, clone } from "lodash";
+import { pullAll, upperFirst, merge, clone } from "lodash";
 import { Config, defined } from "@radic/util";
 import { IConfig, inject, injectable, BINDINGS } from "../core";
 import { IOptionsDefinition, IArgumentsDefinition, ICommandsDefinition, CommandsDefinition } from "./definitions";
 import { IParsedArgv, parseArgv } from "./argv";
 import { ICommandFactory } from "../commands";
-import { IParsedOptionsDefinition, IParsedArgumentsDefinition, IParsedCommandsDefinition } from "./parsed";
+import { IParsedOptions, IParsedArguments, IParsedCommands } from "./parsed";
 import { kernel } from "../core/kernel";
 
 
-export interface IOptionsDefinitionParser {
+export interface IOptionsParser {
     definition: IOptionsDefinition
     argv: any[]
 
-    parse(): IParsedOptionsDefinition
+    parse(): IParsedOptions
 }
-export interface IArgumentsDefinitionParser extends IOptionsDefinitionParser {
+export interface IArgumentsParser extends IOptionsParser {
     definition: IArgumentsDefinition
-    parse(): IParsedArgumentsDefinition
+    parse(): IParsedArguments
 }
-export interface ICommandsDefinitionParser extends IOptionsDefinitionParser {
+export interface ICommandsParser extends IOptionsParser {
     definition: ICommandsDefinition
-    parse(): IParsedCommandsDefinition
+    parse(): IParsedCommands
 }
 
 
@@ -29,7 +29,7 @@ export interface ICommandsDefinitionParser extends IOptionsDefinitionParser {
  * Parses a Definition and Argv and produces a ParsedDefinition
  * @
  */
-export class OptionsDefinitionParser implements IOptionsDefinitionParser {
+export class OptionsDefinitionParser implements IOptionsParser {
     // @inject(BINDINGS.PARSED_OPTIONS_DEFINITION)
     // public parsed: IParsedOptionsDefinition
     constructor(@inject(BINDINGS.PARSED_OPTIONS_DEFINITION) public parsed) {}
@@ -42,7 +42,7 @@ export class OptionsDefinitionParser implements IOptionsDefinitionParser {
     protected errors: string[] = [];
     protected options: {[name: string]: any}
 
-    parse(): IParsedOptionsDefinition {
+    parse(): IParsedOptions {
 
         // first let yargs-parser make sense of it
         this.args = parseArgv(this.argv, this.definition.getOptions());
@@ -87,7 +87,7 @@ export class OptionsDefinitionParser implements IOptionsDefinitionParser {
 /**
  * Parses a Definition and Argv and produces a ParsedDefinition
  */
-export class ArgumentsDefinitionParser extends OptionsDefinitionParser implements IArgumentsDefinitionParser {
+export class ArgumentsDefinitionParser extends OptionsDefinitionParser implements IArgumentsParser {
     // @inject(BINDINGS.PARSED_ARGUMENTS_DEFINITION)
     // public parsed: IParsedArgumentsDefinition
     constructor(@inject(BINDINGS.PARSED_ARGUMENTS_DEFINITION) public parsed) {super(parsed)}
@@ -95,7 +95,7 @@ export class ArgumentsDefinitionParser extends OptionsDefinitionParser implement
     protected arguments: {[name: string]: any}
 
 
-    parse(): IParsedArgumentsDefinition {
+    parse(): IParsedArguments {
         super.parse();
         // adjust the results / make our own representations of the options and arguments.
         this.parseArguments();
@@ -132,7 +132,7 @@ export class ArgumentsDefinitionParser extends OptionsDefinitionParser implement
 /**
  * Parses a Definition and Argv and produces a ParsedDefinition
  */
-export class CommandsDefinitionParser extends OptionsDefinitionParser implements ICommandsDefinitionParser {
+export class CommandsDefinitionParser extends OptionsDefinitionParser implements ICommandsParser {
 
     // @inject(BINDINGS.PARSED_COMMANDS_DEFINITION)
     // public parsed: IParsedCommandsDefinition
@@ -150,7 +150,7 @@ export class CommandsDefinitionParser extends OptionsDefinitionParser implements
     /** The full command and arguments that we need to resolve */
     protected query: string[];
 
-    parse(): IParsedCommandsDefinition {
+    parse(): IParsedCommands {
         super.parse();
         if ( this.definition instanceof CommandsDefinition === false ) return this.parsed
 
@@ -170,7 +170,9 @@ export class CommandsDefinitionParser extends OptionsDefinitionParser implements
             this.parsed[ resolved.type ].parent = resolved.parent;
 
             if ( this.parsed.isCommand ) {
-                this.parsed.command.argv = this.query
+                let argv = clone(this.argv);
+                pullAll(argv, this.args.argv._)
+                this.parsed.command.argv = argv
             }
         }
 

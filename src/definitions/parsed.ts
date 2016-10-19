@@ -5,7 +5,7 @@ import { IParsedArgv } from "./argv";
 import { Command, Group } from "../commands";
 
 
-export interface IParsedOptionsDefinition {
+export interface IParsedOptions {
     argv: any[]
     definition: IOptionsDefinition
     args: IParsedArgv
@@ -22,16 +22,16 @@ export interface IParsedOptionsDefinition {
 
     help: {enabled: boolean, show: boolean, key: string}
 
-    global?: IParsedOptionsDefinition
+    global?: IParsedOptions
 }
-export interface IParsedArgumentsDefinition extends IParsedOptionsDefinition {
+export interface IParsedArguments extends IParsedOptions {
     definition: IArgumentsDefinition
     arguments: {[name: string]: any}
     nargs: number
     hasArg(n: string): boolean
     arg(n: string): any
 }
-export interface IParsedCommandsDefinition extends IParsedOptionsDefinition {
+export interface IParsedCommands extends IParsedOptions {
     definition: ICommandsDefinition
     isCommand: boolean
     isGroup: boolean
@@ -41,7 +41,7 @@ export interface IParsedCommandsDefinition extends IParsedOptionsDefinition {
 }
 
 @injectable()
-export class ParsedOptionsDefinition implements IParsedOptionsDefinition {
+export class ParsedOptionsDefinition implements IParsedOptions {
     help: {enabled: boolean; show: boolean; key: string} = { enabled: false, show: false, key: undefined }
     options: {[name: string]: any}                       = {};
     argv: any[]
@@ -70,7 +70,7 @@ export class ParsedOptionsDefinition implements IParsedOptionsDefinition {
 }
 
 @injectable()
-export class ParsedArgumentsDefinition extends ParsedOptionsDefinition implements IParsedArgumentsDefinition {
+export class ParsedArgumentsDefinition extends ParsedOptionsDefinition implements IParsedArguments {
     definition: IArgumentsDefinition
     arguments: {[name: string]: any} = {};
 
@@ -89,7 +89,7 @@ export class ParsedArgumentsDefinition extends ParsedOptionsDefinition implement
 }
 
 @injectable()
-export class ParsedCommandsDefinition extends ParsedOptionsDefinition implements IParsedCommandsDefinition {
+export class ParsedCommandsDefinition extends ParsedOptionsDefinition implements IParsedCommands {
     definition: ICommandsDefinition
     isRoot: boolean    = false;
     isCommand: boolean = false

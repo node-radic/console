@@ -1,10 +1,9 @@
 // export * from './connection'
 import { Group, group, command, Command } from "../../src";
 import { injectable, inject, COMMANDO } from "../core";
-import { IConnectionRepository } from "../services";
-import { AuthMethod } from "../services/connections";
-import { Remote } from "../services/remotes/remote";
-
+import { AuthMethod, Remote  } from "../services";
+import { IConnectionRepository } from "../services/connection";
+import { RemoteFactory, IRemoteRegistration } from "../services/connection.remote";
 
 // id: number
 // name: string
@@ -14,10 +13,23 @@ import { Remote } from "../services/remotes/remote";
 // auth_secret: string
 // extra: Object
 
-@group('con', 'Connection manager. Connect to jenkins, jira, git, etc')
+@group('con', 'Define connections to remote jenkins, jira, git, etc')
 export class ConnectionGroup extends Group {
+    @inject(COMMANDO.REMOTES)
+    remotes: RemoteFactory
+
     handle() {
-        this.showHelp()
+        this.showHelp('Connection Manager')
+        this.out.header('Available Remotes')
+        let table = this.out.columns()
+        this.remotes.all().forEach((remote:IRemoteRegistration) => {
+            table.push([
+                `{skyblue}${remote.prettyName}{/skyblue}`,
+                `{grey}${remote.name}{/grey}`
+            ])
+        })
+        this.out.writeln(table.toString());
+
     }
 }
 
@@ -35,6 +47,7 @@ export abstract class ConnectionCommand extends Command {
 
 @command('add', 'Add a new connection', ConnectionGroup)
 export class AddConnectionCommand extends ConnectionCommand {
+
     arguments = {
         name  : { description: 'The name of the connection', required: true },
         remote: { description: 'Remote to connect to' },
@@ -49,13 +62,14 @@ export class AddConnectionCommand extends ConnectionCommand {
         // let done = this.async()
         super.handle();
 
+
         this.askArgs({
             name  : { type: 'input', message: 'name' },
             remote: { type: 'list', message: 'remote', choices: [ 'first', 'second' ] },
             method: { type: 'list', message: 'authentication method', choices: (answers: any) => [ 'basic', 'oauth2', 'oauth', 'token' ] },
-            key   : { type: 'input', message: (answers: any) => AuthMethod.getKeyName(answers.method || this.argv.method) },
-            secret: { type: 'password', message: (answers: any) => AuthMethod.getSecretName(answers.method || this.argv.method) },
-            extra : { type: 'input', message: 'Enter URL', when: (answers: any) => [ Remote.bitbucket_server.toString(), Remote.packagist.toString(), Remote.jira.toString(), Remote.jenkins.toString() ].indexOf(answers.remote || this.argv.remote) !== - 1 }
+            key   : { type: 'input', message: (answers: any) => AuthMethod.getKeyName(answers.method || this.parsed.arg('method')) },
+            secret: { type: 'password', message: (answers: any) => AuthMethod.getSecretName(answers.method || this.parsed.arg('method')) },
+            // extra : { type: 'input', message: 'Enter URL', when: (answers: any) => [ Remote.bitbucket_server.toString(), Remote.packagist.toString(), Remote.jira.toString(), Remote.jenkins.toString() ].indexOf(answers.remote || this.argv.remote) !== - 1 }
 
 
         }, this.argv).then((args: any) => {
@@ -77,7 +91,7 @@ export class AddConnectionCommand extends ConnectionCommand {
     }
 }
 
-@command('list', 'List all connections', ConnectionGroup)
+@command('list', 'List connections or remotes', ConnectionGroup)
 export class ListConnectionCommand extends ConnectionCommand {
 }
 @command('rm', 'Remove a connection', ConnectionGroup)

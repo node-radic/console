@@ -17,6 +17,7 @@ var config_1 = require("./config");
 var io_1 = require("../io");
 var definitions_1 = require("../definitions");
 var commands_1 = require("../commands");
+var helpers_1 = require("./helpers");
 var ConsoleKernel = (function (_super) {
     __extends(ConsoleKernel, _super);
     function ConsoleKernel() {
@@ -65,6 +66,7 @@ var ConsoleKernel = (function (_super) {
         kernel.bind(bindings_1.default.COMMANDS_FACTORY).to(commands_1.CommandFactory).inSingletonScope();
         kernel.bind(bindings_1.default.INPUT).to(io_1.Input);
         kernel.bind(bindings_1.default.OUTPUT).to(io_1.Output);
+        kernel.bind(bindings_1.default.HELPERS).to(helpers_1.Helpers);
         kernel.bind(bindings_1.default.OPTIONS_DEFINITION).to(definitions_1.OptionsDefinition);
         kernel.bind(bindings_1.default.ARGUMENTS_DEFINITION).to(definitions_1.ArgumentsDefinition);
         kernel.bind(bindings_1.default.COMMANDS_DEFINITION).to(definitions_1.CommandsDefinition);
