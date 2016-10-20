@@ -1,7 +1,6 @@
 import * as util from "@radic/util";
 
 
-
 let defaults = {
     app       : {
         title      : undefined,
@@ -18,7 +17,7 @@ let defaults = {
         group      : 'steelblue bold',
         command    : 'purple',
         description: 'grey',
-        argument   : 'yellow darken 50'
+        argument   : 'yellow darken 25'
         //etc
     },
     help      : {
@@ -42,7 +41,10 @@ let defaults = {
         text   : {
             commands     : 'Commands & Groups',
             options      : 'Options',
-            globalOptions: 'Global Options'
+            arguments    : 'Arguments',
+            globalOptions: 'Global Options',
+            usage: 'Usage',
+            example: 'Example'
         }
     }
 }

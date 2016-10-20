@@ -26,11 +26,6 @@ var OptionsDefinition = (function () {
         this.setters = ['default', 'desc', 'narg', 'handler', 'alias'];
         this.reset();
     }
-    OptionsDefinition.prototype.parse = function (argv) {
-        this.parser.definition = this;
-        this.parser.argv = argv;
-        return this.parser.parse();
-    };
     OptionsDefinition.prototype.reset = function () {
         this._keys = {};
         this._options = {
@@ -47,6 +42,11 @@ var OptionsDefinition = (function () {
             desc: {},
             handler: {}
         };
+    };
+    OptionsDefinition.prototype.parse = function (argv) {
+        this.parser.definition = this;
+        this.parser.argv = argv;
+        return this.parser.parse();
     };
     OptionsDefinition.prototype.getJoinedOptions = function () {
         var opts = this._options;
@@ -70,6 +70,16 @@ var OptionsDefinition = (function () {
         });
         return joined;
     };
+    OptionsDefinition.prototype.example = function (str) {
+        this._example = str;
+        return this;
+    };
+    OptionsDefinition.prototype.usage = function (str) {
+        this._usage = str;
+        return this;
+    };
+    OptionsDefinition.prototype.getExample = function () { return this._example; };
+    OptionsDefinition.prototype.getUsage = function () { return this._usage; };
     OptionsDefinition.prototype.hasHelp = function () {
         return this._help.enabled;
     };
@@ -222,8 +232,7 @@ var ArgumentsDefinition = (function (_super) {
         if (desc === void 0) { desc = ''; }
         if (required === void 0) { required = false; }
         if (type === void 0) { type = 'string'; }
-        if (def === void 0) { def = null; }
-        this._arguments[name] = { required: required, type: type, default: def };
+        this._arguments[name] = { name: name, desc: desc, required: required, type: type, default: def };
         return this;
     };
     ArgumentsDefinition.prototype.arguments = function (args) {
@@ -233,7 +242,7 @@ var ArgumentsDefinition = (function (_super) {
         else {
             Object.keys(args).forEach(function (name) {
                 var arg = lodash_1.merge({ required: false, default: null, type: 'string' }, args[name]);
-                _this.argument(name, arg.description, arg.required, arg.type, arg.default);
+                _this.argument(name, arg.desc, arg.required, arg.type, arg.default);
             });
         }
         return this;

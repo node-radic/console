@@ -12,19 +12,21 @@ var core_1 = require("../core");
 var _ = require("lodash");
 var groups = [];
 var commands = [];
-function command(name, desc, parent) {
+function command(name, prettyName, desc, parent) {
     if (desc === void 0) { desc = ''; }
     if (parent === void 0) { parent = null; }
+    prettyName = prettyName || name;
     return function (cls) {
-        commands.push({ name: name, cls: cls, desc: desc, parent: parent, type: 'command' });
+        commands.push({ name: name, cls: cls, prettyName: prettyName, desc: desc, parent: parent, type: 'command' });
     };
 }
 exports.command = command;
-function group(name, desc, parent) {
+function group(name, prettyName, desc, parent) {
     if (desc === void 0) { desc = ''; }
     if (parent === void 0) { parent = null; }
+    prettyName = prettyName || name;
     return function (cls) {
-        groups.push({ name: name, cls: cls, desc: desc, parent: parent, type: 'group' });
+        groups.push({ name: name, cls: cls, prettyName: prettyName, desc: desc, parent: parent, type: 'group' });
     };
 }
 exports.group = group;
@@ -109,6 +111,10 @@ var CommandFactory = (function () {
         command.definition.mergeOptions(core_1.kernel.get(core_1.BINDINGS.CLI).globalDefinition);
         command.definition.arguments(command.arguments);
         command.definition.options(command.options);
+        if (command.example)
+            command.definition.example(command.example);
+        if (command.usage)
+            command.definition.usage(command.usage);
         command.name = commandRegistration.name;
         command.desc = commandRegistration.desc;
         command.parent = commandRegistration.parent ? commandRegistration.parent : null;
@@ -141,6 +147,7 @@ var CommandFactory = (function () {
         }
         if (resolved) {
             resolved.tree = tree;
+            resolved.parts = parts;
             resolved.arguments = arr;
             resolved.hasArguments = arr.length > 0;
             return resolved;
@@ -170,13 +177,13 @@ var CommandFactory = (function () {
     };
     CommandFactory.prototype.getCommand = function (name, parent) { return _.filter(this.commands, parent ? { name: name, parent: parent } : { name: name })[0]; };
     CommandFactory.prototype.getGroup = function (name, parent) { return _.filter(this.groups, parent ? { name: name, parent: parent } : { name: name })[0]; };
-    CommandFactory.prototype.addGroup = function (name, cls, desc, parent) {
+    CommandFactory.prototype.addGroup = function (name, prettyName, cls, desc, parent) {
         if (desc === void 0) { desc = ''; }
-        groups.push({ name: name, cls: cls, desc: desc, parent: parent, type: 'group' });
+        groups.push({ name: name, cls: cls, prettyName: prettyName, desc: desc, parent: parent, type: 'group' });
     };
-    CommandFactory.prototype.addCommand = function (name, cls, desc, parent) {
+    CommandFactory.prototype.addCommand = function (name, prettyName, cls, desc, parent) {
         if (desc === void 0) { desc = ''; }
-        commands.push({ name: name, cls: cls, desc: desc, parent: parent, type: 'command' });
+        commands.push({ name: name, prettyName: prettyName, cls: cls, desc: desc, parent: parent, type: 'command' });
     };
     CommandFactory = __decorate([
         core_1.injectable(), 

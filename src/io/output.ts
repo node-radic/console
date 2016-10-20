@@ -6,9 +6,9 @@ import { merge } from "lodash";
 import { Parser } from "@radic/console-colors";
 import * as archy from "archy";
 
-export interface IOutput
-{
+export interface IOutput {
     parser: Parser
+    nl: this
     tree(label: string, nodex: any[]): this
     writeln(text?: string): this
     line(text?: string): this
@@ -23,7 +23,6 @@ export interface IOutput
     columns(options?: any): CliTable
     dump(...args: any[]): void;
 }
-
 
 
 export const TABLE_STYLE = {
@@ -56,6 +55,11 @@ export class Output implements IOutput {
     colorsEnabled: boolean = true
 
     macros: {[name: string]: Function}
+
+    get nl(): this {
+        this.line()
+        return this
+    }
 
     macro(name: string, fn?: Function) {
         if ( fn ) return fn.apply(this, [ this ]);

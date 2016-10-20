@@ -16,6 +16,7 @@ export class Group extends BaseCommandRegistration implements IGroup {
 
     name: string;
     desc: string;
+    prettyName: string;
     parent?: IGroupConstructor
 
     handle() {
@@ -24,7 +25,7 @@ export class Group extends BaseCommandRegistration implements IGroup {
 
     showHelp(title?:string, desc?:string) {
         this.out
-            .title(title || this.name)
+            .title(title || this.prettyName)
             .description(desc || this.desc)
             .line()
             .header(this.config('descriptor.text.commands'));

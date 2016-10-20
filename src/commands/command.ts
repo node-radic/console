@@ -17,6 +17,8 @@ export interface ICommand extends ICommandRegistration<ICommand> {
     arguments: any
     options: any
     parsed: IParsedArguments
+    definition: IArgumentsDefinition
+    globalDefinition: IOptionsDefinition
 }
 
 export interface ICommandConstructor {
@@ -30,11 +32,14 @@ export class Command extends BaseCommandRegistration implements ICommand {
     name: string;
     desc: string;
     parent: IGroupConstructor;
+    prettyName: string
     argv: any[] = []
 
     // can be filled by overriding class
     arguments: any = {}
     options: any   = {}
+    example: string
+    usage: string
 
     parsed: IParsedArguments
 
@@ -53,16 +58,17 @@ export class Command extends BaseCommandRegistration implements ICommand {
     }
 
     protected parse() {
-        this.parsed = this.definition.mergeOptions(this.globalDefinition).parse(this.argv);
+        // merge into an empty definition
+        this.parsed = _.clone(this.definition).mergeOptions(this.globalDefinition).parse(this.argv);
         // this.parsed.global = this.definition.parse(this.argv);
 
-        this.log.warn('ok')
+        this.handleHelp()
+
         // handle errors
         if ( this.parsed.hasErrors() ) {
             this.handleParseErrors();
         }
 
-        this.handleHelp()
     }
 
     protected handleHelp() {
@@ -70,6 +76,15 @@ export class Command extends BaseCommandRegistration implements ICommand {
             this.showHelp()
             this.cli.exit();
         }
+    }
+
+    showHelp(title?: string, desc?: string) {
+        this.out
+            .title(title || this.prettyName)
+            .line()
+            .line(desc || this.desc)
+
+        this.descriptor.command(this);
     }
 
     protected handleParseErrors() {
@@ -81,10 +96,6 @@ export class Command extends BaseCommandRegistration implements ICommand {
         })
         this.fail()
         this.cli.exit()
-    }
-
-    protected checkHelp(help: {enabled: boolean, key: string}) {
-
     }
 
     // parser
@@ -115,7 +126,7 @@ export class Command extends BaseCommandRegistration implements ICommand {
         let pm = (name: string, opts: any) => _.merge({
             name: name,
             // 'default': defaults && defaults[ name ] ? defaults[ name ] : null,
-            when: (answers: any) => ! argv[ name ]
+            when: (answers: any) => this.hasArg(name) === false
         }, opts)
 
         let prompts: any[] = names.map((name: string) => {
@@ -143,16 +154,6 @@ export class Command extends BaseCommandRegistration implements ICommand {
 
 
     // definition
-
-    showHelp(title?: string, desc?: string) {
-        this.out
-            .title(title || this.name)
-            .line()
-            .line(desc || this.desc)
-
-        this.descriptor.command(this);
-    }
-
     setArguments(args: {[name: string]: {}}) { this.definition.arguments(args); }
 
     setOptions(options: {[name: string]: {}}) { this.definition.options(options); }

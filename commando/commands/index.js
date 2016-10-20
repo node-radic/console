@@ -6,4 +6,5 @@ __export(require('./config'));
 __export(require('./git'));
 __export(require('./init'));
 __export(require('./connection'));
+__export(require('./on'));
 //# sourceMappingURL=index.js.map

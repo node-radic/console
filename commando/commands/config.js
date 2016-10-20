@@ -20,7 +20,7 @@ var ConfigGroup = (function (_super) {
         _super.apply(this, arguments);
     }
     ConfigGroup = __decorate([
-        src_1.group('config', 'Manage the global and local configuration'), 
+        src_1.group('config', 'Configuration', 'Manage the global and local configuration'), 
         __metadata('design:paramtypes', [])
     ], ConfigGroup);
     return ConfigGroup;
@@ -32,7 +32,7 @@ var ListConfigCommand = (function (_super) {
         _super.apply(this, arguments);
     }
     ListConfigCommand = __decorate([
-        src_1.command('list', 'Give the current working directory a bit of R.', ConfigGroup), 
+        src_1.command('list', 'List Configuration', 'Give the current working directory a bit of R.', ConfigGroup), 
         __metadata('design:paramtypes', [])
     ], ListConfigCommand);
     return ListConfigCommand;

@@ -1,4 +1,5 @@
 "use strict";
+(function () { }());
 require("reflect-metadata");
 var src_1 = require("./src");
 require("./commando/index");

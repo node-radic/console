@@ -23,7 +23,7 @@ var InitCommand = (function (_super) {
         this.out.success('Success');
     };
     InitCommand = __decorate([
-        src_1.command('init', 'Give the current working directory a bit of R.'), 
+        src_1.command('init', 'Initialize R', 'Give the current working directory a bit of R.'), 
         __metadata('design:paramtypes', [])
     ], InitCommand);
     return InitCommand;

@@ -1,11 +1,10 @@
-import { pullAll, upperFirst, merge, clone } from "lodash";
+import { drop, upperFirst, merge, clone } from "lodash";
 import { Config, defined } from "@radic/util";
 import { IConfig, inject, injectable, BINDINGS } from "../core";
 import { IOptionsDefinition, IArgumentsDefinition, ICommandsDefinition, CommandsDefinition } from "./definitions";
 import { IParsedArgv, parseArgv } from "./argv";
 import { ICommandFactory } from "../commands";
 import { IParsedOptions, IParsedArguments, IParsedCommands } from "./parsed";
-import { kernel } from "../core/kernel";
 
 
 export interface IOptionsParser {
@@ -91,6 +90,7 @@ export class ArgumentsDefinitionParser extends OptionsDefinitionParser implement
     // @inject(BINDINGS.PARSED_ARGUMENTS_DEFINITION)
     // public parsed: IParsedArgumentsDefinition
     constructor(@inject(BINDINGS.PARSED_ARGUMENTS_DEFINITION) public parsed) {super(parsed)}
+
     public definition: IArgumentsDefinition
     protected arguments: {[name: string]: any}
 
@@ -170,9 +170,7 @@ export class CommandsDefinitionParser extends OptionsDefinitionParser implements
             this.parsed[ resolved.type ].parent = resolved.parent;
 
             if ( this.parsed.isCommand ) {
-                let argv = clone(this.argv);
-                pullAll(argv, this.args.argv._)
-                this.parsed.command.argv = argv
+                this.parsed.command.argv = drop(this.argv, resolved.parts.length)
             }
         }
 

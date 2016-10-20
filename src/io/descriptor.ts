@@ -5,9 +5,9 @@ import { BINDINGS, inject, injectable, IConfig, CommandsCli, ArgumentsCli } from
 import { ICommandFactory, IResolvedRegistration } from "../commands/factory";
 import { IGroup, IGroupConstructor } from "../commands/group";
 import { ICommand, ICommandConstructor } from "../commands/command";
+import { IArgument } from "../definitions/definitions";
 
-export interface IDescriptor
-{
+export interface IDescriptor {
     cli(cli: any)
 
     getOptions(definition: IOptionsDefinition): CliTable;
@@ -15,18 +15,25 @@ export interface IDescriptor
     options(definition: IOptionsDefinition): this
     arguments(definition: IArgumentsDefinition): this
 
+    getGroup(group): CliTable
     group(group: string | IGroup): this
+    getCommand(command): {args: CliTable,options: CliTable,usage: string, example: string}
     command(command: ICommand): this
 
     getCommandTree(from?: string): any[]
-    commandTree(label?: string, from?: string): this
+     commandTree(label?: string, from?: string): this
+
+    getExample(definition: IOptionsDefinition): string
+    example(definition: IOptionsDefinition): this
+
+    getUsage(definition: IOptionsDefinition): string
+    usage(definition: IOptionsDefinition): this
 
 }
 
 
 @injectable()
-export class Descriptor implements IDescriptor
-{
+export class Descriptor implements IDescriptor {
     @inject(BINDINGS.OUTPUT)
     out: IOutput;
 
@@ -85,17 +92,29 @@ export class Descriptor implements IDescriptor
     }
 
     group(group: IGroup): this {
-        this.out.writeln(this.getGroup(group).toString());
+        this.out.line(this.getGroup(group).toString());
         return this
     }
 
 
-    getCommand(command): string {
-        return '';
+    getCommand(command): {args: CliTable,options: CliTable,usage: string, example: string} {
+        let args    = this.getArguments(command.definition),
+            options = this.getOptions(command.definition),
+            usage   = this.getUsage(command.definition),
+            example = this.getExample(command.definition)
+
+        return { args, options, usage, example };
     }
 
     command(command: ICommand): this {
-        this.out.writeln(this.getCommand(command).toString());
+        let c                                 = this.config,
+            { args, options, usage, example } = this.getCommand(command)
+
+        if ( usage ) this.out.line().header(c('descriptor.text.usage')).line(usage)
+        this.out.line().header(c('descriptor.text.arguments')).line(args.toString())
+        if ( options.length ) this.out.line().header(c('descriptor.text.options')).line(options.toString())
+        if ( example ) this.out.line().header(c('descriptor.text.example')).line(example)
+
         return this
     }
 
@@ -113,18 +132,48 @@ export class Descriptor implements IDescriptor
     }
 
     options(definition: IOptionsDefinition): this {
-        this.out.writeln(this.getOptions(definition).toString());
+        this.out.line(this.getOptions(definition).toString());
         return this
     }
 
 
     getArguments(definition: IArgumentsDefinition): CliTable {
-        return
+        let args  = definition.getArguments();
+        let table = this.out.columns();
+        Object.keys(args).forEach((name: string) => {
+            let arg: IArgument = args[ name ];
+            let nameColor      = colors.getTrucolorColor(this.config('colors.argument')),
+                _name          = nameColor.in + name + nameColor.out,
+
+                descColor      = colors.getTrucolorColor(this.config('colors.description')),
+                _desc          = descColor.in + arg.desc + descColor.out
+
+            table.push([ _name, _desc ])
+        })
+        return table;
     }
 
     arguments(definition: IArgumentsDefinition): this {
-        this.out.writeln(this.getArguments(definition).toString());
+        this.out.line(this.getArguments(definition).toString());
         return this
+    }
+
+    getExample(definition: IOptionsDefinition): string {
+        return definition.getExample();
+    }
+
+    example(definition: IOptionsDefinition): this {
+        this.out.line(this.getExample(definition))
+        return this;
+    }
+
+    getUsage(definition: IOptionsDefinition): string {
+        return definition.getUsage()
+    }
+
+    usage(definition: IOptionsDefinition): this {
+        this.out.line(this.getUsage(definition))
+        return this;
     }
 
     protected argumentsCli(cli: ArgumentsCli) {

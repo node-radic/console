@@ -1,10 +1,10 @@
 import { Group, group, command, Command } from "../../src";
 
-@group('config', 'Manage the global and local configuration')
+@group('config', 'Configuration', 'Manage the global and local configuration')
 export class ConfigGroup extends Group {
 }
 
-@command('list', 'Give the current working directory a bit of R.', ConfigGroup)
+@command('list', 'List Configuration', 'Give the current working directory a bit of R.', ConfigGroup)
 export class ListConfigCommand extends Command {
 
 }

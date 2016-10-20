@@ -48,14 +48,22 @@ var Descriptor = (function () {
         return table;
     };
     Descriptor.prototype.group = function (group) {
-        this.out.writeln(this.getGroup(group).toString());
+        this.out.line(this.getGroup(group).toString());
         return this;
     };
     Descriptor.prototype.getCommand = function (command) {
-        return '';
+        var args = this.getArguments(command.definition), options = this.getOptions(command.definition), usage = this.getUsage(command.definition), example = this.getExample(command.definition);
+        return { args: args, options: options, usage: usage, example: example };
     };
     Descriptor.prototype.command = function (command) {
-        this.out.writeln(this.getCommand(command).toString());
+        var c = this.config, _a = this.getCommand(command), args = _a.args, options = _a.options, usage = _a.usage, example = _a.example;
+        if (usage)
+            this.out.line().header(c('descriptor.text.usage')).line(usage);
+        this.out.line().header(c('descriptor.text.arguments')).line(args.toString());
+        if (options.length)
+            this.out.line().header(c('descriptor.text.options')).line(options.toString());
+        if (example)
+            this.out.line().header(c('descriptor.text.example')).line(example);
         return this;
     };
     Descriptor.prototype.getOptions = function (definition) {
@@ -70,14 +78,36 @@ var Descriptor = (function () {
         return table;
     };
     Descriptor.prototype.options = function (definition) {
-        this.out.writeln(this.getOptions(definition).toString());
+        this.out.line(this.getOptions(definition).toString());
         return this;
     };
     Descriptor.prototype.getArguments = function (definition) {
-        return;
+        var _this = this;
+        var args = definition.getArguments();
+        var table = this.out.columns();
+        Object.keys(args).forEach(function (name) {
+            var arg = args[name];
+            var nameColor = console_colors_1.colors.getTrucolorColor(_this.config('colors.argument')), _name = nameColor.in + name + nameColor.out, descColor = console_colors_1.colors.getTrucolorColor(_this.config('colors.description')), _desc = descColor.in + arg.desc + descColor.out;
+            table.push([_name, _desc]);
+        });
+        return table;
     };
     Descriptor.prototype.arguments = function (definition) {
-        this.out.writeln(this.getArguments(definition).toString());
+        this.out.line(this.getArguments(definition).toString());
+        return this;
+    };
+    Descriptor.prototype.getExample = function (definition) {
+        return definition.getExample();
+    };
+    Descriptor.prototype.example = function (definition) {
+        this.out.line(this.getExample(definition));
+        return this;
+    };
+    Descriptor.prototype.getUsage = function (definition) {
+        return definition.getUsage();
+    };
+    Descriptor.prototype.usage = function (definition) {
+        this.out.line(this.getUsage(definition));
         return this;
     };
     Descriptor.prototype.argumentsCli = function (cli) {

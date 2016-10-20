@@ -86,7 +86,7 @@ export class ConsoleKernel extends BaseKernel
 
         kernel.bind<IInput>(BINDINGS.INPUT).to(Input);
         kernel.bind<IOutput>(BINDINGS.OUTPUT).to(Output);
-        kernel.bind<IHelpers>(BINDINGS.HELPERS).to(Helpers);
+        kernel.bind(BINDINGS.HELPERS).to(Helpers);
 
 
 

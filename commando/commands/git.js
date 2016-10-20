@@ -20,7 +20,7 @@ var GitGroup = (function (_super) {
         _super.apply(this, arguments);
     }
     GitGroup = __decorate([
-        src_1.group('git', 'Gi'), 
+        src_1.group('git', 'Git Helpers', 'Gi'), 
         __metadata('design:paramtypes', [])
     ], GitGroup);
     return GitGroup;
@@ -32,7 +32,7 @@ var GitInitCommand = (function (_super) {
         _super.apply(this, arguments);
     }
     GitInitCommand = __decorate([
-        src_1.command('init', 'Give the current working directory a bit of R.', GitGroup), 
+        src_1.command('init', 'Initialize Git project', 'Give the current working directory a bit of R.', GitGroup), 
         __metadata('design:paramtypes', [])
     ], GitInitCommand);
     return GitInitCommand;

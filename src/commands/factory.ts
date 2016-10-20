@@ -10,6 +10,7 @@ import { IInput } from "../io/input";
 export interface ICommandRegistration<T> {
     name: string
     desc: string
+    prettyName: string
     parent?: IGroupConstructor
     cls?: T
     type?: 'group' | 'command'
@@ -18,6 +19,7 @@ export interface ICommandRegistration<T> {
 }
 
 export interface IResolvedRegistration<T> extends ICommandRegistration<T> {
+    parts: string[]
     arguments: string[]
     hasArguments: boolean
     tree: any
@@ -26,25 +28,29 @@ export interface IResolvedRegistration<T> extends ICommandRegistration<T> {
 let groups: ICommandRegistration<IGroupConstructor>[]     = []
 let commands: ICommandRegistration<ICommandConstructor>[] = []
 
-export function command(name: string, desc: string = '', parent: IGroupConstructor = null) {
+export function command(name: string, prettyName: string, desc: string = '', parent: IGroupConstructor = null) {
+    prettyName = prettyName || name
     return (cls: ICommandConstructor) => {
-        commands.push({ name, cls, desc, parent, type: 'command' })
+        commands.push({ name, cls, prettyName, desc, parent, type: 'command' })
     }
 }
 
-export function group(name: string, desc: string = '', parent: IGroupConstructor = null) {
+export function group(name: string, prettyName: string, desc: string = '', parent: IGroupConstructor = null) {
+    prettyName = prettyName || name
     return (cls: IGroupConstructor) => {
-        groups.push({ name, cls, desc, parent, type: 'group' })
+        groups.push({ name, cls, prettyName, desc, parent, type: 'group' })
     }
 }
+
+
 export interface ICommandFactory {
 
     groups: ICommandRegistration<IGroupConstructor>[]
     commands: ICommandRegistration<ICommandConstructor>[]
 
 
-    addGroup(name: string, cls: IGroupConstructor, desc?: string, parent?: IGroupConstructor)
-    addCommand(name: string, cls: ICommandConstructor, desc?: string, parent?: IGroupConstructor)
+    addGroup(name: string, prettyName:string, cls: IGroupConstructor, desc?: string, parent?: IGroupConstructor)
+    addCommand(name: string, prettyName:string, cls: ICommandConstructor, desc?: string, parent?: IGroupConstructor)
 
     createCommand(command: ICommandRegistration<ICommandConstructor>, argv?: any[]): Command
     createGroup(group: ICommandRegistration<IGroupConstructor>): Group
@@ -76,21 +82,21 @@ export abstract class BaseCommandRegistration {
 
 
     private _in;
-    get in() : IInput { return this._in ? this._in : this._in = kernel.get<IInput>(BINDINGS.INPUT) }
+    get in(): IInput { return this._in ? this._in : this._in = kernel.get<IInput>(BINDINGS.INPUT) }
 
     private _out;
-    get out() : IOutput { return this._out ? this._out : this._out = kernel.get<IOutput>(BINDINGS.OUTPUT) }
+    get out(): IOutput { return this._out ? this._out : this._out = kernel.get<IOutput>(BINDINGS.OUTPUT) }
 
     private _log;
-    get log() : ILog { return this._log ? this._log : this._log = kernel.get<ILog>(BINDINGS.LOG) }
+    get log(): ILog { return this._log ? this._log : this._log = kernel.get<ILog>(BINDINGS.LOG) }
 
     private _config;
-    get config() : IConfig { return this._config ? this._config : this._config = kernel.get<IConfig>(BINDINGS.CONFIG) }
+    get config(): IConfig { return this._config ? this._config : this._config = kernel.get<IConfig>(BINDINGS.CONFIG) }
 
     @inject(BINDINGS.CLI)
     protected cli: Cli<ICommandsDefinition, IParsedCommands, ICommandsParser>
 
-    private failed: boolean = false
+    private failed: boolean      = false
     protected asyncMode: boolean = false;
 
     fire() {
@@ -120,6 +126,7 @@ export abstract class BaseCommandRegistration {
 
 @injectable()
 export class CommandFactory implements ICommandFactory {
+
     get groups() { return groups }
 
     get commands() { return commands }
@@ -140,6 +147,8 @@ export class CommandFactory implements ICommandFactory {
         command.definition.mergeOptions(kernel.get<CommandsCli>(BINDINGS.CLI).globalDefinition);
         command.definition.arguments(command.arguments);
         command.definition.options(command.options);
+        if ( command.example ) command.definition.example(command.example)
+        if ( command.usage ) command.definition.usage(command.usage)
 
         command.name   = commandRegistration.name;
         command.desc   = commandRegistration.desc
@@ -187,6 +196,7 @@ export class CommandFactory implements ICommandFactory {
 
         if ( resolved ) {
             resolved.tree         = tree;
+            resolved.parts        = parts;
             resolved.arguments    = arr;
             resolved.hasArguments = arr.length > 0
             return resolved
@@ -221,7 +231,7 @@ export class CommandFactory implements ICommandFactory {
 
     getGroup(name: string, parent?: any): ICommandRegistration<IGroupConstructor> { return <any> _.filter(this.groups, parent ? { name, parent } : { name })[ 0 ] }
 
-    addGroup(name: string, cls: IGroupConstructor, desc: string = '', parent?: IGroupConstructor) { groups.push({ name, cls, desc, parent, type: 'group' })}
+    addGroup(name: string, prettyName:string, cls: IGroupConstructor, desc: string = '', parent?: IGroupConstructor) { groups.push({ name, cls, prettyName, desc, parent, type: 'group' })}
 
-    addCommand(name: string, cls: ICommandConstructor, desc: string = '', parent?: IGroupConstructor) { commands.push({ name, cls, desc, parent, type: 'command' })}
+    addCommand(name: string, prettyName:string, cls: ICommandConstructor, desc: string = '', parent?: IGroupConstructor) { commands.push({ name, prettyName, cls, desc, parent, type: 'command' })}
 }

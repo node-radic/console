@@ -13,7 +13,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var util_1 = require("@radic/util");
 var core_1 = require("../core");
 var ParsedOptionsDefinition = (function () {
     function ParsedOptionsDefinition() {
@@ -60,10 +59,10 @@ var ParsedArgumentsDefinition = (function (_super) {
         configurable: true
     });
     ParsedArgumentsDefinition.prototype.hasArg = function (n) {
-        return util_1.defined(this.arguments[n]);
+        return this.arguments[n] !== null;
     };
     ParsedArgumentsDefinition.prototype.arg = function (n) {
-        return this.arguments[n];
+        return this.hasArg(n) ? this.arguments[n] : this.definition.getArguments()[n].default;
     };
     ParsedArgumentsDefinition = __decorate([
         core_1.injectable(), 

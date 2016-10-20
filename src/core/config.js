@@ -20,7 +20,7 @@ var defaults = {
         group: 'steelblue bold',
         command: 'purple',
         description: 'grey',
-        argument: 'yellow darken 50'
+        argument: 'yellow darken 25'
     },
     help: {
         enabled: false,
@@ -43,7 +43,10 @@ var defaults = {
         text: {
             commands: 'Commands & Groups',
             options: 'Options',
-            globalOptions: 'Global Options'
+            arguments: 'Arguments',
+            globalOptions: 'Global Options',
+            usage: 'Usage',
+            example: 'Example'
         }
     }
 };

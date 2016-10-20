@@ -1,5 +1,4 @@
-
-
+(function(){}())
 import "reflect-metadata";
 import { kernel, BINDINGS, IDescriptor } from "./src";
 import "./commando/index";

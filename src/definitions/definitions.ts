@@ -35,7 +35,7 @@ export interface IArgument {
     required?: boolean
     default?: any
     type?: string
-    description?: string
+    desc?: string
     value?: any
 }
 
@@ -59,6 +59,12 @@ export interface IOptionsDefinition {
     getHelpKey(): string
     help(k: string, a?: string): this
 
+    example(str: string): this
+    usage(str: string): this
+
+    getExample(): string
+    getUsage(): string
+
     parse(argv: string[]): IParsedOptions
     // showHelp(...without: string[]): void
 }
@@ -79,14 +85,9 @@ export interface ICommandsDefinition extends IOptionsDefinition {
 
 @injectable()
 export class OptionsDefinition implements IOptionsDefinition {
-    //@inject(BINDINGS.HELP_WRITER)
-    // helpWriter: IHelpWriter
 
-    parse(argv: string[]): IParsedOptions {
-        this.parser.definition = this
-        this.parser.argv       = argv;
-        return this.parser.parse();
-    }
+    protected _example: string;
+    protected _usage: string;
 
     protected _options: IArgvParserOptions
     protected _keys: {[name: string]: boolean}
@@ -115,6 +116,11 @@ export class OptionsDefinition implements IOptionsDefinition {
         }
     }
 
+    parse(argv: string[]): IParsedOptions {
+        this.parser.definition = this
+        this.parser.argv       = argv;
+        return this.parser.parse();
+    }
 
     getJoinedOptions(): IJoinedOptions {
         let opts                   = this._options;
@@ -138,6 +144,22 @@ export class OptionsDefinition implements IOptionsDefinition {
         });
         return joined;
     }
+
+
+    example(str: string): this {
+        this._example = str
+        return this;
+    }
+
+    usage(str: string): this {
+        this._usage = str
+        return this;
+    }
+
+    getExample(): string { return this._example; }
+
+    getUsage(): string { return this._usage }
+
 
     hasHelp(): boolean {
         return this._help.enabled;
@@ -302,8 +324,8 @@ export class ArgumentsDefinition extends OptionsDefinition implements IArguments
         return this._arguments;
     }
 
-    argument(name: string, desc: string = '', required: boolean = false, type: string = 'string', def: any = null): this {
-        this._arguments[ name ] = <IArgument> { required, type, default: def };
+    argument(name: string, desc: string = '', required: boolean = false, type: string = 'string', def?: any): this {
+        this._arguments[ name ] = <IArgument> { name, desc, required, type, default: def };
         return this
 
     }
@@ -315,7 +337,7 @@ export class ArgumentsDefinition extends OptionsDefinition implements IArguments
         } else {
             Object.keys(args).forEach((name: string) => {
                 let arg: IArgument = merge({ required: false, default: null, type: 'string' }, args[ name ]);
-                this.argument(name, arg.description, arg.required, arg.type, arg.default);
+                this.argument(name, arg.desc, arg.required, arg.type, arg.default);
             })
         }
         return this

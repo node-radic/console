@@ -44,6 +44,14 @@ var Output = (function () {
         }
         args.forEach(function (arg) { return process.stdout.write(util_1.inspect(arg, { colors: _this.colorsEnabled, depth: 5, showHidden: true })); });
     };
+    Object.defineProperty(Output.prototype, "nl", {
+        get: function () {
+            this.line();
+            return this;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Output.prototype.macro = function (name, fn) {
         if (fn)
             return fn.apply(this, [this]);

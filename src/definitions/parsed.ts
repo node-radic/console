@@ -3,6 +3,9 @@ import { injectable } from "../core";
 import { IOptionsDefinition, IArgumentsDefinition, ICommandsDefinition } from "./definitions";
 import { IParsedArgv } from "./argv";
 import { Command, Group } from "../commands";
+import { IResolvedRegistration } from "../commands/factory";
+import { ICommandConstructor } from "../commands/command";
+import { IGroupConstructor } from "../commands/group";
 
 
 export interface IParsedOptions {
@@ -80,11 +83,11 @@ export class ParsedArgumentsDefinition extends ParsedOptionsDefinition implement
     }
 
     hasArg(n: string): boolean {
-        return defined(this.arguments[ n ]);
+        return this.arguments[ n ] !== null;
     }
 
     arg(n: string): any {
-        return this.arguments[ n ];
+        return this.hasArg(n) ? this.arguments[ n ] : this.definition.getArguments()[n].default
     }
 }
 
@@ -96,4 +99,5 @@ export class ParsedCommandsDefinition extends ParsedOptionsDefinition implements
     isGroup: boolean   = false
     command: Command
     group: Group
+
 }

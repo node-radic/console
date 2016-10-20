@@ -119,9 +119,7 @@ var CommandsDefinitionParser = (function (_super) {
             this.parsed[resolved.type] = this.factory['create' + lodash_1.upperFirst(resolved.type)](resolved);
             this.parsed[resolved.type].parent = resolved.parent;
             if (this.parsed.isCommand) {
-                var argv = lodash_1.clone(this.argv);
-                lodash_1.pullAll(argv, this.args.argv._);
-                this.parsed.command.argv = argv;
+                this.parsed.command.argv = lodash_1.drop(this.argv, resolved.parts.length);
             }
         }
         return this.parsed;

@@ -25,7 +25,7 @@ var Group = (function (_super) {
     };
     Group.prototype.showHelp = function (title, desc) {
         this.out
-            .title(title || this.name)
+            .title(title || this.prettyName)
             .description(desc || this.desc)
             .line()
             .header(this.config('descriptor.text.commands'));

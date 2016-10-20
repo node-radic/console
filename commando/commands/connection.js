@@ -39,7 +39,7 @@ var ConnectionGroup = (function (_super) {
         __metadata('design:type', connection_remote_1.RemoteFactory)
     ], ConnectionGroup.prototype, "remotes", void 0);
     ConnectionGroup = __decorate([
-        src_1.group('con', 'Define connections to remote jenkins, jira, git, etc'), 
+        src_1.group('con', 'Connection Manager', 'Define connections to remote jenkins, jira, git, etc'), 
         __metadata('design:paramtypes', [])
     ], ConnectionGroup);
     return ConnectionGroup;
@@ -57,6 +57,10 @@ var ConnectionCommand = (function (_super) {
         core_1.inject(core_1.COMMANDO.CONNECTIONS), 
         __metadata('design:type', Object)
     ], ConnectionCommand.prototype, "connections", void 0);
+    __decorate([
+        core_1.inject(core_1.COMMANDO.REMOTES), 
+        __metadata('design:type', connection_remote_1.RemoteFactory)
+    ], ConnectionCommand.prototype, "remotes", void 0);
     ConnectionCommand = __decorate([
         core_1.injectable(), 
         __metadata('design:paramtypes', [])
@@ -68,13 +72,15 @@ var AddConnectionCommand = (function (_super) {
     __extends(AddConnectionCommand, _super);
     function AddConnectionCommand() {
         _super.apply(this, arguments);
+        this.usage = '$0 [name] <remote?> <method?> <key?> <secret> <extra??>';
+        this.example = "\n$0 bb  bitbucket        basic   username    password\n$0 bbs bitbucket_server oauth2  a3#A$j342   2i34@k24j https://ci.radic.nl\n";
         this.arguments = {
-            name: { description: 'The name of the connection', required: true },
-            remote: { description: 'Remote to connect to' },
-            method: { description: 'Auth method' },
-            key: { description: '' },
-            secret: { description: '' },
-            extra: { description: '' },
+            name: { desc: 'The name of the connection', required: true },
+            remote: { desc: 'Remote to connect to' },
+            method: { desc: 'Auth method' },
+            key: { desc: '' },
+            secret: { desc: '' },
+            extra: { desc: '' },
         };
     }
     AddConnectionCommand.prototype.handle = function () {
@@ -82,7 +88,7 @@ var AddConnectionCommand = (function (_super) {
         _super.prototype.handle.call(this);
         this.askArgs({
             name: { type: 'input', message: 'name' },
-            remote: { type: 'list', message: 'remote', choices: ['first', 'second'] },
+            remote: { type: 'list', message: 'remote', choices: function (answers) { return _this.remotes.names(); } },
             method: { type: 'list', message: 'authentication method', choices: function (answers) { return ['basic', 'oauth2', 'oauth', 'token']; } },
             key: { type: 'input', message: function (answers) { return services_1.AuthMethod.getKeyName(answers.method || _this.parsed.arg('method')); } },
             secret: { type: 'password', message: function (answers) { return services_1.AuthMethod.getSecretName(answers.method || _this.parsed.arg('method')); } },
@@ -91,7 +97,7 @@ var AddConnectionCommand = (function (_super) {
         });
     };
     AddConnectionCommand = __decorate([
-        src_1.command('add', 'Add a new connection', ConnectionGroup), 
+        src_1.command('add', 'Add connection', 'Add a new connection', ConnectionGroup), 
         __metadata('design:paramtypes', [])
     ], AddConnectionCommand);
     return AddConnectionCommand;
@@ -103,7 +109,7 @@ var ListConnectionCommand = (function (_super) {
         _super.apply(this, arguments);
     }
     ListConnectionCommand = __decorate([
-        src_1.command('list', 'List connections or remotes', ConnectionGroup), 
+        src_1.command('list', 'List connections', 'List connections or remotes', ConnectionGroup), 
         __metadata('design:paramtypes', [])
     ], ListConnectionCommand);
     return ListConnectionCommand;
@@ -115,7 +121,7 @@ var RemoveConnectionCommand = (function (_super) {
         _super.apply(this, arguments);
     }
     RemoveConnectionCommand = __decorate([
-        src_1.command('rm', 'Remove a connection', ConnectionGroup), 
+        src_1.command('rm', 'Remove connection', 'Remove a connection', ConnectionGroup), 
         __metadata('design:paramtypes', [])
     ], RemoveConnectionCommand);
     return RemoveConnectionCommand;
@@ -127,7 +133,7 @@ var CopyConnectionCommand = (function (_super) {
         _super.apply(this, arguments);
     }
     CopyConnectionCommand = __decorate([
-        src_1.command('cp', 'Create a new connection based on an existing one', ConnectionGroup), 
+        src_1.command('cp', 'Copy connection', 'Create a new connection based on an existing one', ConnectionGroup), 
         __metadata('design:paramtypes', [])
     ], CopyConnectionCommand);
     return CopyConnectionCommand;
@@ -139,7 +145,7 @@ var EditConnectionCommand = (function (_super) {
         _super.apply(this, arguments);
     }
     EditConnectionCommand = __decorate([
-        src_1.command('edit', 'Edit a existing connection', ConnectionGroup), 
+        src_1.command('edit', 'Edit connection', 'Edit a existing connection', ConnectionGroup), 
         __metadata('design:paramtypes', [])
     ], EditConnectionCommand);
     return EditConnectionCommand;

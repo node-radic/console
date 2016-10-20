@@ -27,18 +27,24 @@ var Command = (function (_super) {
         this.options = {};
     }
     Command.prototype.parse = function () {
-        this.parsed = this.definition.mergeOptions(this.globalDefinition).parse(this.argv);
-        this.log.warn('ok');
+        this.parsed = _.clone(this.definition).mergeOptions(this.globalDefinition).parse(this.argv);
+        this.handleHelp();
         if (this.parsed.hasErrors()) {
             this.handleParseErrors();
         }
-        this.handleHelp();
     };
     Command.prototype.handleHelp = function () {
         if (this.parsed.help.enabled && this.parsed.help.show) {
             this.showHelp();
             this.cli.exit();
         }
+    };
+    Command.prototype.showHelp = function (title, desc) {
+        this.out
+            .title(title || this.prettyName)
+            .line()
+            .line(desc || this.desc);
+        this.descriptor.command(this);
     };
     Command.prototype.handleParseErrors = function () {
         var _this = this;
@@ -50,8 +56,6 @@ var Command = (function (_super) {
         });
         this.fail();
         this.cli.exit();
-    };
-    Command.prototype.checkHelp = function (help) {
     };
     Command.prototype.hasArg = function (n) { return this.parsed.hasArg(n); };
     Command.prototype.askArg = function (name, opts) {
@@ -65,6 +69,7 @@ var Command = (function (_super) {
         return defer.promise;
     };
     Command.prototype.askArgs = function (questions, argv) {
+        var _this = this;
         var defer = BB.defer();
         var names = Object.keys(questions);
         if (argv.noInteraction) {
@@ -73,7 +78,7 @@ var Command = (function (_super) {
         }
         var pm = function (name, opts) { return _.merge({
             name: name,
-            when: function (answers) { return !argv[name]; }
+            when: function (answers) { return _this.hasArg(name) === false; }
         }, opts); };
         var prompts = names.map(function (name) {
             return pm(name, questions[name]);
@@ -90,13 +95,6 @@ var Command = (function (_super) {
     Command.prototype.arg = function (n) { return this.parsed.arg(n); };
     Command.prototype.hasOpt = function (n) { return this.parsed.hasOpt(n); };
     Command.prototype.opt = function (n) { return this.parsed.opt(n); };
-    Command.prototype.showHelp = function (title, desc) {
-        this.out
-            .title(title || this.name)
-            .line()
-            .line(desc || this.desc);
-        this.descriptor.command(this);
-    };
     Command.prototype.setArguments = function (args) { this.definition.arguments(args); };
     Command.prototype.setOptions = function (options) { this.definition.options(options); };
     Command.prototype.line = function (text) { this.out.writeln(text); };
