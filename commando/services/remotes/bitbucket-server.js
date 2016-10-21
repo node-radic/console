@@ -13,27 +13,37 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _ = require('lodash');
 var connection_remote_1 = require("../connection.remote");
 var connection_1 = require("../connection");
-var BitbucketRemote = (function (_super) {
-    __extends(BitbucketRemote, _super);
-    function BitbucketRemote() {
+var BitbucketServerExtra = (function (_super) {
+    __extends(BitbucketServerExtra, _super);
+    function BitbucketServerExtra() {
         _super.apply(this, arguments);
-        this.usesExtra = false;
+        this.name = 'url';
+        this.prettyName = 'Bitbucket Server Base URL';
     }
-    BitbucketRemote.prototype.getAuthMethods = function () { return [connection_1.AuthMethod.basic, connection_1.AuthMethod.oauth2, connection_1.AuthMethod.oauth]; };
-    BitbucketRemote.prototype.init = function () {
+    return BitbucketServerExtra;
+}(connection_remote_1.RemoteExtra));
+exports.BitbucketServerExtra = BitbucketServerExtra;
+var BitbucketServerRemote = (function (_super) {
+    __extends(BitbucketServerRemote, _super);
+    function BitbucketServerRemote() {
+        _super.apply(this, arguments);
+        this.usesExtra = true;
+        this.extraDefinition = new BitbucketServerExtra();
+    }
+    BitbucketServerRemote.prototype.getAuthMethods = function () { return [connection_1.AuthMethod.basic, connection_1.AuthMethod.oauth2, connection_1.AuthMethod.oauth]; };
+    BitbucketServerRemote.prototype.init = function () {
         _.merge(this.defaultRequestOptions, {
-            baseUrl: 'https://bitbucket.org',
+            baseUrl: this.connection.extra,
             auth: { username: this.connection.key, password: this.connection.secret }
         });
     };
-    BitbucketRemote = __decorate([
-        connection_remote_1.remote('bitbucket', 'Bitbucket'), 
+    BitbucketServerRemote = __decorate([
+        connection_remote_1.remote('bitbucket_server', 'Bitbucket Server'), 
         __metadata('design:paramtypes', [])
-    ], BitbucketRemote);
-    return BitbucketRemote;
+    ], BitbucketServerRemote);
+    return BitbucketServerRemote;
 }(connection_remote_1.Remote));
-exports.BitbucketRemote = BitbucketRemote;
-//# sourceMappingURL=bitbucket.js.map
+exports.BitbucketServerRemote = BitbucketServerRemote;
+//# sourceMappingURL=bitbucket-server.js.map

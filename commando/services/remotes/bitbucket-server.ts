@@ -10,7 +10,7 @@ export class BitbucketServerExtra extends RemoteExtra {
 
 @remote('bitbucket_server', 'Bitbucket Server')
 export class BitbucketServerRemote extends Remote {
-    authMethods    = [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth]
+    getAuthMethods(){ return  [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth] }
     usesExtra = true
     extraDefinition = new BitbucketServerExtra()
 

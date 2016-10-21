@@ -6,7 +6,7 @@ import * as rp from "request-promise";
 @remote('github', 'Github')
 export class GithubRemote extends Remote {
     usesExtra   = false
-    authMethods = [ AuthMethod.basic, AuthMethod.oauth, AuthMethod.token ]
+    getAuthMethods(){ return  [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth] }
 
     protected init() {
         _.merge(this.defaultRequestOptions, {

@@ -70,7 +70,14 @@ declare module "trucolor";
 declare module "globule";
 
 
-
+declare module "window-size" {
+    interface WindowSize {
+        height: number
+        width: number
+    }
+    let ws:WindowSize
+    export = ws
+}
 
 declare module "headway"
 declare module "cmdify"

@@ -13,98 +13,45 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var util_1 = require("@radic/util");
-var _ = require("lodash");
 var core_1 = require("../core");
 var database_1 = require("./database");
-var AuthMethod = (function (_super) {
-    __extends(AuthMethod, _super);
-    function AuthMethod() {
-        _super.apply(this, arguments);
-    }
-    AuthMethod.getKeyName = function (method) {
-        return AuthMethod.getName(method, true);
-    };
-    AuthMethod.getSecretName = function (method) {
-        return AuthMethod.getName(method, false);
-    };
-    AuthMethod.prototype.equals = function (method) {
-        if (typeof method === 'string') {
-            return this.value === method;
-        }
-        if (method instanceof AuthMethod) {
-            return this.value === method.value;
-        }
-        return false;
-    };
-    AuthMethod.getName = function (method, key) {
-        if (key === void 0) { key = true; }
-        switch (true) {
-            case method == AuthMethod.basic:
-                return key ? 'username' : 'password';
-            case method == AuthMethod.oauth:
-                return key ? 'key' : 'secret';
-            case method == AuthMethod.oauth2:
-                return key ? 'id' : 'secret';
-            case method == AuthMethod.token:
-                return key ? 'username' : 'token';
-        }
-    };
-    Object.defineProperty(AuthMethod.prototype, "name", {
-        get: function () {
-            return this.value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AuthMethod.prototype, "keyName", {
-        get: function () {
-            return AuthMethod.getKeyName(AuthMethod[this.value]);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    AuthMethod.basic = new AuthMethod('basic');
-    AuthMethod.oauth = new AuthMethod('oauth');
-    AuthMethod.oauth2 = new AuthMethod('oauth2');
-    AuthMethod.token = new AuthMethod('token');
-    return AuthMethod;
-}(util_1.StringType));
-exports.AuthMethod = AuthMethod;
+var connection_remote_1 = require("./connection.remote");
 var Connection = (function (_super) {
     __extends(Connection, _super);
     function Connection() {
-        _super.call(this);
-        this.fields = {
-            id: 'number',
-            name: 'string',
-            method: 'string',
-            key: 'string',
-            secret: 'string',
-            extra: 'object'
-        };
+        _super.apply(this, arguments);
+        this._extra = '{}';
     }
+    Object.defineProperty(Connection.prototype, "extra", {
+        get: function () { return JSON.parse(this._extra); },
+        set: function (val) { this._extra = JSON.stringify(val); },
+        enumerable: true,
+        configurable: true
+    });
     Connection.prototype.getMethod = function () {
-        return AuthMethod[this.method];
+        return connection_remote_1.AuthMethod[this.method];
     };
     Connection.prototype.getRemote = function () {
-        var reg = this.remotes.get(this.remote);
-        var remote = this.remotes.create(this.remote, this);
-        return remote;
+        return this.remotes.create(this.remote, this);
     };
-    Connection.prototype.fill = function (data) {
-        var _this = this;
-        Object.keys(this.fields).forEach(function (fieldName) {
-            if (data[fieldName]) {
-                var setterMethod = 'set' + _.upperFirst(fieldName);
-                if (_this[setterMethod]) {
-                    return _this[setterMethod](data[fieldName]);
-                }
-                _this[fieldName] = data[fieldName];
-            }
-        });
-    };
+    __decorate([
+        core_1.inject(core_1.COMMANDO.REMOTES), 
+        __metadata('design:type', connection_remote_1.RemoteFactory)
+    ], Connection.prototype, "remotes", void 0);
+    __decorate([
+        core_1.inject(core_1.COMMANDO.CONNECTIONS), 
+        __metadata('design:type', ConnectionRepository)
+    ], Connection.prototype, "repository", void 0);
     Connection = __decorate([
+        database_1.model('connection', {
+            table: 'connections',
+            fields: ['name', 'method', 'remote', 'key', 'secret', 'extra'],
+            key: {
+                name: 'name',
+                type: 'string',
+                auto: true
+            }
+        }),
         core_1.provide(core_1.COMMANDO.CONNECTION), 
         __metadata('design:paramtypes', [])
     ], Connection);
@@ -115,18 +62,8 @@ var ConnectionRepository = (function (_super) {
     __extends(ConnectionRepository, _super);
     function ConnectionRepository() {
         _super.apply(this, arguments);
-        this.table = 'connections';
     }
-    ConnectionRepository.prototype.createModel = function () {
-        return core_1.kernel.build(core_1.COMMANDO.CONNECTION);
-    };
-    ConnectionRepository.prototype.add = function (data) {
-        data.id = this.getCountRecords();
-        this.query.push(data).value();
-    };
-    ConnectionRepository.prototype.getCountRecords = function () {
-        return parseInt(this.query.size().value());
-    };
+    ConnectionRepository.prototype.getModelID = function () { return 'connection'; };
     ConnectionRepository = __decorate([
         core_1.provideSingleton(core_1.COMMANDO.CONNECTIONS), 
         __metadata('design:paramtypes', [])

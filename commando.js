@@ -15,27 +15,23 @@ cli.globalDefinition
 });
 cli.definition
     .options({
-    version: { desc: 'Show version', boolean: true },
+    V: { alias: 'version', desc: 'Show version', boolean: true },
     t: { alias: 'tree', desc: 'Display command tree', boolean: true }
 });
 cli.parse(process.argv);
 var parsed = cli.parsed;
 if (parsed.global.opt('v')) {
-    cli.log.setLevel(parsed.global.opt('v'));
+    cli.log.setLevel(2 + parsed.global.opt('v'));
     var m = {
         version: { desc: 'Show version', boolean: true },
         t: { alias: 'tree', desc: 'Display command tree', boolean: true }
     };
-    cli.log.error('error', m);
-    cli.log.warn('warn', m);
+    cli.log.error('error');
+    cli.log.warn('warn');
     cli.log.info('info');
     cli.log.verbose('verse');
     cli.log.debug('verse');
     cli.log.silly('silly');
-}
-if (parsed.opt('d')) {
-    cli.log.setLevel('debug');
-    cli.log.getWinston();
 }
 if (parsed.opt('t')) {
     var descriptor = src_1.kernel.get(src_1.BINDINGS.DESCRIPTOR);

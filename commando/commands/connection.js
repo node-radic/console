@@ -16,7 +16,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var src_1 = require("../../src");
 var core_1 = require("../core");
 var services_1 = require("../services");
+var connection_1 = require("../services/connection");
 var connection_remote_1 = require("../services/connection.remote");
+var util_1 = require("util");
+var ws = require('window-size');
 var ConnectionGroup = (function (_super) {
     __extends(ConnectionGroup, _super);
     function ConnectionGroup() {
@@ -55,7 +58,7 @@ var ConnectionCommand = (function (_super) {
     };
     __decorate([
         core_1.inject(core_1.COMMANDO.CONNECTIONS), 
-        __metadata('design:type', Object)
+        __metadata('design:type', connection_1.ConnectionRepository)
     ], ConnectionCommand.prototype, "connections", void 0);
     __decorate([
         core_1.inject(core_1.COMMANDO.REMOTES), 
@@ -75,7 +78,7 @@ var AddConnectionCommand = (function (_super) {
         this.usage = '$0 [name] <remote?> <method?> <key?> <secret> <extra??>';
         this.example = "\n$0 bb  bitbucket        basic   username    password\n$0 bbs bitbucket_server oauth2  a3#A$j342   2i34@k24j https://ci.radic.nl\n";
         this.arguments = {
-            name: { desc: 'The name of the connection', required: true },
+            name: { desc: 'The name of the connection' },
             remote: { desc: 'Remote to connect to' },
             method: { desc: 'Auth method' },
             key: { desc: '' },
@@ -83,17 +86,36 @@ var AddConnectionCommand = (function (_super) {
             extra: { desc: '' },
         };
     }
+    AddConnectionCommand.prototype.validateName = function (name) {
+        if (this.connections.has(name)) {
+            return 'A connection with that name already exists';
+        }
+    };
     AddConnectionCommand.prototype.handle = function () {
         var _this = this;
         _super.prototype.handle.call(this);
+        var con = this.connections.find('connections');
+        var m = this.connections.find('hello');
+        var model = this.connections.model({
+            name: 'hello',
+            remote: 'bitbucket',
+            method: 'basic',
+            key: 'radic',
+            secret: '',
+            extra: JSON.stringify({ url: 'https://projects.radic.nl' })
+        });
+        model.save();
+        this.cli.exit();
         this.askArgs({
-            name: { type: 'input', message: 'name' },
+            name: { type: 'input', message: 'name', validate: function (input) { return _this.validateName(input); } },
             remote: { type: 'list', message: 'remote', choices: function (answers) { return _this.remotes.names(); } },
             method: { type: 'list', message: 'authentication method', choices: function (answers) { return ['basic', 'oauth2', 'oauth', 'token']; } },
             key: { type: 'input', message: function (answers) { return services_1.AuthMethod.getKeyName(answers.method || _this.parsed.arg('method')); } },
             secret: { type: 'password', message: function (answers) { return services_1.AuthMethod.getSecretName(answers.method || _this.parsed.arg('method')); } },
         }, this.argv).then(function (args) {
             _this.out.dump(args);
+            var model = _this.connections.model(args);
+            model.save();
         });
     };
     AddConnectionCommand = __decorate([
@@ -108,6 +130,29 @@ var ListConnectionCommand = (function (_super) {
     function ListConnectionCommand() {
         _super.apply(this, arguments);
     }
+    ListConnectionCommand.prototype.handle = function () {
+        _super.prototype.handle.call(this);
+        var head = ['Name', 'Remote', 'Auth Method', 'Extra'];
+        var table = this.out.columns({
+            head: head
+        });
+        var cols = process.stdout['columns'];
+        function calc(head, max) {
+            if (max === void 0) { max = 100; }
+            var percentWidth = max / 100;
+            var colPercent = 100 / head.length;
+            var colWidth = colPercent * percentWidth;
+            return head.map(function (col) {
+                return colWidth;
+            });
+        }
+        var colsWidth = calc(head, ws.width);
+        this.connections.all().forEach(function (con) {
+            table.push([con.name, con.remote, con.method, util_1.inspect(con.extra, { colors: false, depth: 1, showHidden: false })]);
+        });
+        this.out.writeln(table.toString());
+        var a = 'a';
+    };
     ListConnectionCommand = __decorate([
         src_1.command('list', 'List connections', 'List connections or remotes', ConnectionGroup), 
         __metadata('design:paramtypes', [])

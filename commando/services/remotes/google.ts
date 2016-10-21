@@ -4,7 +4,7 @@ import { AuthMethod } from "../connection";
 
 @remote('google', 'Google')
 export class GoogleRemote extends Remote {
-    authMethods    = [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth]
+    getAuthMethods(){ return  [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth] }
     usesExtra = false
 
     protected init() {

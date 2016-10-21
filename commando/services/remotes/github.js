@@ -21,8 +21,8 @@ var GithubRemote = (function (_super) {
     function GithubRemote() {
         _super.apply(this, arguments);
         this.usesExtra = false;
-        this.authMethods = [connection_1.AuthMethod.basic, connection_1.AuthMethod.oauth, connection_1.AuthMethod.token];
     }
+    GithubRemote.prototype.getAuthMethods = function () { return [connection_1.AuthMethod.basic, connection_1.AuthMethod.oauth2, connection_1.AuthMethod.oauth]; };
     GithubRemote.prototype.init = function () {
         _.merge(this.defaultRequestOptions, {
             baseUrl: 'https://api.github.com/',

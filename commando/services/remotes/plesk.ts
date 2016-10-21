@@ -4,7 +4,7 @@ import { AuthMethod } from "../connection";
 
 @remote('plesk', 'Plesk')
 export class PleskRemote extends Remote {
-    authMethods    = [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth]
+    getAuthMethods(){ return  [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth] }
     usesExtra = false
 
     protected init() {

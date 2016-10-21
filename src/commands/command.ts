@@ -9,6 +9,7 @@ import { BaseCommandRegistration, ICommandRegistration } from "./factory";
 import { IHelper, IHelpers } from "../core/helpers";
 
 
+
 export interface ICommandHelper extends IHelper {
 
 }
@@ -115,6 +116,26 @@ export class Command extends BaseCommandRegistration implements ICommand {
         return defer.promise;
     }
 
+    /**
+     * Interactively ask for arguments.
+     * This can work on optional arguments, where `require: false` (default).
+     * @param questions
+     * @param argv
+     * @returns {any}
+     * @example
+     * class MyCmd extends Command {
+     *      arguments = {
+     *          type: { desc: 'Enter the type' }
+     *      }
+     *      handle(){
+     *          this.askArgs([
+     *              type: { type: 'list', message: 'Choose your type', choices: ['sqlite', 'mysql', 'mssql'] }
+     *          ], this.argv).then((args) => {
+     *              this.out.dump(args)
+     *          })
+     *      }
+     * }
+     */
     askArgs(questions: {[name: string]: inquirer.Question}, argv: any) {
         var defer = BB.defer();
         let names = Object.keys(questions)
@@ -145,6 +166,8 @@ export class Command extends BaseCommandRegistration implements ICommand {
 
 
     }
+
+
 
     arg(n) { return this.parsed.arg(n) }
 

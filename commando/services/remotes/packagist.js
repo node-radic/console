@@ -13,27 +13,26 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _ = require('lodash');
 var connection_remote_1 = require("../connection.remote");
 var connection_1 = require("../connection");
-var BitbucketRemote = (function (_super) {
-    __extends(BitbucketRemote, _super);
-    function BitbucketRemote() {
+var PackagistRemote = (function (_super) {
+    __extends(PackagistRemote, _super);
+    function PackagistRemote() {
         _super.apply(this, arguments);
         this.usesExtra = false;
     }
-    BitbucketRemote.prototype.getAuthMethods = function () { return [connection_1.AuthMethod.basic, connection_1.AuthMethod.oauth2, connection_1.AuthMethod.oauth]; };
-    BitbucketRemote.prototype.init = function () {
+    PackagistRemote.prototype.getAuthMethods = function () { return [connection_1.AuthMethod.basic, connection_1.AuthMethod.oauth2, connection_1.AuthMethod.oauth]; };
+    PackagistRemote.prototype.init = function () {
         _.merge(this.defaultRequestOptions, {
-            baseUrl: 'https://bitbucket.org',
+            baseUrl: this.connection.extra,
             auth: { username: this.connection.key, password: this.connection.secret }
         });
     };
-    BitbucketRemote = __decorate([
-        connection_remote_1.remote('bitbucket', 'Bitbucket'), 
+    PackagistRemote = __decorate([
+        connection_remote_1.remote('packagist', 'Packagist'), 
         __metadata('design:paramtypes', [])
-    ], BitbucketRemote);
-    return BitbucketRemote;
+    ], PackagistRemote);
+    return PackagistRemote;
 }(connection_remote_1.Remote));
-exports.BitbucketRemote = BitbucketRemote;
-//# sourceMappingURL=bitbucket.js.map
+exports.PackagistRemote = PackagistRemote;
+//# sourceMappingURL=packagist.js.map

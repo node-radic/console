@@ -19,7 +19,7 @@
     "minor": "mversion minor -m",
     "major": "mversion major -m",
     "posttest": "echo \"DONE!\"",
-    "docs": "rm -r docs/typedocs; typedoc --hideGenerator --includeDeclarations --mode file --out docs/typedocs --tsconfig tsconfig.docs.json --readme README.md lib"
+    "docs": "rm -r docs/typedocs; /home/radic/.node/bin/typedoc --hideGenerator --includeDeclarations --mode file --out docs/typedocs --tsconfig tsconfig.docs.json --readme README.md commando"
   },
   "keywords": [],
   "author": "Robin Radic",

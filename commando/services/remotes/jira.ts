@@ -1,10 +1,17 @@
+import * as _ from 'lodash'
 import {remote, RemoteExtra, Remote } from "../connection.remote";
 import { AuthMethod } from "../connection";
 
 
+
+export class JiraExtra extends RemoteExtra {
+    name = 'url'
+    prettyName = 'Jira Server Base URL'
+}
+
 @remote('jira', 'Jira')
 export class JiraRemote extends Remote {
-    authMethods    = [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth]
+    getAuthMethods(){ return  [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth] }
     usesExtra = false
 
     protected init() {

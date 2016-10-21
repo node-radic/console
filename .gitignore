@@ -46,3 +46,4 @@ dev
 lib/typings/tsd
 
 src/scripts2
+.env

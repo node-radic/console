@@ -4,7 +4,7 @@ import { AuthMethod } from "../connection";
 
 @remote('packagist', 'Packagist')
 export class PackagistRemote extends Remote {
-    authMethods    = [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth]
+    getAuthMethods(){ return  [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth] }
     usesExtra = false
 
     protected init() {

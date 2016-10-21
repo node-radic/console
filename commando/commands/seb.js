@@ -13,27 +13,33 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _ = require('lodash');
-var connection_remote_1 = require("../connection.remote");
-var connection_1 = require("../connection");
-var BitbucketRemote = (function (_super) {
-    __extends(BitbucketRemote, _super);
-    function BitbucketRemote() {
+var src_1 = require("../../src");
+var SebGroup = (function (_super) {
+    __extends(SebGroup, _super);
+    function SebGroup() {
         _super.apply(this, arguments);
-        this.usesExtra = false;
     }
-    BitbucketRemote.prototype.getAuthMethods = function () { return [connection_1.AuthMethod.basic, connection_1.AuthMethod.oauth2, connection_1.AuthMethod.oauth]; };
-    BitbucketRemote.prototype.init = function () {
-        _.merge(this.defaultRequestOptions, {
-            baseUrl: 'https://bitbucket.org',
-            auth: { username: this.connection.key, password: this.connection.secret }
-        });
-    };
-    BitbucketRemote = __decorate([
-        connection_remote_1.remote('bitbucket', 'Bitbucket'), 
+    SebGroup = __decorate([
+        src_1.group('seb', 'Seb commands', 'Provides commands for seb'), 
         __metadata('design:paramtypes', [])
-    ], BitbucketRemote);
-    return BitbucketRemote;
-}(connection_remote_1.Remote));
-exports.BitbucketRemote = BitbucketRemote;
-//# sourceMappingURL=bitbucket.js.map
+    ], SebGroup);
+    return SebGroup;
+}(src_1.Group));
+exports.SebGroup = SebGroup;
+var ShowSebCommand = (function (_super) {
+    __extends(ShowSebCommand, _super);
+    function ShowSebCommand() {
+        _super.apply(this, arguments);
+    }
+    ShowSebCommand.prototype.handle = function () {
+        var color = this.opt('g') ? 'green' : 'yellow';
+        this.line("This is the {" + color + "}show {bold}seb{/" + color + "} command{/bold}");
+    };
+    ShowSebCommand = __decorate([
+        src_1.command('show', 'Show Seb', 'Show this seb', SebGroup), 
+        __metadata('design:paramtypes', [])
+    ], ShowSebCommand);
+    return ShowSebCommand;
+}(src_1.Command));
+exports.ShowSebCommand = ShowSebCommand;
+//# sourceMappingURL=seb.js.map

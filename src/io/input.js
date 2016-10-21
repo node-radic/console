@@ -27,6 +27,32 @@ var Input = (function () {
         });
         return defer.promise;
     };
+    Input.prototype.askArgs = function (questions, argv) {
+        var defer = BB.defer();
+        var names = Object.keys(questions);
+        if (argv.noInteraction) {
+            defer.resolve(_.pick(argv, names));
+            return defer.promise;
+        }
+        var pm = function (name, opts) { return _.merge({
+            name: name,
+            when: function (answers) { return !argv._[name]; }
+        }, opts); };
+        var prompts = names.map(function (name) {
+            return pm(name, questions[name]);
+        });
+        return this.prompt(prompts).then(function (args) {
+            args = _.chain(argv)
+                .pick(names)
+                .merge(args)
+                .value();
+            defer.resolve(args);
+            return defer.promise;
+        });
+    };
+    Input.prototype.prompt = function (prompts) {
+        return inquirer.prompt(prompts);
+    };
     Input = __decorate([
         inversify_1.injectable(), 
         __metadata('design:paramtypes', [])

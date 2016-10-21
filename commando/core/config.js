@@ -5,6 +5,7 @@ var path_1 = require("path");
 var fs_1 = require("fs");
 var dotenv = require("dotenv");
 var defaultConfig = {
+    debug: false,
     cli: {
         showCopyright: true
     },
@@ -14,9 +15,22 @@ var defaultConfig = {
 };
 var _config = new util_1.PersistentConfig(defaultConfig, paths_1.paths.userDataConfig);
 var denvPath = path_1.join(paths_1.paths.root, '.env');
+function parseEnvVal(val) {
+    if (val === 'true' || val === 'false') {
+        return val === 'true';
+    }
+    if (isFinite(val))
+        return parseInt(val);
+    return val;
+}
 if (fs_1.existsSync(denvPath)) {
     var denv = dotenv.parse(fs_1.readFileSync(denvPath));
-    Object.keys(denv).forEach(function (key) { return _config.set(key.toLowerCase().replace('_', '.'), denv[key]); });
+    Object.keys(denv).forEach(function (key) {
+        var value = parseEnvVal(denv[key]);
+        key = key.replace('_', '.');
+        if (_config.has(key))
+            _config.set(key, value);
+    });
 }
 var config = util_1.Config.makeProperty(_config);
 exports.config = config;

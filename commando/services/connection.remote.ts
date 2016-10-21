@@ -1,21 +1,67 @@
 import { StringType } from "@radic/util";
 import * as _ from "lodash";
-import { kernel, COMMANDO, provideSingleton } from "../core";
+import { injectable, kernel, COMMANDO, provideSingleton } from "../core";
 import * as rp from "request-promise";
-import { AuthMethod, IConnection } from "./connection";
+import {  Connection } from "./connection";
 export { RequestPromise, Options as RequestOptions } from "request-promise";
 export { StatusCodeError } from "request-promise/errors";
 
 
+export class AuthMethod extends StringType {
+    static basic  = new AuthMethod('basic')
+    static oauth  = new AuthMethod('oauth')
+    static oauth2 = new AuthMethod('oauth2')
+    static token  = new AuthMethod('token')
+
+
+    static getKeyName(method: AuthMethod|string) {
+        return AuthMethod.getName(method, true);
+    }
+
+    static getSecretName(method: AuthMethod|string) {
+        return AuthMethod.getName(method, false);
+    }
+
+    equals(method: any): boolean {
+        if ( typeof method === 'string' ) {
+            return this.value === method
+        }
+        if ( method instanceof AuthMethod ) {
+            return this.value === method.value;
+        }
+        return false;
+    }
+
+    private static getName(method: AuthMethod|string, key: boolean = true) {
+        switch ( true ) {
+            case method == AuthMethod.basic:
+                return key ? 'username' : 'password'
+            case method == AuthMethod.oauth:
+                return key ? 'key' : 'secret'
+            case method == AuthMethod.oauth2:
+                return key ? 'id' : 'secret'
+            case method == AuthMethod.token:
+                return key ? 'username' : 'token'
+        }
+    }
+
+    get name(): string {
+        return this.value
+    }
+
+    get keyName(): string {
+        return AuthMethod.getKeyName(AuthMethod[ this.value ])
+    }
+}
+
 export interface IRemote {
     name: string
     prettyName: string
-
-    authMethods: AuthMethod[]
-    connection: IConnection
-
+    connection: Connection
     hasExtra: boolean
     extraDefinition ?: RemoteExtra
+    callInit()
+    getAuthMethods(): AuthMethod[]
 }
 
 export interface IRemoteRegistration {
@@ -41,12 +87,13 @@ export class RemoteFactory {
         this.remotes[ name ] = cls
     }
 
-    create<T extends IRemote>(name, connection: IConnection): T {
+    create<T extends IRemote>(name, connection: Connection): T {
         let reg           = this.get(name);
         let remote        = kernel.build<T>(reg.cls);
         remote.connection = connection;
         remote.name       = reg.name
         remote.prettyName = reg.prettyName
+        remote.callInit()
         return remote;
     }
 
@@ -73,16 +120,15 @@ export function remote(name: string, prettyName: string, type: RemoteType = Remo
     }
 }
 
-
+@injectable()
 export abstract class Remote implements IRemote {
-    abstract get authMethods(): Array<AuthMethod>
-
+    abstract getAuthMethods(): AuthMethod[]
     name: string
     prettyName: string
-
+    extra:RemoteExtra;
     hasExtra: boolean = false;
-    connection: IConnection
-
+    connection: Connection
+    inited: boolean = false
 
     protected defaultRequestOptions: rp.Options = <any> {
         baseUrl: '',
@@ -99,12 +145,15 @@ export abstract class Remote implements IRemote {
     };
 
     constructor() {
+
+    }
+
+    callInit(){
+        if(this.inited) return false;
+        this.inited = true
         this.init();
     }
-
-    protected init() {
-
-    }
+    protected abstract init() ;
 
     validate(): boolean | string[] {
         return true;

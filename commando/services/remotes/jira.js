@@ -16,24 +16,34 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var _ = require('lodash');
 var connection_remote_1 = require("../connection.remote");
 var connection_1 = require("../connection");
-var BitbucketRemote = (function (_super) {
-    __extends(BitbucketRemote, _super);
-    function BitbucketRemote() {
+var JiraExtra = (function (_super) {
+    __extends(JiraExtra, _super);
+    function JiraExtra() {
+        _super.apply(this, arguments);
+        this.name = 'url';
+        this.prettyName = 'Jira Server Base URL';
+    }
+    return JiraExtra;
+}(connection_remote_1.RemoteExtra));
+exports.JiraExtra = JiraExtra;
+var JiraRemote = (function (_super) {
+    __extends(JiraRemote, _super);
+    function JiraRemote() {
         _super.apply(this, arguments);
         this.usesExtra = false;
     }
-    BitbucketRemote.prototype.getAuthMethods = function () { return [connection_1.AuthMethod.basic, connection_1.AuthMethod.oauth2, connection_1.AuthMethod.oauth]; };
-    BitbucketRemote.prototype.init = function () {
+    JiraRemote.prototype.getAuthMethods = function () { return [connection_1.AuthMethod.basic, connection_1.AuthMethod.oauth2, connection_1.AuthMethod.oauth]; };
+    JiraRemote.prototype.init = function () {
         _.merge(this.defaultRequestOptions, {
-            baseUrl: 'https://bitbucket.org',
+            baseUrl: this.connection.extra,
             auth: { username: this.connection.key, password: this.connection.secret }
         });
     };
-    BitbucketRemote = __decorate([
-        connection_remote_1.remote('bitbucket', 'Bitbucket'), 
+    JiraRemote = __decorate([
+        connection_remote_1.remote('jira', 'Jira'), 
         __metadata('design:paramtypes', [])
-    ], BitbucketRemote);
-    return BitbucketRemote;
+    ], JiraRemote);
+    return JiraRemote;
 }(connection_remote_1.Remote));
-exports.BitbucketRemote = BitbucketRemote;
-//# sourceMappingURL=bitbucket.js.map
+exports.JiraRemote = JiraRemote;
+//# sourceMappingURL=jira.js.map

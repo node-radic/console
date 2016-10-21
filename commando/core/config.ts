@@ -1,16 +1,16 @@
-import {Config, PersistentConfig, IConfigProperty} from "@radic/util";
-import {paths} from "./paths";
-import {join} from "path";
-import {readFileSync, existsSync} from "fs";
+import { Config, PersistentConfig, IConfigProperty } from "@radic/util";
+import { paths } from "./paths";
+import { join } from "path";
+import { readFileSync, existsSync } from "fs";
 import * as dotenv from "dotenv";
 
 
-
 let defaultConfig: any = {
-    cli : {
+    debug: false,
+    cli  : {
         showCopyright: true
     },
-    auth: {
+    auth : {
         connections: []
     }
 };
@@ -20,11 +20,24 @@ let _config = new PersistentConfig(defaultConfig, paths.userDataConfig);
 
 // load .env stuff
 var denvPath = join(paths.root, '.env');
-if (existsSync(denvPath)) {
+function parseEnvVal(val: any) {
+    if ( val === 'true' || val === 'false' ) {
+        return val === 'true'
+    }
+    if(isFinite(val)) return parseInt(val)
+    return val
+}
+if ( existsSync(denvPath) ) {
     var denv = dotenv.parse(readFileSync(denvPath));
-    Object.keys(denv).forEach((key) => _config.set(key.toLowerCase().replace('_', '.'), denv[key]))
+    Object.keys(denv).forEach((key:string) => {
+        let value = parseEnvVal(denv[key])
+        key = key.replace('_', '.');
+        // only set if its actually a config key
+        if(_config.has(key))
+            _config.set(key, value)
+    })
 }
 
 // export the wrapped config
 let config: IConfigProperty = Config.makeProperty(_config);
-export {config, IConfigProperty};
+export { config, IConfigProperty };

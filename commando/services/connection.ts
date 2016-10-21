@@ -1,159 +1,136 @@
 import { StringType } from "@radic/util";
-import * as _ from "lodash";
-import { kernel, provide, inject, COMMANDO, provideSingleton } from "../core";
-import { IModel, Model, IRepository, Repository } from "./database";
-import { IRemote, RemoteFactory } from "./connection.remote";
+import { inject, provide, COMMANDO, provideSingleton } from "../core";
+import { Model, Repository, model } from "./database";
+import { IRemote, RemoteFactory, AuthMethod } from "./connection.remote";
 
 // import * as rp from "request-promise";
 // export {RequestPromise, Options as RequestOptions} from "request-promise";
 // export {StatusCodeError} from "request-promise/errors";
 
 
-
-export class AuthMethod extends StringType {
-    static basic  = new AuthMethod('basic')
-    static oauth  = new AuthMethod('oauth')
-    static oauth2 = new AuthMethod('oauth2')
-    static token  = new AuthMethod('token')
-
-
-    static getKeyName(method: AuthMethod|string) {
-        return AuthMethod.getName(method, true);
+@model('connection', {
+    table : 'connections',
+    fields: [ 'name', 'method', 'remote', 'key', 'secret', 'extra' ],
+    key   : {
+        name: 'name',
+        type: 'string',
+        auto: true
     }
-
-    static getSecretName(method: AuthMethod|string) {
-        return AuthMethod.getName(method, false);
-    }
-
-    equals(method: any): boolean {
-        if ( typeof method === 'string' ) {
-            return this.value === method
-        }
-        if ( method instanceof AuthMethod ) {
-            return this.value === method.value;
-        }
-        return false;
-    }
-
-    private static getName(method: AuthMethod|string, key: boolean = true) {
-        switch ( true ) {
-            case method == AuthMethod.basic:
-                return key ? 'username' : 'password'
-            case method == AuthMethod.oauth:
-                return key ? 'key' : 'secret'
-            case method == AuthMethod.oauth2:
-                return key ? 'id' : 'secret'
-            case method == AuthMethod.token:
-                return key ? 'username' : 'token'
-        }
-    }
-
-    get name(): string {
-        return this.value
-    }
-
-    get keyName(): string {
-        return AuthMethod.getKeyName(AuthMethod[ this.value ])
-    }
-}
-
-
-
-export interface IConnection extends IModel {
-
-    id: number
-    method: string
-    remote: string
-    key: string
-    secret: string
-    extra: string
-
-    getMethod(): AuthMethod
-    getRemote(): IRemote
-
-}
-
-
+})
 @provide(COMMANDO.CONNECTION)
-export class Connection extends Model implements IConnection {
-
-    id: number
+export class Connection extends Model {
+    name: string
     method: string
     remote: string
     key: string
     secret: string
-    extra: string
 
-    getMethod():AuthMethod {
-        return AuthMethod[this.method]
+    _extra: string = '{}'
+    get extra(): Object { return JSON.parse(this._extra) }
+
+    set extra(val: Object) { this._extra = JSON.stringify(val) }
+
+    getMethod() {
+        return AuthMethod[ this.method ]
     }
 
+    getRemote(): IRemote {
+        return this.remotes.create(this.remote, this)
+    }
+
+    @inject(COMMANDO.REMOTES)
     protected remotes: RemoteFactory;
 
-    getRemote():IRemote {
-        let reg = this.remotes.get(this.remote);
-        let remote = this.remotes.create(this.remote, this);
-        return remote;
-    }
+    @inject(COMMANDO.CONNECTIONS)
+    protected repository: ConnectionRepository
 
-    fields: {[name: string]: string} = {
-        id    : 'number',
-        name  : 'string',
-        method: 'string',
-        key   : 'string',
-        secret: 'string',
-        extra : 'object'
-    }
-
-    constructor() {
-        super();
-    }
-
-    fill(data: IConnectionFields) {
-        Object.keys(this.fields).forEach((fieldName: string) => {
-            if ( data[ fieldName ] ) {
-                // check if attribute has a custom setter
-                let setterMethod = 'set' + _.upperFirst(fieldName);
-                if ( this[ setterMethod ] ) {
-                    return this[ setterMethod ](data[ fieldName ])
-                }
-                // otherwise just set it
-                this[ fieldName ] = data[ fieldName ]
-            }
-        })
-    }
-}
-
-
-export interface IConnectionRepository extends IRepository<IConnection> {
-
-}
-export interface IConnectionFields {
-    id: number
-    name: string
-    auth: string
-    method: string
-    key: string
-    secret: string
-    extra: Object
 }
 
 @provideSingleton(COMMANDO.CONNECTIONS)
-export class ConnectionRepository extends Repository<Connection> implements IConnectionRepository {
-    table = 'connections'
+export class ConnectionRepository extends Repository<Connection> {
 
-    createModel(): Connection {
-        return kernel.build<Connection>(COMMANDO.CONNECTION)
-    }
+    getModelID() { return 'connection' }
 
-    add(data: IConnectionFields) {
-        data.id = this.getCountRecords()
-        this.query.push(data).value();
-    }
 
-    getCountRecords(): number {
-        return parseInt(this.query.size().value<string>())
-    }
+
 
 }
-
+//
+// export interface IRawConnection {
+//     name: string
+//     method: string
+//     remote: string
+//     key: string
+//     secret: string
+//     extra: string
+// }
+//
+// export interface IConnection {
+//     name: string
+//     method: AuthMethod
+//     remote: IRemote
+//     key: string
+//     secret: string
+//     extra: Object
+// }
+//
+// export class Connections {
+//
+//     table: string = 'connections'
+//
+//     key: TableKey = {
+//         name: 'name',
+//         type: 'string',
+//         auto: false
+//     }
+//
+//     @inject(COMMANDO.DATABASE)
+//     protected database: Database
+//
+//     @inject(COMMANDO.REMOTES)
+//     protected remotes: RemoteFactory;
+//
+//     _query: CommandoDatabaseQuery<IConnection>;
+//     get query(): CommandoDatabaseQuery<IConnection> {
+//         return this._query ? this._query : this._query = this.database.get(this.table);
+//     }
+//
+//
+//     has(name:string) :boolean {
+//         return this.get(name) !== undefined
+//     }
+//
+//     get(name:string) : IConnection | undefined {
+//         return this.query.find({name: name}).value<IConnection>()
+//     }
+//
+//     create(data:any){
+//
+//     }
+//
+//     update(data:any){
+//
+//     }
+//
+//     delete(name:string){
+//
+//     }
+//
+//     // to db
+//     protected serialize(data:IConnection) : any {
+//         let serialized:any = _.pick(data, ['name', 'key', 'secret'])
+//         serialized.method = data.method.toString()
+//         serialized.remote = data.remote.name
+//         serialized.extra = JSON.stringify(data.extra)
+//         return serialized;
+//     }
+//
+//     // from db
+//     protected deserialize(data) : IConnection {
+//         data.method = typeof data.method === 'string' ? AuthMethod[ data.method ] : data.method
+//         data.remote = typeof data.remote === 'string' ? this.remotes.create(data.remote, this)  : data.remote
+//         data.extra = typeof data.extra === 'string' ? JSON.parse(data.extra) : data.extra
+//         return data;
+//     }
+// }
+//

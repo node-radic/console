@@ -21,7 +21,7 @@ export interface IDescriptor {
     command(command: ICommand): this
 
     getCommandTree(from?: string): any[]
-     commandTree(label?: string, from?: string): this
+    commandTree(label?: string, from?: string): this
 
     getExample(definition: IOptionsDefinition): string
     example(definition: IOptionsDefinition): this
