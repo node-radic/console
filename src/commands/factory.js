@@ -122,9 +122,9 @@ var CommandFactory = (function () {
             return item.parent === (groupRegistration ? groupRegistration.cls : null);
         });
     };
-    CommandFactory.prototype.createCommand = function (commandRegistration, argv) {
+    CommandFactory.prototype.createCommand = function (registration, argv) {
         if (argv === void 0) { argv = []; }
-        var command = core_1.kernel.make(commandRegistration.cls);
+        var command = core_1.kernel.make(registration.cls);
         command.argv = argv;
         command.definition.mergeOptions(core_1.kernel.get(core_1.BINDINGS.CLI).globalDefinition);
         command.definition.arguments(command.arguments);
@@ -133,17 +133,18 @@ var CommandFactory = (function () {
             command.definition.example(command.example);
         if (command.usage)
             command.definition.usage(command.usage);
-        command.name = commandRegistration.name;
-        command.desc = commandRegistration.desc;
-        command.prettyName = commandRegistration.prettyName;
-        command.parent = commandRegistration.parent ? commandRegistration.parent : null;
+        command.name = registration.name;
+        command.desc = registration.desc;
+        command.prettyName = registration.prettyName;
+        command.parent = registration.parent ? registration.parent : null;
         return command;
     };
-    CommandFactory.prototype.createGroup = function (groupRegistration) {
-        var group = core_1.kernel.make(groupRegistration.cls);
-        group.name = groupRegistration.name;
-        group.desc = groupRegistration.desc;
-        group.parent = groupRegistration.parent ? groupRegistration.parent : null;
+    CommandFactory.prototype.createGroup = function (registration) {
+        var group = core_1.kernel.make(registration.cls);
+        group.name = registration.name;
+        group.desc = registration.desc;
+        group.prettyName = registration.prettyName;
+        group.parent = registration.parent ? registration.parent : null;
         return group;
     };
     CommandFactory.prototype.getTree = function () {

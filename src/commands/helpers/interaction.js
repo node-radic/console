@@ -27,11 +27,11 @@ var InteractionCommandHelper = (function () {
     };
     InteractionCommandHelper.prototype.askArgs = function (questions) {
         var _this = this;
-        var argv = _.clone(this.command.argv);
+        var args = _.clone(this.command.parsed.arguments);
         var defer = BB.defer();
         var names = Object.keys(questions);
-        if (argv.noInteraction) {
-            defer.resolve(_.pick(argv, names));
+        if (this.command.parsed.args.argv['noInteraction']) {
+            defer.resolve(_.pick(args, names));
             return defer.promise;
         }
         var pm = function (name, opts) { return _.merge({ name: name, type: 'input', when: function (answers) { return _this.command.hasArg(name) === false; } }, opts); };
@@ -40,12 +40,12 @@ var InteractionCommandHelper = (function () {
         });
         return inquirer.prompt(prompts)
             .catch(console.error.bind(console))
-            .then(function (args) {
-            args = _.chain(argv)
+            .then(function (answers) {
+            answers = _.chain(args)
                 .pick(names)
-                .merge(args)
+                .merge(answers)
                 .value();
-            defer.resolve(args);
+            defer.resolve(answers);
             return defer.promise;
         });
     };

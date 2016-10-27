@@ -10,3 +10,10 @@ export class InitCommand extends Command {
         this.out.success('Success')
     }
 }
+
+@command('test', 'Test R', 'Test a bit of R.')
+export class TestCommand extends Command {
+    handle() {
+        this.out.success('Success')
+    }
+}

@@ -44,8 +44,7 @@ var Command = (function (_super) {
     Command.prototype.showHelp = function (title, desc) {
         this.out
             .title(title || this.prettyName)
-            .line()
-            .line(desc || this.desc);
+            .description(desc || this.desc);
         this.descriptor.command(this);
     };
     Command.prototype.handleParseErrors = function () {

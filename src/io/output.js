@@ -85,35 +85,35 @@ var Output = (function () {
     };
     Output.prototype.write = function (text) {
         if (this.useParser && this.colorsEnabled)
-            text = this.parser.parse(text + '{reset}');
+            text = this.parser.parse(text);
         process.stdout.write(text);
         return this;
     };
     Output.prototype.success = function (text) {
-        this.configColorString('success', text);
+        this.styleString('success', text);
         return this;
     };
     Output.prototype.error = function (text) {
-        this.configColorString('error', text);
+        this.styleString('error', text);
         return this;
     };
-    Output.prototype.configColorString = function (color, text) {
-        this.writeln("{" + this.config('colors.' + color) + "}" + text);
+    Output.prototype.styleString = function (style, text) {
+        this.writeln("{" + style + "}" + text + "{/" + style + "}");
     };
     Output.prototype.description = function (text) {
-        this.configColorString('description', text);
+        this.styleString('description', text);
         return this;
     };
     Output.prototype.title = function (text) {
-        this.configColorString('title', text);
+        this.styleString('title', text);
         return this;
     };
     Output.prototype.subtitle = function (text) {
-        this.configColorString('subtitle', text);
+        this.styleString('subtitle', text);
         return this;
     };
     Output.prototype.header = function (text) {
-        this.configColorString('header', text);
+        this.styleString('header', text);
         return this;
     };
     Output.prototype.table = function (options) {
@@ -123,7 +123,8 @@ var Output = (function () {
     Output.prototype.columns = function (options) {
         if (options === void 0) { options = {}; }
         var chars = exports.TABLE_STYLE.NONE;
-        return new Table(util_2.kindOf(options) === 'array' ? lodash_1.merge({ head: options }, { chars: chars }) : lodash_1.merge(options, { chars: chars }));
+        options = util_2.kindOf(options) === 'array' ? lodash_1.merge({ head: options }, { chars: chars }) : lodash_1.merge(options, { chars: chars });
+        return new Table(options);
     };
     Output.prototype.setUseParser = function (use) {
         this.useParser = use;

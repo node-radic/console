@@ -40,6 +40,7 @@ var Log = (function () {
         });
     }
     Log.prototype._log = function (name, args) {
+        args[0] = this.out.parser.parse(args[0]);
         this.winston.log.apply(this.winston, [name].concat(args));
         return this;
     };
@@ -125,6 +126,10 @@ var Log = (function () {
         this.winston.profile.apply(this.winston, args);
         return this;
     };
+    __decorate([
+        core_1.inject(core_1.BINDINGS.OUTPUT), 
+        __metadata('design:type', Object)
+    ], Log.prototype, "out", void 0);
     Log = __decorate([
         core_1.injectable(), 
         __metadata('design:paramtypes', [])

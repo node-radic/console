@@ -156,8 +156,8 @@ export class CommandFactory implements ICommandFactory {
             })
     }
 
-    createCommand(commandRegistration, argv = []): Command {
-        let command: Command = kernel.make<Command>(commandRegistration.cls);
+    createCommand(registration, argv = []): Command {
+        let command: Command = kernel.make<Command>(registration.cls);
         command.argv = argv
         command.definition.mergeOptions(kernel.get<CommandsCli>(BINDINGS.CLI).globalDefinition);
         command.definition.arguments(command.arguments);
@@ -165,19 +165,21 @@ export class CommandFactory implements ICommandFactory {
         if ( command.example ) command.definition.example(command.example)
         if ( command.usage ) command.definition.usage(command.usage)
 
-        command.name   = commandRegistration.name
-        command.desc   = commandRegistration.desc
-        command.prettyName = commandRegistration.prettyName
-        command.parent = commandRegistration.parent ? commandRegistration.parent : null
+        command.name   = registration.name
+        command.desc   = registration.desc
+        command.prettyName = registration.prettyName
+        command.parent = registration.parent ? registration.parent : null
 
         return command;
     }
 
-    createGroup(groupRegistration): Group {
-        let group    = kernel.make<Group>(groupRegistration.cls);
-        group.name   = groupRegistration.name
-        group.desc   = groupRegistration.desc
-        group.parent = groupRegistration.parent ? groupRegistration.parent : null
+    createGroup(registration): Group {
+        let group    = kernel.make<Group>(registration.cls);
+        group.name   = registration.name
+        group.desc   = registration.desc
+        group.prettyName = registration.prettyName
+
+        group.parent = registration.parent ? registration.parent : null
         return group
     }
 

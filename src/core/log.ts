@@ -1,8 +1,9 @@
 import { Logger, transports, LoggerInstance, QueryOptions, LogCallback, ConsoleTransportOptions} from "winston";
 import * as Winston from 'winston';
-import { injectable } from "../core";
+import { injectable, BINDINGS, inject } from "../core";
 import * as moment from "moment";
 import { inspect } from "util";
+import { IOutput } from "../io/output";
 
 
 export const LogLevel = {
@@ -41,6 +42,9 @@ export interface ILog {
 export class Log implements ILog {
     protected winston: LoggerInstance
 
+    @inject(BINDINGS.OUTPUT)
+    protected out: IOutput;
+
     constructor() {
         this.winston = new (Logger)(<any> {
             transports : [
@@ -73,6 +77,7 @@ export class Log implements ILog {
 
 
     private _log(name: string, args: any[]): this {
+        args[0] = this.out.parser.parse(args[0]);
         this.winston.log.apply(this.winston, [ name ].concat(args))
         return this
     }

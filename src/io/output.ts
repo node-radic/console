@@ -98,7 +98,7 @@ export class Output implements IOutput {
     write(text: string): this {
 
         if ( this.useParser && this.colorsEnabled )
-            text = this.parser.parse(text + '{reset}')
+            text = this.parser.parse(text)
 
         // if ( ! this.colorsEnabled )
         // text = this.parser.clean
@@ -108,36 +108,36 @@ export class Output implements IOutput {
     }
 
     success(text: string): this {
-        this.configColorString('success', text)
+        this.styleString('success', text)
         return this
     }
 
     error(text: string): this {
-        this.configColorString('error', text)
+        this.styleString('error', text)
         return this
     }
 
-    protected configColorString(color, text) {
-        this.writeln(`{${this.config('colors.' + color)}}${text}`)
+    protected styleString(style, text) {
+        this.writeln(`{${style}}${text}{/${style}}`)
     }
 
     description(text: string): this {
-        this.configColorString('description', text)
+        this.styleString('description', text)
         return this
     }
 
     title(text: string): this {
-        this.configColorString('title', text)
+        this.styleString('title', text)
         return this
     }
 
     subtitle(text: string): this {
-        this.configColorString('subtitle', text)
+        this.styleString('subtitle', text)
         return this
     }
 
     header(text: string): this {
-        this.configColorString('header', text)
+        this.styleString('header', text)
         return this
     }
 
@@ -147,7 +147,8 @@ export class Output implements IOutput {
 
     columns(options: any = {}): CliTable {
         let chars = TABLE_STYLE.NONE;
-        return new Table(kindOf(options) === 'array' ? merge({ head: options }, { chars }) : merge(options, { chars }))
+        options = kindOf(options) === 'array' ? merge({ head: options }, { chars }) : merge(options, { chars })
+        return new Table(options)
     }
 
 

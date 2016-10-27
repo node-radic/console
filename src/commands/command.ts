@@ -85,8 +85,7 @@ export class Command extends BaseCommandRegistration implements ICommand {
     showHelp(title?: string, desc?: string) {
         this.out
             .title(title || this.prettyName)
-            .line()
-            .line(desc || this.desc)
+            .description(desc || this.desc)
 
         this.descriptor.command(this);
     }

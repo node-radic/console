@@ -51,7 +51,7 @@ export class Descriptor implements IDescriptor {
         let mapNode: any = (node: IResolvedRegistration<IGroupConstructor|ICommandConstructor>): any => {
             if ( node.type === 'group' ) {
                 return {
-                    label: `{${c.group}}${node.name}{/reset} : {${c.description}}${node.desc}{reset}`,
+                    label: `{group}${node.name}{/group} : {description}${node.desc}{/description}`,
                     nodes: node[ 'children' ] ? node[ 'children' ].map(mapNode) : []
                 }
             }
@@ -60,7 +60,7 @@ export class Descriptor implements IDescriptor {
                 let args    = command.definition.getArguments()
                 let names   = Object.keys(args)
 
-                let out = `{${c.command}}${node.name}{reset} ` // : {${c.description}}${node.desc}{reset}`
+                let out = `{command}${node.name}{/command} ` // : {${c.description}}${node.desc}{reset}`
 
                 out += names.map((name) => {
                     let arg = args[name]
@@ -89,7 +89,7 @@ export class Descriptor implements IDescriptor {
 
     commandTree(label: string = 'Overview', from?: string): this {
 
-        this.out.tree(`{${this.config('colors.header')}}${label}{reset}`, this.getCommandTree())
+        this.out.tree(`{header}${label}{/header}`, this.getCommandTree())
         return this
     }
 
@@ -153,10 +153,10 @@ export class Descriptor implements IDescriptor {
     getArguments(definition: IArgumentsDefinition): CliTable {
         let args  = definition.getArguments();
         let table = this.out.columns();
-        let required = '[{yellow}required{/yellow}]'
+
         Object.keys(args).forEach((name: string) => {
             let arg: any  = args[ name ];
-            table.push([ `{argument}${name}{/argument}`, `{description}${arg.desc}{/description}`, '' ]);
+            table.push([ `{argument}${name}{/argument}`, `{description}${arg.desc}{/description}`, arg.required ? '[{required}required{/required}]' : '' ]);
         })
         return table;
     }
@@ -191,26 +191,28 @@ export class Descriptor implements IDescriptor {
     protected commandsCli(cli: CommandsCli) {
         let c = this.config
 
+        // this.out['setUseParser'](false)
 
         // Title & Version
         if ( c('app.title') && c('descriptor.cli.showTitle') === true )
-            this.out.write(`{${c('colors.title')}}${c('app.title')}{reset} `)
+            this.out.write(`{title}${c('app.title')}{/title} `)
 
         if ( c('app.version') && c('descriptor.cli.showVersion') )
-            this.out.write(`{${c('colors.subtitle')}}${c('app.version')}{reset} `)
+            this.out.write(`{subtitle}${c('app.version')}{/subtitle}`)
 
         if ( c('app.description') && c('descriptor.cli.showDescription') )
-            this.out.line().description(c('app.description'))
+            this.out.line().write(`{description}${c('app.description')}{/description}`)
 
+        this.out.line().line()
 
         let group         = this.getGroup(null);
         let options       = this.getOptions(cli.definition);
         let globalOptions = this.getOptions(cli.globalDefinition);
         let tree          = this.getCommandTree();
 
-        this.out.line().header(c('descriptor.text.commands')).line(group.toString())
-        this.out.line().header(c('descriptor.text.options')).line(options.toString())
-        this.out.line().header(c('descriptor.text.globalOptions')).line(globalOptions.toString())
+        this.out.line(`{header}${c('descriptor.text.commands')}{/header}`).line(group.toString()).line()
+        this.out.line(`{header}${c('descriptor.text.options')}{/header}`).line(options.toString()).line()
+        this.out.line(`{header}${c('descriptor.text.globalOptions')}{/header}`).line(globalOptions.toString()).line()
     }
 
     cli(cli: any) {

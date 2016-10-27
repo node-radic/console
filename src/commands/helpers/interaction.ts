@@ -25,12 +25,12 @@ export default class InteractionCommandHelper implements ICommandHelper {
     }
 
     askArgs(questions: {[name: string]: Question}) {
-        let argv: any = _.clone(this.command.argv)
+        let args: any = _.clone(this.command.parsed.arguments)
         var defer     = BB.defer();
         let names     = Object.keys(questions)
 
-        if ( argv.noInteraction ) {
-            defer.resolve(_.pick(argv, names)); //['name', 'remote', 'method', 'key', 'secret', 'extra']))
+        if ( this.command.parsed.args.argv['noInteraction'] ) {
+            defer.resolve(_.pick(args, names)); //['name', 'remote', 'method', 'key', 'secret', 'extra']))
             return defer.promise;
         }
 
@@ -42,13 +42,13 @@ export default class InteractionCommandHelper implements ICommandHelper {
 
         return (<any> inquirer.prompt(prompts))
             .catch(console.error.bind(console))
-            .then((args: any) => {
-                args = _.chain(argv)
+            .then((answers: any) => {
+                answers = _.chain(args)
                     .pick(names)
-                    .merge(args)
+                    .merge(answers)
                     .value();
 
-                defer.resolve(args);
+                defer.resolve(answers);
                 return defer.promise
             })
     }

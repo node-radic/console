@@ -14,7 +14,7 @@ let defaults = {
         success    : 'green lighten 20 bold',
         header     : 'darkorange bold',
         group      : 'steelblue bold',
-        command    : 'slateblue',
+        command    : 'darkcyan',
         description: 'darkslategray',
         argument   : 'yellow darken 25'
     },

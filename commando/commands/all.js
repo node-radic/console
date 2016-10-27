@@ -29,4 +29,19 @@ var InitCommand = (function (_super) {
     return InitCommand;
 }(src_1.Command));
 exports.InitCommand = InitCommand;
+var TestCommand = (function (_super) {
+    __extends(TestCommand, _super);
+    function TestCommand() {
+        _super.apply(this, arguments);
+    }
+    TestCommand.prototype.handle = function () {
+        this.out.success('Success');
+    };
+    TestCommand = __decorate([
+        src_1.command('test', 'Test R', 'Test a bit of R.'), 
+        __metadata('design:paramtypes', [])
+    ], TestCommand);
+    return TestCommand;
+}(src_1.Command));
+exports.TestCommand = TestCommand;
 //# sourceMappingURL=all.js.map

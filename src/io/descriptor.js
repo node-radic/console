@@ -18,7 +18,7 @@ var Descriptor = (function () {
         var mapNode = function (node) {
             if (node.type === 'group') {
                 return {
-                    label: "{" + c.group + "}" + node.name + "{/reset} : {" + c.description + "}" + node.desc + "{reset}",
+                    label: "{group}" + node.name + "{/group} : {description}" + node.desc + "{/description}",
                     nodes: node['children'] ? node['children'].map(mapNode) : []
                 };
             }
@@ -26,7 +26,7 @@ var Descriptor = (function () {
                 var command = _this.factory.createCommand(node);
                 var args_1 = command.definition.getArguments();
                 var names = Object.keys(args_1);
-                var out = "{" + c.command + "}" + node.name + "{reset} ";
+                var out = "{command}" + node.name + "{/command} ";
                 out += names.map(function (name) {
                     var arg = args_1[name];
                     var out = arg.name;
@@ -44,7 +44,7 @@ var Descriptor = (function () {
     };
     Descriptor.prototype.commandTree = function (label, from) {
         if (label === void 0) { label = 'Overview'; }
-        this.out.tree("{" + this.config('colors.header') + "}" + label + "{reset}", this.getCommandTree());
+        this.out.tree("{header}" + label + "{/header}", this.getCommandTree());
         return this;
     };
     Descriptor.prototype.getGroup = function (group) {
@@ -92,10 +92,9 @@ var Descriptor = (function () {
     Descriptor.prototype.getArguments = function (definition) {
         var args = definition.getArguments();
         var table = this.out.columns();
-        var required = '[{yellow}required{/yellow}]';
         Object.keys(args).forEach(function (name) {
             var arg = args[name];
-            table.push([("{argument}" + name + "{/argument}"), ("{description}" + arg.desc + "{/description}"), '']);
+            table.push([("{argument}" + name + "{/argument}"), ("{description}" + arg.desc + "{/description}"), arg.required ? '[{required}required{/required}]' : '']);
         });
         return table;
     };
@@ -122,18 +121,19 @@ var Descriptor = (function () {
     Descriptor.prototype.commandsCli = function (cli) {
         var c = this.config;
         if (c('app.title') && c('descriptor.cli.showTitle') === true)
-            this.out.write("{" + c('colors.title') + "}" + c('app.title') + "{reset} ");
+            this.out.write("{title}" + c('app.title') + "{/title} ");
         if (c('app.version') && c('descriptor.cli.showVersion'))
-            this.out.write("{" + c('colors.subtitle') + "}" + c('app.version') + "{reset} ");
+            this.out.write("{subtitle}" + c('app.version') + "{/subtitle}");
         if (c('app.description') && c('descriptor.cli.showDescription'))
-            this.out.line().description(c('app.description'));
+            this.out.line().write("{description}" + c('app.description') + "{/description}");
+        this.out.line().line();
         var group = this.getGroup(null);
         var options = this.getOptions(cli.definition);
         var globalOptions = this.getOptions(cli.globalDefinition);
         var tree = this.getCommandTree();
-        this.out.line().header(c('descriptor.text.commands')).line(group.toString());
-        this.out.line().header(c('descriptor.text.options')).line(options.toString());
-        this.out.line().header(c('descriptor.text.globalOptions')).line(globalOptions.toString());
+        this.out.line("{header}" + c('descriptor.text.commands') + "{/header}").line(group.toString()).line();
+        this.out.line("{header}" + c('descriptor.text.options') + "{/header}").line(options.toString()).line();
+        this.out.line("{header}" + c('descriptor.text.globalOptions') + "{/header}").line(globalOptions.toString()).line();
     };
     Descriptor.prototype.cli = function (cli) {
         if (cli instanceof core_1.ArgumentsCli) {

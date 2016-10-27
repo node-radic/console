@@ -18,6 +18,8 @@ var core_1 = require("../core");
 var fs_1 = require("fs");
 var fs_extra_1 = require("fs-extra");
 var moment = require('moment');
+var fs_2 = require("fs");
+var path_1 = require("path");
 var DBGroup = (function (_super) {
     __extends(DBGroup, _super);
     function DBGroup() {
@@ -42,6 +44,10 @@ var ShowDBCommand = (function (_super) {
     return ShowDBCommand;
 }(src_1.Command));
 exports.ShowDBCommand = ShowDBCommand;
+function backupDb(backupPath) {
+    backupPath = backupPath || path_1.resolve('r-db-back' + moment().format('.Y-M-D_H-mm-ss.[backup]'));
+    fs_extra_1.copySync(core_1.paths.userDatabase, backupPath);
+}
 var ResetDBCommand = (function (_super) {
     __extends(ResetDBCommand, _super);
     function ResetDBCommand() {
@@ -51,9 +57,9 @@ var ResetDBCommand = (function (_super) {
         var _this = this;
         this.in.confirm('Should i create a backup?', true).then(function (backup) {
             if (backup) {
-                var backupPath = core_1.paths.userDatabase + moment().format('Y.M.D-H.mm.ss.[backup]');
-                fs_extra_1.copySync(core_1.paths.userDatabase, backupPath);
-                _this.log.info('Database backup created at ' + core_1.paths.userDatabase + moment().format('.Y-M-D_H-mm-ss.[backup]'));
+                var backupPath = core_1.paths.userDatabase + moment().format('.Y-M-D_H-mm-ss.[backup]');
+                backupDb(backupPath);
+                _this.log.info('Database backup created at ' + backupPath + '. Use the {command}restore{/command} command to revert back the changes.');
             }
             fs_1.unlinkSync(core_1.paths.userDatabase);
             _this.log.info('Database has been reset');
@@ -82,6 +88,14 @@ var RestoreDBCommand = (function (_super) {
         }).then(function (answers) {
             _this.out.dump(answers);
         });
+    };
+    RestoreDBCommand.prototype.restore = function (filePath) {
+        filePath = path_1.resolve(filePath);
+        if (!fs_2.existsSync(filePath)) {
+            this.fail('File does not exist at ' + filePath);
+        }
+        var db = fs_extra_1.readJsonSync(filePath);
+        this.out.dump(db);
     };
     RestoreDBCommand = __decorate([
         src_1.command('restore', 'Restore Database', 'Restore a backup of the database.', DBGroup), 
