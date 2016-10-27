@@ -1,22 +1,21 @@
 import * as inquirer from "inquirer";
 import * as _ from "lodash";
 import * as BB from "bluebird";
-import { kindOf } from "@radic/util";
-import { inject, injectable, BINDINGS } from "../core";
-import { IOptionsDefinition, IArgumentsDefinition, IParsedArguments } from "../definitions";
+import { inject, injectable, BINDINGS, kernel, IHelper, IHelpers } from "../core";
+import { IOptionsDefinition, IArgumentsDefinition, IParsedArguments,IArgumentDefinition, IOption } from "../definitions";
 import { IGroupConstructor } from "./group";
 import { BaseCommandRegistration, ICommandRegistration } from "./factory";
-import { IHelper, IHelpers } from "../core/helpers";
-
-
 
 export interface ICommandHelper extends IHelper {
-
+    setCommand(command: Command)
+}
+export interface ICommandHelperConstructor {
+    new(): ICommandHelper
 }
 
 export interface ICommand extends ICommandRegistration<ICommand> {
-    arguments: any
-    options: any
+    arguments: {[name: string]: IArgumentDefinition}
+    options: {[name: string]: IOption}
     parsed: IParsedArguments
     definition: IArgumentsDefinition
     globalDefinition: IOptionsDefinition
@@ -37,8 +36,8 @@ export class Command extends BaseCommandRegistration implements ICommand {
     argv: any[] = []
 
     // can be filled by overriding class
-    arguments: any = {}
-    options: any   = {}
+    arguments: {[name: string]: IArgumentDefinition} = {}
+    options: {[name: string]: IOption}               = {}
     example: string
     usage: string
 
@@ -51,8 +50,9 @@ export class Command extends BaseCommandRegistration implements ICommand {
     globalDefinition: IOptionsDefinition
 
     @inject(BINDINGS.HELPERS)
-    helpers: IHelpers<ICommandHelper>
+    protected helpers: IHelpers<ICommandHelper>
 
+    protected defaultHelpers: string[] = ['interaction']
 
     constructor() {
         super()
@@ -63,6 +63,7 @@ export class Command extends BaseCommandRegistration implements ICommand {
         this.parsed = _.clone(this.definition).mergeOptions(this.globalDefinition).parse(this.argv);
         // this.parsed.global = this.definition.parse(this.argv);
 
+        // handle help before parse errors. the command execution will be canceled anyway when showing help.
         this.handleHelp()
 
         // handle errors
@@ -70,6 +71,8 @@ export class Command extends BaseCommandRegistration implements ICommand {
             this.handleParseErrors();
         }
 
+        // add the default helpers
+        this.handleDefaultHelpers()
     }
 
     protected handleHelp() {
@@ -97,6 +100,15 @@ export class Command extends BaseCommandRegistration implements ICommand {
         })
         this.fail()
         this.cli.exit()
+    }
+
+    protected handleDefaultHelpers() {
+        this.defaultHelpers.forEach((name: string) => {
+            let cls: ICommandHelperConstructor = require('./helpers/' + name).default
+            this.addHelper(cls);
+        })
+        // reset it. calling this function again will then do nothing
+        this.defaultHelpers = []
     }
 
     // parser
@@ -136,25 +148,22 @@ export class Command extends BaseCommandRegistration implements ICommand {
      *      }
      * }
      */
-    askArgs(questions: {[name: string]: inquirer.Question}, argv: any) {
-        var defer = BB.defer();
-        let names = Object.keys(questions)
+    askArgs(questions: {[name: string]: inquirer.Question}) {
+        let argv: any = _.clone(this.argv)
+        var defer     = BB.defer();
+        let names     = Object.keys(questions)
         if ( argv.noInteraction ) {
             defer.resolve(_.pick(argv, names)); //['name', 'remote', 'method', 'key', 'secret', 'extra']))
             return defer.promise;
         }
 
-        let pm = (name: string, opts: any) => _.merge({
-            name: name,
-            // 'default': defaults && defaults[ name ] ? defaults[ name ] : null,
-            when: (answers: any) => this.hasArg(name) === false
-        }, opts)
+        let pm = (name: string, opts: any) => _.merge({ name, type: 'input', when: (answers: any) => this.hasArg(name) === false }, opts)
 
         let prompts: any[] = names.map((name: string) => {
             return pm(name, questions[ name ])
         })
 
-        return (<any> inquirer.prompt(prompts)).then((args: any) => {
+        return (<any> inquirer.prompt(prompts)).catch(console.error.bind(console)).then((args: any) => {
             args = _.chain(argv)
                 .pick(names)
                 .merge(args)
@@ -163,10 +172,7 @@ export class Command extends BaseCommandRegistration implements ICommand {
             defer.resolve(args);
             return defer.promise
         })
-
-
     }
-
 
 
     arg(n) { return this.parsed.arg(n) }
@@ -195,9 +201,15 @@ export class Command extends BaseCommandRegistration implements ICommand {
     // etc
 
 
-    addHelper(name: string, helper: ICommandHelper) { this.helpers[ name ] = helper; }
+    addHelper(cls: ICommandHelperConstructor) {
+        let helper:ICommandHelper     = kernel.build<ICommandHelper>(cls);
+        helper.setCommand(this);
+        this.log.debug('Adding helper ' + helper.getName(), helper)
+        this.helpers.set(helper.getName(), helper);
+        return this;
+    }
 
-    getHelper(name: string) { return this.helpers[ name ] }
+    getHelper<T extends ICommandHelper>(name: string): T { return <T> this.helpers.get(name) }
 
 }
 export default Command

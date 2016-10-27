@@ -1,11 +1,9 @@
 import { IOptionsDefinition, IArgumentsDefinition } from "../definitions";
 import { IOutput } from "./output";
-import { colors } from "@radic/console-colors";
 import { BINDINGS, inject, injectable, IConfig, CommandsCli, ArgumentsCli } from "../core";
 import { ICommandFactory, IResolvedRegistration } from "../commands/factory";
 import { IGroup, IGroupConstructor } from "../commands/group";
 import { ICommand, ICommandConstructor } from "../commands/command";
-import { IArgument } from "../definitions/definitions";
 
 export interface IDescriptor {
     cli(cli: any)
@@ -60,9 +58,29 @@ export class Descriptor implements IDescriptor {
             if ( node.type === 'command' ) {
                 let command = this.factory.createCommand(<any> node);
                 let args    = command.definition.getArguments()
-                let keys    = Object.keys(args)
+                let names   = Object.keys(args)
 
-                return `{${c.command}}${node.name}{reset}` + (keys.length > 0 ? `{${c.argument}}${keys.map((name) => args[ name ]).join('{reset ')}{reset}` : '')
+                let out = `{${c.command}}${node.name}{reset} ` // : {${c.description}}${node.desc}{reset}`
+
+                out += names.map((name) => {
+                    let arg = args[name]
+                    let  out = arg.name
+
+
+                    if(arg.default)
+                        out += '=' + arg.default
+
+                    if(arg.required === true)
+                        return '[' + out + ']'
+                    else
+                        return '{dimgray}<' + out + '>{/dimgray}'
+
+
+                }).join(' ')
+
+                return out;
+
+                // (keys.length > 0 ? `{${c.argument}}${keys.map((name) => args[ name ]).join('{reset} ')}{reset}` : '')
             }
         }
 
@@ -70,6 +88,7 @@ export class Descriptor implements IDescriptor {
     }
 
     commandTree(label: string = 'Overview', from?: string): this {
+
         this.out.tree(`{${this.config('colors.header')}}${label}{reset}`, this.getCommandTree())
         return this
     }
@@ -79,13 +98,7 @@ export class Descriptor implements IDescriptor {
         let children = this.factory.getGroupChildren(group ? group.name : null, group ? group.parent : undefined)
         let table    = this.out.columns();
         children.forEach((child) => {
-            let nameColor = colors.getTrucolorColor(this.config('colors.' + child.type)),
-                name      = nameColor.in + child.name + nameColor.out,
-
-                descColor = colors.getTrucolorColor(this.config('colors.description')),
-                desc      = descColor.in + child.desc + descColor.out
-
-            table.push([ name, desc ]);
+            table.push([ `{${child.type}}${child.name}{/${child.type}}`, `{description}${child.desc}{/description}` ]);
         })
 
         return table
@@ -140,15 +153,10 @@ export class Descriptor implements IDescriptor {
     getArguments(definition: IArgumentsDefinition): CliTable {
         let args  = definition.getArguments();
         let table = this.out.columns();
+        let required = '[{yellow}required{/yellow}]'
         Object.keys(args).forEach((name: string) => {
-            let arg: IArgument = args[ name ];
-            let nameColor      = colors.getTrucolorColor(this.config('colors.argument')),
-                _name          = nameColor.in + name + nameColor.out,
-
-                descColor      = colors.getTrucolorColor(this.config('colors.description')),
-                _desc          = descColor.in + arg.desc + descColor.out
-
-            table.push([ _name, _desc ])
+            let arg: any  = args[ name ];
+            table.push([ `{argument}${name}{/argument}`, `{description}${arg.desc}{/description}`, '' ]);
         })
         return table;
     }

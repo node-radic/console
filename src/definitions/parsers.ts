@@ -1,7 +1,7 @@
 import { drop, upperFirst, merge, clone } from "lodash";
 import { Config, defined } from "@radic/util";
 import { IConfig, inject, injectable, BINDINGS } from "../core";
-import { IOptionsDefinition, IArgumentsDefinition, ICommandsDefinition, CommandsDefinition } from "./definitions";
+import { IOptionsDefinition, IArgumentsDefinition, ICommandsDefinition, CommandsDefinition, IArgument } from "./definitions";
 import { IParsedArgv, parseArgv } from "./argv";
 import { ICommandFactory } from "../commands";
 import { IParsedOptions, IParsedArguments, IParsedCommands } from "./parsed";
@@ -82,6 +82,8 @@ export class OptionsDefinitionParser implements IOptionsParser {
 
 }
 
+
+
 @injectable()
 /**
  * Parses a Definition and Argv and produces a ParsedDefinition
@@ -115,12 +117,24 @@ export class ArgumentsDefinitionParser extends OptionsDefinitionParser implement
 
         // Associate arguments with values
         Object.keys(all).forEach((name: string, i: number) => {
+            let def = all[ name ];
+            let value:any;
+
+            // get a value
             if ( i > args.length - 1 ) {
-                if ( all[ name ].required ) return this.errors.push(`The argument [${name}] is required`)
-                input[ name ] = all[ name ].default;
+                if ( all[ name ].required )
+                    return this.errors.push(`The argument [${name}] is required`)
+                else
+                    value = all[ name ].default;
             } else {
-                input[ name ] = args[ i ]
+                value = args[ i ]
             }
+
+            // parse value if required
+            if(def.type === 'array'){
+                value = value ? value.split(',') : []
+            }
+            input[ name ] = value;
         })
 
         this.arguments = input;

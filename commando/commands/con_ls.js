@@ -14,32 +14,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var src_1 = require("../../src");
-var SebGroup = (function (_super) {
-    __extends(SebGroup, _super);
-    function SebGroup() {
+var con_1 = require("./con");
+var util_1 = require("util");
+var ListConnectionCommand = (function (_super) {
+    __extends(ListConnectionCommand, _super);
+    function ListConnectionCommand() {
         _super.apply(this, arguments);
     }
-    SebGroup = __decorate([
-        src_1.group('seb', 'Seb commands', 'Provides commands for seb'), 
-        __metadata('design:paramtypes', [])
-    ], SebGroup);
-    return SebGroup;
-}(src_1.Group));
-exports.SebGroup = SebGroup;
-var ShowSebCommand = (function (_super) {
-    __extends(ShowSebCommand, _super);
-    function ShowSebCommand() {
-        _super.apply(this, arguments);
-    }
-    ShowSebCommand.prototype.handle = function () {
-        var color = this.opt('g') ? 'green' : 'yellow';
-        this.line("This is the {" + color + "}show {bold}seb{/" + color + "} command{/bold}");
+    ListConnectionCommand.prototype.handle = function () {
+        _super.prototype.handle.call(this);
+        var table = this.out.columns(['Name', 'Remote', 'Auth Method', 'Extra']);
+        this.connections.all().forEach(function (con) {
+            table.push([con.name, con.remote, con.method, util_1.inspect(con.extra, { colors: false, depth: 1, showHidden: false })]);
+        });
+        this.out.writeln(table.toString());
     };
-    ShowSebCommand = __decorate([
-        src_1.command('show', 'Show Seb', 'Show this seb', SebGroup), 
+    ListConnectionCommand = __decorate([
+        src_1.command('ls', 'List connections', 'List connections or remotes', con_1.ConnectionGroup), 
         __metadata('design:paramtypes', [])
-    ], ShowSebCommand);
-    return ShowSebCommand;
-}(src_1.Command));
-exports.ShowSebCommand = ShowSebCommand;
-//# sourceMappingURL=seb.js.map
+    ], ListConnectionCommand);
+    return ListConnectionCommand;
+}(con_1.ConnectionCommand));
+exports.ListConnectionCommand = ListConnectionCommand;
+//# sourceMappingURL=con_ls.js.map

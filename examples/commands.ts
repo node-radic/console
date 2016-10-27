@@ -1,4 +1,4 @@
-import {Command, Group, command, group, IArgument} from "../src";
+import {Command, Group, command, group, IParsedArgument} from "../src";
 import { IOption } from "../src/definitions/definition.options";
 
 

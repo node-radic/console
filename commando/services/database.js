@@ -12,11 +12,23 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var Cryptr = require("cryptr");
-var _ = require('lodash');
+var _ = require("lodash");
 var fs_1 = require("fs");
 var util_1 = require("@radic/util");
 var core_1 = require("../core");
 var kernel_1 = require("../../src/core/kernel");
+var Validation = require("validatorjs");
+Validation.register('object', function (value, req, attr) {
+    console.log('validate object: ', 'value', value, 'req', req, 'attr', attr);
+    console.log('validate object: kindOf(value) === "object"', util_1.kindOf(value) === 'object');
+    return util_1.kindOf(value) === 'object';
+});
+Validation.register('unique', function (value, model, column) {
+    console.log('validate unique: ', 'value', value, 'model', model, 'column', column);
+    var find = {};
+    find[column] = value;
+    return false;
+});
 var Database = (function () {
     function Database(paths, keys) {
         var _this = this;
@@ -77,6 +89,7 @@ function model(id, info) {
         info = _.merge({
             id: id,
             cls: cls,
+            columns: {},
             key: {
                 name: 'id',
                 type: 'integer',
@@ -87,57 +100,91 @@ function model(id, info) {
     };
 }
 exports.model = model;
+function getModel(modelId) {
+    if (!models[modelId])
+        throw Error('Model does not exist:' + modelId);
+    var reg = models[modelId];
+    var model = kernel_1.kernel.build(reg.cls);
+    model._modelId = modelId;
+    return model;
+}
+exports.getModel = getModel;
 var Model = (function () {
     function Model() {
     }
-    Model.prototype.getRegistration = function () {
-        var reg = _.find(models, { id: this._modelId });
-        var a = 'a';
-        return reg;
-    };
-    Model.prototype.getFields = function () {
-        return this.getRegistration().fields;
-    };
-    Model.prototype.getTable = function () {
-        return this.getRegistration().table;
-    };
-    Model.prototype.getKey = function () {
-        return this.getRegistration().key;
-    };
-    Model.prototype.getDB = function () {
-        return this._database;
-    };
-    Object.defineProperty(Model.prototype, "query", {
+    Object.defineProperty(Model.prototype, "_registration", {
         get: function () {
-            return this._query ? this._query : this._query = this.getDB().get(this.getTable());
+            var reg = _.find(models, { id: this._modelId });
+            var a = 'a';
+            return reg;
         },
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Model.prototype, "_rules", {
+        get: function () {
+            var rules = _.clone(this._registration.columns);
+            this._fields.forEach(function (name) {
+                if (rules[name] === '' || rules[name] === null) {
+                    delete rules[name];
+                }
+            });
+            return rules;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Model.prototype, "_fields", {
+        get: function () { return Object.keys(this._registration.columns); },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Model.prototype, "_table", {
+        get: function () { return this._registration.table; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Model.prototype, "_key", {
+        get: function () { return this._registration.key; },
+        enumerable: true,
+        configurable: true
+    });
+    Model.prototype.getDB = function () {
+        return this._database;
+    };
+    Model.prototype.query = function () {
+        return this._query ? this._query : this._query = this.getDB().get(this._table);
+    };
     Model.prototype.fill = function (data) {
-        _.assignIn(this, _.pick(data, this.getFields()));
+        _.assignIn(this, _.pick(data, this._fields));
         return this;
     };
     Model.prototype.serialize = function () {
-        return _.pick(this, this.getFields());
+        return _.pick(this, this._fields);
     };
     Object.defineProperty(Model.prototype, "querySelf", {
         get: function () {
             var find = {};
-            find[this.getKey().name] = this[this.getKey().name];
+            find[this._key.name] = this[this._key.name];
             return find;
         },
         enumerable: true,
         configurable: true
     });
     Model.prototype.save = function () {
-        this.query.push(this.serialize()).value();
+        var find = {};
+        find[this._key.name] = this[this._key.name];
+        this.query().find(find);
+        this.query().push(this.serialize()).value();
+    };
+    Model.prototype.validate = function () {
+        return new Validation(this.serialize(), this._registration.columns);
     };
     Model.prototype.update = function () {
-        this.query.find(this.querySelf).assign(this.serialize()).value();
+        this.query().find(this.querySelf).assign(this.serialize()).value();
     };
     Model.prototype.delete = function () {
-        this.query.remove(this.querySelf).value();
+        this.query().remove(this.querySelf).value();
     };
     __decorate([
         core_1.inject(core_1.COMMANDO.DATABASE), 
@@ -154,23 +201,21 @@ var Repository = (function () {
     function Repository() {
     }
     Repository.prototype.model = function (data) {
-        var reg = models[this.getModelID()];
-        var model = kernel_1.kernel.build(reg.cls);
-        model._modelId = this.getModelID();
+        var model = getModel(this.getModelID());
         if (data)
             model.fill(data);
         return model;
     };
     Object.defineProperty(Repository.prototype, "table", {
         get: function () {
-            return this._table ? this._table : this._table = this.model().getTable();
+            return this._table ? this._table : this._table = this.model()._table;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Repository.prototype, "key", {
         get: function () {
-            return this._key ? this._key : this._key = this.model().getKey();
+            return this._key ? this._key : this._key = this.model()._key;
         },
         enumerable: true,
         configurable: true

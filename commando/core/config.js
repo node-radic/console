@@ -6,6 +6,7 @@ var fs_1 = require("fs");
 var dotenv = require("dotenv");
 var defaultConfig = {
     debug: false,
+    env: {},
     cli: {
         showCopyright: true
     },
@@ -28,6 +29,7 @@ if (fs_1.existsSync(denvPath)) {
     Object.keys(denv).forEach(function (key) {
         var value = parseEnvVal(denv[key]);
         key = key.replace('_', '.');
+        _config.set('env.' + key, value);
         if (_config.has(key))
             _config.set(key, value);
     });

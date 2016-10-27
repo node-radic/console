@@ -2,16 +2,23 @@ import { StringType } from "@radic/util";
 import { inject, provide, COMMANDO, provideSingleton } from "../core";
 import { Model, Repository, model } from "./database";
 import { IRemote, RemoteFactory, AuthMethod } from "./connection.remote";
-
 // import * as rp from "request-promise";
 // export {RequestPromise, Options as RequestOptions} from "request-promise";
 // export {StatusCodeError} from "request-promise/errors";
 
 
+
 @model('connection', {
-    table : 'connections',
-    fields: [ 'name', 'method', 'remote', 'key', 'secret', 'extra' ],
-    key   : {
+    table  : 'connections',
+    columns: {
+        name  : 'unique:connection',
+        method: 'required',
+        remote: 'required',
+        key   : 'required',
+        secret: 'string',
+        extra : 'object'
+    },
+    key    : {
         name: 'name',
         type: 'string',
         auto: true
@@ -48,12 +55,7 @@ export class Connection extends Model {
 
 @provideSingleton(COMMANDO.CONNECTIONS)
 export class ConnectionRepository extends Repository<Connection> {
-
     getModelID() { return 'connection' }
-
-
-
-
 }
 //
 // export interface IRawConnection {

@@ -34,7 +34,23 @@ export function command(name: string, prettyName: string, desc: string = '', par
         commands.push({ name, cls, prettyName, desc, parent, type: 'command' })
     }
 }
+let registrations: ICommandRegistration<IGroupConstructor|ICommandConstructor>[] = []
+export function COMMAND(name:string, prettyName: string, options:any = {}){
+    options = _.merge({
+        name,
+        prettyName: prettyName || name,
+        desc: '',
+        parent: null,
+        type: 'command',
+        arguments: {},
+        options: {}
 
+    }, options)
+    return (cls: ICommandConstructor|IGroupConstructor) => {
+        options.cls = cls;
+        registrations.push(options)
+    }
+}
 export function group(name: string, prettyName: string, desc: string = '', parent: IGroupConstructor = null) {
     prettyName = prettyName || name
     return (cls: IGroupConstructor) => {
@@ -142,7 +158,6 @@ export class CommandFactory implements ICommandFactory {
 
     createCommand(commandRegistration, argv = []): Command {
         let command: Command = kernel.make<Command>(commandRegistration.cls);
-
         command.argv = argv
         command.definition.mergeOptions(kernel.get<CommandsCli>(BINDINGS.CLI).globalDefinition);
         command.definition.arguments(command.arguments);
@@ -150,8 +165,9 @@ export class CommandFactory implements ICommandFactory {
         if ( command.example ) command.definition.example(command.example)
         if ( command.usage ) command.definition.usage(command.usage)
 
-        command.name   = commandRegistration.name;
+        command.name   = commandRegistration.name
         command.desc   = commandRegistration.desc
+        command.prettyName = commandRegistration.prettyName
         command.parent = commandRegistration.parent ? commandRegistration.parent : null
 
         return command;

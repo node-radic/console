@@ -3,7 +3,7 @@ import { injectable } from "inversify";
 import * as inquirer from "inquirer";
 import * as    _ from "lodash";
 
-
+export type QuestionType = "input" |'confirm'|'list'|'rawlist'|'expand'|'checkbox'|'password'|'editor'
 export type Questions = Question | Question[] | Rx.Observable<Question>;
 
 /**
@@ -27,7 +27,7 @@ export interface Question {
      * </ul>
      * @defaults: 'input'
      */
-        type?: string;
+        type?: QuestionType;
     /**
      * The name to use when storing the answer in the anwers hash.
      */
@@ -41,7 +41,7 @@ export interface Question {
      * Default value(s) to use if nothing is entered, or a function that returns the default value(s).
      * If defined as a function, the first parameter will be the current inquirer session answers.
      */
-        default?: any | ((answers: Answers) => any);
+    default?: any | ((answers: Answers) => any);
     /**
      * Choices array or a function returning a choices array. If defined as a function,
      * the first parameter will be the current inquirer session answers.
@@ -68,59 +68,40 @@ export interface Question {
 }
 
 export interface IInput {
-    // askInput(question: string, def?: string, opts?: any): Promise<string>
-    // askInput(question: string, def?: string): Promise<string>
     ask(question: string, opts?: any)
-    // askInput(question: string): Promise<string>
+    prompt(prompts: Questions): Promise<Answers>
+    askSecret(msg: string, opts?: any ): Promise<string>
+    confirm(msg:string, def?:boolean, opts?: any ) : Promise<boolean>
+    askChoice(msg:string, choices:any[], multi?:boolean, opts?: any ) : Promise<string[]|string>
 }
 
 @injectable()
 export class Input implements IInput {
     noInteraction: boolean = false
 
-    ask(message: string, opts: any = {}): Promise<any> {
-        let defer                       = BB.defer();
-        let defaults: inquirer.Question = { type: 'input', message: message, name: 'question' }
-        inquirer.prompt([
-            _.merge(defaults, opts)
-        ])[ 'then' ]((answers: any) => {
+    ask<R>(message: string, opts: any = {}): Promise<R> {
+        let defer              = BB.defer<R>();
+        let defaults: Question = { type: 'input', message: message, name: 'question' }
+        this.prompt(_.merge(defaults, opts)).then((answers: any) => {
             defer.resolve(answers.question);
         })
         return <any> defer.promise
     }
 
-
-    askArgs(questions: {[name: string]: Question}, argv: any) : Promise<Answers> {
-        var defer = BB.defer();
-        let names = Object.keys(questions)
-        if ( argv.noInteraction ) {
-            defer.resolve(_.pick(argv, names)); //['name', 'remote', 'method', 'key', 'secret', 'extra']))
-            return <any> defer.promise;
-        }
-
-        let pm = (name: string, opts: any) => _.merge({
-            name: name,
-            // 'default': defaults && defaults[ name ] ? defaults[ name ] : null,
-            when: (answers: any) => ! argv._[name]
-        }, opts)
-
-        let prompts: any[] = names.map((name: string) => {
-            return pm(name, questions[ name ])
-        })
-
-        return this.prompt(prompts).then((args: any) => {
-            args = _.chain(argv)
-                .pick(names)
-                .merge(args)
-                .value();
-
-            defer.resolve(args);
-            return defer.promise
-        })
+    askSecret(msg: string, opts: any = {}): Promise<string> {
+        return this.ask<string>(msg, _.merge({}, opts))
     }
 
-    prompt(prompts:Questions) : Promise<Answers>{
-        return <any> inquirer.prompt(prompts)
+    confirm(msg:string, def:boolean=true, opts: any = {}) : Promise<boolean> {
+        return this.ask<boolean>(msg, _.merge({ default: def }, opts))
+    }
+
+    askChoice(msg:string, choices:any[], multi:boolean=false, opts: any = {}) : Promise<string[]|string> {
+        return this.ask<string[]|string>(msg, _.merge({ type: multi ? 'checkbox' : 'list', choices }, opts))
+    }
+
+    prompt(prompts: Questions): Promise<Answers> {
+        return (<any> inquirer.prompt(prompts)).catch(console.error.bind(console))
     }
 
 

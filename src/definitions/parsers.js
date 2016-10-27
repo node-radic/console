@@ -77,14 +77,21 @@ var ArgumentsDefinitionParser = (function (_super) {
         var args = lodash_1.clone(this.args.argv._);
         var errors = [];
         Object.keys(all).forEach(function (name, i) {
+            var def = all[name];
+            var value;
             if (i > args.length - 1) {
                 if (all[name].required)
                     return _this.errors.push("The argument [" + name + "] is required");
-                input[name] = all[name].default;
+                else
+                    value = all[name].default;
             }
             else {
-                input[name] = args[i];
+                value = args[i];
             }
+            if (def.type === 'array') {
+                value = value ? value.split(',') : [];
+            }
+            input[name] = value;
         });
         this.arguments = input;
     };

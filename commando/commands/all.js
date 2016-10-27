@@ -29,4 +29,4 @@ var InitCommand = (function (_super) {
     return InitCommand;
 }(src_1.Command));
 exports.InitCommand = InitCommand;
-//# sourceMappingURL=init.js.map
+//# sourceMappingURL=all.js.map

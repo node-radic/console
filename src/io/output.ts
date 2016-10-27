@@ -24,6 +24,9 @@ export interface IOutput {
     dump(...args: any[]): void;
 }
 
+let truwrap = require('truwrap');
+
+truwrap({})
 
 export const TABLE_STYLE = {
     FAT : {
@@ -41,20 +44,31 @@ export const TABLE_STYLE = {
     }
 }
 
+
 @injectable()
 export class Output implements IOutput {
-    dump(...args: any[]): void {
-        args.forEach((arg) => process.stdout.write(inspect(arg, { colors: this.colorsEnabled, depth: 5, showHidden: true })))
-    }
 
     @inject(BINDINGS.CONFIG)
     config: IConfig;
 
-    parser: Parser         = new Parser;
+    _parser: Parser;
+    get parser(): Parser {
+        if ( ! this._parser ) {
+            this._parser = new Parser;
+            this._parser.colors.styles(this.config('styles'));
+        }
+        return this._parser
+    }
+
+
     useParser: boolean     = true
     colorsEnabled: boolean = true
 
     macros: {[name: string]: Function}
+
+    dump(...args: any[]): void {
+        args.forEach((arg) => this.writeln(inspect(arg, { colors: this.colorsEnabled, depth: 5, showHidden: true })))
+    }
 
     get nl(): this {
         this.line()
@@ -82,6 +96,7 @@ export class Output implements IOutput {
     }
 
     write(text: string): this {
+
         if ( this.useParser && this.colorsEnabled )
             text = this.parser.parse(text + '{reset}')
 

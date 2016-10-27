@@ -1,6 +1,7 @@
 /// <reference path="winston.d.ts" />
 ///<reference path="underscore.string.d.ts"/>
 ///<reference path="lowdb.d.ts"/>
+///<reference path="validatorjs.d.ts"/>
 
 
 interface YargsParserOptions

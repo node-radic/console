@@ -20,38 +20,27 @@ var Input = (function () {
         if (opts === void 0) { opts = {}; }
         var defer = BB.defer();
         var defaults = { type: 'input', message: message, name: 'question' };
-        inquirer.prompt([
-            _.merge(defaults, opts)
-        ])['then'](function (answers) {
+        this.prompt(_.merge(defaults, opts)).then(function (answers) {
             defer.resolve(answers.question);
         });
         return defer.promise;
     };
-    Input.prototype.askArgs = function (questions, argv) {
-        var defer = BB.defer();
-        var names = Object.keys(questions);
-        if (argv.noInteraction) {
-            defer.resolve(_.pick(argv, names));
-            return defer.promise;
-        }
-        var pm = function (name, opts) { return _.merge({
-            name: name,
-            when: function (answers) { return !argv._[name]; }
-        }, opts); };
-        var prompts = names.map(function (name) {
-            return pm(name, questions[name]);
-        });
-        return this.prompt(prompts).then(function (args) {
-            args = _.chain(argv)
-                .pick(names)
-                .merge(args)
-                .value();
-            defer.resolve(args);
-            return defer.promise;
-        });
+    Input.prototype.askSecret = function (msg, opts) {
+        if (opts === void 0) { opts = {}; }
+        return this.ask(msg, _.merge({}, opts));
+    };
+    Input.prototype.confirm = function (msg, def, opts) {
+        if (def === void 0) { def = true; }
+        if (opts === void 0) { opts = {}; }
+        return this.ask(msg, _.merge({ default: def }, opts));
+    };
+    Input.prototype.askChoice = function (msg, choices, multi, opts) {
+        if (multi === void 0) { multi = false; }
+        if (opts === void 0) { opts = {}; }
+        return this.ask(msg, _.merge({ type: multi ? 'checkbox' : 'list', choices: choices }, opts));
     };
     Input.prototype.prompt = function (prompts) {
-        return inquirer.prompt(prompts);
+        return inquirer.prompt(prompts).catch(console.error.bind(console));
     };
     Input = __decorate([
         inversify_1.injectable(), 

@@ -45,7 +45,14 @@ var Connection = (function (_super) {
     Connection = __decorate([
         database_1.model('connection', {
             table: 'connections',
-            fields: ['name', 'method', 'remote', 'key', 'secret', 'extra'],
+            columns: {
+                name: 'unique:connection',
+                method: 'required',
+                remote: 'required',
+                key: 'required',
+                secret: 'string',
+                extra: 'object'
+            },
             key: {
                 name: 'name',
                 type: 'string',

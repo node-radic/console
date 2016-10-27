@@ -1,10 +1,29 @@
 import * as Cryptr from "cryptr";
-import * as _ from 'lodash';
+import * as _ from "lodash";
 import { readFileSync } from "fs";
-import { Config } from "@radic/util";
+import { Config, kindOf } from "@radic/util";
 import * as LowDB from "lowdb";
 import { injectable, provideSingleton, COMMANDO, inject } from "../core";
 import { kernel } from "../../src/core/kernel";
+import * as Validation from "validatorjs";
+
+Validation.register('object', (value, req, attr) => {
+    console.log('validate object: ', 'value', value, 'req', req, 'attr', attr)
+    console.log('validate object: kindOf(value) === "object"', kindOf(value) === 'object')
+    return kindOf(value) === 'object'
+})
+
+Validation.register('unique', (value, model, column) => {
+    console.log('validate unique: ', 'value', value, 'model', model, 'column', column)
+
+    let find       = {}
+    find[ column ] = value;
+    // let found = getModel(model).query().filter(find).size().value();
+    // console.log('validate unique found:', found)
+
+    return false
+})
+
 
 export interface CommandoDatabaseQuery<T> extends LowDB.LoDashWrapper {
 }
@@ -18,12 +37,6 @@ export interface CommandoDatabase extends LowDB.Low {}
 export class Database {
     protected _db: LowDB.Low;
     protected cryptr;
-
-    // @inject(COMMANDO.PATHS)
-    // protected paths;
-    //
-    // @inject(COMMANDO.KEYS)
-    // protected keys;
 
     constructor(@inject(COMMANDO.PATHS) protected paths,
                 @inject(COMMANDO.KEYS) protected keys) {
@@ -46,12 +59,6 @@ export class Database {
         this._db.defaults({
             connections: []
         }).value()
-        // let defaults = {
-        //     connections: [],
-        //     auths      : []
-        // };
-        // this._db.setState(_.merge(defaults, this._db.getState()));
-
     }
 
     protected getDB(): CommandoDatabase {
@@ -99,10 +106,11 @@ export type ModelKeyType = 'string' | 'number' |  'guid'
 
 export interface IModelRegistration {
     table: string
-    fields: string[]
+    columns: {[name: string]: string|string[]}
     key?: TableKey
     cls?: ModelConstructor
 }
+
 let models: {[id: string]: IModelRegistration} = {};
 
 export function model(id: string, info: IModelRegistration) {
@@ -110,7 +118,8 @@ export function model(id: string, info: IModelRegistration) {
         info         = _.merge({
             id,
             cls,
-            key: {
+            columns: {},
+            key    : {
                 name: 'id',
                 type: 'integer',
                 auto: true
@@ -120,68 +129,91 @@ export function model(id: string, info: IModelRegistration) {
     }
 }
 
+export function getModel<T extends Model>(modelId) {
+    if ( ! models[ modelId ] )
+        throw Error('Model does not exist:' + modelId)
+
+    let reg   = models[ modelId ]
+    let model = kernel.build<T>(reg.cls);
+
+    model._modelId = modelId
+    return model;
+}
+
 
 @injectable()
 export abstract class Model {
-    _modelId:string
+    _modelId: string
 
-    getRegistration() :IModelRegistration {
+    get _registration(): IModelRegistration {
         let reg = _.find(models, { id: this._modelId });
-        let a = 'a';
+        let a   = 'a';
         return reg;
     }
 
-
-    getFields() : string[] {
-        return this.getRegistration().fields
+    get _rules(): {[column: string]: string|string[]} {
+        let rules = _.clone(this._registration.columns);
+        this._fields.forEach((name) => {
+            if ( rules[ name ] === '' || rules[ name ] === null ) {
+                delete rules[ name ]
+            }
+        })
+        return rules;
     }
 
-    getTable() : string {
-        return this.getRegistration().table
-    }
+    get _fields(): string [] { return Object.keys(this._registration.columns) }
 
-    getKey() : TableKey {
-        return this.getRegistration().key
-    }
+    get _table(): string { return this._registration.table }
+
+    get _key(): TableKey { return this._registration.key }
+
 
     @inject(COMMANDO.DATABASE)
     protected _database: Database
 
-    getDB() : Database {
+    getDB(): Database {
         return this._database
     }
 
     protected _query: CommandoDatabaseQuery<this>;
-    protected get query(): CommandoDatabaseQuery<this> {
-        return this._query ? this._query : this._query = this.getDB().get(this.getTable());
+
+    query(): CommandoDatabaseQuery<this> {
+        return this._query ? this._query : this._query = this.getDB().get(this._table);
     }
 
 
     fill(data: any): this {
-        _.assignIn(this, _.pick(data, this.getFields()))
+        _.assignIn(this, _.pick(data, this._fields))
         return this;
     }
 
     serialize(): any {
-        return _.pick(this, this.getFields())
+        return _.pick(this, this._fields)
     }
 
     protected get querySelf(): {[key: string]: string} {
-        let find              = {}
-        find[ this.getKey().name ] = this[ this.getKey().name ];
+        let find               = {}
+        find[ this._key.name ] = this[ this._key.name ];
         return find
     }
 
     save() {
-        this.query.push(this.serialize()).value()
+        let find               = {}
+        find[ this._key.name ] = this[ this._key.name ];
+        this.query().find(find)
+        this.query().push(this.serialize()).value()
+    }
+
+    validate(): _validatorjs.ValidatorJS {
+        return new Validation(this.serialize(), this._registration.columns)
     }
 
     update() {
-        this.query.find(this.querySelf).assign(this.serialize()).value()
+        this.query().find(this.querySelf).assign(this.serialize()).value()
     }
 
     delete() {
-        this.query.remove(this.querySelf).value()
+        this.query().remove(this.querySelf).value()
     }
 
 }
@@ -191,21 +223,19 @@ export abstract class Repository<T extends Model> {
     abstract getModelID(): string;
 
     model(data?: any): T {
-        let reg = models[this.getModelID()]
-        let model = kernel.build<T>(reg.cls);
-        model._modelId = this.getModelID()
+        let model = getModel<T>(this.getModelID())
         if ( data ) model.fill(data);
         return model;
     }
 
-    protected _table:string;
+    protected _table: string;
     get table(): string {
-        return this._table ? this._table : this._table = this.model().getTable()
+        return this._table ? this._table : this._table = this.model()._table
     }
 
-    protected _key:TableKey
+    protected _key: TableKey
     get key(): TableKey {
-        return this._key ? this._key : this._key = this.model().getKey()
+        return this._key ? this._key : this._key = this.model()._key
     }
 
     @inject(COMMANDO.DATABASE)

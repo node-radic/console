@@ -25,6 +25,7 @@ var Command = (function (_super) {
         this.argv = [];
         this.arguments = {};
         this.options = {};
+        this.defaultHelpers = ['interaction'];
     }
     Command.prototype.parse = function () {
         this.parsed = _.clone(this.definition).mergeOptions(this.globalDefinition).parse(this.argv);
@@ -32,6 +33,7 @@ var Command = (function (_super) {
         if (this.parsed.hasErrors()) {
             this.handleParseErrors();
         }
+        this.handleDefaultHelpers();
     };
     Command.prototype.handleHelp = function () {
         if (this.parsed.help.enabled && this.parsed.help.show) {
@@ -57,6 +59,14 @@ var Command = (function (_super) {
         this.fail();
         this.cli.exit();
     };
+    Command.prototype.handleDefaultHelpers = function () {
+        var _this = this;
+        this.defaultHelpers.forEach(function (name) {
+            var cls = require('./helpers/' + name).default;
+            _this.addHelper(cls);
+        });
+        this.defaultHelpers = [];
+    };
     Command.prototype.hasArg = function (n) { return this.parsed.hasArg(n); };
     Command.prototype.askArg = function (name, opts) {
         if (opts === void 0) { opts = {}; }
@@ -68,22 +78,20 @@ var Command = (function (_super) {
                 .then(function (answer) { return defer.resolve(answer); });
         return defer.promise;
     };
-    Command.prototype.askArgs = function (questions, argv) {
+    Command.prototype.askArgs = function (questions) {
         var _this = this;
+        var argv = _.clone(this.argv);
         var defer = BB.defer();
         var names = Object.keys(questions);
         if (argv.noInteraction) {
             defer.resolve(_.pick(argv, names));
             return defer.promise;
         }
-        var pm = function (name, opts) { return _.merge({
-            name: name,
-            when: function (answers) { return _this.hasArg(name) === false; }
-        }, opts); };
+        var pm = function (name, opts) { return _.merge({ name: name, type: 'input', when: function (answers) { return _this.hasArg(name) === false; } }, opts); };
         var prompts = names.map(function (name) {
             return pm(name, questions[name]);
         });
-        return inquirer.prompt(prompts).then(function (args) {
+        return inquirer.prompt(prompts).catch(console.error.bind(console)).then(function (args) {
             args = _.chain(argv)
                 .pick(names)
                 .merge(args)
@@ -101,8 +109,14 @@ var Command = (function (_super) {
     Command.prototype.table = function (options) { };
     Command.prototype.progress = function () { };
     Command.prototype.title = function () { };
-    Command.prototype.addHelper = function (name, helper) { this.helpers[name] = helper; };
-    Command.prototype.getHelper = function (name) { return this.helpers[name]; };
+    Command.prototype.addHelper = function (cls) {
+        var helper = core_1.kernel.build(cls);
+        helper.setCommand(this);
+        this.log.debug('Adding helper ' + helper.getName(), helper);
+        this.helpers.set(helper.getName(), helper);
+        return this;
+    };
+    Command.prototype.getHelper = function (name) { return this.helpers.get(name); };
     __decorate([
         core_1.inject(core_1.BINDINGS.ARGUMENTS_DEFINITION), 
         __metadata('design:type', Object)

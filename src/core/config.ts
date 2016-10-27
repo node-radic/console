@@ -7,6 +7,17 @@ let defaults = {
         description: undefined,
         version    : undefined,
     },
+    styles: {
+        title   : 'yellow bold',
+        subtitle: 'yellow',
+
+        success    : 'green lighten 20 bold',
+        header     : 'darkorange bold',
+        group      : 'steelblue bold',
+        command    : 'slateblue',
+        description: 'darkslategray',
+        argument   : 'yellow darken 25'
+    },
     colors    : {
         enabled : true,
         title   : 'yellow bold',
@@ -15,8 +26,8 @@ let defaults = {
         success    : 'green lighten 20 bold',
         header     : 'darkorange bold',
         group      : 'steelblue bold',
-        command    : 'purple',
-        description: 'grey',
+        command    : 'slateblue',
+        description: 'darkslategray',
         argument   : 'yellow darken 25'
         //etc
     },

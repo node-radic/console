@@ -9,4 +9,5 @@ __export(require('./config'));
 __export(require('./kernel'));
 __export(require('./cli'));
 __export(require('./log'));
+__export(require('./helpers'));
 //# sourceMappingURL=index.js.map

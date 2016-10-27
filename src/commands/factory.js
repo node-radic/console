@@ -21,6 +21,24 @@ function command(name, prettyName, desc, parent) {
     };
 }
 exports.command = command;
+var registrations = [];
+function COMMAND(name, prettyName, options) {
+    if (options === void 0) { options = {}; }
+    options = _.merge({
+        name: name,
+        prettyName: prettyName || name,
+        desc: '',
+        parent: null,
+        type: 'command',
+        arguments: {},
+        options: {}
+    }, options);
+    return function (cls) {
+        options.cls = cls;
+        registrations.push(options);
+    };
+}
+exports.COMMAND = COMMAND;
 function group(name, prettyName, desc, parent) {
     if (desc === void 0) { desc = ''; }
     if (parent === void 0) { parent = null; }
@@ -117,6 +135,7 @@ var CommandFactory = (function () {
             command.definition.usage(command.usage);
         command.name = commandRegistration.name;
         command.desc = commandRegistration.desc;
+        command.prettyName = commandRegistration.prettyName;
         command.parent = commandRegistration.parent ? commandRegistration.parent : null;
         return command;
     };

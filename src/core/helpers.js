@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var kernel_1 = require("./kernel");
 var Helpers = (function () {
     function Helpers() {
+        this.helpers = {};
     }
     Helpers.prototype.get = function (name) {
         return this.helpers[name];

@@ -2,7 +2,7 @@ import { injectable } from "./kernel";
 
 
 export interface IHelper {
-    name: string
+    getName() : string
 }
 
 export interface IHelpers<T extends IHelper> {
@@ -15,7 +15,7 @@ export interface IHelpers<T extends IHelper> {
 
 @injectable()
 export class Helpers<T extends IHelper> implements IHelpers<T> {
-    helpers: {[name: string]: T}
+    helpers: {[name: string]: T} = {}
 
     get<H extends T>(name: string): T {
         return this.helpers[ name ];

@@ -8,7 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var console_colors_1 = require("@radic/console-colors");
 var core_1 = require("../core");
 var Descriptor = (function () {
     function Descriptor() {
@@ -26,8 +25,19 @@ var Descriptor = (function () {
             if (node.type === 'command') {
                 var command = _this.factory.createCommand(node);
                 var args_1 = command.definition.getArguments();
-                var keys = Object.keys(args_1);
-                return ("{" + c.command + "}" + node.name + "{reset}") + (keys.length > 0 ? "{" + c.argument + "}" + keys.map(function (name) { return args_1[name]; }).join('{reset ') + "{reset}" : '');
+                var names = Object.keys(args_1);
+                var out = "{" + c.command + "}" + node.name + "{reset} ";
+                out += names.map(function (name) {
+                    var arg = args_1[name];
+                    var out = arg.name;
+                    if (arg.default)
+                        out += '=' + arg.default;
+                    if (arg.required === true)
+                        return '[' + out + ']';
+                    else
+                        return '{dimgray}<' + out + '>{/dimgray}';
+                }).join(' ');
+                return out;
             }
         };
         return tree.map(mapNode);
@@ -38,12 +48,10 @@ var Descriptor = (function () {
         return this;
     };
     Descriptor.prototype.getGroup = function (group) {
-        var _this = this;
         var children = this.factory.getGroupChildren(group ? group.name : null, group ? group.parent : undefined);
         var table = this.out.columns();
         children.forEach(function (child) {
-            var nameColor = console_colors_1.colors.getTrucolorColor(_this.config('colors.' + child.type)), name = nameColor.in + child.name + nameColor.out, descColor = console_colors_1.colors.getTrucolorColor(_this.config('colors.description')), desc = descColor.in + child.desc + descColor.out;
-            table.push([name, desc]);
+            table.push([("{" + child.type + "}" + child.name + "{/" + child.type + "}"), ("{description}" + child.desc + "{/description}")]);
         });
         return table;
     };
@@ -82,13 +90,12 @@ var Descriptor = (function () {
         return this;
     };
     Descriptor.prototype.getArguments = function (definition) {
-        var _this = this;
         var args = definition.getArguments();
         var table = this.out.columns();
+        var required = '[{yellow}required{/yellow}]';
         Object.keys(args).forEach(function (name) {
             var arg = args[name];
-            var nameColor = console_colors_1.colors.getTrucolorColor(_this.config('colors.argument')), _name = nameColor.in + name + nameColor.out, descColor = console_colors_1.colors.getTrucolorColor(_this.config('colors.description')), _desc = descColor.in + arg.desc + descColor.out;
-            table.push([_name, _desc]);
+            table.push([("{argument}" + name + "{/argument}"), ("{description}" + arg.desc + "{/description}"), '']);
         });
         return table;
     };

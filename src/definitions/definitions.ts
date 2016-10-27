@@ -30,13 +30,20 @@ export interface IJoinedOption {
     narg?: number
     handler?: Function
 }
-export interface IArgument {
+export interface IArgument  {
     name?: string
     required?: boolean
     default?: any
     type?: string
     desc?: string
     value?: any
+}
+
+export interface IArgumentDefinition{
+    required?: boolean
+    default?: any
+    type?: string
+    desc?: string
 }
 
 export interface IOptionsDefinition {

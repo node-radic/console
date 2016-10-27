@@ -15,6 +15,8 @@ var util_2 = require("@radic/util");
 var lodash_1 = require("lodash");
 var console_colors_1 = require("@radic/console-colors");
 var archy = require("archy");
+var truwrap = require('truwrap');
+truwrap({});
 exports.TABLE_STYLE = {
     FAT: {
         'top': '═', 'top-mid': '╤', 'top-left': '╔', 'top-right': '╗',
@@ -32,17 +34,27 @@ exports.TABLE_STYLE = {
 };
 var Output = (function () {
     function Output() {
-        this.parser = new console_colors_1.Parser;
         this.useParser = true;
         this.colorsEnabled = true;
     }
+    Object.defineProperty(Output.prototype, "parser", {
+        get: function () {
+            if (!this._parser) {
+                this._parser = new console_colors_1.Parser;
+                this._parser.colors.styles(this.config('styles'));
+            }
+            return this._parser;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Output.prototype.dump = function () {
         var _this = this;
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i - 0] = arguments[_i];
         }
-        args.forEach(function (arg) { return process.stdout.write(util_1.inspect(arg, { colors: _this.colorsEnabled, depth: 5, showHidden: true })); });
+        args.forEach(function (arg) { return _this.writeln(util_1.inspect(arg, { colors: _this.colorsEnabled, depth: 5, showHidden: true })); });
     };
     Object.defineProperty(Output.prototype, "nl", {
         get: function () {
