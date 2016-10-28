@@ -51,7 +51,7 @@ var OptionsDefinition = (function () {
     OptionsDefinition.prototype.getJoinedOptions = function () {
         var opts = this._options;
         var joined = {};
-        ['array', 'boolean', 'count', 'number', 'nested'].forEach(function (type) {
+        ['array', 'boolean', 'count', 'number', 'string', 'nested'].forEach(function (type) {
             if (typeof opts[type] === "undefined")
                 return;
             opts[type].forEach(function (key) {

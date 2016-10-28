@@ -132,7 +132,7 @@ export class OptionsDefinition implements IOptionsDefinition {
     getJoinedOptions(): IJoinedOptions {
         let opts                   = this._options;
         let joined: IJoinedOptions = {};
-        [ 'array', 'boolean', 'count', 'number', 'nested' ].forEach((type: string) => {
+        [ 'array', 'boolean', 'count', 'number', 'string', 'nested' ].forEach((type: string) => {
             if ( typeof opts[ type ] === "undefined" ) return;
             opts[ type ].forEach((key: string) => {
                 if ( typeof joined[ key ] === "undefined" ) {

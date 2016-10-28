@@ -13,13 +13,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var fs_extra_1 = require("fs-extra");
+var fs_1 = require("fs");
+var path_1 = require("path");
 var src_1 = require("../../src");
 var core_1 = require("../core");
-var fs_1 = require("fs");
-var fs_extra_1 = require("fs-extra");
-var moment = require('moment');
-var fs_2 = require("fs");
-var path_1 = require("path");
+var services_1 = require("../services");
 var DBGroup = (function (_super) {
     __extends(DBGroup, _super);
     function DBGroup() {
@@ -32,6 +31,22 @@ var DBGroup = (function (_super) {
     return DBGroup;
 }(src_1.Group));
 exports.DBGroup = DBGroup;
+var DBCommand = (function (_super) {
+    __extends(DBCommand, _super);
+    function DBCommand() {
+        _super.apply(this, arguments);
+    }
+    __decorate([
+        src_1.inject(core_1.COMMANDO.DATABASE), 
+        __metadata('design:type', services_1.Database)
+    ], DBCommand.prototype, "db", void 0);
+    DBCommand = __decorate([
+        src_1.injectable(), 
+        __metadata('design:paramtypes', [])
+    ], DBCommand);
+    return DBCommand;
+}(src_1.Command));
+exports.DBCommand = DBCommand;
 var ShowDBCommand = (function (_super) {
     __extends(ShowDBCommand, _super);
     function ShowDBCommand() {
@@ -42,12 +57,8 @@ var ShowDBCommand = (function (_super) {
         __metadata('design:paramtypes', [])
     ], ShowDBCommand);
     return ShowDBCommand;
-}(src_1.Command));
+}(DBCommand));
 exports.ShowDBCommand = ShowDBCommand;
-function backupDb(backupPath) {
-    backupPath = backupPath || path_1.resolve('r-db-back' + moment().format('.Y-M-D_H-mm-ss.[backup]'));
-    fs_extra_1.copySync(core_1.paths.userDatabase, backupPath);
-}
 var ResetDBCommand = (function (_super) {
     __extends(ResetDBCommand, _super);
     function ResetDBCommand() {
@@ -57,11 +68,10 @@ var ResetDBCommand = (function (_super) {
         var _this = this;
         this.in.confirm('Should i create a backup?', true).then(function (backup) {
             if (backup) {
-                var backupPath = core_1.paths.userDatabase + moment().format('.Y-M-D_H-mm-ss.[backup]');
-                backupDb(backupPath);
+                var backupPath = _this.db.backup();
                 _this.log.info('Database backup created at ' + backupPath + '. Use the {command}restore{/command} command to revert back the changes.');
             }
-            fs_1.unlinkSync(core_1.paths.userDatabase);
+            _this.db.drop();
             _this.log.info('Database has been reset');
         });
     };
@@ -70,28 +80,38 @@ var ResetDBCommand = (function (_super) {
         __metadata('design:paramtypes', [])
     ], ResetDBCommand);
     return ResetDBCommand;
-}(src_1.Command));
+}(DBCommand));
 exports.ResetDBCommand = ResetDBCommand;
 var RestoreDBCommand = (function (_super) {
     __extends(RestoreDBCommand, _super);
     function RestoreDBCommand() {
         _super.apply(this, arguments);
-        this.arguments = {
-            path: { desc: 'Path to the DB backup file', type: 'string' }
+        this.arguments = {};
+        this.options = {
+            p: { alias: 'path', desc: 'Path to backup file location', string: true },
+            l: { alias: 'list', desc: 'List internal backups', boolean: true }
         };
     }
     RestoreDBCommand.prototype.handle = function () {
+        if (!this.opt('p')) {
+        }
+        if (this.opt('l')) {
+            this.list();
+        }
+    };
+    RestoreDBCommand.prototype.list = function () {
         var _this = this;
-        var interact = this.getHelper('interaction');
-        interact.askArgs({
-            path: { message: this.arguments.path.desc }
-        }).then(function (answers) {
-            _this.out.dump(answers);
+        var backups = this.db.listBackups();
+        if (backups.length === 0)
+            return this.log.warn('No internal backups have been made.');
+        this.out.header("Internal backups (" + backups.length + ")");
+        backups.forEach(function (backup) {
+            _this.out.writeln(" - " + backup);
         });
     };
     RestoreDBCommand.prototype.restore = function (filePath) {
         filePath = path_1.resolve(filePath);
-        if (!fs_2.existsSync(filePath)) {
+        if (!fs_1.existsSync(filePath)) {
             this.fail('File does not exist at ' + filePath);
         }
         var db = fs_extra_1.readJsonSync(filePath);
@@ -102,18 +122,21 @@ var RestoreDBCommand = (function (_super) {
         __metadata('design:paramtypes', [])
     ], RestoreDBCommand);
     return RestoreDBCommand;
-}(src_1.Command));
+}(DBCommand));
 exports.RestoreDBCommand = RestoreDBCommand;
 var BackupDBCommand = (function (_super) {
     __extends(BackupDBCommand, _super);
     function BackupDBCommand() {
         _super.apply(this, arguments);
+        this.options = {};
     }
+    BackupDBCommand.prototype.handle = function () {
+    };
     BackupDBCommand = __decorate([
         src_1.command('backup', 'Backup Database', 'Create a backup of the database.', DBGroup), 
         __metadata('design:paramtypes', [])
     ], BackupDBCommand);
     return BackupDBCommand;
-}(src_1.Command));
+}(DBCommand));
 exports.BackupDBCommand = BackupDBCommand;
 //# sourceMappingURL=db.js.map

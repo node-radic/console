@@ -11,7 +11,8 @@ cli.config
 cli.globalDefinition
     .help('h', 'help')
     .options({
-    v: { alias: 'verbose', desc: 'Increase output verbosity', count: true }
+    v: { alias: 'verbose', desc: 'Increase output verbosity', count: true },
+    D: { alias: 'dump-parsed', desc: 'Dump parsed definition to console', boolean: true }
 });
 cli.definition
     .options({
@@ -41,6 +42,9 @@ if (parsed.opt('t')) {
 if (parsed.opt('V')) {
     cli.out.line(cli.config('app.version'));
     cli.exit();
+}
+if (parsed.global.opt('D')) {
+    cli.out.dump(cli.parsed);
 }
 cli.handle();
 //# sourceMappingURL=commando.js.map

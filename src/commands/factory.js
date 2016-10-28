@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("../core");
 var _ = require("lodash");
+var util_1 = require("@radic/util");
 var groups = [];
 var commands = [];
 function command(name, prettyName, desc, parent) {
@@ -102,6 +103,13 @@ var BaseCommandRegistration = (function () {
     return BaseCommandRegistration;
 }());
 exports.BaseCommandRegistration = BaseCommandRegistration;
+function toObj(arr) {
+    var obj = {};
+    arr.forEach(function (key) {
+        obj[key] = {};
+    });
+    return obj;
+}
 var CommandFactory = (function () {
     function CommandFactory() {
     }
@@ -126,9 +134,14 @@ var CommandFactory = (function () {
         if (argv === void 0) { argv = []; }
         var command = core_1.kernel.make(registration.cls);
         command.argv = argv;
-        command.definition.mergeOptions(core_1.kernel.get(core_1.BINDINGS.CLI).globalDefinition);
-        command.definition.arguments(command.arguments);
-        command.definition.options(command.options);
+        var options = _.cloneDeep(command.options);
+        var args = _.cloneDeep(command.arguments);
+        if (util_1.kindOf(options) === 'array')
+            options = toObj(options);
+        if (util_1.kindOf(args) === 'array')
+            args = toObj(args);
+        command.definition.arguments(args);
+        command.definition.options(options);
         if (command.example)
             command.definition.example(command.example);
         if (command.usage)

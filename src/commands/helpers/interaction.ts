@@ -55,3 +55,4 @@ export default class InteractionCommandHelper implements ICommandHelper {
 
 
 }
+export { InteractionCommandHelper }

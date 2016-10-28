@@ -2,9 +2,10 @@ import * as inquirer from "inquirer";
 import * as _ from "lodash";
 import * as BB from "bluebird";
 import { inject, injectable, BINDINGS, kernel, IHelper, IHelpers } from "../core";
-import { IOptionsDefinition, IArgumentsDefinition, IParsedArguments,IArgumentDefinition, IOption } from "../definitions";
+import { IOptionsDefinition, IArgumentsDefinition, IParsedArguments, IArgumentDefinition, IOption } from "../definitions";
 import { IGroupConstructor } from "./group";
 import { BaseCommandRegistration, ICommandRegistration } from "./factory";
+import { Question, Answers } from "../io/input";
 
 export interface ICommandHelper extends IHelper {
     setCommand(command: Command)
@@ -14,8 +15,8 @@ export interface ICommandHelperConstructor {
 }
 
 export interface ICommand extends ICommandRegistration<ICommand> {
-    arguments: {[name: string]: IArgumentDefinition}
-    options: {[name: string]: IOption}
+    arguments: {[name: string]: IArgumentDefinition}|string[]
+    options: {[name: string]: IOption}|string[]
     parsed: IParsedArguments
     definition: IArgumentsDefinition
     globalDefinition: IOptionsDefinition
@@ -36,8 +37,8 @@ export class Command extends BaseCommandRegistration implements ICommand {
     argv: any[] = []
 
     // can be filled by overriding class
-    arguments: {[name: string]: IArgumentDefinition} = {}
-    options: {[name: string]: IOption}               = {}
+    arguments: {[name: string]: IArgumentDefinition}|string[] = {}
+    options: {[name: string]: IOption}|string[]               = {}
     example: string
     usage: string
 
@@ -52,16 +53,18 @@ export class Command extends BaseCommandRegistration implements ICommand {
     @inject(BINDINGS.HELPERS)
     protected helpers: IHelpers<ICommandHelper>
 
-    protected defaultHelpers: string[] = ['interaction']
+    protected defaultHelpers: string[] = [ 'interaction' ]
 
     constructor() {
         super()
     }
 
     protected parse() {
-        // merge into an empty definition
-        this.parsed = _.clone(this.definition).mergeOptions(this.globalDefinition).parse(this.argv);
-        // this.parsed.global = this.definition.parse(this.argv);
+        // merge into an empty definition to generate the parsed definition containing both
+        this.parsed = kernel.get<IArgumentsDefinition>(BINDINGS.ARGUMENTS_DEFINITION)
+            .mergeOptions(this.definition)
+            .mergeOptions(this.globalDefinition)
+            .parse(this.argv)
 
         // handle help before parse errors. the command execution will be canceled anyway when showing help.
         this.handleHelp()
@@ -127,50 +130,8 @@ export class Command extends BaseCommandRegistration implements ICommand {
         return defer.promise;
     }
 
-    /**
-     * Interactively ask for arguments.
-     * This can work on optional arguments, where `require: false` (default).
-     * @param questions
-     * @param argv
-     * @returns {any}
-     * @example
-     * class MyCmd extends Command {
-     *      arguments = {
-     *          type: { desc: 'Enter the type' }
-     *      }
-     *      handle(){
-     *          this.askArgs([
-     *              type: { type: 'list', message: 'Choose your type', choices: ['sqlite', 'mysql', 'mssql'] }
-     *          ], this.argv).then((args) => {
-     *              this.out.dump(args)
-     *          })
-     *      }
-     * }
-     */
-    askArgs(questions: {[name: string]: inquirer.Question}) {
-        let argv: any = _.clone(this.argv)
-        var defer     = BB.defer();
-        let names     = Object.keys(questions)
-        if ( argv.noInteraction ) {
-            defer.resolve(_.pick(argv, names)); //['name', 'remote', 'method', 'key', 'secret', 'extra']))
-            return defer.promise;
-        }
-
-        let pm = (name: string, opts: any) => _.merge({ name, type: 'input', when: (answers: any) => this.hasArg(name) === false }, opts)
-
-        let prompts: any[] = names.map((name: string) => {
-            return pm(name, questions[ name ])
-        })
-
-        return (<any> inquirer.prompt(prompts)).catch(console.error.bind(console)).then((args: any) => {
-            args = _.chain(argv)
-                .pick(names)
-                .merge(args)
-                .value();
-
-            defer.resolve(args);
-            return defer.promise
-        })
+    askArgs(questions: {[name: string]: Question}): Promise<Answers> {
+        return this.in.askArgs(this.parsed, questions)
     }
 
 
@@ -201,7 +162,7 @@ export class Command extends BaseCommandRegistration implements ICommand {
 
 
     addHelper(cls: ICommandHelperConstructor) {
-        let helper:ICommandHelper     = kernel.build<ICommandHelper>(cls);
+        let helper: ICommandHelper = kernel.build<ICommandHelper>(cls);
         helper.setCommand(this);
         this.log.debug('Adding helper ' + helper.getName(), helper)
         this.helpers.set(helper.getName(), helper);

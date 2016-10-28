@@ -53,4 +53,5 @@ var InteractionCommandHelper = (function () {
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = InteractionCommandHelper;
+exports.InteractionCommandHelper = InteractionCommandHelper;
 //# sourceMappingURL=interaction.js.map

@@ -14,5 +14,7 @@ exports.paths = {
     userDataConfig: path_1.join(home, '.r', 'r.conf'),
     userSecretKeyFile: path_1.join(home, '.r', 'secret.key'),
     userPublicKeyFile: path_1.join(home, '.r', 'public.key'),
+    backups: path_1.join(home, '.r', 'backups'),
+    dbBackups: path_1.join(home, '.r', 'backups', 'db')
 };
 //# sourceMappingURL=paths.js.map

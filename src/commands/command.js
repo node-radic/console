@@ -13,8 +13,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var inquirer = require("inquirer");
-var _ = require("lodash");
 var BB = require("bluebird");
 var core_1 = require("../core");
 var factory_1 = require("./factory");
@@ -28,7 +26,10 @@ var Command = (function (_super) {
         this.defaultHelpers = ['interaction'];
     }
     Command.prototype.parse = function () {
-        this.parsed = _.clone(this.definition).mergeOptions(this.globalDefinition).parse(this.argv);
+        this.parsed = core_1.kernel.get(core_1.BINDINGS.ARGUMENTS_DEFINITION)
+            .mergeOptions(this.definition)
+            .mergeOptions(this.globalDefinition)
+            .parse(this.argv);
         this.handleHelp();
         if (this.parsed.hasErrors()) {
             this.handleParseErrors();
@@ -78,26 +79,7 @@ var Command = (function (_super) {
         return defer.promise;
     };
     Command.prototype.askArgs = function (questions) {
-        var _this = this;
-        var argv = _.clone(this.argv);
-        var defer = BB.defer();
-        var names = Object.keys(questions);
-        if (argv.noInteraction) {
-            defer.resolve(_.pick(argv, names));
-            return defer.promise;
-        }
-        var pm = function (name, opts) { return _.merge({ name: name, type: 'input', when: function (answers) { return _this.hasArg(name) === false; } }, opts); };
-        var prompts = names.map(function (name) {
-            return pm(name, questions[name]);
-        });
-        return inquirer.prompt(prompts).catch(console.error.bind(console)).then(function (args) {
-            args = _.chain(argv)
-                .pick(names)
-                .merge(args)
-                .value();
-            defer.resolve(args);
-            return defer.promise;
-        });
+        return this.in.askArgs(this.parsed, questions);
     };
     Command.prototype.arg = function (n) { return this.parsed.arg(n); };
     Command.prototype.hasOpt = function (n) { return this.parsed.hasOpt(n); };

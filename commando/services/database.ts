@@ -3,9 +3,15 @@ import * as _ from "lodash";
 import { readFileSync } from "fs";
 import { Config, kindOf } from "@radic/util";
 import * as LowDB from "lowdb";
-import { injectable, provideSingleton, COMMANDO, inject } from "../core";
-import { kernel } from "../../src/core/kernel";
+import { injectable, provideSingleton, COMMANDO, inject, paths } from "../core";
+import { kernel } from "../../src";
 import * as Validation from "validatorjs";
+import { copySync } from "fs-extra";
+import { resolve } from "path";
+import * as moment from 'moment';
+import globule = require("globule");
+import { join } from "path";
+
 
 Validation.register('object', (value, req, attr) => {
     console.log('validate object: ', 'value', value, 'req', req, 'attr', attr)
@@ -89,6 +95,47 @@ export class Database {
     asConfig() {
         new Config(this.rawDB());
     }
+
+    drop(): this {
+        this.setState({})
+        return this
+    }
+
+    getState(): Object {
+        return this._db.getState()
+    }
+
+    setState(state): this {
+        this._db.setState(state)
+        return this;
+    }
+
+    write(source?: string): this {
+        this._db.read(source)
+        return this;
+    }
+
+    read(source?: string): this {
+        this._db.read(source)
+        return this;
+    }
+
+    backup(backupPath?: string) : string {
+        backupPath = backupPath || resolve(paths.dbBackups, moment().format('Y/M/D/HH-mm-ss.[db]') );
+        copySync(paths.userDatabase, backupPath);
+        return backupPath
+    }
+
+    listBackups(){
+        return globule.find(join(paths.dbBackups, '**/*.db'));
+    }
+
+    restore(restorePath:string) : this {
+        this.write(resolve(restorePath));
+        return this
+    }
+
+
 }
 
 

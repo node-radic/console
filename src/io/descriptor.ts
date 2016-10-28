@@ -15,7 +15,7 @@ export interface IDescriptor {
 
     getGroup(group): CliTable
     group(group: string | IGroup): this
-    getCommand(command): {args: CliTable,options: CliTable,usage: string, example: string}
+    getCommand(command): {args: CliTable,options: CliTable,usage: string, example: string, globalOptions: CliTable}
     command(command: ICommand): this
 
     getCommandTree(from?: string): any[]
@@ -63,14 +63,14 @@ export class Descriptor implements IDescriptor {
                 let out = `{command}${node.name}{/command} ` // : {${c.description}}${node.desc}{reset}`
 
                 out += names.map((name) => {
-                    let arg = args[name]
-                    let  out = arg.name
+                    let arg = args[ name ]
+                    let out = arg.name
 
 
-                    if(arg.default)
+                    if ( arg.default )
                         out += '=' + arg.default
 
-                    if(arg.required === true)
+                    if ( arg.required === true )
                         return '[' + out + ']'
                     else
                         return '{dimgray}<' + out + '>{/dimgray}'
@@ -110,36 +110,66 @@ export class Descriptor implements IDescriptor {
     }
 
 
-    getCommand(command): {args: CliTable,options: CliTable,usage: string, example: string} {
-        let args    = this.getArguments(command.definition),
-            options = this.getOptions(command.definition),
-            usage   = this.getUsage(command.definition),
-            example = this.getExample(command.definition)
+    getCommand(command): {args: CliTable,options: CliTable,usage: string, example: string, globalOptions: CliTable} {
+        let args          = this.getArguments(command.definition),
+            options       = this.getOptions(command.definition),
+            usage         = this.getUsage(command.definition),
+            example       = this.getExample(command.definition),
+            globalOptions = this.getOptions(command.globalDefinition)
 
-        return { args, options, usage, example };
+        return { args, options, usage, example, globalOptions };
     }
 
-    command(command: ICommand): this {
-        let c                                 = this.config,
-            { args, options, usage, example } = this.getCommand(command)
+    command(command: ICommand, showGlobal: boolean = true): this {
+        let c                                                = this.config,
+            { args, options, usage, example, globalOptions } = this.getCommand(command)
 
-        if ( usage ) this.out.line().header(c('descriptor.text.usage')).line(usage)
-        this.out.line().header(c('descriptor.text.arguments')).line(args.toString())
-        if ( options.length ) this.out.line().header(c('descriptor.text.options')).line(options.toString())
-        if ( example ) this.out.line().header(c('descriptor.text.example')).line(example)
+        if ( usage )
+            this.out
+                .line()
+                .header(c('descriptor.text.usage'))
+                .line(usage)
+
+        if ( args.length )
+            this.out
+                .line()
+                .header(c('descriptor.text.arguments'))
+                .line(args.toString())
+
+        if ( options.length )
+            this.out
+                .line()
+                .header(c('descriptor.text.options'))
+                .line(options.toString())
+
+        if ( showGlobal && globalOptions.length )
+            this.out
+                .line()
+                .header(c('descriptor.text.globalOptions'))
+                .line(globalOptions.toString())
+
+        if ( example )
+            this.out
+                .line()
+                .header(c('descriptor.text.example'))
+                .line(example)
 
         return this
     }
 
 
     getOptions(definition: IOptionsDefinition): CliTable {
-        let opts  = definition.getJoinedOptions();
-        let table = this.out.columns();
+        let opts      = definition.getJoinedOptions();
+        let table     = this.out.columns();
+        let prefixKey = (key: string) => (key.length === 1 ? '-' : '--') + key
         Object.keys(opts).forEach((key: string) => {
-            let keys    = [ '-' + key ]
+            let opt     = opts[ key ];
+            let keys:any    = [ prefixKey(key) ]
             let aliases = definition.getOptions().alias[ key ] || []
-            keys        = keys.concat(aliases.map((alias: string) => alias.length === 1 ? '-' + alias : '--' + alias))
-            table.push([ keys.join('|'), opts[ key ].desc, `[{yellow}${opts[ key ].type}{/yellow}]` ])
+            keys        = keys.concat(aliases.map(prefixKey)).join('|')
+
+
+            table.push([ keys, opt.desc, `[{yellow}${opt.type}{/yellow}]` ])
         })
         return table
     }
@@ -155,7 +185,7 @@ export class Descriptor implements IDescriptor {
         let table = this.out.columns();
 
         Object.keys(args).forEach((name: string) => {
-            let arg: any  = args[ name ];
+            let arg: any = args[ name ];
             table.push([ `{argument}${name}{/argument}`, `{description}${arg.desc}{/description}`, arg.required ? '[{required}required{/required}]' : '' ]);
         })
         return table;

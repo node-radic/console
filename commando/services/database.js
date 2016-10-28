@@ -16,8 +16,13 @@ var _ = require("lodash");
 var fs_1 = require("fs");
 var util_1 = require("@radic/util");
 var core_1 = require("../core");
-var kernel_1 = require("../../src/core/kernel");
+var src_1 = require("../../src");
 var Validation = require("validatorjs");
+var fs_extra_1 = require("fs-extra");
+var path_1 = require("path");
+var moment = require('moment');
+var globule = require("globule");
+var path_2 = require("path");
 Validation.register('object', function (value, req, attr) {
     console.log('validate object: ', 'value', value, 'req', req, 'attr', attr);
     console.log('validate object: kindOf(value) === "object"', util_1.kindOf(value) === 'object');
@@ -74,6 +79,37 @@ var Database = (function () {
     Database.prototype.asConfig = function () {
         new util_1.Config(this.rawDB());
     };
+    Database.prototype.drop = function () {
+        this.setState({});
+        return this;
+    };
+    Database.prototype.getState = function () {
+        return this._db.getState();
+    };
+    Database.prototype.setState = function (state) {
+        this._db.setState(state);
+        return this;
+    };
+    Database.prototype.write = function (source) {
+        this._db.read(source);
+        return this;
+    };
+    Database.prototype.read = function (source) {
+        this._db.read(source);
+        return this;
+    };
+    Database.prototype.backup = function (backupPath) {
+        backupPath = backupPath || path_1.resolve(core_1.paths.dbBackups, moment().format('Y/M/D/HH-mm-ss.[db]'));
+        fs_extra_1.copySync(core_1.paths.userDatabase, backupPath);
+        return backupPath;
+    };
+    Database.prototype.listBackups = function () {
+        return globule.find(path_2.join(core_1.paths.dbBackups, '**/*.db'));
+    };
+    Database.prototype.restore = function (restorePath) {
+        this.write(path_1.resolve(restorePath));
+        return this;
+    };
     Database = __decorate([
         core_1.provideSingleton(core_1.COMMANDO.DATABASE),
         __param(0, core_1.inject(core_1.COMMANDO.PATHS)),
@@ -104,7 +140,7 @@ function getModel(modelId) {
     if (!models[modelId])
         throw Error('Model does not exist:' + modelId);
     var reg = models[modelId];
-    var model = kernel_1.kernel.build(reg.cls);
+    var model = src_1.kernel.build(reg.cls);
     model._modelId = modelId;
     return model;
 }

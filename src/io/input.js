@@ -42,6 +42,29 @@ var Input = (function () {
     Input.prototype.prompt = function (prompts) {
         return inquirer.prompt(prompts).catch(console.error.bind(console));
     };
+    Input.prototype.askArgs = function (parsed, questions) {
+        var args = _.clone(parsed.arguments);
+        var defer = BB.defer();
+        var names = Object.keys(questions);
+        if (this.noInteraction) {
+            defer.resolve(_.pick(args, names));
+            return defer.promise;
+        }
+        var pm = function (name, opts) { return _.merge({ name: name, type: 'input', when: function (answers) { return parsed.hasArg(name) === false; } }, opts); };
+        var prompts = names.map(function (name) {
+            return pm(name, questions[name]);
+        });
+        return inquirer.prompt(prompts)
+            .catch(console.error.bind(console))
+            .then(function (answers) {
+            answers = _.chain(args)
+                .pick(names)
+                .merge(answers)
+                .value();
+            defer.resolve(answers);
+            return defer.promise;
+        });
+    };
     Input = __decorate([
         inversify_1.injectable(), 
         __metadata('design:paramtypes', [])

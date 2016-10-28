@@ -5,6 +5,7 @@ import * as _ from "lodash";
 import { ICommandsDefinition, ICommandsParser, IParsedCommands } from "../definitions";
 import { IOutput, IDescriptor } from "../io";
 import { IInput } from "../io/input";
+import { kindOf } from "@radic/util";
 
 
 export interface ICommandRegistration<T> {
@@ -140,6 +141,14 @@ export abstract class BaseCommandRegistration {
 
 }
 
+function toObj(arr:string[]){
+    let obj = {};
+    arr.forEach((key) => {
+        obj[key] = {}
+    })
+    return obj
+}
+
 @injectable()
 export class CommandFactory implements ICommandFactory {
 
@@ -159,9 +168,14 @@ export class CommandFactory implements ICommandFactory {
     createCommand(registration, argv = []): Command {
         let command: Command = kernel.make<Command>(registration.cls);
         command.argv = argv
-        command.definition.mergeOptions(kernel.get<CommandsCli>(BINDINGS.CLI).globalDefinition);
-        command.definition.arguments(command.arguments);
-        command.definition.options(command.options);
+
+        let options:any = _.cloneDeep(command.options)
+        let args:any = _.cloneDeep(command.arguments)
+        if(kindOf(options) === 'array') options = toObj(options)
+        if(kindOf(args) === 'array') args = toObj(args)
+        command.definition.arguments(args);
+        command.definition.options(options);
+
         if ( command.example ) command.definition.example(command.example)
         if ( command.usage ) command.definition.usage(command.usage)
 

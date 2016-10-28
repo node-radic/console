@@ -2,6 +2,7 @@ import * as BB from "bluebird";
 import { injectable } from "inversify";
 import * as inquirer from "inquirer";
 import * as    _ from "lodash";
+import { IParsedArguments } from "../definitions/parsed";
 
 export type QuestionType = "input" |'confirm'|'list'|'rawlist'|'expand'|'checkbox'|'password'|'editor'
 export type Questions = Question | Question[] | Rx.Observable<Question>;
@@ -73,6 +74,7 @@ export interface IInput {
     askSecret(msg: string, opts?: any ): Promise<string>
     confirm(msg:string, def?:boolean, opts?: any ) : Promise<boolean>
     askChoice(msg:string, choices:any[], multi?:boolean, opts?: any ) : Promise<string[]|string>
+    askArgs(parsed: IParsedArguments,  questions: {[name: string]: Question}): Promise<Answers>;
 }
 
 @injectable()
@@ -102,6 +104,35 @@ export class Input implements IInput {
 
     prompt(prompts: Questions): Promise<Answers> {
         return (<any> inquirer.prompt(prompts)).catch(console.error.bind(console))
+    }
+
+    askArgs(parsed:IParsedArguments, questions: {[name: string]: Question}) {
+        let args: any = _.clone(parsed.arguments)
+        var defer     = BB.defer();
+        let names     = Object.keys(questions)
+
+        if ( this.noInteraction ) {
+            defer.resolve(_.pick(args, names)); //['name', 'remote', 'method', 'key', 'secret', 'extra']))
+            return defer.promise;
+        }
+
+        let pm = (name: string, opts: any) => _.merge({ name, type: 'input', when: (answers: any) => parsed.hasArg(name) === false }, opts)
+
+        let prompts: any[] = names.map((name: string) => {
+            return pm(name, questions[ name ])
+        })
+
+        return (<any> inquirer.prompt(prompts))
+            .catch(console.error.bind(console))
+            .then((answers: any) => {
+                answers = _.chain(args)
+                    .pick(names)
+                    .merge(answers)
+                    .value();
+
+                defer.resolve(answers);
+                return defer.promise
+            })
     }
 
 

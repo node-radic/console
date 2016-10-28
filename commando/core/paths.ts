@@ -1,4 +1,4 @@
-import { join as j } from "path";
+import { join as j, resolve as r } from "path";
 let root = j(__dirname, '..', '..'),
     home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE,
     cwd  = process.cwd()
@@ -17,6 +17,8 @@ export var paths: any = {
     userDataConfig   : j(home, '.r', 'r.conf'),
     userSecretKeyFile: j(home, '.r', 'secret.key'),
     userPublicKeyFile: j(home, '.r', 'public.key'),
+    backups          : j(home, '.r', 'backups'),
+    dbBackups        : j(home, '.r', 'backups', 'db')
 };
 
 

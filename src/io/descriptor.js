@@ -60,28 +60,49 @@ var Descriptor = (function () {
         return this;
     };
     Descriptor.prototype.getCommand = function (command) {
-        var args = this.getArguments(command.definition), options = this.getOptions(command.definition), usage = this.getUsage(command.definition), example = this.getExample(command.definition);
-        return { args: args, options: options, usage: usage, example: example };
+        var args = this.getArguments(command.definition), options = this.getOptions(command.definition), usage = this.getUsage(command.definition), example = this.getExample(command.definition), globalOptions = this.getOptions(command.globalDefinition);
+        return { args: args, options: options, usage: usage, example: example, globalOptions: globalOptions };
     };
-    Descriptor.prototype.command = function (command) {
-        var c = this.config, _a = this.getCommand(command), args = _a.args, options = _a.options, usage = _a.usage, example = _a.example;
+    Descriptor.prototype.command = function (command, showGlobal) {
+        if (showGlobal === void 0) { showGlobal = true; }
+        var c = this.config, _a = this.getCommand(command), args = _a.args, options = _a.options, usage = _a.usage, example = _a.example, globalOptions = _a.globalOptions;
         if (usage)
-            this.out.line().header(c('descriptor.text.usage')).line(usage);
-        this.out.line().header(c('descriptor.text.arguments')).line(args.toString());
+            this.out
+                .line()
+                .header(c('descriptor.text.usage'))
+                .line(usage);
+        if (args.length)
+            this.out
+                .line()
+                .header(c('descriptor.text.arguments'))
+                .line(args.toString());
         if (options.length)
-            this.out.line().header(c('descriptor.text.options')).line(options.toString());
+            this.out
+                .line()
+                .header(c('descriptor.text.options'))
+                .line(options.toString());
+        if (showGlobal && globalOptions.length)
+            this.out
+                .line()
+                .header(c('descriptor.text.globalOptions'))
+                .line(globalOptions.toString());
         if (example)
-            this.out.line().header(c('descriptor.text.example')).line(example);
+            this.out
+                .line()
+                .header(c('descriptor.text.example'))
+                .line(example);
         return this;
     };
     Descriptor.prototype.getOptions = function (definition) {
         var opts = definition.getJoinedOptions();
         var table = this.out.columns();
+        var prefixKey = function (key) { return (key.length === 1 ? '-' : '--') + key; };
         Object.keys(opts).forEach(function (key) {
-            var keys = ['-' + key];
+            var opt = opts[key];
+            var keys = [prefixKey(key)];
             var aliases = definition.getOptions().alias[key] || [];
-            keys = keys.concat(aliases.map(function (alias) { return alias.length === 1 ? '-' + alias : '--' + alias; }));
-            table.push([keys.join('|'), opts[key].desc, ("[{yellow}" + opts[key].type + "{/yellow}]")]);
+            keys = keys.concat(aliases.map(prefixKey)).join('|');
+            table.push([keys, opt.desc, ("[{yellow}" + opt.type + "{/yellow}]")]);
         });
         return table;
     };

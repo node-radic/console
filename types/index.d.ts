@@ -12,14 +12,14 @@ interface YargsParserOptions
     config?: boolean
     coerce: {[key: string]: Function}
     count: string[]
-
-    default: {[key: string]: any}
-    envPrefix?: string
-    narg: {[key: string]: number}
-    normalize?: boolean
     string: string[]
-    configuration?: {[key: string]: boolean}
     number: string[]
+    default: {[key: string]: any}
+    narg: {[key: string]: number}
+
+    envPrefix?: string
+    normalize?: boolean
+    configuration?: {[key: string]: boolean}
 }
 interface YargsParserArgv
 {
