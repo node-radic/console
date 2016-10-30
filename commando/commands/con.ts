@@ -12,14 +12,13 @@ export class ConnectionGroup extends Group {
         this.showHelp('Connection Manager')
         this.out.header('Available Remotes')
         let table = this.out.columns()
-        this.remotes.all().forEach((remote: IRemoteRegistration) => {
+        this.remotes.values().forEach((remote: IRemoteRegistration) => {
             table.push([
                 `{skyblue}${remote.prettyName}{/skyblue}`,
                 `{grey}${remote.name}{/grey}`
             ])
         })
         this.out.writeln(table.toString());
-
     }
 }
 
@@ -35,4 +34,5 @@ export abstract class ConnectionCommand extends Command {
     handle() {
         this.out.line(`This is the {green}con ${this.name}{/green} command`)
     }
+
 }

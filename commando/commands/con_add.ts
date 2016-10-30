@@ -36,7 +36,7 @@ $0 bbs bitbucket_server oauth2  a3#A$j342   2i34@k24j https://ci.radic.nl
 
         interact.askArgs({
             name  : { type: 'input', message: 'name', validate: (input: string) => this.validateName(input) },
-            remote: { type: 'list', message: 'remote', choices: (answers: any) => this.remotes.names() },
+            remote: { type: 'list', message: 'remote', choices: (answers: any) => this.remotes.keys() },
             method: { type: 'list', message: 'authentication method', choices: (answers: any) => [ 'basic', 'oauth2', 'oauth', 'token' ] },
             key   : { type: 'input', message: (answers: any) => AuthMethod.getKeyName(answers.method || this.parsed.arg('method')) },
             secret: { type: 'password', message: (answers: any) => AuthMethod.getSecretName(answers.method || this.parsed.arg('method')) },

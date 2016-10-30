@@ -2,7 +2,7 @@ import { StringType } from "@radic/util";
 import * as _ from "lodash";
 import { injectable, kernel, COMMANDO, provideSingleton } from "../core";
 import * as rp from "request-promise";
-import {  Connection } from "./connection";
+import { Connection } from "./connection";
 export { RequestPromise, Options as RequestOptions } from "request-promise";
 export { StatusCodeError } from "request-promise/errors";
 
@@ -12,6 +12,7 @@ export class AuthMethod extends StringType {
     static oauth  = new AuthMethod('oauth')
     static oauth2 = new AuthMethod('oauth2')
     static token  = new AuthMethod('token')
+    static key    = new AuthMethod('key')
 
 
     static getKeyName(method: AuthMethod|string) {
@@ -42,6 +43,8 @@ export class AuthMethod extends StringType {
                 return key ? 'id' : 'secret'
             case method == AuthMethod.token:
                 return key ? 'username' : 'token'
+            case method == AuthMethod.key:
+                return key ? 'username' : 'keyfile'
         }
     }
 
@@ -60,6 +63,7 @@ export interface IRemote {
     connection: Connection
     hasExtra: boolean
     extraDefinition ?: RemoteExtra
+    type: RemoteType
     callInit()
     getAuthMethods(): AuthMethod[]
 }
@@ -75,61 +79,37 @@ export interface IRemoteConstructor {
     new (): IRemote
 }
 
-export const enum RemoteType {
-    GENERIC, GIT, CI
-}
+export type RemoteType = 'generic' | 'git' | 'rest' | 'ci' | 'ssh'
 
-@provideSingleton(COMMANDO.REMOTES)
-export class RemoteFactory {
-    remotes: {[name: string]: IRemoteRegistration} = {}
-
-    register(name, cls) {
-        this.remotes[ name ] = cls
-    }
-
-    create<T extends IRemote>(name, connection: Connection): T {
-        let reg           = this.get(name);
-        let remote        = kernel.build<T>(reg.cls);
-        remote.connection = connection;
-        remote.name       = reg.name
-        remote.prettyName = reg.prettyName
-        remote.callInit()
-        return remote;
-    }
-
-    has(name) {
-        return this.remotes[ name ] !== undefined
-    }
-
-    get(name): IRemoteRegistration {
-        return this.remotes[ name ];
-    }
-
-    names(): string[] {
-        return Object.keys(this.remotes);
-    }
-
-    all(): IRemoteRegistration[] {
-        return _.values(this.remotes);
-    }
-}
-
-export function remote(name: string, prettyName: string, type: RemoteType = RemoteType.GENERIC) {
-    return (cls: IRemoteConstructor) => {
-        kernel.get<RemoteFactory>(COMMANDO.REMOTES).register(name, { name, prettyName, cls, type });
-    }
-}
 
 @injectable()
 export abstract class Remote implements IRemote {
     abstract getAuthMethods(): AuthMethod[]
+
+    connection: Connection
     name: string
     prettyName: string
-    extra:RemoteExtra;
+    extra: RemoteExtra;
+    type: RemoteType;
     hasExtra: boolean = false;
-    connection: Connection
-    inited: boolean = false
+    inited: boolean   = false
 
+    callInit() {
+        if ( this.inited ) return false;
+        this.inited = true
+        this.init();
+    }
+
+    protected abstract init() ;
+
+    validate(): boolean | string[] {
+        return true;
+    }
+
+}
+
+@injectable()
+export abstract class RestRemote extends Remote {
     protected defaultRequestOptions: rp.Options = <any> {
         baseUrl: '',
         uri    : '',
@@ -145,18 +125,11 @@ export abstract class Remote implements IRemote {
     };
 
     constructor() {
-
+        super()
     }
 
-    callInit(){
-        if(this.inited) return false;
-        this.inited = true
-        this.init();
-    }
-    protected abstract init() ;
-
-    validate(): boolean | string[] {
-        return true;
+    mergeDefaults(options:any){
+        this.defaultRequestOptions = _.merge(this.defaultRequestOptions, options)
     }
 
     request(options: rp.Options): rp.RequestPromise {
@@ -187,10 +160,25 @@ export abstract class Remote implements IRemote {
     }
 }
 
-export abstract class RemoteExtra {
-    abstract get name(): string
+@injectable()
+export abstract class GitRestRemote extends RestRemote {
+    abstract getUserRepositories(username: string): rp.RequestPromise
 
-    abstract get prettyName(): string
+    abstract getUserTeams(username: string): rp.RequestPromise
+
+    abstract deleteRepository(owner: string, repo: string): rp.RequestPromise
+
+    abstract createRepository(owner: string, repo: string): rp.RequestPromise
+
+    abstract getRepositories(owner: string): rp.RequestPromise
+}
+
+
+@injectable()
+export abstract class RemoteExtra {
+    abstract getName(): string
+
+    abstract getPrettyName(): string
 
     validate(extra: string): boolean {
         return true;
@@ -205,3 +193,46 @@ export abstract class RemoteExtra {
     }
 }
 
+
+@provideSingleton(COMMANDO.REMOTES)
+export class RemoteFactory {
+    remotes: {[name: string]: IRemoteRegistration} = {}
+
+    register(name, cls) {
+        this.remotes[ name ] = cls
+    }
+
+    create<T extends IRemote>(name, connection: Connection): T {
+        let reg           = this.get(name);
+        let remote        = kernel.build<T>(reg.cls);
+        remote.connection = connection;
+        remote.name       = reg.name
+        remote.prettyName = reg.prettyName
+        remote.type       = reg.type;
+        remote.callInit()
+        return remote;
+    }
+
+    has(name) {
+        return this.remotes[ name ] !== undefined
+    }
+
+    get(name): IRemoteRegistration {
+        return this.remotes[ name ];
+    }
+
+    keys(): string[] {
+        return Object.keys(this.remotes);
+    }
+
+    values(): IRemoteRegistration[] {
+        return _.values(this.remotes);
+    }
+
+}
+
+export function remote(name: string, prettyName: string, type: RemoteType = 'generic') {
+    return (cls: IRemoteConstructor) => {
+        kernel.get<RemoteFactory>(COMMANDO.REMOTES).register(name, { name, prettyName, cls, type });
+    }
+}

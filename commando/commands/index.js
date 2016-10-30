@@ -13,5 +13,5 @@ __export(require('./git'));
 __export(require('./all'));
 __export(require('./on'));
 __export(require('./dev'));
-__export(require('./db'));
+__export(require('./dev_db'));
 //# sourceMappingURL=index.js.map

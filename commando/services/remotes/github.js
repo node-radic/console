@@ -1,9 +1,4 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -13,45 +8,45 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var connection_remote_1 = require("../connection.remote");
-var BB = require("bluebird");
-var connection_1 = require("../connection");
-var GithubRemote = (function (_super) {
-    __extends(GithubRemote, _super);
-    function GithubRemote() {
-        _super.apply(this, arguments);
+const remote_1 = require("../remote");
+let GithubRemote = class GithubRemote extends remote_1.GitRestRemote {
+    constructor(...args) {
+        super(...args);
         this.usesExtra = false;
     }
-    GithubRemote.prototype.getAuthMethods = function () { return [connection_1.AuthMethod.basic, connection_1.AuthMethod.oauth2, connection_1.AuthMethod.oauth]; };
-    GithubRemote.prototype.init = function () {
-        _.merge(this.defaultRequestOptions, {
+    createRepository(owner, repo) {
+        return undefined;
+    }
+    getRepositories(owner) {
+        return undefined;
+    }
+    getAuthMethods() { return [remote_1.AuthMethod.basic, remote_1.AuthMethod.oauth2, remote_1.AuthMethod.oauth]; }
+    init() {
+        this.mergeDefaults({
             baseUrl: 'https://api.github.com/',
             auth: { username: this.connection.key, password: this.connection.secret },
             headers: {
                 'User-Agent': 'Commando',
             }
         });
-    };
-    GithubRemote.prototype.deleteRepository = function (owner, repo) {
-        return this.delete("repos/" + owner + "/" + repo);
-    };
-    GithubRemote.prototype.getUserTeams = function (username) {
-        return this.get("users/" + username + "/orgs").then(function (data) {
-            return data;
+    }
+    deleteRepository(owner, repo) {
+        return this.delete(`repos/${owner}/${repo}`);
+    }
+    getUserTeams(username) {
+        return this.get(`users/${username}/orgs`);
+    }
+    getUserRepositories(username) {
+        return this.get(`users/${username}/repos`).then((data) => {
+            return new Promise((resolve, reject) => {
+                resolve(data);
+            });
         });
-    };
-    GithubRemote.prototype.getUserRepositories = function (username) {
-        return this.get("users/" + username + "/repos").then(function (data) {
-            var defer = BB.defer();
-            defer.resolve(data);
-            return defer.promise;
-        });
-    };
-    GithubRemote = __decorate([
-        connection_remote_1.remote('github', 'Github'), 
-        __metadata('design:paramtypes', [])
-    ], GithubRemote);
-    return GithubRemote;
-}(connection_remote_1.Remote));
+    }
+};
+GithubRemote = __decorate([
+    remote_1.remote('github', 'Github', 'git'), 
+    __metadata('design:paramtypes', [])
+], GithubRemote);
 exports.GithubRemote = GithubRemote;
 //# sourceMappingURL=github.js.map

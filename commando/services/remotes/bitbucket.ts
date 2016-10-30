@@ -1,15 +1,14 @@
 import * as _ from 'lodash'
-import {remote, RemoteExtra, Remote } from "../connection.remote";
-import { AuthMethod } from "../connection";
+import {remote, RemoteExtra, RestRemote,AuthMethod } from "../remote";
 
 
-@remote('bitbucket', 'Bitbucket')
-export class BitbucketRemote extends Remote {
+@remote('bitbucket', 'Bitbucket', "git")
+export class BitbucketRemote extends RestRemote {
     getAuthMethods(){ return  [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth] }
     usesExtra = false
 
     protected init() {
-        _.merge(this.defaultRequestOptions, {
+        this.mergeDefaults({
             baseUrl: 'https://bitbucket.org',
             auth   : {username: this.connection.key, password: this.connection.secret}
         })

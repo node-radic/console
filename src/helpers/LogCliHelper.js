@@ -1,9 +1,8 @@
 "use strict";
-var LogCliHelper = (function () {
-    function LogCliHelper() {
+class LogCliHelper {
+    constructor() {
         this.name = 'log';
     }
-    return LogCliHelper;
-}());
+}
 exports.LogCliHelper = LogCliHelper;
 //# sourceMappingURL=LogCliHelper.js.map

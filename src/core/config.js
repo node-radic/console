@@ -1,11 +1,6 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var util = require("@radic/util");
-var defaults = {
+const util = require("@radic/util");
+let defaults = {
     app: {
         title: undefined,
         description: undefined,
@@ -60,38 +55,34 @@ var defaults = {
         }
     }
 };
-var Config = (function (_super) {
-    __extends(Config, _super);
-    function Config() {
-        _super.apply(this, arguments);
-    }
-    Config.prototype.title = function (title) {
+class Config extends util.Config {
+    title(title) {
         this.set('app.title', title);
         return this;
-    };
-    Config.prototype.version = function (title) {
+    }
+    version(title) {
         this.set('app.version', title);
         return this;
-    };
-    Config.prototype.description = function (title) {
+    }
+    description(title) {
         this.set('app.description', title);
         return this;
-    };
-    Config.prototype.help = function (key, command) {
+    }
+    help(key, command) {
         this.merge('help', {
             enabled: true,
             key: key,
             command: command
         });
         return this;
-    };
-    Config.prototype.dump = function () {
+    }
+    dump() {
         console.dir(this.data, { colors: true, showHidden: true });
-    };
-    Config.prototype.get = function (prop, def) {
-        return _super.prototype.get.call(this, prop, def);
-    };
-    Config.makeProperty = function (config) {
+    }
+    get(prop, def) {
+        return super.get(prop, def);
+    }
+    static makeProperty(config) {
         var cf = function (prop) {
             return config.get(prop);
         };
@@ -106,10 +97,9 @@ var Config = (function (_super) {
         cf.has = config.has.bind(config);
         cf.dump = config.dump.bind(config);
         return cf;
-    };
-    return Config;
-}(util.Config));
+    }
+}
 exports.Config = Config;
-var _config = new Config(defaults);
+let _config = new Config(defaults);
 exports.config = Config.makeProperty(_config);
 //# sourceMappingURL=config.js.map

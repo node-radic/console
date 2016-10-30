@@ -13,6 +13,7 @@ export var paths: any = {
     tsd              : j(root, 'tsd.json'),
     user             : home,
     userData         : j(home, '.r'),
+    userCache: j(home, '.r', 'r.cache'),
     userDatabase     : j(home, '.r', 'r.db'),
     userDataConfig   : j(home, '.r', 'r.conf'),
     userSecretKeyFile: j(home, '.r', 'secret.key'),

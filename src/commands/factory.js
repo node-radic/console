@@ -8,25 +8,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require("../core");
-var _ = require("lodash");
-var util_1 = require("@radic/util");
-var groups = [];
-var commands = [];
-function command(name, prettyName, desc, parent) {
-    if (desc === void 0) { desc = ''; }
-    if (parent === void 0) { parent = null; }
+const core_1 = require("../core");
+const _ = require("lodash");
+const util_1 = require("@radic/util");
+let groups = [];
+let commands = [];
+function command(name, prettyName, desc = '', parent = null) {
     prettyName = prettyName || name;
-    return function (cls) {
-        commands.push({ name: name, cls: cls, prettyName: prettyName, desc: desc, parent: parent, type: 'command' });
+    return (cls) => {
+        commands.push({ name, cls, prettyName, desc, parent, type: 'command' });
     };
 }
 exports.command = command;
-var registrations = [];
-function COMMAND(name, prettyName, options) {
-    if (options === void 0) { options = {}; }
+let registrations = [];
+function COMMAND(name, prettyName, options = {}) {
     options = _.merge({
-        name: name,
+        name,
         prettyName: prettyName || name,
         desc: '',
         parent: null,
@@ -34,108 +31,78 @@ function COMMAND(name, prettyName, options) {
         arguments: {},
         options: {}
     }, options);
-    return function (cls) {
+    return (cls) => {
         options.cls = cls;
         registrations.push(options);
     };
 }
 exports.COMMAND = COMMAND;
-function group(name, prettyName, desc, parent) {
-    if (desc === void 0) { desc = ''; }
-    if (parent === void 0) { parent = null; }
+function group(name, prettyName, desc = '', parent = null) {
     prettyName = prettyName || name;
-    return function (cls) {
-        groups.push({ name: name, cls: cls, prettyName: prettyName, desc: desc, parent: parent, type: 'group' });
+    return (cls) => {
+        groups.push({ name, cls, prettyName, desc, parent, type: 'group' });
     };
 }
 exports.group = group;
-var BaseCommandRegistration = (function () {
-    function BaseCommandRegistration() {
+class BaseCommandRegistration {
+    constructor() {
         this.failed = false;
         this.asyncMode = false;
     }
-    Object.defineProperty(BaseCommandRegistration.prototype, "in", {
-        get: function () { return this._in ? this._in : this._in = core_1.kernel.get(core_1.BINDINGS.INPUT); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BaseCommandRegistration.prototype, "out", {
-        get: function () { return this._out ? this._out : this._out = core_1.kernel.get(core_1.BINDINGS.OUTPUT); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BaseCommandRegistration.prototype, "log", {
-        get: function () { return this._log ? this._log : this._log = core_1.kernel.get(core_1.BINDINGS.LOG); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(BaseCommandRegistration.prototype, "config", {
-        get: function () { return this._config ? this._config : this._config = core_1.kernel.get(core_1.BINDINGS.CONFIG); },
-        enumerable: true,
-        configurable: true
-    });
-    BaseCommandRegistration.prototype.fire = function () {
+    get in() { return this._in ? this._in : this._in = core_1.kernel.get(core_1.BINDINGS.INPUT); }
+    get out() { return this._out ? this._out : this._out = core_1.kernel.get(core_1.BINDINGS.OUTPUT); }
+    get log() { return this._log ? this._log : this._log = core_1.kernel.get(core_1.BINDINGS.LOG); }
+    get config() { return this._config ? this._config : this._config = core_1.kernel.get(core_1.BINDINGS.CONFIG); }
+    fire() {
         this.parse();
         if (this['handle'])
             this['handle'].apply(this);
-    };
-    BaseCommandRegistration.prototype.async = function () {
+    }
+    async() {
         this.asyncMode = true;
         return this.done;
-    };
-    BaseCommandRegistration.prototype.done = function () { };
-    BaseCommandRegistration.prototype.fail = function (reason) {
+    }
+    done() { }
+    fail(reason) {
         this.failed = true;
-    };
-    BaseCommandRegistration.prototype.parse = function () { };
-    __decorate([
-        core_1.inject(core_1.BINDINGS.DESCRIPTOR), 
-        __metadata('design:type', Object)
-    ], BaseCommandRegistration.prototype, "descriptor", void 0);
-    __decorate([
-        core_1.inject(core_1.BINDINGS.COMMANDS_FACTORY), 
-        __metadata('design:type', Object)
-    ], BaseCommandRegistration.prototype, "factory", void 0);
-    __decorate([
-        core_1.inject(core_1.BINDINGS.CLI), 
-        __metadata('design:type', core_1.Cli)
-    ], BaseCommandRegistration.prototype, "cli", void 0);
-    return BaseCommandRegistration;
-}());
+    }
+    parse() { }
+}
+__decorate([
+    core_1.inject(core_1.BINDINGS.DESCRIPTOR), 
+    __metadata('design:type', Object)
+], BaseCommandRegistration.prototype, "descriptor", void 0);
+__decorate([
+    core_1.inject(core_1.BINDINGS.COMMANDS_FACTORY), 
+    __metadata('design:type', Object)
+], BaseCommandRegistration.prototype, "factory", void 0);
+__decorate([
+    core_1.inject(core_1.BINDINGS.CLI), 
+    __metadata('design:type', core_1.Cli)
+], BaseCommandRegistration.prototype, "cli", void 0);
 exports.BaseCommandRegistration = BaseCommandRegistration;
 function toObj(arr) {
-    var obj = {};
-    arr.forEach(function (key) {
+    let obj = {};
+    arr.forEach((key) => {
         obj[key] = {};
     });
     return obj;
 }
-var CommandFactory = (function () {
-    function CommandFactory() {
-    }
-    Object.defineProperty(CommandFactory.prototype, "groups", {
-        get: function () { return groups; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CommandFactory.prototype, "commands", {
-        get: function () { return commands; },
-        enumerable: true,
-        configurable: true
-    });
-    CommandFactory.prototype.getGroupChildren = function (name, parent) {
-        var groupRegistration = this.getGroup(name, parent);
+let CommandFactory = class CommandFactory {
+    get groups() { return groups; }
+    get commands() { return commands; }
+    getGroupChildren(name, parent) {
+        let groupRegistration = this.getGroup(name, parent);
         return commands.concat(groups)
-            .filter(function (item) {
+            .filter((item) => {
             return item.parent === (groupRegistration ? groupRegistration.cls : null);
         });
-    };
-    CommandFactory.prototype.createCommand = function (registration, argv) {
-        if (argv === void 0) { argv = []; }
-        var command = core_1.kernel.make(registration.cls);
+    }
+    createCommand(registration, argv = []) {
+        let command = core_1.kernel.make(registration.cls);
         command.argv = argv;
-        var options = _.cloneDeep(command.options);
-        var args = _.cloneDeep(command.arguments);
+        let options = _.cloneDeep(command.options);
+        let args = _.cloneDeep(command.arguments);
         if (util_1.kindOf(options) === 'array')
             options = toObj(options);
         if (util_1.kindOf(args) === 'array')
@@ -151,23 +118,23 @@ var CommandFactory = (function () {
         command.prettyName = registration.prettyName;
         command.parent = registration.parent ? registration.parent : null;
         return command;
-    };
-    CommandFactory.prototype.createGroup = function (registration) {
-        var group = core_1.kernel.make(registration.cls);
+    }
+    createGroup(registration) {
+        let group = core_1.kernel.make(registration.cls);
         group.name = registration.name;
         group.desc = registration.desc;
         group.prettyName = registration.prettyName;
         group.parent = registration.parent ? registration.parent : null;
         return group;
-    };
-    CommandFactory.prototype.getTree = function () {
+    }
+    getTree() {
         return this.unflatten(commands.concat(groups));
-    };
-    CommandFactory.prototype.resolveFromArray = function (arr) {
-        var tree = this.getTree(), stop = false, parts = [], resolved;
+    }
+    resolveFromArray(arr) {
+        let tree = this.getTree(), stop = false, parts = [], resolved;
         while (stop === false && arr.length > 0) {
-            var part = arr.shift();
-            var found = _.find(tree, { name: part });
+            let part = arr.shift();
+            let found = _.find(tree, { name: part });
             if (found) {
                 resolved = found;
                 parts.push(part);
@@ -186,15 +153,12 @@ var CommandFactory = (function () {
             return resolved;
         }
         return null;
-    };
-    CommandFactory.prototype.resolveFromString = function (resolvable) {
+    }
+    resolveFromString(resolvable) {
         return this.resolveFromArray(resolvable.split(' '));
-    };
-    CommandFactory.prototype.unflatten = function (array, parent, tree) {
-        var _this = this;
-        if (parent === void 0) { parent = { cls: null }; }
-        if (tree === void 0) { tree = []; }
-        var children = _.filter(array, function (child) {
+    }
+    unflatten(array, parent = { cls: null }, tree = []) {
+        var children = _.filter(array, (child) => {
             return child.parent === parent.cls;
         });
         if (!_.isEmpty(children)) {
@@ -204,25 +168,18 @@ var CommandFactory = (function () {
             else {
                 parent['children'] = children;
             }
-            _.each(children, function (child) { _this.unflatten(array, child); });
+            _.each(children, (child) => { this.unflatten(array, child); });
         }
         return tree;
-    };
-    CommandFactory.prototype.getCommand = function (name, parent) { return _.filter(this.commands, parent ? { name: name, parent: parent } : { name: name })[0]; };
-    CommandFactory.prototype.getGroup = function (name, parent) { return _.filter(this.groups, parent ? { name: name, parent: parent } : { name: name })[0]; };
-    CommandFactory.prototype.addGroup = function (name, prettyName, cls, desc, parent) {
-        if (desc === void 0) { desc = ''; }
-        groups.push({ name: name, cls: cls, prettyName: prettyName, desc: desc, parent: parent, type: 'group' });
-    };
-    CommandFactory.prototype.addCommand = function (name, prettyName, cls, desc, parent) {
-        if (desc === void 0) { desc = ''; }
-        commands.push({ name: name, prettyName: prettyName, cls: cls, desc: desc, parent: parent, type: 'command' });
-    };
-    CommandFactory = __decorate([
-        core_1.injectable(), 
-        __metadata('design:paramtypes', [])
-    ], CommandFactory);
-    return CommandFactory;
-}());
+    }
+    getCommand(name, parent) { return _.filter(this.commands, parent ? { name, parent } : { name })[0]; }
+    getGroup(name, parent) { return _.filter(this.groups, parent ? { name, parent } : { name })[0]; }
+    addGroup(name, prettyName, cls, desc = '', parent) { groups.push({ name, cls, prettyName, desc, parent, type: 'group' }); }
+    addCommand(name, prettyName, cls, desc = '', parent) { commands.push({ name, prettyName, cls, desc, parent, type: 'command' }); }
+};
+CommandFactory = __decorate([
+    core_1.injectable(), 
+    __metadata('design:paramtypes', [])
+], CommandFactory);
 exports.CommandFactory = CommandFactory;
 //# sourceMappingURL=factory.js.map

@@ -1,9 +1,9 @@
 "use strict";
-(function () { }());
 require("reflect-metadata");
-var src_1 = require("./src");
+require('core-js');
+const src_1 = require("./src");
 require("./commando/index");
-var cli = src_1.kernel.commandsCli();
+let cli = src_1.kernel.commandsCli();
 cli.config
     .title('Commando')
     .description('General all-round super duper cli')
@@ -20,10 +20,10 @@ cli.definition
     t: { alias: 'tree', desc: 'Display command tree', boolean: true }
 });
 cli.parse(process.argv);
-var parsed = cli.parsed;
+let parsed = cli.parsed;
 if (parsed.global.opt('v')) {
     cli.log.setLevel(2 + parsed.global.opt('v'));
-    var m = {
+    let m = {
         version: { desc: 'Show version', boolean: true },
         t: { alias: 'tree', desc: 'Display command tree', boolean: true }
     };
@@ -35,7 +35,7 @@ if (parsed.global.opt('v')) {
     cli.log.silly('silly');
 }
 if (parsed.opt('t')) {
-    var descriptor = src_1.kernel.get(src_1.BINDINGS.DESCRIPTOR);
+    let descriptor = src_1.kernel.get(src_1.BINDINGS.DESCRIPTOR);
     descriptor.commandTree('Command Tree');
     cli.exit();
 }

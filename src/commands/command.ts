@@ -63,6 +63,7 @@ export class Command extends BaseCommandRegistration implements ICommand {
         // merge into an empty definition to generate the parsed definition containing both
         this.parsed = kernel.get<IArgumentsDefinition>(BINDINGS.ARGUMENTS_DEFINITION)
             .mergeOptions(this.definition)
+            .mergeArguments(this.definition)
             .mergeOptions(this.globalDefinition)
             .parse(this.argv)
 

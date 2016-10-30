@@ -33,7 +33,7 @@ if ( existsSync(denvPath) ) {
     Object.keys(denv).forEach((key:string) => {
         let value = parseEnvVal(denv[key])
         key = key.replace('_', '.');
-        _config.set('env.'+ key, value)
+        // _config.set('env.'+ key, value)
         // only set if its actually a config key
         if(_config.has(key))
             _config.set(key, value)

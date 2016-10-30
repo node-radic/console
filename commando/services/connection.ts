@@ -1,11 +1,10 @@
 import { StringType } from "@radic/util";
 import { inject, provide, COMMANDO, provideSingleton } from "../core";
 import { Model, Repository, model } from "./database";
-import { IRemote, RemoteFactory, AuthMethod } from "./connection.remote";
+import { IRemote, RemoteFactory, AuthMethod, RemoteType } from "./remote";
 // import * as rp from "request-promise";
 // export {RequestPromise, Options as RequestOptions} from "request-promise";
 // export {StatusCodeError} from "request-promise/errors";
-
 
 
 @model('connection', {
@@ -15,6 +14,7 @@ import { IRemote, RemoteFactory, AuthMethod } from "./connection.remote";
         method: 'required',
         remote: 'required',
         key   : 'required',
+        type  : 'required string',
         secret: 'string',
         extra : 'object'
     },
@@ -31,6 +31,7 @@ export class Connection extends Model {
     remote: string
     key: string
     secret: string
+    // type: RemoteType | string
 
     _extra: string = '{}'
     get extra(): Object { return JSON.parse(this._extra) }
@@ -41,8 +42,13 @@ export class Connection extends Model {
         return AuthMethod[ this.method ]
     }
 
-    getRemote(): IRemote {
-        return this.remotes.create(this.remote, this)
+    getRemote<T extends IRemote>(): T {
+        return this.remotes.create<T>(this.remote, this)
+    }
+
+    get type(): RemoteType | string | undefined {
+        if(!this.remote) return undefined
+        return this.getRemote().type;
     }
 
     @inject(COMMANDO.REMOTES)

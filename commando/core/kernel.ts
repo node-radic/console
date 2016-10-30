@@ -7,7 +7,7 @@ import { paths } from "./paths";
 import { Keys } from "./keys";
 
 
-kernel.bind(COMMANDO.CONFIG).toDynamicValue(config)
+kernel.bind(COMMANDO.CONFIG).toFunction(config)
 kernel.bind(COMMANDO.PATHS).toConstantValue(paths)
 kernel.bind(COMMANDO.KEYS).to(Keys)
 

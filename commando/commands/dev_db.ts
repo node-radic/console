@@ -8,8 +8,11 @@ import { paths, COMMANDO } from "../core";
 import { Database } from "../services";
 import { IOptionsDefinition, IOption } from "../../src/definitions/definitions";
 import globule = require("globule");
+import { kernel } from "../../src/core/kernel";
+import { Model, getModel } from "../services/database";
+import { DevGroup } from "./dev";
 
-@group('db', 'Internal Database Manager', 'Manage Commando\'s internal database')
+@group('db', 'Internal Database Manager', 'Manage Commando\'s internal database', DevGroup)
 export class DBGroup extends Group {
 }
 
@@ -21,8 +24,29 @@ export abstract class DBCommand extends Command {
 
 @command('show', 'Show Database data', 'View tables, columns, rows etc', DBGroup)
 export class ShowDBCommand extends DBCommand {
-    options: ['t']
+    options= {
+        t: {alias: 'show-tables', desc: 'Show tables', boolean: true},
+    }
 
+    handle(){
+        if(this.opt('t')){
+            // this.showTables()
+        }
+
+        this.showTables()
+    }
+
+     showTables() {
+        let models = this.db.getModels();
+        Object.keys(models).forEach((modelId) => {
+            // let reg = models[modelId]
+            let model:Model = getModel(modelId)
+            let table = this.out.table(model._columns);
+            model.query().value<any[]>().forEach((row:any) => table.push(Object.keys(row).map((key)=> row[key])))
+            this.out.line(`{header}${model._table}{/header}`).line(table.toString())
+            // this.out.dump(model.query().value())
+        })
+    }
 }
 
 

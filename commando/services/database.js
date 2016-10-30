@@ -11,45 +11,49 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var Cryptr = require("cryptr");
-var _ = require("lodash");
-var fs_1 = require("fs");
-var util_1 = require("@radic/util");
-var core_1 = require("../core");
-var src_1 = require("../../src");
-var Validation = require("validatorjs");
-var fs_extra_1 = require("fs-extra");
-var path_1 = require("path");
-var moment = require('moment');
-var globule = require("globule");
-var path_2 = require("path");
-Validation.register('object', function (value, req, attr) {
+const Cryptr = require("cryptr");
+const _ = require("lodash");
+const fs_1 = require("fs");
+const util_1 = require("@radic/util");
+const core_1 = require("../core");
+const src_1 = require("../../src");
+const Validation = require("validatorjs");
+const fs_extra_1 = require("fs-extra");
+const path_1 = require("path");
+const moment = require('moment');
+const globule = require("globule");
+const path_2 = require("path");
+let models = {};
+Validation.register('object', (value, req, attr) => {
     console.log('validate object: ', 'value', value, 'req', req, 'attr', attr);
     console.log('validate object: kindOf(value) === "object"', util_1.kindOf(value) === 'object');
     return util_1.kindOf(value) === 'object';
 });
-Validation.register('unique', function (value, model, column) {
+Validation.register('unique', (value, model, column) => {
     console.log('validate unique: ', 'value', value, 'model', model, 'column', column);
-    var find = {};
+    let find = {};
     find[column] = value;
     return false;
 });
-var Database = (function () {
-    function Database(paths, keys) {
-        var _this = this;
+let Database = class Database {
+    constructor(paths, keys, config) {
         this.paths = paths;
         this.keys = keys;
+        this.config = config;
         this.cryptr = new Cryptr(this.keys.public);
         this._db = require('lowdb')(this.paths.userDatabase, {
             format: {
-                deserialize: function (str) {
-                    var decrypted = _this.cryptr.decrypt(str);
-                    var obj = JSON.parse(decrypted);
+                deserialize: (str) => {
+                    const decrypted = this.cryptr.decrypt(str);
+                    const obj = JSON.parse(decrypted);
+                    if (this.config('debug') === true) {
+                        fs_extra_1.writeJsonSync(this.paths.userDatabase + '.debug.json', obj);
+                    }
                     return obj;
                 },
-                serialize: function (obj) {
-                    var str = JSON.stringify(obj);
-                    var encrypted = _this.cryptr.encrypt(str);
+                serialize: (obj) => {
+                    const str = JSON.stringify(obj);
+                    const encrypted = this.cryptr.encrypt(str);
                     return encrypted;
                 }
             }
@@ -58,73 +62,75 @@ var Database = (function () {
             connections: []
         }).value();
     }
-    Database.prototype.getDB = function () {
+    getDB() {
         return this._db;
-    };
-    Database.prototype.rawDB = function () {
-        var str = fs_1.readFileSync(this.paths.userDatabase);
-        var decrypted = this.cryptr.decrypt(str);
-        var obj = JSON.parse(decrypted);
+    }
+    rawDB() {
+        let str = fs_1.readFileSync(this.paths.userDatabase);
+        const decrypted = this.cryptr.decrypt(str);
+        const obj = JSON.parse(decrypted);
         return obj;
-    };
-    Database.prototype.get = function (name) {
+    }
+    get(name) {
         return this._db.get(name);
-    };
-    Database.prototype.has = function (name) {
+    }
+    has(name) {
         return this._db.has(name).value();
-    };
-    Database.prototype.raw = function () {
+    }
+    raw() {
         return this.rawDB();
-    };
-    Database.prototype.asConfig = function () {
+    }
+    asConfig() {
         new util_1.Config(this.rawDB());
-    };
-    Database.prototype.drop = function () {
+    }
+    drop() {
         this.setState({});
         return this;
-    };
-    Database.prototype.getState = function () {
+    }
+    getState() {
         return this._db.getState();
-    };
-    Database.prototype.setState = function (state) {
+    }
+    setState(state) {
         this._db.setState(state);
         return this;
-    };
-    Database.prototype.write = function (source) {
+    }
+    write(source) {
         this._db.read(source);
         return this;
-    };
-    Database.prototype.read = function (source) {
+    }
+    read(source) {
         this._db.read(source);
         return this;
-    };
-    Database.prototype.backup = function (backupPath) {
+    }
+    backup(backupPath) {
         backupPath = backupPath || path_1.resolve(core_1.paths.dbBackups, moment().format('Y/M/D/HH-mm-ss.[db]'));
         fs_extra_1.copySync(core_1.paths.userDatabase, backupPath);
         return backupPath;
-    };
-    Database.prototype.listBackups = function () {
+    }
+    listBackups() {
         return globule.find(path_2.join(core_1.paths.dbBackups, '**/*.db'));
-    };
-    Database.prototype.restore = function (restorePath) {
+    }
+    restore(restorePath) {
         this.write(path_1.resolve(restorePath));
         return this;
-    };
-    Database = __decorate([
-        core_1.provideSingleton(core_1.COMMANDO.DATABASE),
-        __param(0, core_1.inject(core_1.COMMANDO.PATHS)),
-        __param(1, core_1.inject(core_1.COMMANDO.KEYS)), 
-        __metadata('design:paramtypes', [Object, Object])
-    ], Database);
-    return Database;
-}());
+    }
+    getModels() {
+        return models;
+    }
+};
+Database = __decorate([
+    core_1.provideSingleton(core_1.COMMANDO.DATABASE),
+    __param(0, core_1.inject(core_1.COMMANDO.PATHS)),
+    __param(1, core_1.inject(core_1.COMMANDO.KEYS)),
+    __param(2, core_1.inject(core_1.COMMANDO.CONFIG)), 
+    __metadata('design:paramtypes', [Object, Object, Function])
+], Database);
 exports.Database = Database;
-var models = {};
 function model(id, info) {
-    return function (cls) {
+    return (cls) => {
         info = _.merge({
-            id: id,
-            cls: cls,
+            id,
+            cls,
             columns: {},
             key: {
                 name: 'id',
@@ -139,169 +145,126 @@ exports.model = model;
 function getModel(modelId) {
     if (!models[modelId])
         throw Error('Model does not exist:' + modelId);
-    var reg = models[modelId];
-    var model = src_1.kernel.build(reg.cls);
+    let reg = models[modelId];
+    let model = src_1.kernel.build(reg.cls);
     model._modelId = modelId;
     return model;
 }
 exports.getModel = getModel;
-var Model = (function () {
-    function Model() {
+let Model = class Model {
+    get _registration() {
+        return models[this._modelId];
     }
-    Object.defineProperty(Model.prototype, "_registration", {
-        get: function () {
-            var reg = _.find(models, { id: this._modelId });
-            var a = 'a';
-            return reg;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Model.prototype, "_rules", {
-        get: function () {
-            var rules = _.clone(this._registration.columns);
-            this._fields.forEach(function (name) {
-                if (rules[name] === '' || rules[name] === null) {
-                    delete rules[name];
-                }
-            });
-            return rules;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Model.prototype, "_fields", {
-        get: function () { return Object.keys(this._registration.columns); },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Model.prototype, "_table", {
-        get: function () { return this._registration.table; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Model.prototype, "_key", {
-        get: function () { return this._registration.key; },
-        enumerable: true,
-        configurable: true
-    });
-    Model.prototype.getDB = function () {
+    get _rules() {
+        let rules = _.clone(this._registration.columns);
+        this._columns.forEach((name) => {
+            if (rules[name] === '' || rules[name] === null) {
+                delete rules[name];
+            }
+        });
+        return rules;
+    }
+    get _columns() { return Object.keys(this._registration.columns); }
+    get _table() { return this._registration.table; }
+    get _key() { return this._registration.key; }
+    getDB() {
         return this._database;
-    };
-    Model.prototype.query = function () {
+    }
+    query() {
         return this._query ? this._query : this._query = this.getDB().get(this._table);
-    };
-    Model.prototype.fill = function (data) {
-        _.assignIn(this, _.pick(data, this._fields));
+    }
+    fill(data) {
+        _.assignIn(this, _.pick(data, this._columns));
         return this;
-    };
-    Model.prototype.serialize = function () {
-        return _.pick(this, this._fields);
-    };
-    Object.defineProperty(Model.prototype, "querySelf", {
-        get: function () {
-            var find = {};
-            find[this._key.name] = this[this._key.name];
-            return find;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Model.prototype.save = function () {
-        var find = {};
+    }
+    serialize() {
+        return _.pick(this, this._columns);
+    }
+    get querySelf() {
+        let find = {};
+        find[this._key.name] = this[this._key.name];
+        return find;
+    }
+    save() {
+        let find = {};
         find[this._key.name] = this[this._key.name];
         this.query().find(find);
         this.query().push(this.serialize()).value();
-    };
-    Model.prototype.validate = function () {
-        return new Validation(this.serialize(), this._registration.columns);
-    };
-    Model.prototype.update = function () {
-        this.query().find(this.querySelf).assign(this.serialize()).value();
-    };
-    Model.prototype.delete = function () {
-        this.query().remove(this.querySelf).value();
-    };
-    __decorate([
-        core_1.inject(core_1.COMMANDO.DATABASE), 
-        __metadata('design:type', Database)
-    ], Model.prototype, "_database", void 0);
-    Model = __decorate([
-        core_1.injectable(), 
-        __metadata('design:paramtypes', [])
-    ], Model);
-    return Model;
-}());
-exports.Model = Model;
-var Repository = (function () {
-    function Repository() {
     }
-    Repository.prototype.model = function (data) {
-        var model = getModel(this.getModelID());
+    validate() {
+        return new Validation(this.serialize(), this._registration.columns);
+    }
+    update() {
+        this.query().find(this.querySelf).assign(this.serialize()).value();
+    }
+    delete() {
+        this.query().remove(this.querySelf).value();
+    }
+};
+__decorate([
+    core_1.inject(core_1.COMMANDO.DATABASE), 
+    __metadata('design:type', Database)
+], Model.prototype, "_database", void 0);
+Model = __decorate([
+    core_1.injectable(), 
+    __metadata('design:paramtypes', [])
+], Model);
+exports.Model = Model;
+let Repository = class Repository {
+    model(data) {
+        if (data === undefined)
+            return undefined;
+        let model = getModel(this.getModelID());
         if (data)
             model.fill(data);
         return model;
-    };
-    Object.defineProperty(Repository.prototype, "table", {
-        get: function () {
-            return this._table ? this._table : this._table = this.model()._table;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Repository.prototype, "key", {
-        get: function () {
-            return this._key ? this._key : this._key = this.model()._key;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Repository.prototype, "query", {
-        get: function () {
-            return this._query ? this._query : this._query = this.db.get(this.table);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Repository.prototype.has = function (name) {
+    }
+    get columns() {
+        return Object.keys(models[this.getModelID()].columns);
+    }
+    get table() {
+        return models[this.getModelID()].table;
+    }
+    get key() {
+        return models[this.getModelID()].key;
+    }
+    get query() {
+        return this._query ? this._query : this._query = this.db.get(this.table);
+    }
+    has(name) {
         return this.get(name) !== undefined;
-    };
-    Repository.prototype.get = function (name) {
-        return this.findBy(this.key.name, name);
-    };
-    Repository.prototype.all = function () {
-        var _this = this;
-        var all = this.query.value();
+    }
+    get(name) {
+        return this.model(this.findBy(this.key.name, name));
+    }
+    all() {
+        let all = this.query.value();
         if (all.length > 0)
-            return all.map(function (data) { return _this.model(data); });
+            return all.map((data) => this.model(data));
         return [];
-    };
-    Repository.prototype.find = function (keyValue) {
-        var find = {};
-        find[this.key.name] = keyValue;
-        return this.query.find(find).value();
-    };
-    Repository.prototype.findBy = function (key, value) {
-        var find = {};
+    }
+    find(keyValue) {
+        return this.findBy(this.key.name, keyValue);
+    }
+    findBy(key, value) {
+        let find = {};
         find[key] = value;
-        return this.query.find(find).value();
-    };
-    Repository.prototype.filter = function (filter) {
-        if (filter === void 0) { filter = {}; }
+        return this.model(this.query.find(find).value());
+    }
+    filter(filter = {}) {
         return this.query.filter(filter).value();
-    };
-    Repository.prototype.count = function () {
+    }
+    count() {
         return parseInt(this.query.size().value());
-    };
-    __decorate([
-        core_1.inject(core_1.COMMANDO.DATABASE), 
-        __metadata('design:type', Database)
-    ], Repository.prototype, "db", void 0);
-    Repository = __decorate([
-        core_1.injectable(), 
-        __metadata('design:paramtypes', [])
-    ], Repository);
-    return Repository;
-}());
+    }
+};
+__decorate([
+    core_1.inject(core_1.COMMANDO.DATABASE), 
+    __metadata('design:type', Database)
+], Repository.prototype, "db", void 0);
+Repository = __decorate([
+    core_1.injectable(), 
+    __metadata('design:paramtypes', [])
+], Repository);
 exports.Repository = Repository;
 //# sourceMappingURL=database.js.map

@@ -1,7 +1,7 @@
 import { drop, upperFirst, merge, clone } from "lodash";
 import { Config, defined } from "@radic/util";
 import { IConfig, inject, injectable, BINDINGS } from "../core";
-import { IOptionsDefinition, IArgumentsDefinition, ICommandsDefinition, CommandsDefinition, IArgument } from "./definitions";
+import { IOptionsDefinition, IArgumentsDefinition, ICommandsDefinition, CommandsDefinition, IArgument, IArgumentDefinition } from "./definitions";
 import { IParsedArgv, parseArgv } from "./argv";
 import { ICommandFactory } from "../commands";
 import { IParsedOptions, IParsedArguments, IParsedCommands } from "./parsed";
@@ -139,6 +139,7 @@ export class ArgumentsDefinitionParser extends OptionsDefinitionParser implement
 
         this.arguments = input;
     }
+
 
 }
 

@@ -54,7 +54,7 @@ export class ParsedOptionsDefinition implements IParsedOptions {
     args: IParsedArgv
 
     hasOpt(n: string): boolean {
-        return this.options[ n ] !== undefined
+        return ! this.options[ n ] === false
     }
 
     /** The number of options given */
@@ -82,8 +82,9 @@ export class ParsedArgumentsDefinition extends ParsedOptionsDefinition implement
         return Object.keys(this.arguments).length
     }
 
+
     hasArg(n: string): boolean {
-        return this.arguments[ n ] !== null;
+        return ! this.arguments[ n ] === false;
     }
 
     arg(n: string): any {

@@ -1,17 +1,19 @@
 import * as Cryptr from "cryptr";
 import * as _ from "lodash";
 import { readFileSync } from "fs";
-import { Config, kindOf } from "@radic/util";
+import { Config, kindOf, IConfigProperty } from "@radic/util";
 import * as LowDB from "lowdb";
 import { injectable, provideSingleton, COMMANDO, inject, paths } from "../core";
 import { kernel } from "../../src";
 import * as Validation from "validatorjs";
-import { copySync } from "fs-extra";
+import { copySync, writeJsonSync } from "fs-extra";
 import { resolve } from "path";
 import * as moment from 'moment';
 import globule = require("globule");
 import { join } from "path";
 
+
+let models: {[id: string]: IModelRegistration} = {};
 
 Validation.register('object', (value, req, attr) => {
     console.log('validate object: ', 'value', value, 'req', req, 'attr', attr)
@@ -44,8 +46,10 @@ export class Database {
     protected _db: LowDB.Low;
     protected cryptr;
 
+
     constructor(@inject(COMMANDO.PATHS) protected paths,
-                @inject(COMMANDO.KEYS) protected keys) {
+                @inject(COMMANDO.KEYS) protected keys,
+                @inject(COMMANDO.CONFIG) protected config: IConfigProperty) {
         this.cryptr = new Cryptr(this.keys.public)
 
         this._db = require('lowdb')(this.paths.userDatabase, {
@@ -53,6 +57,10 @@ export class Database {
                 deserialize: (str) => {
                     const decrypted = this.cryptr.decrypt(str)
                     const obj       = JSON.parse(decrypted)
+
+                    if ( this.config('debug') === true ) {
+                        writeJsonSync(this.paths.userDatabase + '.debug.json', obj)
+                    }
                     return obj
                 },
                 serialize  : (obj) => {
@@ -120,19 +128,23 @@ export class Database {
         return this;
     }
 
-    backup(backupPath?: string) : string {
-        backupPath = backupPath || resolve(paths.dbBackups, moment().format('Y/M/D/HH-mm-ss.[db]') );
+    backup(backupPath?: string): string {
+        backupPath = backupPath || resolve(paths.dbBackups, moment().format('Y/M/D/HH-mm-ss.[db]'));
         copySync(paths.userDatabase, backupPath);
         return backupPath
     }
 
-    listBackups(){
+    listBackups() {
         return globule.find(join(paths.dbBackups, '**/*.db'));
     }
 
-    restore(restorePath:string) : this {
+    restore(restorePath: string): this {
         this.write(resolve(restorePath));
         return this
+    }
+
+    getModels(): {[id: string]: IModelRegistration} {
+        return models
     }
 
 
@@ -158,7 +170,6 @@ export interface IModelRegistration {
     cls?: ModelConstructor
 }
 
-let models: {[id: string]: IModelRegistration} = {};
 
 export function model(id: string, info: IModelRegistration) {
     return (cls: Function)=> {
@@ -193,14 +204,12 @@ export abstract class Model {
     _modelId: string
 
     get _registration(): IModelRegistration {
-        let reg = _.find(models, { id: this._modelId });
-        let a   = 'a';
-        return reg;
+        return models[ this._modelId ];
     }
 
     get _rules(): {[column: string]: string|string[]} {
         let rules = _.clone(this._registration.columns);
-        this._fields.forEach((name) => {
+        this._columns.forEach((name) => {
             if ( rules[ name ] === '' || rules[ name ] === null ) {
                 delete rules[ name ]
             }
@@ -208,7 +217,7 @@ export abstract class Model {
         return rules;
     }
 
-    get _fields(): string [] { return Object.keys(this._registration.columns) }
+    get _columns(): string [] { return Object.keys(this._registration.columns) }
 
     get _table(): string { return this._registration.table }
 
@@ -225,17 +234,18 @@ export abstract class Model {
     protected _query: CommandoDatabaseQuery<this>;
 
     query(): CommandoDatabaseQuery<this> {
+        // kernel.get<any>(BINDINGS.OUTPUT).dump(this._modelId, this._registration)
         return this._query ? this._query : this._query = this.getDB().get(this._table);
     }
 
 
     fill(data: any): this {
-        _.assignIn(this, _.pick(data, this._fields))
+        _.assignIn(this, _.pick(data, this._columns))
         return this;
     }
 
     serialize(): any {
-        return _.pick(this, this._fields)
+        return _.pick(this, this._columns)
     }
 
     protected get querySelf(): {[key: string]: string} {
@@ -269,20 +279,24 @@ export abstract class Model {
 export abstract class Repository<T extends Model> {
     abstract getModelID(): string;
 
-    model(data?: any): T {
+    model(data?: any): T | undefined {
+        if(data === undefined) return undefined
         let model = getModel<T>(this.getModelID())
         if ( data ) model.fill(data);
         return model;
     }
 
-    protected _table: string;
-    get table(): string {
-        return this._table ? this._table : this._table = this.model()._table
+
+    get columns(): string[] {
+        return Object.keys(models[ this.getModelID() ].columns)
     }
 
-    protected _key: TableKey
+    get table(): string {
+        return models[ this.getModelID() ].table
+    }
+
     get key(): TableKey {
-        return this._key ? this._key : this._key = this.model()._key
+        return models[ this.getModelID() ].key
     }
 
     @inject(COMMANDO.DATABASE)
@@ -298,7 +312,7 @@ export abstract class Repository<T extends Model> {
     }
 
     get(name: string): T | undefined {
-        return <any> this.findBy(this.key.name, name);
+        return this.model(this.findBy(this.key.name, name));
     }
 
     all(): T[] {
@@ -307,20 +321,18 @@ export abstract class Repository<T extends Model> {
         return [];
     }
 
-    find(keyValue): T | null {
-        let find              = {}
-        find[ this.key.name ] = keyValue
-        return this.query.find(find).value<T>()
+    find(keyValue): T | undefined {
+        return this.findBy(this.key.name, keyValue);
     }
 
-    findBy(key: string, value: string) {
+    findBy(key: string, value: string): T | undefined {
         let find    = {}
         find[ key ] = value
-        return this.query.find(find).value()
+        return this.model(this.query.find(find).value<T>())
     }
 
-    filter(filter: any = {}) {
-        return this.query.filter(filter).value();
+    filter(filter: any = {}): T[] | undefined {
+        return this.query.filter(filter).value<T[]>();
     }
 
     count(): number {

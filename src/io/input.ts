@@ -42,7 +42,7 @@ export interface Question {
      * Default value(s) to use if nothing is entered, or a function that returns the default value(s).
      * If defined as a function, the first parameter will be the current inquirer session answers.
      */
-    default?: any | ((answers: Answers) => any);
+        default?: any | ((answers: Answers) => any);
     /**
      * Choices array or a function returning a choices array. If defined as a function,
      * the first parameter will be the current inquirer session answers.
@@ -71,10 +71,10 @@ export interface Question {
 export interface IInput {
     ask(question: string, opts?: any)
     prompt(prompts: Questions): Promise<Answers>
-    askSecret(msg: string, opts?: any ): Promise<string>
-    confirm(msg:string, def?:boolean, opts?: any ) : Promise<boolean>
-    askChoice(msg:string, choices:any[], multi?:boolean, opts?: any ) : Promise<string[]|string>
-    askArgs(parsed: IParsedArguments,  questions: {[name: string]: Question}): Promise<Answers>;
+    askSecret(msg: string, opts?: any): Promise<string>
+    confirm(msg: string, def?: boolean, opts?: any): Promise<boolean>
+    askChoice(msg: string, choices: any[], multi?: boolean, opts?: any): Promise<string[]|string>
+    askArgs(parsed: IParsedArguments, questions: {[name: string]: Question}): Promise<Answers>;
 }
 
 @injectable()
@@ -94,11 +94,11 @@ export class Input implements IInput {
         return this.ask<string>(msg, _.merge({}, opts))
     }
 
-    confirm(msg:string, def:boolean=true, opts: any = {}) : Promise<boolean> {
+    confirm(msg: string, def: boolean = true, opts: any = {}): Promise<boolean> {
         return this.ask<boolean>(msg, _.merge({ default: def }, opts))
     }
 
-    askChoice(msg:string, choices:any[], multi:boolean=false, opts: any = {}) : Promise<string[]|string> {
+    askChoice(msg: string, choices: any[], multi: boolean = false, opts: any = {}): Promise<string[]|string> {
         return this.ask<string[]|string>(msg, _.merge({ type: multi ? 'checkbox' : 'list', choices }, opts))
     }
 
@@ -106,20 +106,34 @@ export class Input implements IInput {
         return (<any> inquirer.prompt(prompts)).catch(console.error.bind(console))
     }
 
-    askArgs(parsed:IParsedArguments, questions: {[name: string]: Question}) {
-        let args: any = _.clone(parsed.arguments)
+    askArgs(parsed: IParsedArguments, questions: {[name: string]: Question}) {
+        let args: any = _.cloneDeep(parsed.arguments)
         var defer     = BB.defer();
         let names     = Object.keys(questions)
 
+        // console.dir(names, { depth: 5, colors: true });
         if ( this.noInteraction ) {
             defer.resolve(_.pick(args, names)); //['name', 'remote', 'method', 'key', 'secret', 'extra']))
             return defer.promise;
         }
 
-        let pm = (name: string, opts: any) => _.merge({ name, type: 'input', when: (answers: any) => parsed.hasArg(name) === false }, opts)
+
+        let pm = (name: string, opts: any) => _.merge({
+            name,
+            type   : 'input',
+            message: parsed.definition.getArguments()[ name ].desc || '',
+            when   : (answers: any) => parsed.hasArg(name) === false
+        }, opts)
 
         let prompts: any[] = names.map((name: string) => {
-            return pm(name, questions[ name ])
+            let question = questions[ name ]
+            if ( question.when ) {
+                let when: any = question.when;
+                question.when = (answers: any): boolean => {
+                    return parsed.hasArg(name) === false && when(answers)
+                }
+            }
+            return pm(name, question)
         })
 
         return (<any> inquirer.prompt(prompts))

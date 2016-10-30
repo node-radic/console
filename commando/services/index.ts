@@ -1,6 +1,8 @@
 export * from './connection'
-export * from './connection.remote'
-export * from './remotes'
+export * from './remote'
+export * from './cache'
 export * from './database'
+
+export * from './remotes'
 //  enjin menjin menyin
 

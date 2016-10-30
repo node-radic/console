@@ -1,46 +1,35 @@
 "use strict";
-var BB = require("bluebird");
-var inquirer = require("inquirer");
-var _ = require("lodash");
-var InteractionCommandHelper = (function () {
-    function InteractionCommandHelper() {
+const BB = require("bluebird");
+const inquirer = require("inquirer");
+const _ = require("lodash");
+class InteractionCommandHelper {
+    get in() {
+        return this.command.in;
     }
-    Object.defineProperty(InteractionCommandHelper.prototype, "in", {
-        get: function () {
-            return this.command.in;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(InteractionCommandHelper.prototype, "out", {
-        get: function () {
-            return this.command.out;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    InteractionCommandHelper.prototype.setCommand = function (command) {
+    get out() {
+        return this.command.out;
+    }
+    setCommand(command) {
         this.command = command;
-    };
-    InteractionCommandHelper.prototype.getName = function () {
+    }
+    getName() {
         return 'interaction';
-    };
-    InteractionCommandHelper.prototype.askArgs = function (questions) {
-        var _this = this;
-        var args = _.clone(this.command.parsed.arguments);
+    }
+    askArgs(questions) {
+        let args = _.clone(this.command.parsed.arguments);
         var defer = BB.defer();
-        var names = Object.keys(questions);
+        let names = Object.keys(questions);
         if (this.command.parsed.args.argv['noInteraction']) {
             defer.resolve(_.pick(args, names));
             return defer.promise;
         }
-        var pm = function (name, opts) { return _.merge({ name: name, type: 'input', when: function (answers) { return _this.command.hasArg(name) === false; } }, opts); };
-        var prompts = names.map(function (name) {
+        let pm = (name, opts) => _.merge({ name, type: 'input', when: (answers) => this.command.hasArg(name) === false }, opts);
+        let prompts = names.map((name) => {
             return pm(name, questions[name]);
         });
         return inquirer.prompt(prompts)
             .catch(console.error.bind(console))
-            .then(function (answers) {
+            .then((answers) => {
             answers = _.chain(args)
                 .pick(names)
                 .merge(answers)
@@ -48,9 +37,8 @@ var InteractionCommandHelper = (function () {
             defer.resolve(answers);
             return defer.promise;
         });
-    };
-    return InteractionCommandHelper;
-}());
+    }
+}
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = InteractionCommandHelper;
 exports.InteractionCommandHelper = InteractionCommandHelper;

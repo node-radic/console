@@ -1,14 +1,12 @@
-import {remote, RemoteExtra, Remote } from "../connection.remote";
-import { AuthMethod } from "../connection";
-
+import {remote, RemoteExtra, RestRemote,AuthMethod } from "../remote";
 
 @remote('packagist', 'Packagist')
-export class PackagistRemote extends Remote {
+export class PackagistRemote extends RestRemote {
     getAuthMethods(){ return  [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth] }
     usesExtra = false
 
     protected init() {
-        _.merge(this.defaultRequestOptions, {
+        this.mergeDefaults({
             baseUrl: this.connection.extra,
             auth   : {username: this.connection.key, password: this.connection.secret}
         })

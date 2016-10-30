@@ -8,45 +8,36 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var cryptico = require("cryptico");
-var fs = require("fs-extra");
-var kernel_1 = require("./kernel");
-var bindings_1 = require("./bindings");
-var paths_1 = require("./paths");
-var path_1 = require("path");
-var Keys = (function () {
-    function Keys() {
+const cryptico = require("cryptico");
+const fs = require("fs-extra");
+const kernel_1 = require("./kernel");
+const bindings_1 = require("./bindings");
+const paths_1 = require("./paths");
+const path_1 = require("path");
+let Keys = class Keys {
+    constructor() {
         this._secret = cryptico.generateRSAKey('pass', 1024);
         this._public = fs.existsSync(paths_1.paths.userPublicKeyFile) ? this.loadUserKeyFiles() : this.generateUserKeyFiles();
     }
-    Keys.prototype.generateUserKeyFiles = function () {
+    generateUserKeyFiles() {
         var key = cryptico.publicKeyString(this._secret);
         fs.ensureDirSync(path_1.dirname(paths_1.paths.userPublicKeyFile));
         fs.writeFileSync(paths_1.paths.userPublicKeyFile, key);
         return key;
-    };
-    Keys.prototype.loadUserKeyFiles = function () {
+    }
+    loadUserKeyFiles() {
         return fs.readFileSync(paths_1.paths.userPublicKeyFile, 'utf-8');
-    };
-    Object.defineProperty(Keys.prototype, "secret", {
-        get: function () { return this._secret; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Keys.prototype, "public", {
-        get: function () { return this._public; },
-        enumerable: true,
-        configurable: true
-    });
-    __decorate([
-        kernel_1.inject(bindings_1.COMMANDO.PATHS), 
-        __metadata('design:type', Object)
-    ], Keys.prototype, "paths", void 0);
-    Keys = __decorate([
-        kernel_1.injectable(), 
-        __metadata('design:paramtypes', [])
-    ], Keys);
-    return Keys;
-}());
+    }
+    get secret() { return this._secret; }
+    get public() { return this._public; }
+};
+__decorate([
+    kernel_1.inject(bindings_1.COMMANDO.PATHS), 
+    __metadata('design:type', Object)
+], Keys.prototype, "paths", void 0);
+Keys = __decorate([
+    kernel_1.injectable(), 
+    __metadata('design:paramtypes', [])
+], Keys);
 exports.Keys = Keys;
 //# sourceMappingURL=keys.js.map

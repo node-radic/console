@@ -3,6 +3,7 @@ export let COMMANDO = {
     PATHS   : 'paths',
     KEYS    : 'keys',
     DATABASE: 'database',
+    CACHE: 'cache',
 
     CONNECTION : 'connection',
     CONNECTIONS: 'connections',

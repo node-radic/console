@@ -12,5 +12,5 @@ export * from './all'
 
 export * from './on'
 export * from './dev'
-export * from './db'
+export * from './dev_db'
 

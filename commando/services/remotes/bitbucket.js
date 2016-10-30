@@ -1,9 +1,4 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -13,27 +8,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _ = require('lodash');
-var connection_remote_1 = require("../connection.remote");
-var connection_1 = require("../connection");
-var BitbucketRemote = (function (_super) {
-    __extends(BitbucketRemote, _super);
-    function BitbucketRemote() {
-        _super.apply(this, arguments);
+const remote_1 = require("../remote");
+let BitbucketRemote = class BitbucketRemote extends remote_1.RestRemote {
+    constructor(...args) {
+        super(...args);
         this.usesExtra = false;
     }
-    BitbucketRemote.prototype.getAuthMethods = function () { return [connection_1.AuthMethod.basic, connection_1.AuthMethod.oauth2, connection_1.AuthMethod.oauth]; };
-    BitbucketRemote.prototype.init = function () {
-        _.merge(this.defaultRequestOptions, {
+    getAuthMethods() { return [remote_1.AuthMethod.basic, remote_1.AuthMethod.oauth2, remote_1.AuthMethod.oauth]; }
+    init() {
+        this.mergeDefaults({
             baseUrl: 'https://bitbucket.org',
             auth: { username: this.connection.key, password: this.connection.secret }
         });
-    };
-    BitbucketRemote = __decorate([
-        connection_remote_1.remote('bitbucket', 'Bitbucket'), 
-        __metadata('design:paramtypes', [])
-    ], BitbucketRemote);
-    return BitbucketRemote;
-}(connection_remote_1.Remote));
+    }
+};
+BitbucketRemote = __decorate([
+    remote_1.remote('bitbucket', 'Bitbucket', "git"), 
+    __metadata('design:paramtypes', [])
+], BitbucketRemote);
 exports.BitbucketRemote = BitbucketRemote;
 //# sourceMappingURL=bitbucket.js.map

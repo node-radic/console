@@ -1,23 +1,23 @@
-
-import {remote, RemoteExtra, Remote } from "../connection.remote";
-import { AuthMethod } from "../connection";
-
+import { remote, RemoteExtra, RestRemote, AuthMethod } from "../remote";
 
 export class BitbucketServerExtra extends RemoteExtra {
-    name = 'url'
-    prettyName = 'Bitbucket Server Base URL'
+
+    getName(): string {return 'url' }
+
+    getPrettyName(): string {return 'Bitbucket Server Base URL'}
 }
 
-@remote('bitbucket_server', 'Bitbucket Server')
-export class BitbucketServerRemote extends Remote {
-    getAuthMethods(){ return  [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth] }
-    usesExtra = true
+@remote('bitbucket_server', 'Bitbucket Server', 'git')
+export class BitbucketServerRemote extends RestRemote {
+    getAuthMethods() { return [ AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth ] }
+
+    usesExtra       = true
     extraDefinition = new BitbucketServerExtra()
 
     protected init() {
-        _.merge(this.defaultRequestOptions, {
+        this.mergeDefaults({
             baseUrl: this.connection.extra,
-            auth   : {username: this.connection.key, password: this.connection.secret}
+            auth   : { username: this.connection.key, password: this.connection.secret }
         })
     }
 

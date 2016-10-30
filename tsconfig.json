@@ -10,7 +10,7 @@
 
         "module": "commonjs",
         "moduleResolution": "node",
-        "target": "es5",
+        "target": "es6",
         "lib": ["es6", "es2015"],
         "noResolve": false,
         "typeRoots": [
@@ -18,10 +18,7 @@
             "./types"
         ],
         "types": [
-            "lodash",
-            "jasmine",
-            "node",
-            "@radic/util"
+            "node"
         ]
     },
     "exclude": [

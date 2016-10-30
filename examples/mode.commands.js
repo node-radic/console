@@ -1,8 +1,8 @@
 "use strict";
 require("reflect-metadata");
-var src_1 = require("../src");
+const src_1 = require("../src");
 require("./commands");
-var cli = src_1.kernel.commandsCli();
+let cli = src_1.kernel.commandsCli();
 cli.globalDefinition
     .options({
     v: { alias: 'version', desc: 'Show the version of this app', boolean: true },
@@ -18,12 +18,12 @@ cli.config
     .version('1.0.1')
     .help('h', 'help');
 cli.parse(process.argv);
-var parsed = cli.parsed;
+let parsed = cli.parsed;
 if (parsed.opt('d')) {
     cli.log.setLevel('debug');
 }
 if (parsed.opt('t')) {
-    var descriptor = src_1.kernel.get(src_1.BINDINGS.DESCRIPTOR);
+    let descriptor = src_1.kernel.get(src_1.BINDINGS.DESCRIPTOR);
     descriptor.commandTree('Command Tree');
     cli.exit();
 }

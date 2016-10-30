@@ -8,55 +8,61 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var BB = require("bluebird");
-var inversify_1 = require("inversify");
-var inquirer = require("inquirer");
-var _ = require("lodash");
-var Input = (function () {
-    function Input() {
+const BB = require("bluebird");
+const inversify_1 = require("inversify");
+const inquirer = require("inquirer");
+const _ = require("lodash");
+let Input = class Input {
+    constructor() {
         this.noInteraction = false;
     }
-    Input.prototype.ask = function (message, opts) {
-        if (opts === void 0) { opts = {}; }
-        var defer = BB.defer();
-        var defaults = { type: 'input', message: message, name: 'question' };
-        this.prompt(_.merge(defaults, opts)).then(function (answers) {
+    ask(message, opts = {}) {
+        let defer = BB.defer();
+        let defaults = { type: 'input', message: message, name: 'question' };
+        this.prompt(_.merge(defaults, opts)).then((answers) => {
             defer.resolve(answers.question);
         });
         return defer.promise;
-    };
-    Input.prototype.askSecret = function (msg, opts) {
-        if (opts === void 0) { opts = {}; }
+    }
+    askSecret(msg, opts = {}) {
         return this.ask(msg, _.merge({}, opts));
-    };
-    Input.prototype.confirm = function (msg, def, opts) {
-        if (def === void 0) { def = true; }
-        if (opts === void 0) { opts = {}; }
+    }
+    confirm(msg, def = true, opts = {}) {
         return this.ask(msg, _.merge({ default: def }, opts));
-    };
-    Input.prototype.askChoice = function (msg, choices, multi, opts) {
-        if (multi === void 0) { multi = false; }
-        if (opts === void 0) { opts = {}; }
-        return this.ask(msg, _.merge({ type: multi ? 'checkbox' : 'list', choices: choices }, opts));
-    };
-    Input.prototype.prompt = function (prompts) {
+    }
+    askChoice(msg, choices, multi = false, opts = {}) {
+        return this.ask(msg, _.merge({ type: multi ? 'checkbox' : 'list', choices }, opts));
+    }
+    prompt(prompts) {
         return inquirer.prompt(prompts).catch(console.error.bind(console));
-    };
-    Input.prototype.askArgs = function (parsed, questions) {
-        var args = _.clone(parsed.arguments);
+    }
+    askArgs(parsed, questions) {
+        let args = _.cloneDeep(parsed.arguments);
         var defer = BB.defer();
-        var names = Object.keys(questions);
+        let names = Object.keys(questions);
         if (this.noInteraction) {
             defer.resolve(_.pick(args, names));
             return defer.promise;
         }
-        var pm = function (name, opts) { return _.merge({ name: name, type: 'input', when: function (answers) { return parsed.hasArg(name) === false; } }, opts); };
-        var prompts = names.map(function (name) {
-            return pm(name, questions[name]);
+        let pm = (name, opts) => _.merge({
+            name,
+            type: 'input',
+            message: parsed.definition.getArguments()[name].desc || '',
+            when: (answers) => parsed.hasArg(name) === false
+        }, opts);
+        let prompts = names.map((name) => {
+            let question = questions[name];
+            if (question.when) {
+                let when = question.when;
+                question.when = (answers) => {
+                    return parsed.hasArg(name) === false && when(answers);
+                };
+            }
+            return pm(name, question);
         });
         return inquirer.prompt(prompts)
             .catch(console.error.bind(console))
-            .then(function (answers) {
+            .then((answers) => {
             answers = _.chain(args)
                 .pick(names)
                 .merge(answers)
@@ -64,13 +70,12 @@ var Input = (function () {
             defer.resolve(answers);
             return defer.promise;
         });
-    };
-    Input = __decorate([
-        inversify_1.injectable(), 
-        __metadata('design:paramtypes', [])
-    ], Input);
-    return Input;
-}());
+    }
+};
+Input = __decorate([
+    inversify_1.injectable(), 
+    __metadata('design:paramtypes', [])
+], Input);
 exports.Input = Input;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Input;

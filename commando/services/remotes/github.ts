@@ -1,15 +1,26 @@
-import { Remote, remote } from "../connection.remote";
+import * as _ from 'lodash';
+
+import { remote, RemoteExtra, GitRestRemote, AuthMethod } from "../remote";
 import * as BB from "bluebird";
-import { AuthMethod } from "../connection";
+
 import * as rp from "request-promise";
 
-@remote('github', 'Github')
-export class GithubRemote extends Remote {
-    usesExtra   = false
-    getAuthMethods(){ return  [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth] }
+@remote('github', 'Github', 'git')
+export class GithubRemote extends GitRestRemote {
+    createRepository(owner: string, repo: string): rp.RequestPromise {
+        return undefined
+    }
+
+    getRepositories(owner: string): rp.RequestPromise {
+        return undefined
+    }
+
+    usesExtra = false
+
+    getAuthMethods() { return [ AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth ] }
 
     protected init() {
-        _.merge(this.defaultRequestOptions, {
+        this.mergeDefaults({
             baseUrl: 'https://api.github.com/',
             auth   : { username: this.connection.key, password: this.connection.secret },
             headers: {
@@ -23,20 +34,17 @@ export class GithubRemote extends Remote {
         return this.delete(`repos/${owner}/${repo}`);
     }
 
-    getUserTeams(username: string) {
-        return this.get(`users/${username}/orgs`).then((data: any) => {
-            return data;
-        });
+    getUserTeams(username: string): rp.RequestPromise {
+        return this.get(`users/${username}/orgs`)
     }
 
-    getUserRepositories(username: string) {
+    getUserRepositories(username: string): any {
         return this.get(`users/${username}/repos`).then((data: any) => {
-            let defer = BB.defer();
-            defer.resolve(data);
-            return defer.promise;
+            return new Promise<string[]>((resolve, reject) => {
+                resolve(<string[]> data);
+            });
         })
     }
-
 
 }
 

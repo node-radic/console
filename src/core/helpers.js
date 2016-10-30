@@ -8,26 +8,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var kernel_1 = require("./kernel");
-var Helpers = (function () {
-    function Helpers() {
+const kernel_1 = require("./kernel");
+let Helpers = class Helpers {
+    constructor() {
         this.helpers = {};
     }
-    Helpers.prototype.get = function (name) {
+    get(name) {
         return this.helpers[name];
-    };
-    Helpers.prototype.set = function (name, helper) {
+    }
+    set(name, helper) {
         this.helpers[name] = helper;
         return this;
-    };
-    Helpers.prototype.has = function (name) {
+    }
+    has(name) {
         return this.helpers[name] !== undefined;
-    };
-    Helpers = __decorate([
-        kernel_1.injectable(), 
-        __metadata('design:paramtypes', [])
-    ], Helpers);
-    return Helpers;
-}());
+    }
+};
+Helpers = __decorate([
+    kernel_1.injectable(), 
+    __metadata('design:paramtypes', [])
+], Helpers);
 exports.Helpers = Helpers;
 //# sourceMappingURL=helpers.js.map

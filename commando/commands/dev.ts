@@ -1,4 +1,4 @@
-import * as lodash from "lodash";
+import * as _ from "lodash";
 import { Group, group, Command, command, inject, injectable } from "../../src";
 import { COMMANDO, config } from "../core";
 import { ConnectionRepository } from "../services/connection";
@@ -40,26 +40,28 @@ export class ConDevCommand extends DevCommand {
         this.con('bbs', 'bitbucket_server', 'radic', { extra: { url: 'https://git.radic.nl' } })
 
         this.out.dump(this.cons);
+        this.in.askSecret('Password to use').then((secret: string) =>
+            this.in.ask('Do you want to save these connections?', { type: 'confirm' }).then((answer: boolean) => {
+                if ( answer === true ) {
+                    this.log.info('Saving connections');
+                    this.cons.forEach((con) => {
+                        con.secret = secret;
+                        this.log.verbose('Connection ' + con.name + ': saving', con);
+                        this.connections.model(con).save()
+                        this.log.verbose('Connection ' + con.name + ': saved', con);
+                    })
 
-        this.in.ask('Do you want to save these connections?', { type: 'confirm' }).then((answer: boolean) => {
-            if ( answer === true ) {
-                this.log.info('Saving connections');
-                this.cons.forEach((con) => {
-                    this.log.debug('Connection ' + con.name + ': saving', con);
-                    this.connections.model(con).save()
-                    this.log.debug('Connection ' + con.name + ': saved', con);
-                })
-
-                return this.log.info('Connections saved')
-            }
-            this.log.warn('Canceled operation')
-        })
+                    return this.log.info('Connections saved')
+                }
+                this.log.warn('Canceled operation')
+            })
+        )
     }
 
     cons: any[] = []
 
     con(name, remote, key = 'radic', opts: any = {}) {
-        opts = lodash.merge({
+        opts        = _.merge({
             name, remote, key,
             method: 'basic',
             secret: null,
