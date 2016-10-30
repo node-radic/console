@@ -1,6 +1,7 @@
 import * as _s from "underscore.string";
 import {inject, injectable, BINDINGS} from '../core'
-import { IParsedArgument, IArgumentsDefinition} from "./definitions";
+import { IArgumentsDefinition} from "../definitions";
+import { IArgument } from "./definitions";
 
 
 
@@ -41,7 +42,7 @@ export class DefinitionSignatureParser
             token = token[0].toString()
         }
 
-        let arg = <IParsedArgument> {name: token, description: desc, required: false, type: 'string', default: null}
+        let arg = <IArgument> {name: token, desc: desc, required: false, type: 'string', default: null}
 
         // suggest to make it work more with regex for more advanced signatures:
         // https://regex101.com/r/aK6wE0/1
@@ -71,7 +72,7 @@ export class DefinitionSignatureParser
                 arg.required = true
         }
 
-        this.definition.argument(arg.name, arg.description, arg.required, arg.type, arg.default);
+        this.definition.argument(arg.name, arg.desc, arg.required, arg.type, arg.default);
 
 
     }

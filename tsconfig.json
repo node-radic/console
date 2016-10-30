@@ -14,14 +14,16 @@
         "lib": ["es6", "es2015"],
         "noResolve": false,
         "typeRoots": [
-            "./node_modules/@types",
-            "./types"
+            "./node_modules/@types"
         ],
         "types": [
+            "request-promise",
+            "lodash",
             "node"
         ]
     },
     "exclude": [
+        "examples",
         "node_modules",
         "gulpfile.ts"
     ]

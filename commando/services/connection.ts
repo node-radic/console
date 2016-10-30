@@ -7,6 +7,12 @@ import { IRemote, RemoteFactory, AuthMethod, RemoteType } from "./remote";
 // export {StatusCodeError} from "request-promise/errors";
 
 
+@provideSingleton(COMMANDO.CONNECTIONS)
+export class ConnectionRepository extends Repository<Connection> {
+    getModelID() { return 'connection' }
+}
+
+
 @model('connection', {
     table  : 'connections',
     columns: {
@@ -24,6 +30,7 @@ import { IRemote, RemoteFactory, AuthMethod, RemoteType } from "./remote";
         auto: true
     }
 })
+
 @provide(COMMANDO.CONNECTION)
 export class Connection extends Model {
     name: string
@@ -34,9 +41,9 @@ export class Connection extends Model {
     // type: RemoteType | string
 
     _extra: string = '{}'
-    get extra(): Object { return JSON.parse(this._extra) }
+    get extra(): Object|any { return JSON.parse(this._extra) }
 
-    set extra(val: Object) { this._extra = JSON.stringify(val) }
+    set extra(val: Object|any) { this._extra = JSON.stringify(val) }
 
     getMethod() {
         return AuthMethod[ this.method ]
@@ -51,17 +58,16 @@ export class Connection extends Model {
         return this.getRemote().type;
     }
 
+    set type(val:RemoteType | string | undefined){
+
+    }
+
     @inject(COMMANDO.REMOTES)
     protected remotes: RemoteFactory;
 
     @inject(COMMANDO.CONNECTIONS)
     protected repository: ConnectionRepository
 
-}
-
-@provideSingleton(COMMANDO.CONNECTIONS)
-export class ConnectionRepository extends Repository<Connection> {
-    getModelID() { return 'connection' }
 }
 //
 // export interface IRawConnection {

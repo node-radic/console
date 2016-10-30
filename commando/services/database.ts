@@ -35,7 +35,9 @@ Validation.register('unique', (value, model, column) => {
 
 export interface CommandoDatabaseQuery<T> extends LowDB.LoDashWrapper {
 }
-export interface CommandoDatabase extends LowDB.Low {}
+export interface CommandoDatabase extends LowDB.Low {
+
+}
 
 
 /**
@@ -240,7 +242,10 @@ export abstract class Model {
 
 
     fill(data: any): this {
-        _.assignIn(this, _.pick(data, this._columns))
+        this._columns.forEach((col:string) => {
+            if(data[col]) this[col] = data[col]
+        })
+        // _.assignIn(this, _.pick(data, this._columns))
         return this;
     }
 
@@ -280,7 +285,7 @@ export abstract class Repository<T extends Model> {
     abstract getModelID(): string;
 
     model(data?: any): T | undefined {
-        if(data === undefined) return undefined
+        if ( data === undefined ) return undefined
         let model = getModel<T>(this.getModelID())
         if ( data ) model.fill(data);
         return model;
@@ -304,7 +309,7 @@ export abstract class Repository<T extends Model> {
 
     _query: CommandoDatabaseQuery<T>;
     get query(): CommandoDatabaseQuery<T> {
-        return this._query ? this._query : this._query = this.db.get(this.table);
+        return this._query ? this._query : this._query = (<CommandoDatabaseQuery<T>> this.db.get(this.table));
     }
 
     has(name: string): boolean {
@@ -312,7 +317,7 @@ export abstract class Repository<T extends Model> {
     }
 
     get(name: string): T | undefined {
-        return this.model(this.findBy(this.key.name, name));
+        return this.findBy(this.key.name, name);
     }
 
     all(): T[] {
@@ -328,15 +333,24 @@ export abstract class Repository<T extends Model> {
     findBy(key: string, value: string): T | undefined {
         let find    = {}
         find[ key ] = value
-        return this.model(this.query.find(find).value<T>())
+        // console.log('find', find, 'key', key, value, 'arguments', arguments, 'query', this.query.find(find).value<T>(), 'this.getModelID()', this.getModelID())
+        return <T> this.toModel(this.query.find(find).value<T>())
     }
 
     filter(filter: any = {}): T[] | undefined {
-        return this.query.filter(filter).value<T[]>();
+        return <T[]> this.toModel(this.query.filter(filter).value<any[]>());
     }
 
     count(): number {
         return parseInt(this.query.size().value<string>())
+    }
+
+    protected toModel(val: any): T|T[] {
+        if ( kindOf(val) === 'array' ) {
+            if ( val.length === 0 ) return <any> []
+            return val.map((data: any) => this.model(data))
+        }
+        return <any> this.model(val)
     }
 
 }

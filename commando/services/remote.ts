@@ -1,8 +1,9 @@
 import { StringType } from "@radic/util";
 import * as _ from "lodash";
-import { injectable, kernel, COMMANDO, provideSingleton } from "../core";
+import { inject, injectable, kernel, COMMANDO, provideSingleton } from "../core";
 import * as rp from "request-promise";
 import { Connection } from "./connection";
+import { BINDINGS, ILog } from "../../src/core";
 export { RequestPromise, Options as RequestOptions } from "request-promise";
 export { StatusCodeError } from "request-promise/errors";
 
@@ -86,6 +87,9 @@ export type RemoteType = 'generic' | 'git' | 'rest' | 'ci' | 'ssh'
 export abstract class Remote implements IRemote {
     abstract getAuthMethods(): AuthMethod[]
 
+    @inject(BINDINGS.LOG)
+    log: ILog
+
     connection: Connection
     name: string
     prettyName: string
@@ -128,49 +132,78 @@ export abstract class RestRemote extends Remote {
         super()
     }
 
-    mergeDefaults(options:any){
-        this.defaultRequestOptions = _.merge(this.defaultRequestOptions, options)
+    mergeDefaults(options: any) {
+        this.defaultRequestOptions = _.merge({}, this.defaultRequestOptions, options)
     }
 
-    request(options: rp.Options): rp.RequestPromise {
-        options                        = _.merge(this.defaultRequestOptions, options);
-        var request: rp.RequestPromise = rp(options);
-
+    request(options: rp.Options): Promise<any> {
+        options                   = _.merge({}, this.defaultRequestOptions, options);
+        var request: Promise<any> = <any> rp(options);
+        request.catch(this.onError.bind(this));
         return request;
     }
 
-    get(endpoint: string, params: any = {}): rp.RequestPromise {
+    onError(res: any) {
+        this.log.error('Unknown error', res)
+        this.log.debug('Error details', res)
+    }
+
+    get(endpoint: string, params: any = {}): Promise<any> {
         return this.request({ uri: endpoint, qs: params });
     }
 
-    put(endpoint: string, payload: any = {}): rp.RequestPromise {
+    put(endpoint: string, payload: any = {}): Promise<any> {
         return this.request({ method: 'PUT', uri: endpoint, body: payload, json: true })
     }
 
-    patch(endpoint: string, payload: any = {}): rp.RequestPromise {
+    patch(endpoint: string, payload: any = {}): Promise<any> {
         return this.request({ method: 'PATCH', uri: endpoint, body: payload, json: true })
     }
 
-    post(endpoint: string, payload: any = {}): rp.RequestPromise {
+    post(endpoint: string, payload: any = {}): Promise<any> {
         return this.request({ method: 'POST', uri: endpoint, body: payload, json: true })
     }
 
-    delete(endpoint: string, params: any = {}): rp.RequestPromise {
-        return this.request({ method: 'DELETE', uri: endpoint, qs: params });
+    delete(endpoint: string, params: any = {}): Promise<any> {
+        return this.request({ method: 'DELETE', uri: endpoint, qs: params })
     }
 }
 
 @injectable()
 export abstract class GitRestRemote extends RestRemote {
-    abstract getUserRepositories(username: string): rp.RequestPromise
 
-    abstract getUserTeams(username: string): rp.RequestPromise
+    onError(res: any) {
+        // if ( res.error ) {
+        //     if(res.error.errors && res.error.errors[ 0 ] && res.error.errors[ 0 ].message)
+        //         this.log.error(res.error.errors[ 0 ].message)
+        //     else
+        //         this.log.error(res.error.message)
+        // } else
+        if ( res.message ) {
+            this.log.error(res.message)
+        } else {
+            super.onError(res)
+        }
+        this.log.debug('Error details', res)
+    }
 
-    abstract deleteRepository(owner: string, repo: string): rp.RequestPromise
+    abstract getUserRepositories(username?: string): Promise<any>
 
-    abstract createRepository(owner: string, repo: string): rp.RequestPromise
+    abstract getUserTeams(username?: string): Promise<string[]>
 
-    abstract getRepositories(owner: string): rp.RequestPromise
+    abstract deleteRepository(owner: string, repo: string): Promise<any>
+
+    abstract createRepository(owner: string, repo: string, opts?: any): Promise<Promise<any>>
+
+    abstract getRepositories(owner?: string): Promise<any>
+
+    abstract getRepository(owner: string, repo: string): Promise<any>
+
+    abstract getUser(username?: string): Promise<any>
+
+    abstract getTeam(team: string): Promise<any>
+
+    abstract getTeamRepositories(team: string): Promise<any>
 }
 
 

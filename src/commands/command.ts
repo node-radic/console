@@ -44,6 +44,7 @@ export class Command extends BaseCommandRegistration implements ICommand {
 
     parsed: IParsedArguments
 
+    /** @see {CommandFactory.createCommand} **/
     @inject(BINDINGS.ARGUMENTS_DEFINITION)
     definition: IArgumentsDefinition; // filled by createCommand
 
@@ -118,13 +119,13 @@ export class Command extends BaseCommandRegistration implements ICommand {
 
     hasArg(n) { return this.parsed.hasArg(n) }
 
-    askArg(name: string, opts: any = {}) {
+    askArg(name: string, question: Question = {}) {
         let defer = BB.defer();
 
         if ( this.hasArg(name) )
             defer.resolve(this.arg(name));
         else
-            this.in.ask(name + '?', opts)
+            this.in.ask(name + '?', question)
                 .then((answer: string) => defer.resolve(answer))
 
 

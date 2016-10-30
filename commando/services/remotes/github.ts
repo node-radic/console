@@ -1,19 +1,7 @@
 import * as _ from 'lodash';
-
 import { remote, RemoteExtra, GitRestRemote, AuthMethod } from "../remote";
-import * as BB from "bluebird";
-
-import * as rp from "request-promise";
-
 @remote('github', 'Github', 'git')
 export class GithubRemote extends GitRestRemote {
-    createRepository(owner: string, repo: string): rp.RequestPromise {
-        return undefined
-    }
-
-    getRepositories(owner: string): rp.RequestPromise {
-        return undefined
-    }
 
     usesExtra = false
 
@@ -30,21 +18,58 @@ export class GithubRemote extends GitRestRemote {
         })
     }
 
-    deleteRepository(owner: string, repo: string): rp.RequestPromise {
-        return this.delete(`repos/${owner}/${repo}`);
-    }
-
-    getUserTeams(username: string): rp.RequestPromise {
-        return this.get(`users/${username}/orgs`)
-    }
-
-    getUserRepositories(username: string): any {
-        return this.get(`users/${username}/repos`).then((data: any) => {
-            return new Promise<string[]>((resolve, reject) => {
-                resolve(<string[]> data);
-            });
+    getRepositories(owner: string): Promise<any> {
+        return <any> this.getUser().then((res: any) => {
+            // console.dir(res)
+            // opts = _.merge({ name: repo }, opts)
+            let repos = owner.toLowerCase() === res.login.toLowerCase() ? this.get('user/repos') : this.post(`orgs/${owner}/repos`);
+            repos.then((repos:any) => {
+                console.dir(repos)
+            })
         })
     }
 
+
+    getRepository(owner: string, repo: string): Promise<any> {
+        return this.get(`repos/${owner}/${repo}`);
+    }
+
+    createRepository(owner: string, repo: string, opts: any = {}): Promise<any> {
+        // console.log('owner', owner, 'repo', repo, 'opts', opts)
+        return <any> this.getUser().then((res: any) => {
+            // console.dir(res)
+            opts = _.merge({ name: repo }, opts)
+            return owner.toLowerCase() === res.login.toLowerCase() ? this.post('user/repos', opts) : this.post(`orgs/${owner}/repos`, opts);
+        })
+    }
+
+    deleteRepository(owner: string, repo: string): Promise<any> {
+        return this.delete(`repos/${owner}/${repo}`);
+    }
+
+    getUser(username?: string): Promise<any> {
+        return username ? this.get(`users/${username}`) : this.get('user')
+    }
+
+    getUserTeams(username?: string): Promise<string[]> {
+        let teams = username ? this.get(`users/${username}/orgs`) : this.get('user/orgs')
+        return teams.then((res) => {
+            return new Promise((resolve, reject) => {
+                resolve(Object.keys(_.keyBy(res, 'login')))
+            })
+        })
+    }
+
+    getUserRepositories(username?: string): Promise<any> {
+        return username ? this.get(`users/${username}/repos`) : this.get('user/repos')
+    }
+
+    getTeam(team: string): Promise<any> {
+        return this.get(`orgs/${team}`)
+    }
+
+    getTeamRepositories(team: string): Promise<any> {
+        return this.get(`orgs/${team}/repos`)
+    }
 }
 

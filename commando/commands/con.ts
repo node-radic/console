@@ -3,6 +3,8 @@ import { Group, group, Command } from "../../src";
 import { injectable, inject, COMMANDO } from "../core";
 import { RemoteFactory, IRemoteRegistration, ConnectionRepository } from "../services";
 
+
+
 @group('con', 'Connection Manager', 'Define connections to remote jenkins, jira, git, etc')
 export class ConnectionGroup extends Group {
     @inject(COMMANDO.REMOTES)

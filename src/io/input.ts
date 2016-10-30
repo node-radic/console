@@ -3,6 +3,7 @@ import { injectable } from "inversify";
 import * as inquirer from "inquirer";
 import * as    _ from "lodash";
 import { IParsedArguments } from "../definitions/parsed";
+import { kindOf } from "@radic/util";
 
 export type QuestionType = "input" |'confirm'|'list'|'rawlist'|'expand'|'checkbox'|'password'|'editor'
 export type Questions = Question | Question[] | Rx.Observable<Question>;
@@ -133,6 +134,18 @@ export class Input implements IInput {
                     return parsed.hasArg(name) === false && when(answers)
                 }
             }
+            if(question.type && question.choices && (question.type === 'list' || question.type === 'checkbox')){
+                if(kindOf(question.choices) === 'function'){
+                    let old:any = question.choices
+                    question.choices = <any> function (answers: string[]) {
+                        let choices = old(answers)
+                        choices.push(new inquirer.Separator())
+                        return choices
+                    }
+                } else {
+                    (<any> question.choices).push(new inquirer.Separator())
+                }
+            }
             return pm(name, question)
         })
 
@@ -142,6 +155,7 @@ export class Input implements IInput {
                 answers = _.chain(args)
                     .pick(names)
                     .merge(answers)
+                    // .map((answer:string) => answer.trim())
                     .value();
 
                 defer.resolve(answers);

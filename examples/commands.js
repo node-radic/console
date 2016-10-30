@@ -10,8 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 const src_1 = require("../src");
 let TestCommand = class TestCommand extends src_1.Command {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.options = {
             f: { alias: 'file', desc: 'Path to a .json file', string: true },
             z: { alias: 'with-handler', desc: 'Path to a .json file', string: true },
@@ -25,8 +25,8 @@ TestCommand = __decorate([
 ], TestCommand);
 exports.TestCommand = TestCommand;
 let DataCommand = class DataCommand extends src_1.Command {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.arguments = {};
         this.options = {};
     }
@@ -38,8 +38,8 @@ DataCommand = __decorate([
 ], DataCommand);
 exports.DataCommand = DataCommand;
 let DumpCommand = class DumpCommand extends src_1.Command {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.options = {};
     }
     handle() { this.out.writeln('This is the data command'); }
@@ -57,8 +57,8 @@ GitGroup = __decorate([
 ], GitGroup);
 exports.GitGroup = GitGroup;
 let GitCloneCommand = class GitCloneCommand extends src_1.Command {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.arguments = '{name:The name}';
         this.options = {
             h: { alias: 'with-hidden', desc: 'Include hidden objects', boolean: true }
@@ -84,8 +84,8 @@ GitRepoGroup = __decorate([
 ], GitRepoGroup);
 exports.GitRepoGroup = GitRepoGroup;
 let GitRepoListCommand = class GitRepoListCommand extends src_1.Command {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.options = {};
     }
     handle() { this.out.writeln('This is the con list command'); }
@@ -103,8 +103,8 @@ ConnectionGroup = __decorate([
 ], ConnectionGroup);
 exports.ConnectionGroup = ConnectionGroup;
 let ConnectionListCommand = class ConnectionListCommand extends src_1.Command {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.options = {};
     }
     handle() { this.out.writeln('This is the con list command'); }
@@ -115,8 +115,8 @@ ConnectionListCommand = __decorate([
 ], ConnectionListCommand);
 exports.ConnectionListCommand = ConnectionListCommand;
 let ConnectionAddCommand = class ConnectionAddCommand extends src_1.Command {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.options = {};
     }
     handle() { this.out.writeln('This is the con list command'); }
@@ -127,8 +127,8 @@ ConnectionAddCommand = __decorate([
 ], ConnectionAddCommand);
 exports.ConnectionAddCommand = ConnectionAddCommand;
 let ConnectionEditCommand = class ConnectionEditCommand extends src_1.Command {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.options = {};
     }
     handle() { this.out.writeln('This is the con list command'); }
@@ -139,8 +139,8 @@ ConnectionEditCommand = __decorate([
 ], ConnectionEditCommand);
 exports.ConnectionEditCommand = ConnectionEditCommand;
 let ConnectionRemoveCommand = class ConnectionRemoveCommand extends src_1.Command {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.options = {};
     }
     handle() { this.out.writeln('This is the con list command'); }
@@ -165,8 +165,8 @@ JiraProjectsGroup = __decorate([
 ], JiraProjectsGroup);
 exports.JiraProjectsGroup = JiraProjectsGroup;
 let JiraProjectsListCommand = class JiraProjectsListCommand extends src_1.Command {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.options = {};
     }
     handle() { this.out.writeln('This is the con list command'); }
