@@ -4,6 +4,9 @@ import { remote, RemoteExtra, RestRemote, AuthMethod, GitRestRemote } from "../r
 
 @remote('bitbucket', 'Bitbucket', "git")
 export class BitbucketRemote extends GitRestRemote {
+    getMirrorUrl(owner:string, repo:string): string {
+        return `https://bitbucket.org/${owner}/${repo}`;
+    }
     getAuthMethods(){ return  [AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth] }
     usesExtra = false
 

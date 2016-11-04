@@ -277,18 +277,25 @@ export class OptionsDefinition implements IOptionsDefinition {
     option(k: string, o: IOption): this {
         this.registerOption(k)
         // types first
-        if ( o.boolean ) this.boolean(k);
-        if ( o.number ) this.number(k);
-        if ( o.string ) this.string(k);
-        if ( o.nested ) this.nested(k);
-        if ( o.count ) this.count(k);
-
-        if ( o.alias ) this.alias(k, o.alias);
-        //if ( o.coerce ) this.coerce();
-        if ( o.default ) this.default(k, o.default);
-        if ( o.desc ) this.desc(k, o.desc)
-        if ( o.narg ) this.narg(k, o.narg);
-        if ( o.handler ) this.handler(k, o.handler);
+        this.types.forEach((type:string) => {
+            if(o[type]) this[type].apply(this, [k])
+        })
+        this.setters.forEach((set:string) => {
+            if(o[set]) this[set].apply(this, [k, o[set]])
+        })
+        // if ( o.array ) this.array(k);
+        // if ( o.boolean ) this.boolean(k);
+        // if ( o.count ) this.count(k);
+        // if ( o.number ) this.number(k);
+        // if ( o.string ) this.string(k);
+        // // if ( o.nested ) this.nested(k);
+        //
+        // if ( o.alias ) this.alias(k, o.alias);
+        // //if ( o.coerce ) this.coerce();
+        // if ( o.default ) this.default(k, o.default);
+        // if ( o.desc ) this.desc(k, o.desc)
+        // if ( o.narg ) this.narg(k, o.narg);
+        // if ( o.handler ) this.handler(k, o.handler);
         return this;
     }
 

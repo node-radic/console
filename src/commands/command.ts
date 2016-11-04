@@ -6,6 +6,7 @@ import { IOptionsDefinition, IArgumentsDefinition, IParsedArguments, IArgumentDe
 import { IGroupConstructor } from "./group";
 import { BaseCommandRegistration, ICommandRegistration } from "./factory";
 import { Question, Answers } from "../io/input";
+import { kindOf } from "@radic/util";
 
 export interface ICommandHelper extends IHelper {
     setCommand(command: Command)
@@ -26,6 +27,14 @@ export interface ICommandConstructor {
     new (): ICommand
 }
 
+
+function toObj(arr:string[]){
+    let obj = {};
+    arr.forEach((key) => {
+        obj[key] = {}
+    })
+    return obj
+}
 
 @injectable()
 export class Command extends BaseCommandRegistration implements ICommand {
@@ -61,6 +70,7 @@ export class Command extends BaseCommandRegistration implements ICommand {
     }
 
     protected parse() {
+
         // merge into an empty definition to generate the parsed definition containing both
         this.parsed = kernel.get<IArgumentsDefinition>(BINDINGS.ARGUMENTS_DEFINITION)
             .mergeOptions(this.definition)
@@ -166,7 +176,7 @@ export class Command extends BaseCommandRegistration implements ICommand {
     addHelper(cls: ICommandHelperConstructor) {
         let helper: ICommandHelper = kernel.build<ICommandHelper>(cls);
         helper.setCommand(this);
-        this.log.debug('Adding helper ' + helper.getName(), helper)
+        // this.log.debug('Adding helper ' + helper.getName(), helper)
         this.helpers.set(helper.getName(), helper);
         return this;
     }

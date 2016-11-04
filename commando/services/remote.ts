@@ -136,6 +136,10 @@ export abstract class RestRemote extends Remote {
         this.defaultRequestOptions = _.merge({}, this.defaultRequestOptions, options)
     }
 
+    getDefaults(): rp.Options {
+        return this.defaultRequestOptions
+    }
+
     request(options: rp.Options): Promise<any> {
         options                   = _.merge({}, this.defaultRequestOptions, options);
         var request: Promise<any> = <any> rp(options);
@@ -204,6 +208,8 @@ export abstract class GitRestRemote extends RestRemote {
     abstract getTeam(team: string): Promise<any>
 
     abstract getTeamRepositories(team: string): Promise<any>
+
+    abstract getMirrorUrl(owner:string, repo:string) :string
 }
 
 

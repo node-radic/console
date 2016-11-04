@@ -11,6 +11,11 @@ export class BitbucketServerExtra extends RemoteExtra {
 
 @remote('bitbucket_server', 'Bitbucket Server', 'git')
 export class BitbucketServerRemote extends GitRestRemote {
+
+    getMirrorUrl(owner:string, repo:string): string {
+        return this.defaultRequestOptions.baseUrl.replace('rest/api/1.0', '') + `/${owner}/${repo}`;
+    }
+
     getAuthMethods() { return [ AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth ] }
 
     usesExtra       = true

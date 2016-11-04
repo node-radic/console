@@ -47,5 +47,5 @@ lib/typings/tsd
 
 src/scripts2
 .env
-src/**/*.js
-commando/**/*.js
+#src/**/*.js
+#commando/**/*.js

@@ -13,7 +13,7 @@ export const LogLevel = {
 export interface ILog {
     getTransports(): string[]
     getTransport(transport: string): any
-    setLevel(transport: string, level?: string): this
+    setLevel(transport: string|number, level?: string|number): this
     getWinston(): any
     log(...args: any[]): this
     query(options: QueryOptions, callback?: (err: Error, results: any) => void)
@@ -76,13 +76,14 @@ export class Log implements ILog {
     }
 
 
+
     private _log(name: string, args: any[]): this {
         args[0] = this.out.parser.parse(args[0]);
         this.winston.log.apply(this.winston, [ name ].concat(args))
         return this
     }
 
-    setLevel(transport: string, level?: string): this {
+    setLevel(transport: string|number, level?: string|number): this {
         if ( level ) {
             this.winston.transports[ transport ].level = this.parseLevel(level);
         } else {
@@ -91,6 +92,7 @@ export class Log implements ILog {
         }
         return this;
     }
+
 
     protected parseLevel(level:any):string{
         let levels = Object.keys(LogLevel);
@@ -120,7 +122,7 @@ export class Log implements ILog {
     // verbose(...args: any[]) { return this.winston.log.apply(this.winston, [ 'verbose' ].concat(args)); }
     verbose(...args: any[]) { return this._log('verbose', args); }
 
-    debug(...args: any[]) { return this._log('debug', args); }
+    debug(...args: any[]) {return this._log('debug', args); }
 
     silly(...args: any[]) { return this._log('silly', args); }
 

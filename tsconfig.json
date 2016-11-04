@@ -18,8 +18,7 @@
         ],
         "types": [
             "request-promise",
-            "lodash",
-            "node"
+            "lodash"
         ]
     },
     "exclude": [

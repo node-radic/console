@@ -3,6 +3,9 @@ import { remote, RemoteExtra, GitRestRemote, AuthMethod } from "../remote";
 @remote('github', 'Github', 'git')
 export class GithubRemote extends GitRestRemote {
 
+    getMirrorUrl(owner:string, repo:string): string {
+        return `https://github.com/${owner}/${repo}`;
+    }
     usesExtra = false
 
     getAuthMethods() { return [ AuthMethod.basic, AuthMethod.oauth2, AuthMethod.oauth ] }

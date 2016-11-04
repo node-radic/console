@@ -4,6 +4,7 @@ import { kernel, BINDINGS, IDescriptor } from "./src";
 import "./commando/index";
 
 import * as P from 'yargs-parser';
+import { LogLevel } from "./src/core/log";
 
 
 let cli = kernel.commandsCli();
@@ -33,20 +34,16 @@ cli.definition
 cli.parse(process.argv)
 let parsed = cli.parsed;
 
-
 if ( parsed.global.opt('v') ) {
     // cli.out.line('v:' + parsed.global.opt('v'))
-    cli.log.setLevel(2 + parsed.global.opt('v'))
-    let m = {
-        version: { desc: 'Show version', boolean: true },
-        t      : { alias: 'tree', desc: 'Display command tree', boolean: true }
-    }
-    cli.log.error('error')
-    cli.log.warn('warn')
-    cli.log.info('info')
-    cli.log.verbose('verse')
-    cli.log.debug('verse')
-    cli.log.silly('silly')
+    cli.log.setLevel(LogLevel.info + parsed.global.opt('v'))
+    //
+    // cli.log.error('error')
+    // cli.log.warn('warn')
+    // cli.log.info('info')
+    // cli.log.verbose('verse')
+    // cli.log.debug('verse')
+    // cli.log.silly('silly')
 }
 
 
