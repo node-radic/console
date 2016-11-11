@@ -200,16 +200,20 @@ declare module "cliui" {
 
 
 declare module "lastpass"{
-    class Lastpass {
-        constructor(username:string)
-        loadVault(username:string, password:string, twoFactor?:string)  : Promise<null>
-        loadVaultFile(vaultFile:string)  : Promise<null>
-        saveVaultFile(vaultFile:string, options?:any) : Promise<null>
+    interface Lastpass {
+
+        loadVault(username?:string, password?:string, twoFactor?:string)  : Promise<any>
+        loadVaultFile(vaultFile?:string)  : Promise<any>
+        saveVaultFile(vaultFile?:string, options?:any) : Promise<any>
         getVault()
-        getAccounts(username:string, password:string, search:any):Promise<Array<any>>
+        getAccounts(username?:string, password?:string, search?:any):Promise<Array<any>>
     }
 
-    export default Lastpass
+    interface LastpassConstructor {
+        new(username?:string) : Lastpass
+    }
 
+    var Lastpass:LastpassConstructor
+    export default Lastpass
 }
 

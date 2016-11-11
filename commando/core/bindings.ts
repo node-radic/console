@@ -11,8 +11,9 @@ export let COMMANDO = {
     AUTH : 'auth',
     AUTHS: 'auths',
 
-    REMOTES: 'remotes'
-
+    REMOTES: 'remotes',
+    DGRAM_SERVER: 'dgram_server',
+    DGRAM_CLIENT: 'dgram_client'
 }
 
 Object.keys(COMMANDO).forEach((key) => COMMANDO[ key ] = Symbol('commando_' + COMMANDO[ key ]))

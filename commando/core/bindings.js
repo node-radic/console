@@ -9,7 +9,9 @@ exports.COMMANDO = {
     CONNECTIONS: 'connections',
     AUTH: 'auth',
     AUTHS: 'auths',
-    REMOTES: 'remotes'
+    REMOTES: 'remotes',
+    DGRAM_SERVER: 'dgram_server',
+    DGRAM_CLIENT: 'dgram_client'
 };
 Object.keys(exports.COMMANDO).forEach((key) => exports.COMMANDO[key] = Symbol('commando_' + exports.COMMANDO[key]));
 Object.defineProperty(exports, "__esModule", { value: true });

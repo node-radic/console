@@ -12,6 +12,14 @@ let defaultConfig = {
     },
     auth: {
         connections: []
+    },
+    dgram: {
+        server: {
+            port: 41333
+        },
+        client: {
+            port: 41334
+        }
     }
 };
 let _config = new util_1.PersistentConfig(defaultConfig, paths_1.paths.userDataConfig);

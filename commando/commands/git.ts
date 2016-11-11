@@ -118,7 +118,7 @@ export class DeleteGitRepoCommand extends GitCommand {
 
 }
 
-interface Mirror { con: Connection, rem: GitRestRemote, name: string, project: string, repo: string, raw: string }
+export interface Mirror { con: Connection, rem: GitRestRemote, name: string, project: string, repo: string, raw: string }
 
 @command('mirror', 'Mirror repositories', 'Hook a repositories', GitRepoGroup)
 export class MirrorGitRepoCommand extends GitCommand {

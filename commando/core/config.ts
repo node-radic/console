@@ -13,6 +13,14 @@ let defaultConfig: any = {
     },
     auth : {
         connections: []
+    },
+    dgram: {
+        server: {
+            port:41333
+        },
+        client: {
+            port:41334
+        }
     }
 };
 

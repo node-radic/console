@@ -111,6 +111,7 @@
     "inversify": "^2.0.0",
     "inversify-binding-decorators": "^2.0.0",
     "inversify-inject-decorators": "^2.0.0",
+    "lastpass": "^1.0.2",
     "lodash": "^4.16.0",
     "lowdb": "^0.13.1",
     "moment": "^2.15.1",
