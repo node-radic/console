@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import { Group, group, Command, command, inject, injectable } from "../../src";
 import { COMMANDO, config } from "../core";
 import { ConnectionRepository } from "../services/connection";
-
+import {spawn} from 'child_process'
 @group('dev', 'Dev/Debug Commands', 'Extra commands for debugging and development purposes')
 export class DevGroup extends Group {
 
@@ -73,5 +73,19 @@ export class ConDevCommand extends DevCommand {
 
     add(con) {
 
+    }
+}
+
+
+//--remote-debugging-port=9222
+
+
+@command('chromium', 'Chromium Remote Debugging', 'Start your host Chrome instance with the remote-debugging-port command line switch.', DevGroup)
+export class ChromiumRemoteDebugDevCommand extends DevCommand {
+    handle(){
+        const browser = spawn('chromium-browser', ['--remote-debugging-port=9222'], {
+            detached: true,
+            stdio: process.stdin
+        })
     }
 }

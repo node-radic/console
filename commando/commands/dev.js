@@ -12,6 +12,7 @@ const _ = require("lodash");
 const src_1 = require("../../src");
 const core_1 = require("../core");
 const connection_1 = require("../services/connection");
+const child_process_1 = require('child_process');
 let DevGroup = class DevGroup extends src_1.Group {
     fire() {
         if (core_1.config('debug') !== true) {
@@ -85,4 +86,17 @@ ConDevCommand = __decorate([
     __metadata('design:paramtypes', [])
 ], ConDevCommand);
 exports.ConDevCommand = ConDevCommand;
+let ChromiumRemoteDebugDevCommand = class ChromiumRemoteDebugDevCommand extends DevCommand {
+    handle() {
+        const browser = child_process_1.spawn('chromium-browser', ['--remote-debugging-port=9222'], {
+            detached: true,
+            stdio: process.stdin
+        });
+    }
+};
+ChromiumRemoteDebugDevCommand = __decorate([
+    src_1.command('chromium', 'Chromium Remote Debugging', 'Start your host Chrome instance with the remote-debugging-port command line switch.', DevGroup), 
+    __metadata('design:paramtypes', [])
+], ChromiumRemoteDebugDevCommand);
+exports.ChromiumRemoteDebugDevCommand = ChromiumRemoteDebugDevCommand;
 //# sourceMappingURL=dev.js.map

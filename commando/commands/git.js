@@ -281,7 +281,7 @@ __decorate([
     __metadata('design:type', Object)
 ], MirrorGitRepoCommand.prototype, "cache", void 0);
 MirrorGitRepoCommand = __decorate([
-    src_1.command('mirror', 'Mirror repositories', 'Hook a repositories', GitRepoGroup), 
+    src_1.command('mirror', 'Mirror repositories', 'Mirror hook repositories', GitRepoGroup), 
     __metadata('design:paramtypes', [])
 ], MirrorGitRepoCommand);
 exports.MirrorGitRepoCommand = MirrorGitRepoCommand;
@@ -334,7 +334,7 @@ let CreateGitRepoCommand = class CreateGitRepoCommand extends MirrorGitRepoComma
     }
 };
 CreateGitRepoCommand = __decorate([
-    src_1.command('create', 'Create repository', 'List something', GitRepoGroup), 
+    src_1.command('create', 'Create repository', 'Create a (mirrored) repository', GitRepoGroup), 
     __metadata('design:paramtypes', [])
 ], CreateGitRepoCommand);
 exports.CreateGitRepoCommand = CreateGitRepoCommand;

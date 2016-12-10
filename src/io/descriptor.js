@@ -146,7 +146,6 @@ let Descriptor = class Descriptor {
         let group = this.getGroup(null);
         let options = this.getOptions(cli.definition);
         let globalOptions = this.getOptions(cli.globalDefinition);
-        let tree = this.getCommandTree();
         this.out.line(`{header}${c('descriptor.text.commands')}{/header}`).line(group.toString()).line();
         this.out.line(`{header}${c('descriptor.text.options')}{/header}`).line(options.toString()).line();
         this.out.line(`{header}${c('descriptor.text.globalOptions')}{/header}`).line(globalOptions.toString()).line();

@@ -120,7 +120,7 @@ export class DeleteGitRepoCommand extends GitCommand {
 
 export interface Mirror { con: Connection, rem: GitRestRemote, name: string, project: string, repo: string, raw: string }
 
-@command('mirror', 'Mirror repositories', 'Hook a repositories', GitRepoGroup)
+@command('mirror', 'Mirror repositories', 'Mirror hook repositories', GitRepoGroup)
 export class MirrorGitRepoCommand extends GitCommand {
 
     arguments = {
@@ -282,7 +282,7 @@ export class MirrorGitRepoCommand extends GitCommand {
 }
 
 
-@command('create', 'Create repository', 'List something', GitRepoGroup)
+@command('create', 'Create repository', 'Create a (mirrored) repository', GitRepoGroup)
 export class CreateGitRepoCommand extends MirrorGitRepoCommand {
 
     options: any = {
