@@ -33,6 +33,7 @@ exports.TABLE_STYLE = {
 };
 let Output = class Output {
     constructor() {
+        this.config = core_1.config;
         this.useParser = true;
         this.colorsEnabled = true;
     }
@@ -112,10 +113,6 @@ let Output = class Output {
         this.useParser = use;
     }
 };
-__decorate([
-    core_1.inject(core_1.BINDINGS.CONFIG), 
-    __metadata('design:type', Function)
-], Output.prototype, "config", void 0);
 Output = __decorate([
     core_1.injectable(), 
     __metadata('design:paramtypes', [])

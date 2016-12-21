@@ -1,4 +1,4 @@
-import { injectable, inject, BINDINGS, IConfig } from "../core";
+import { injectable, inject, BINDINGS, IConfig,config } from "../core";
 import { inspect } from "util";
 import * as Table from "cli-table2";
 import { kindOf } from "@radic/util";
@@ -48,8 +48,7 @@ export const TABLE_STYLE = {
 @injectable()
 export class Output implements IOutput {
 
-    @inject(BINDINGS.CONFIG)
-    config: IConfig;
+    config: IConfig = config;
 
     _parser: Parser;
     get parser(): Parser {
