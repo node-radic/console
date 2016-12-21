@@ -40,10 +40,10 @@ export interface ILog {
 
 @injectable()
 export class Log implements ILog {
-    protected winston: LoggerInstance
+    winston: LoggerInstance
 
     @inject(BINDINGS.OUTPUT)
-    protected out: IOutput;
+    out: IOutput;
 
     constructor() {
         this.winston = new (Logger)(<any> {
