@@ -13,6 +13,12 @@ const src_1 = require("../../src");
 const core_1 = require("../core");
 const connection_1 = require("../services/connection");
 const child_process_1 = require('child_process');
+const udp_1 = require("../services/udp");
+const dgram_1 = require('dgram');
+const paths_1 = require("../core/paths");
+const path_1 = require('path');
+const fs_extra_1 = require('fs-extra');
+const moment = require('moment');
 let DevGroup = class DevGroup extends src_1.Group {
     fire() {
         if (core_1.config('debug') !== true) {
@@ -39,6 +45,34 @@ DevCommand = __decorate([
     __metadata('design:paramtypes', [])
 ], DevCommand);
 exports.DevCommand = DevCommand;
+let ServeDevCommand = class ServeDevCommand extends DevCommand {
+    handle() {
+        this.server.start();
+    }
+};
+__decorate([
+    src_1.inject(core_1.COMMANDO.DGRAM_SERVER), 
+    __metadata('design:type', udp_1.Server)
+], ServeDevCommand.prototype, "server", void 0);
+ServeDevCommand = __decorate([
+    src_1.command('serve', 'Test udp server', 'Test udp server', DevGroup), 
+    __metadata('design:paramtypes', [])
+], ServeDevCommand);
+exports.ServeDevCommand = ServeDevCommand;
+let ClientDevCommand = class ClientDevCommand extends DevCommand {
+    handle() {
+        this.client.connect();
+    }
+};
+__decorate([
+    src_1.inject(core_1.COMMANDO.DGRAM_CLIENT), 
+    __metadata('design:type', udp_1.Client)
+], ClientDevCommand.prototype, "client", void 0);
+ClientDevCommand = __decorate([
+    src_1.command('client', 'Test udp client', 'Test udp client', DevGroup), 
+    __metadata('design:paramtypes', [])
+], ClientDevCommand);
+exports.ClientDevCommand = ClientDevCommand;
 let ConDevCommand = class ConDevCommand extends DevCommand {
     constructor(...args) {
         super(...args);
@@ -99,4 +133,182 @@ ChromiumRemoteDebugDevCommand = __decorate([
     __metadata('design:paramtypes', [])
 ], ChromiumRemoteDebugDevCommand);
 exports.ChromiumRemoteDebugDevCommand = ChromiumRemoteDebugDevCommand;
+let DopDevCommand = class DopDevCommand extends DevCommand {
+    constructor(...args) {
+        super(...args);
+        this.options = {
+            serve: { alias: 's', default: false },
+            host: { alias: 'h', default: '10.0.0.81', type: 'string' },
+            port: { alias: 'p', default: 44411, type: 'number' },
+            'client-port': { alias: 'c', default: 44422, type: 'number' },
+            logpath: { alias: 'L', default: () => path_1.resolve(paths_1.paths.user, '.server-doplog'), type: 'string' },
+            log: { alias: 'l', default: false }
+        };
+        this.arguments = {
+            amount: { type: 'string' }
+        };
+    }
+    handle() {
+        if (this.opt('serve')) {
+            return this.serve();
+        }
+        this.client();
+    }
+    serve() {
+        let sock = dgram_1.createSocket('udp4');
+        sock.on('error', (err) => {
+            console.log(`server error:\n${err.stack}`);
+            sock.close();
+        });
+        let logPath = this.opt('logpath');
+        sock.on('message', (msg, rinfo) => {
+            console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`, rinfo);
+            fs_extra_1.ensureFileSync(logPath);
+            msg = msg.toString();
+            if (msg.toString().trim() === 'log') {
+                sock.send(fs_extra_1.readFileSync(logPath), rinfo.port, rinfo.address);
+            }
+            else {
+                fs_extra_1.appendFileSync(logPath, '\n' + moment().format('hh:mm') + ' = ' + msg);
+            }
+        });
+        sock.on('listening', () => {
+            var net = sock.address();
+            console.log(`server listening ${net.address}:${net.port}`);
+        });
+        sock.bind({ port: this.opt('port'), address: this.opt('host') });
+    }
+    createPackage() {
+        return new Package(this.opt('port'), this.opt('host'));
+    }
+    client() {
+        if (this.opt('log')) {
+            return this.showLog();
+        }
+        this.askArg('amount', 'amount').then((answer) => {
+            this.doLog(answer);
+        });
+    }
+    doLog(msg) {
+        this.createPackage().setData(msg).send().catch((err) => this.onError(err)).then((pkg) => {
+            console.log('Dop logged');
+        });
+    }
+    showLog() {
+        this.createPackage()
+            .setData('log')
+            .returnsData()
+            .send()
+            .catch(this.onError)
+            .then((pkg) => {
+            this.out.writeln('{header}Doplog{/header}');
+            this.out.writeln(pkg.result);
+        });
+    }
+    onError(err) {
+        console.log('error ', err);
+        throw err;
+    }
+};
+DopDevCommand = __decorate([
+    src_1.command('dop', 'dop command', 'dopper de dop', DevGroup), 
+    __metadata('design:paramtypes', [])
+], DopDevCommand);
+exports.DopDevCommand = DopDevCommand;
+class Package {
+    constructor(serverPort, serverHost, data = '') {
+        this.serverPort = serverPort;
+        this.serverHost = serverHost;
+        this.data = data;
+        this.port = 44422;
+        this.listening = false;
+        this.closed = false;
+        this.done = false;
+        this.result = undefined;
+        this.error = undefined;
+        this.listen = false;
+        this.listenHandler = (msg, rinfo) => { };
+    }
+    static create(sPort, sHost) { return new Package(sPort, sHost); }
+    setData(data) {
+        this.data = data;
+        return this;
+    }
+    returnsData() {
+        this.listen = true;
+        return this;
+    }
+    send() {
+        this.createSocket();
+        if (this.listen) {
+            this.listenToServer();
+        }
+        return new Promise((resolve, reject) => {
+            this.sendToServer(this.data, () => {
+                if (this.error)
+                    return reject(this.error);
+                resolve(this);
+            });
+        });
+    }
+    createSocket() {
+        this.sock = dgram_1.createSocket('udp4');
+        this.sock.on('close', () => {
+            this.listening = false;
+            this.closed = true;
+        });
+        this.sock.on('listening', () => {
+            this.listening = true;
+            const ai = this.sock.address();
+        });
+        this.sock.on('error', () => this.onError());
+    }
+    listenToServer() {
+        this.sock.on('message', (msg, rinfo) => {
+            this.listenHandler.apply(this, [msg, rinfo]);
+        });
+        this.sock.bind({ port: this.port, address: '0.0.0.0' });
+    }
+    sendToServer(request, cb) {
+        this.sock.send(this.data, this.serverPort, this.serverHost, (err) => {
+            if (err) {
+                this.error = err;
+                cb(this);
+                return this.onError(err);
+            }
+            if (this.listen) {
+                return this.listenHandler = (msg, rinfo) => {
+                    this.result = msg;
+                    cb(this);
+                };
+            }
+            this.sock.close();
+            cb(this);
+        });
+    }
+    onError(err) {
+        this.sock.close();
+        console.log('error');
+    }
+}
+class Request {
+    constructor(command, ...params) {
+        this.command = command;
+        this.params = params;
+    }
+    toJson() {
+        let data = {
+            command: this.command,
+            params: this.params.map((param) => param.toString())
+        };
+        return JSON.stringify(data);
+    }
+    toString() {
+        return this.toJson();
+    }
+    static fromJson(json) {
+        let data = JSON.parse(json);
+        return new Request(data.command, data.params);
+    }
+}
 //# sourceMappingURL=dev.js.map

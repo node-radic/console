@@ -61,6 +61,10 @@ export class OptionsDefinitionParser implements IOptionsParser {
         this.parsed.help.key     = this.definition.getHelpKey();
         this.parsed.help.show    = this.parsed.opt(this.parsed.help.key) === true
 
+        // if(typeof this.parsed.default === 'function'){
+        //     this.parsed.default = this.parsed.default.apply(this.parsed, []);
+        // }
+
         // and return it :)
         return this.parsed;
     }
@@ -134,6 +138,13 @@ export class ArgumentsDefinitionParser extends OptionsDefinitionParser implement
             if(def.type === 'array'){
                 value = value ? value.split(',') : []
             }
+
+            if(def.type === 'string'){
+                try {
+                    value = value.toString();
+                } catch(e){}
+            }
+
             input[ name ] = value;
         })
 

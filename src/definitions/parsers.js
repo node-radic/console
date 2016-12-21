@@ -82,6 +82,12 @@ let ArgumentsDefinitionParser = class ArgumentsDefinitionParser extends OptionsD
             if (def.type === 'array') {
                 value = value ? value.split(',') : [];
             }
+            if (def.type === 'string') {
+                try {
+                    value = value.toString();
+                }
+                catch (e) { }
+            }
             input[name] = value;
         });
         this.arguments = input;

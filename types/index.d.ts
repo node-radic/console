@@ -48,7 +48,7 @@ declare module "yargs-parser"
 }
 
 declare module "events";
-declare module "fs";
+// declare module "fs";
 
 
 interface CliTable extends Array<string[]> {

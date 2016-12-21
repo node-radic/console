@@ -64,7 +64,8 @@ export class ParsedOptionsDefinition implements IParsedOptions {
 
     opt(n: string): any {
         if ( false === this.hasOpt(n) ) return false;
-        return this.options[ n ];
+        let opt = this.options[ n ];
+        return typeof opt === 'function' ? opt.apply(this) : opt;
     }
 
     hasErrors(): boolean {
@@ -84,7 +85,7 @@ export class ParsedArgumentsDefinition extends ParsedOptionsDefinition implement
 
 
     hasArg(n: string): boolean {
-        return ! this.arguments[ n ] === false;
+        return this.arguments[ n ] !== undefined && this.arguments[ n ] !== null;
     }
 
     arg(n: string): any {

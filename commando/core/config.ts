@@ -37,7 +37,7 @@ function parseEnvVal(val: any) {
     return val
 }
 if ( existsSync(denvPath) ) {
-    var denv = dotenv.parse(readFileSync(denvPath));
+    var denv = dotenv.parse(<any> readFileSync(denvPath));
     Object.keys(denv).forEach((key:string) => {
         let value = parseEnvVal(denv[key])
         key = key.replace('_', '.');

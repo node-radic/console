@@ -24,7 +24,8 @@ let ParsedOptionsDefinition = class ParsedOptionsDefinition {
     opt(n) {
         if (false === this.hasOpt(n))
             return false;
-        return this.options[n];
+        let opt = this.options[n];
+        return typeof opt === 'function' ? opt.apply(this) : opt;
     }
     hasErrors() {
         return this.errors.length > 0;
@@ -44,7 +45,7 @@ let ParsedArgumentsDefinition = class ParsedArgumentsDefinition extends ParsedOp
         return Object.keys(this.arguments).length;
     }
     hasArg(n) {
-        return !this.arguments[n] === false;
+        return this.arguments[n] !== undefined && this.arguments[n] !== null;
     }
     arg(n) {
         return this.hasArg(n) ? this.arguments[n] : this.definition.getArguments()[n].default;
