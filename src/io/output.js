@@ -16,7 +16,6 @@ const lodash_1 = require("lodash");
 const console_colors_1 = require("@radic/console-colors");
 const archy = require("archy");
 let truwrap = require('truwrap');
-truwrap({});
 exports.TABLE_STYLE = {
     FAT: {
         'top': '═', 'top-mid': '╤', 'top-left': '╔', 'top-right': '╗',

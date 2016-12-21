@@ -26,7 +26,7 @@ export interface IOutput {
 
 let truwrap = require('truwrap');
 
-truwrap({})
+// truwrap({})
 
 export const TABLE_STYLE = {
     FAT : {
