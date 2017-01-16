@@ -35,8 +35,8 @@ DBCommand = __decorate([
 ], DBCommand);
 exports.DBCommand = DBCommand;
 let ShowDBCommand = class ShowDBCommand extends DBCommand {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.options = {
             t: { alias: 'show-tables', desc: 'Show tables', boolean: true },
         };
@@ -79,8 +79,8 @@ ResetDBCommand = __decorate([
 ], ResetDBCommand);
 exports.ResetDBCommand = ResetDBCommand;
 let RestoreDBCommand = class RestoreDBCommand extends DBCommand {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.arguments = {};
         this.options = {
             p: { alias: 'path', desc: 'Path to backup file location', string: true },
@@ -118,8 +118,8 @@ RestoreDBCommand = __decorate([
 ], RestoreDBCommand);
 exports.RestoreDBCommand = RestoreDBCommand;
 let BackupDBCommand = class BackupDBCommand extends DBCommand {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.options = {};
     }
     handle() {

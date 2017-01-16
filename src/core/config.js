@@ -14,7 +14,9 @@ let defaults = {
         group: 'steelblue bold',
         command: 'darkcyan',
         description: 'darkslategray',
-        argument: 'yellow darken 25'
+        argument: 'yellow darken 25',
+        optional: 'yellow',
+        type: 'yellow'
     },
     colors: {
         enabled: true,

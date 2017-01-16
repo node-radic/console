@@ -37,8 +37,8 @@ ParsedOptionsDefinition = __decorate([
 ], ParsedOptionsDefinition);
 exports.ParsedOptionsDefinition = ParsedOptionsDefinition;
 let ParsedArgumentsDefinition = class ParsedArgumentsDefinition extends ParsedOptionsDefinition {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.arguments = {};
     }
     get nargs() {
@@ -57,8 +57,8 @@ ParsedArgumentsDefinition = __decorate([
 ], ParsedArgumentsDefinition);
 exports.ParsedArgumentsDefinition = ParsedArgumentsDefinition;
 let ParsedCommandsDefinition = class ParsedCommandsDefinition extends ParsedOptionsDefinition {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.isRoot = false;
         this.isCommand = false;
         this.isGroup = false;

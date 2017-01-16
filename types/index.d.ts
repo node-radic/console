@@ -2,32 +2,29 @@
 ///<reference path="underscore.string.d.ts"/>
 ///<reference path="lowdb.d.ts"/>
 ///<reference path="validatorjs.d.ts"/>
+///<reference path="../node_modules/@types/shelljs/index.d.ts"/>
 
-
-interface YargsParserOptions
-{
-    alias: {[key: string]: string[]}
+interface YargsParserOptions {
+    alias: { [key: string]: string[] }
     array: string[]
     boolean: string[]
     config?: boolean
-    coerce: {[key: string]: Function}
+    coerce: { [key: string]: Function }
     count: string[]
     string: string[]
     number: string[]
-    default: {[key: string]: any}
-    narg: {[key: string]: number}
+    default: { [key: string]: any }
+    narg: { [key: string]: number }
 
     envPrefix?: string
     normalize?: boolean
-    configuration?: {[key: string]: boolean}
+    configuration?: { [key: string]: boolean }
 }
-interface YargsParserArgv
-{
+interface YargsParserArgv {
     _?: any[],
     [key: string]: any
 }
-interface YargsParserDetailed
-{
+interface YargsParserDetailed {
     argv?: YargsParserArgv
     error?: Error
     aliases?: any[]
@@ -35,14 +32,12 @@ interface YargsParserDetailed
     configuration?: any
 }
 
-interface YargsParser
-{
+interface YargsParser {
     (args?: string|string[], opts?: YargsParserOptions): YargsParserArgv
     detailed(args?: string|string[], opts?: YargsParserOptions): YargsParserDetailed
 }
 
-declare module "yargs-parser"
-{
+declare module "yargs-parser" {
     var yp: YargsParser;
     export = yp;
 }
@@ -56,10 +51,10 @@ interface CliTable extends Array<string[]> {
 }
 declare module "cli-table2" {
     interface TableConstructor {
-        new (options?:any): CliTable
+        new (options?: any): CliTable
     }
 
-    let t:TableConstructor;
+    let t: TableConstructor;
 
     export = t
 }
@@ -76,7 +71,7 @@ declare module "window-size" {
         height: number
         width: number
     }
-    let ws:WindowSize
+    let ws: WindowSize
     export = ws
 }
 
@@ -99,37 +94,31 @@ declare module "marked-terminal"
 declare module "graceful-readlink"
 
 // others
-declare module "globule"
-{
-    interface Globule
-    {
-        find( str: string ): string[]
+declare module "globule" {
+    interface Globule {
+        find(str: string): string[]
     }
     var globule: Globule;
     export = globule;
 }
 
-interface IBitbucketRestClient
-{
+interface IBitbucketRestClient {
 
 }
-interface IBitbucketRest
-{
-    connectClient( opts: any ): IBitbucketRestClient
+interface IBitbucketRest {
+    connectClient(opts: any): IBitbucketRestClient
 
 }
 
-declare module "bitbucket-rest"
-{
+declare module "bitbucket-rest" {
     var bitbucket: IBitbucketRest;
     export = bitbucket;
 }
 
 interface ErrorConstructor {
-    prepareStackTrace(error?:any, structuredStackTrace?:any):any[];
+    prepareStackTrace(error?: any, structuredStackTrace?: any): any[];
 }
-interface ErrorStack
-{
+interface ErrorStack {
     getTypeName(): string;
     getFunctionName(): string;
     getMethodName(): string;
@@ -139,35 +128,33 @@ interface ErrorStack
     getColumnNumber(): number;
     isNative(): boolean;
 }
-interface ErrorWithStack  {
+interface ErrorWithStack {
     stack: ErrorStack;
     name: string;
     message: string;
 }
-interface Yargonaut
-{
-    help( font?:any ): Yargonaut
-    errors( font?:any ): Yargonaut
-    font( font?:any, key ?:any): Yargonaut
-    helpStyle( style ?:any): Yargonaut
-    errorsStyle( style?:any ): Yargonaut
-    style( style?:any, key ?:any): Yargonaut
-    transformWholeString( key ): Yargonaut
-    transformUpToFirstColon( key ): Yargonaut
-    ocd( f?:any ): Yargonaut
+interface Yargonaut {
+    help(font?: any): Yargonaut
+    errors(font?: any): Yargonaut
+    font(font?: any, key ?: any): Yargonaut
+    helpStyle(style ?: any): Yargonaut
+    errorsStyle(style?: any): Yargonaut
+    style(style?: any, key ?: any): Yargonaut
+    transformWholeString(key): Yargonaut
+    transformUpToFirstColon(key): Yargonaut
+    ocd(f?: any): Yargonaut
     getAllKeys(): string[]
     getHelpKeys(): string[]
     getErrorKeys(): string[]
-    asFont( text?:any, font?:any, throwErr ?:any): any
+    asFont(text?: any, font?: any, throwErr ?: any): any
     listFonts(): void
-    printFont( font?:any, text?:any, throwErr?:any ): void
-    printFonts( text?:any, throwErr ?:any): void
+    printFont(font?: any, text?: any, throwErr?: any): void
+    printFonts(text?: any, throwErr ?: any): void
     figlet(): any
     chalk(): any
 
 }
-declare module 'yargonaut'
-{
+declare module 'yargonaut' {
     var yargonaut: Yargonaut;
     export = yargonaut;
 }
@@ -177,43 +164,42 @@ declare module "get-caller-file" {
 }
 
 interface DotEnv {
-    parse(buf:string):any;
-    config(options?:{silent:boolean,path:string, encoding:string})
+    parse(buf: string): any;
+    config(options?: { silent: boolean, path: string, encoding: string })
 }
 declare module "dotenv" {
-    var dotenv:DotEnv
-    export = dotenv
+    var dotenvv: DotEnv
+    export = dotenvv
 }
 
-interface IClIUI{
-    (opts:any):IClIUI
+interface IClIUI {
+    (opts: any): IClIUI
     span()
-    div(...opts:any[])
+    div(...opts: any[])
     toString()
     rowToString()
 }
 declare module "cliui" {
-    var cliui:IClIUI;
+    var cliui: IClIUI;
     export = cliui;
 }
 
 
-
-declare module "lastpass"{
+declare module "lastpass" {
     interface Lastpass {
 
-        loadVault(username?:string, password?:string, twoFactor?:string)  : Promise<any>
-        loadVaultFile(vaultFile?:string)  : Promise<any>
-        saveVaultFile(vaultFile?:string, options?:any) : Promise<any>
+        loadVault(username?: string, password?: string, twoFactor?: string): Promise<any>
+        loadVaultFile(vaultFile?: string): Promise<any>
+        saveVaultFile(vaultFile?: string, options?: any): Promise<any>
         getVault()
-        getAccounts(username?:string, password?:string, search?:any):Promise<Array<any>>
+        getAccounts(username?: string, password?: string, search?: any): Promise<Array<any>>
     }
 
     interface LastpassConstructor {
-        new(username?:string) : Lastpass
+        new(username?: string): Lastpass
     }
 
-    var Lastpass:LastpassConstructor
+    var Lastpass: LastpassConstructor
     export default Lastpass
 }
 

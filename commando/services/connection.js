@@ -20,8 +20,8 @@ ConnectionRepository = __decorate([
 ], ConnectionRepository);
 exports.ConnectionRepository = ConnectionRepository;
 let Connection = class Connection extends database_1.Model {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this._extra = '{}';
     }
     get extra() { return JSON.parse(this._extra); }

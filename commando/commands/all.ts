@@ -1,4 +1,5 @@
 import { Group, group, command, Command } from "../../src";
+import { injectable, inject, COMMANDO, IConfigProperty } from "../core";
 import * as dgram from 'dgram';
 
 import { paths } from "../core/paths";
@@ -6,15 +7,15 @@ import { unlinkSync } from "fs";
 import { copySync, renameSync, ensureDirSync } from "fs-extra";
 import * as moment from 'moment';
 import Lastpass from "lastpass";
-import {basename, resolve} from 'path'
-import {find} from 'globule'
+import { basename, resolve } from 'path'
+import { find } from 'globule'
 
 @command('init', 'Initialize R', 'Give the current working directory a bit of R.')
 export class InitCommand extends Command {
     handle() {
 
         const message = Buffer.from('Some bytes');
-        const client = dgram.createSocket('udp4');
+        const client  = dgram.createSocket('udp4');
         client.send(message, 41234, 'localhost', (err) => {
             client.close();
         });
@@ -110,50 +111,24 @@ export class TestCommand extends Command {
     }
 }
 
-@command('connect', 'SSH Connect Helper', 'SSH Connect Helper')
-export class ConnectCommand extends Command {
-    arguments = {
-        target: { desc: 'The target to connect to' },
-        type  : { desc: 'The connection type' }
-    }
-    options   = {
-        c: { alias: 'create', desc: 'Create a new connect target', boolean: true },
-        l: { alias: 'list', desc: 'List all connect targets', boolean: true }
-    }
-
-    handle() {
-        if ( this.opt('c') ) {
-            this.in.askChoice('Authentication method', [ 'key', 'password', 'lastpass' ]).then((answer: string) => {
-                this.in.prompt([
-                    { name: 'host', message: 'Target Host url/ip (without port)', type: 'input' },
-                    { name: 'port', message: 'Target port', type: 'input', default: '22' },
-                    { name: 'method', message: 'Authentication method', type: 'list', choices: [ 'key', 'password', 'lastpass' ] },
-                    { name: 'user', message: 'User' }
-                ]).then((answers: any) => {
-                    this.out.dump(answers)
-                })
-            })
-        }
-        if ( this.opt('l') ) {
-
-        }
-    }
-}
-
-
 
 @command('pmove', 'PMove', 'PMove')
 export class PMoveCommand extends Command {
+    @inject(COMMANDO.CONFIG)
+    conf: IConfigProperty;
     arguments = {
-        from: {desc:'Source directory', required: true},
-        to: {desc:'Target directory', required: true}
+        from: { desc: 'Source directory', required: true },
+        to  : { desc: 'Target directory', required: true }
     }
-    handle(){
+
+    handle() {
         var opts = {
             from      : this.arg('from'),
             to        : this.arg('to'),
-            extensions: ['mp4', 'wma', 'flv', 'mkv', 'avi', 'wmv']
+            extensions: this.conf('pmove.extensions')
         };
+
+        var c = this.conf.get();
 
         //
         // var path = require('path'),
@@ -161,16 +136,16 @@ export class PMoveCommand extends Command {
         //     glob = require('globule');
 
 
-        var dir = resolve(opts.from, '**', '*.{' + opts.extensions.join(',') + '}'),
+        var dir   = resolve(opts.from, '**', '*.{' + opts.extensions.join(',') + '}'),
             found = find(dir);
 
 
         this.out.writeln(`Found ${found.length} files in {bold}${dir}{/bold} `)
 
-        this.in.confirm('Do you want to continue?').then((answer:boolean) => {
-            if(!answer) return this.log.warn('Canceled Pmove');
+        this.in.confirm('Do you want to continue?').then((answer: boolean) => {
+            if ( ! answer ) return this.log.warn('Canceled Pmove');
             ensureDirSync(resolve(opts.to))
-            found.forEach((filePath:string, i : number) => {
+            found.forEach((filePath: string, i: number) => {
                 this.out.write(i.toString());
                 var fileName = basename(filePath);
                 this.log.verbose('renaming', filePath, resolve(opts.to, fileName))
@@ -180,5 +155,13 @@ export class PMoveCommand extends Command {
         })
 
 
+    }
+}
+
+
+@command('make-bin', 'Make a bash bin file', 'Make a bash bin file')
+export class MakeBinCommand extends Command {
+    arguments = {
+        dest: { desc: 'Where to create this command' }
     }
 }

@@ -1,18 +1,17 @@
 import * as cryptico from "cryptico";
 import * as fs from "fs-extra";
-import { injectable, inject } from "./kernel";
+import { kernel, injectable, inject } from "./kernel";
 import { COMMANDO } from "./bindings";
 import { paths } from "./paths";
 import { dirname } from "path";
+import { provideSingleton } from "../../src";
 
-@injectable()
+@provideSingleton(COMMANDO.KEYS)
 export class Keys
 {
     _secret: string
     _public: string
 
-    @inject(COMMANDO.PATHS)
-    paths:{[name:string]:string}
 
     constructor() {
         this._secret = cryptico.generateRSAKey('pass', 1024)

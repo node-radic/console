@@ -45,10 +45,13 @@ let Input = class Input {
             defer.resolve(_.pick(args, names));
             return defer.promise;
         }
+        let pargs = parsed.definition.getArguments();
+        let arg = (name, propName, otherwise) => pargs[name] && pargs[name][propName] ? pargs[name][propName] : otherwise;
         let pm = (name, opts) => _.merge({
             name,
             type: 'input',
-            message: parsed.definition.getArguments()[name].desc || '',
+            message: arg(name, 'desc', ''),
+            default: arg(name, 'default', undefined),
             when: (answers) => parsed.hasArg(name) === false
         }, opts);
         let prompts = names.map((name) => {
@@ -83,7 +86,7 @@ let Input = class Input {
                 .value();
             defer.resolve(answers);
             return defer.promise;
-        });
+        }, console.error.bind(console));
     }
 };
 Input = __decorate([

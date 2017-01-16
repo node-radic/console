@@ -11,8 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 const _ = require('lodash');
 const remote_1 = require("../remote");
 let BitbucketRemote = class BitbucketRemote extends remote_1.GitRestRemote {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.usesExtra = false;
     }
     getMirrorUrl(owner, repo) {

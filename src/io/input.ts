@@ -108,6 +108,7 @@ export class Input implements IInput {
     }
 
     askArgs(parsed: IParsedArguments, questions: {[name: string]: Question}) {
+
         let args: any = _.cloneDeep(parsed.arguments)
         var defer     = BB.defer();
         let names     = Object.keys(questions)
@@ -118,11 +119,13 @@ export class Input implements IInput {
             return defer.promise;
         }
 
-
+        let pargs = parsed.definition.getArguments();
+        let arg = (name:string, propName:string, otherwise:any) => pargs[name] && pargs[name][propName] ? pargs[name][propName] : otherwise;
         let pm = (name: string, opts: any) => _.merge({
             name,
             type   : 'input',
-            message: parsed.definition.getArguments()[ name ].desc || '',
+            message: arg(name, 'desc', ''),
+            default: arg(name, 'default', undefined),
             when   : (answers: any) => parsed.hasArg(name) === false
         }, opts)
 
@@ -160,7 +163,7 @@ export class Input implements IInput {
 
                 defer.resolve(answers);
                 return defer.promise
-            })
+            }, console.error.bind(console))
     }
 
 

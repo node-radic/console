@@ -1,5 +1,5 @@
 import { inject, Kernel as BaseKernel, decorate, injectable, interfaces as inversifyInterfaces } from "inversify";
-import { makeProvideDecorator,makeFluentProvideDecorator } from "inversify-binding-decorators";
+import { makeProvideDecorator, makeFluentProvideDecorator } from "inversify-binding-decorators";
 import getDecorators from "inversify-inject-decorators";
 import BINDINGS from "./bindings";
 import { CommandsCli, ArgumentsCli } from "./cli";
@@ -15,17 +15,22 @@ import Factory = inversifyInterfaces.Factory
 import Context = inversifyInterfaces.Context
 
 
-export class ConsoleKernel extends BaseKernel
-{
+export class ConsoleKernel extends BaseKernel {
     /**
      * Create an instance of a class using the container, making it injectable at runtime and able to @inject on the fly
      * @param cls
+     * @param factoryMethod
      * @returns {T}
      */
-    build<T>(cls: any): T {
+    build<T>(cls: any, factoryMethod?:(context: Context) => any): T {
         this.ensureInjectable(cls);
         let k = 'temporary.kernel.binding'
-        this.bind(k).to(cls);
+        if(factoryMethod) {
+            this.bind(k).toFactory<any>(factoryMethod);
+        } else {
+            this.bind(k).to(cls);
+
+        }
         let instance = this.get<T>(k)
         this.unbind(k)
         return instance;
@@ -47,7 +52,7 @@ export class ConsoleKernel extends BaseKernel
         return this.get<T>(binding)
     }
 
-    protected ensureInjectable(cls:Function){
+    protected ensureInjectable(cls: Function) {
         try { decorate(injectable(), cls); } catch ( err ) {}
     }
 
@@ -64,7 +69,7 @@ export class ConsoleKernel extends BaseKernel
     }
 
     argumentsCli(): ArgumentsCli {
-        return this.Cli<ArgumentsCli ,ICommandsDefinition, ICommandsParser>(ArgumentsCli , CommandsDefinition)
+        return this.Cli<ArgumentsCli ,ICommandsDefinition, ICommandsParser>(ArgumentsCli, CommandsDefinition)
         // if ( this.isBound(BINDINGS.CLI) ) throw Error('cli already created')
         // this.bindKernel(this);
         // this.bind<IArgumentsDefinition>(BINDINGS.ROOT_DEFINITION).to(ArgumentsDefinition).inSingletonScope();
@@ -78,6 +83,7 @@ export class ConsoleKernel extends BaseKernel
         // @TODO use kernel modules instead: https://github.com/inversify/InversifyJS/blob/master/wiki/kernel_modules.md
         // @TODO might want to use @provide for some of these
 
+
         kernel.bind<IOptionsDefinition>(BINDINGS.GLOBAL_DEFINITION).to(OptionsDefinition).inSingletonScope();
         kernel.bind<ILog>(BINDINGS.LOG).to(Log).inSingletonScope();
         kernel.bind<IDescriptor>(BINDINGS.DESCRIPTOR).to(Descriptor).inSingletonScope();
@@ -87,7 +93,6 @@ export class ConsoleKernel extends BaseKernel
         kernel.bind<IInput>(BINDINGS.INPUT).to(Input);
         kernel.bind<IOutput>(BINDINGS.OUTPUT).to(Output);
         kernel.bind(BINDINGS.HELPERS).to(Helpers);
-
 
 
         kernel.bind<IOptionsDefinition>(BINDINGS.OPTIONS_DEFINITION).to(OptionsDefinition);
@@ -150,13 +155,13 @@ export class ConsoleKernel extends BaseKernel
 
 }
 
-let kernel    = new ConsoleKernel;
+let kernel           = new ConsoleKernel;
 let { lazyInject }   = getDecorators(kernel);
 let provide          = makeProvideDecorator(kernel);
-let fprovide = makeFluentProvideDecorator(kernel)
+let fprovide         = makeFluentProvideDecorator(kernel)
 let provideSingleton = function (identifier) {
     return fprovide(identifier).inSingletonScope().done()
 };
 
-export { kernel, lazyInject, provide, provideSingleton, inject, injectable, decorate}
+export { kernel, lazyInject, provide, provideSingleton, inject, injectable, decorate }
 

@@ -14,10 +14,15 @@ const definitions_1 = require("../definitions");
 const commands_1 = require("../commands");
 const helpers_1 = require("./helpers");
 class ConsoleKernel extends inversify_1.Kernel {
-    build(cls) {
+    build(cls, factoryMethod) {
         this.ensureInjectable(cls);
         let k = 'temporary.kernel.binding';
-        this.bind(k).to(cls);
+        if (factoryMethod) {
+            this.bind(k).toFactory(factoryMethod);
+        }
+        else {
+            this.bind(k).to(cls);
+        }
         let instance = this.get(k);
         this.unbind(k);
         return instance;

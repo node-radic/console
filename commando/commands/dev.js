@@ -45,6 +45,22 @@ DevCommand = __decorate([
     __metadata('design:paramtypes', [])
 ], DevCommand);
 exports.DevCommand = DevCommand;
+let PathsDevCommand = class PathsDevCommand extends DevCommand {
+    handle() {
+        let table = this.out.columns();
+        Object.keys(this.paths).forEach(name => table.push([name, this.paths[name]]));
+        this.line(table.toString());
+    }
+};
+__decorate([
+    src_1.inject(core_1.COMMANDO.PATHS), 
+    __metadata('design:type', Object)
+], PathsDevCommand.prototype, "paths", void 0);
+PathsDevCommand = __decorate([
+    src_1.command('paths', 'Show paths', 'paths', DevGroup), 
+    __metadata('design:paramtypes', [])
+], PathsDevCommand);
+exports.PathsDevCommand = PathsDevCommand;
 let ServeDevCommand = class ServeDevCommand extends DevCommand {
     handle() {
         this.server.start();
@@ -74,8 +90,8 @@ ClientDevCommand = __decorate([
 ], ClientDevCommand);
 exports.ClientDevCommand = ClientDevCommand;
 let ConDevCommand = class ConDevCommand extends DevCommand {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.cons = [];
     }
     handle() {
@@ -134,8 +150,8 @@ ChromiumRemoteDebugDevCommand = __decorate([
 ], ChromiumRemoteDebugDevCommand);
 exports.ChromiumRemoteDebugDevCommand = ChromiumRemoteDebugDevCommand;
 let DopDevCommand = class DopDevCommand extends DevCommand {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.options = {
             serve: { alias: 's', default: false },
             host: { alias: 'h', default: '10.0.0.81', type: 'string' },

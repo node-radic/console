@@ -1,6 +1,7 @@
 "use strict";
 require("reflect-metadata");
 require('core-js');
+require('shelljs/global');
 const src_1 = require("./src");
 require("./commando/index");
 const log_1 = require("./src/core/log");
@@ -25,7 +26,7 @@ let parsed = cli.parsed;
 if (parsed.global.opt('v')) {
     cli.log.setLevel(log_1.LogLevel.info + parsed.global.opt('v'));
 }
-if (parsed.opt('t')) {
+if (parsed.opt('T')) {
     let descriptor = src_1.kernel.get(src_1.BINDINGS.DESCRIPTOR);
     descriptor.commandTree('Command Tree');
     cli.exit();

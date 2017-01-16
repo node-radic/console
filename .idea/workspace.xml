@@ -1,56 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="26a51c17-f39e-47bb-af38-6c4252c70bd7" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" />
+    <list default="true" id="374ccfc3-65e0-4773-9f94-72095bc46f8a" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/markdown-navigator.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/markdown-navigator/profiles_settings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/commando/commands/connect.ts" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/helpers/LogCliHelper.js" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/typescript-compiler.xml" afterPath="$PROJECT_DIR$/.idea/typescript-compiler.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando.js" afterPath="$PROJECT_DIR$/commando.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando.ts" afterPath="$PROJECT_DIR$/commando.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/commands/all.js" afterPath="$PROJECT_DIR$/commando/commands/all.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/commands/all.ts" afterPath="$PROJECT_DIR$/commando/commands/all.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/commands/con_add.js" afterPath="$PROJECT_DIR$/commando/commands/con_add.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/commands/con_cp.js" afterPath="$PROJECT_DIR$/commando/commands/con_cp.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/commands/con_rm.js" afterPath="$PROJECT_DIR$/commando/commands/con_rm.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/commands/config.js" afterPath="$PROJECT_DIR$/commando/commands/config.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/commands/connection.js" afterPath="$PROJECT_DIR$/commando/commands/connection.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/commands/config.ts" afterPath="$PROJECT_DIR$/commando/commands/config.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/commands/dev.js" afterPath="$PROJECT_DIR$/commando/commands/dev.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/commands/dev.ts" afterPath="$PROJECT_DIR$/commando/commands/dev.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/commands/dev_db.js" afterPath="$PROJECT_DIR$/commando/commands/dev_db.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/commands/git.js" afterPath="$PROJECT_DIR$/commando/commands/git.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/commands/index.js" afterPath="$PROJECT_DIR$/commando/commands/index.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/commands/init.js" afterPath="$PROJECT_DIR$/commando/commands/init.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/core/bindings.js" afterPath="$PROJECT_DIR$/commando/core/bindings.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/commands/index.ts" afterPath="$PROJECT_DIR$/commando/commands/index.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/core/config.js" afterPath="$PROJECT_DIR$/commando/core/config.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/core/index.js" afterPath="$PROJECT_DIR$/commando/core/index.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/core/config.ts" afterPath="$PROJECT_DIR$/commando/core/config.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/core/kernel.js" afterPath="$PROJECT_DIR$/commando/core/kernel.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/core/kernel.ts" afterPath="$PROJECT_DIR$/commando/core/kernel.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/core/keys.js" afterPath="$PROJECT_DIR$/commando/core/keys.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/core/paths.js" afterPath="$PROJECT_DIR$/commando/core/paths.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/index.js" afterPath="$PROJECT_DIR$/commando/index.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/services/connections.js" afterPath="$PROJECT_DIR$/commando/services/connections.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/services/connections.ts" afterPath="$PROJECT_DIR$/commando/services/connections.ts" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/services/database.js" afterPath="$PROJECT_DIR$/commando/services/database.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/services/index.js" afterPath="$PROJECT_DIR$/commando/services/index.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/services/remotes/remote.js" afterPath="$PROJECT_DIR$/commando/services/remotes/remote.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/commands/command.js" afterPath="$PROJECT_DIR$/src/commands/command.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/commands/factory.js" afterPath="$PROJECT_DIR$/src/commands/factory.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/commands/group.js" afterPath="$PROJECT_DIR$/src/commands/group.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/commands/index.js" afterPath="$PROJECT_DIR$/src/commands/index.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/core/bindings.js" afterPath="$PROJECT_DIR$/src/core/bindings.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/core/cli.js" afterPath="$PROJECT_DIR$/src/core/cli.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/core/cli.ts" afterPath="$PROJECT_DIR$/src/core/cli.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/core/keys.ts" afterPath="$PROJECT_DIR$/commando/core/keys.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/services/connection.js" afterPath="$PROJECT_DIR$/commando/services/connection.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/services/remotes/bamboo.js" afterPath="$PROJECT_DIR$/commando/services/remotes/bamboo.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/services/remotes/bitbucket-server.js" afterPath="$PROJECT_DIR$/commando/services/remotes/bitbucket-server.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/services/remotes/bitbucket.js" afterPath="$PROJECT_DIR$/commando/services/remotes/bitbucket.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/services/remotes/github.js" afterPath="$PROJECT_DIR$/commando/services/remotes/github.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/services/remotes/google.js" afterPath="$PROJECT_DIR$/commando/services/remotes/google.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/services/remotes/jenkins.js" afterPath="$PROJECT_DIR$/commando/services/remotes/jenkins.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/services/remotes/jira.js" afterPath="$PROJECT_DIR$/commando/services/remotes/jira.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/services/remotes/packagist.js" afterPath="$PROJECT_DIR$/commando/services/remotes/packagist.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/services/remotes/plesk.js" afterPath="$PROJECT_DIR$/commando/services/remotes/plesk.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/commando/services/remotes/ssh.js" afterPath="$PROJECT_DIR$/commando/services/remotes/ssh.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/core/config.js" afterPath="$PROJECT_DIR$/src/core/config.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/core/index.js" afterPath="$PROJECT_DIR$/src/core/index.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/core/config.ts" afterPath="$PROJECT_DIR$/src/core/config.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/core/kernel.js" afterPath="$PROJECT_DIR$/src/core/kernel.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/core/log.js" afterPath="$PROJECT_DIR$/src/core/log.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/definitions/argv.js" afterPath="$PROJECT_DIR$/src/definitions/argv.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/definitions/definitions.js" afterPath="$PROJECT_DIR$/src/definitions/definitions.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/definitions/index.js" afterPath="$PROJECT_DIR$/src/definitions/index.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/core/kernel.ts" afterPath="$PROJECT_DIR$/src/core/kernel.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/definitions/definitions.ts" afterPath="$PROJECT_DIR$/src/definitions/definitions.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/definitions/parsed.js" afterPath="$PROJECT_DIR$/src/definitions/parsed.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/definitions/parsers.js" afterPath="$PROJECT_DIR$/src/definitions/parsers.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/definitions/signature.js" afterPath="$PROJECT_DIR$/src/definitions/signature.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/index.js" afterPath="$PROJECT_DIR$/src/index.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/io/descriptor.js" afterPath="$PROJECT_DIR$/src/io/descriptor.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/io/index.js" afterPath="$PROJECT_DIR$/src/io/index.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/io/descriptor.ts" afterPath="$PROJECT_DIR$/src/io/descriptor.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/io/input.js" afterPath="$PROJECT_DIR$/src/io/input.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/io/output.js" afterPath="$PROJECT_DIR$/src/io/output.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/io/input.ts" afterPath="$PROJECT_DIR$/src/io/input.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/io/output.ts" afterPath="$PROJECT_DIR$/src/io/output.ts" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tsconfig.json" afterPath="$PROJECT_DIR$/tsconfig.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/types/index.d.ts" afterPath="$PROJECT_DIR$/types/index.d.ts" />
     </list>
-    <ignored path="console.iws" />
-    <ignored path=".idea/workspace.xml" />
-    <ignored path=".idea/dataSources.local.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -62,32 +72,85 @@
     <option name="PATCH_PATH" value="" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
-  <component name="FavoritesManager">
-    <favorites_list name="console" />
-  </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="tsconfig.json" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tsconfig.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="230">
-              <caret line="10" column="34" selection-start-line="10" selection-start-column="34" selection-end-line="10" selection-end-column="34" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="config.ts" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/commando/core/config.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.5">
+      <split-first>
+        <leaf>
+          <file leaf-file-name="connect.ts" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/commando/commands/connect.ts">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="787">
+                  <caret line="106" column="32" lean-forward="false" selection-start-line="106" selection-start-column="32" selection-end-line="106" selection-end-column="32" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="commando.ts" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/commando.ts">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="115">
+                  <caret line="5" column="0" lean-forward="true" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="r.conf.debug.json" pinned="false" current-in-tab="false">
+            <entry file="file://$USER_HOME$/.r/r.conf.debug.json">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="414">
+                  <caret line="18" column="19" lean-forward="false" selection-start-line="18" selection-start-column="19" selection-end-line="18" selection-end-column="19" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="config.ts" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/commando/core/config.ts">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="552">
+                  <caret line="54" column="0" lean-forward="true" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="config.d.ts" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/node_modules/@radic/console-colors/node_modules/@radic/util/lib/config.d.ts">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="736">
+                  <caret line="32" column="4" lean-forward="false" selection-start-line="32" selection-start-column="4" selection-end-line="32" selection-end-column="4" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file leaf-file-name="connect" pinned="false" current-in-tab="true">
+            <entry file="file:///usr/share/radic-term/bin/connect">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="115">
+                  <caret line="53" column="36" lean-forward="true" selection-start-line="53" selection-start-column="36" selection-end-line="53" selection-end-column="36" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>defer.promise</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>resolve</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -95,35 +158,62 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/.gitignore" />
-        <option value="$PROJECT_DIR$/src/core/cli.ts" />
-        <option value="$PROJECT_DIR$/commando/services/connections.ts" />
-        <option value="$PROJECT_DIR$/tsconfig.json" />
+        <option value="$PROJECT_DIR$/commando/core/kernel.js" />
+        <option value="$PROJECT_DIR$/commando/core/kernel.ts" />
+        <option value="$PROJECT_DIR$/commando/core/keys.ts" />
+        <option value="$PROJECT_DIR$/src/io/input.ts" />
+        <option value="$USER_HOME$/testconnect.sh" />
+        <option value="$PROJECT_DIR$/types/index.d.ts" />
+        <option value="$PROJECT_DIR$/commando.ts" />
+        <option value="$USER_HOME$/connect" />
+        <option value="/usr/share/radic-term/bin/connect" />
+        <option value="$PROJECT_DIR$/commando/commands/connect.ts" />
+        <option value="$USER_HOME$/.r/r.conf.debug.json" />
+        <option value="$PROJECT_DIR$/commando/core/config.ts" />
       </list>
     </option>
   </component>
+  <component name="JsBowerSettings">
+    <exe-path />
+    <config-path />
+  </component>
   <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsFlowSettings">
+    <service-enabled>false</service-enabled>
+    <exe-path />
+    <annotation-enable>false</annotation-enable>
+    <other-services-enabled>false</other-services-enabled>
+  </component>
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="NodeModulesDirectoryManager">
+    <handled-path value="$PROJECT_DIR$/node_modules" />
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
     <option name="x" value="1600" />
     <option name="y" value="28" />
     <option name="width" value="3840" />
-    <option name="height" value="2108" />
+    <option name="height" value="2096" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
-    <OptionsSetting value="true" id="Add" />
-    <OptionsSetting value="true" id="Remove" />
-    <OptionsSetting value="true" id="Checkout" />
-    <OptionsSetting value="true" id="Update" />
-    <OptionsSetting value="true" id="Status" />
-    <OptionsSetting value="true" id="Edit" />
-    <ConfirmationsSetting value="2" id="Add" />
-    <ConfirmationsSetting value="0" id="Remove" />
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>Action Cable</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -134,13 +224,12 @@
       <hideEmptyPackages />
       <abbreviatePackageNames />
       <autoscrollToSource />
-      <autoscrollFromSource />
+      <autoscrollFromSource ProjectPane="true" />
       <sortByType />
       <manualOrder />
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
@@ -148,6 +237,10 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="console" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -158,6 +251,10 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="console" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="commando.ts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NestingTreeNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -202,6 +299,68 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="output.ts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NestingTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="input.ts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NestingTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="core" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -216,11 +375,11 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="spec" />
+              <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="support" />
+              <option name="myItemId" value="commands" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -234,7 +393,229 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="examples" />
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="commands" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="command.ts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NestingTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="node_modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="node_modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="@types" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="node_modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="@types" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="shelljs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="node_modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="@types" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="node" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="node_modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="@radic" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="node_modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="@radic" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console-colors" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="node_modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="@radic" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console-colors" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="node_modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="node_modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="@radic" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console-colors" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="node_modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="@radic" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="util" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="node_modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="@radic" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console-colors" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="node_modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="@radic" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="util" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -288,8 +669,8 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="connections.ts" />
-              <option name="myItemType" value="com.intellij.lang.typescript.compiler.ui.projectView.TypeScriptNestingTreeNode" />
+              <option name="myItemId" value="database.ts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NestingTreeNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -308,10 +689,139 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="core" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="paths.ts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NestingTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="commando" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="keys.ts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NestingTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="commando" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="kernel.ts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NestingTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="commando" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="commando" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="config.ts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NestingTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="commando" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="commands" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="console" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="commando" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="commands" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="connect.ts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NestingTreeNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -322,14 +832,17 @@
     <property name="MemberChooser.sorted" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
     <property name="MemberChooser.copyJavadoc" value="false" />
-    <property name="settings.editor.selected.configurable" value="settings.typescriptcompiler" />
-    <property name="settings.editor.splitter.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="settings.bitbucket" />
     <property name="nodejs_interpreter_path" value="/usr/bin/node" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
+    <property name="last_opened_file_path" value="$USER_HOME$/.node/lib/node_modules/angular-cli" />
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="HbShouldOpenHtmlAsHb" value="" />
-    <property name="javascript.nodejs.core.library.configured.version" value="6.8.0" />
+    <property name="JavaScriptPreferStrict" value="false" />
+    <property name="JavaScriptWeakerCompletionTypeGuess" value="false" />
+    <property name="javascript.nodejs.core.library.configured.version" value="6.9.4" />
+    <property name="js.eslint.eslintPackage" value="" />
     <property name="js-jscs-nodeInterpreter" value="/usr/bin/node" />
+    <property name="SearchEverywhereHistoryKey" value="commando.ts&#9;FILE&#9;file:///home/radic/@radic/console/commando.ts" />
   </component>
   <component name="RunManager">
     <configuration default="true" type="Applet" factoryName="Applet">
@@ -364,6 +877,40 @@
       <option name="PARAMETERS" value="" />
       <module name="" />
       <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="CucumberRunConfigurationType" factoryName="Cucumber">
+      <predefined_log_file id="RUBY_CUCUMBER" enabled="true" />
+      <module name="" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="WORK DIR" VALUE="" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="SHOULD_USE_SDK" VALUE="false" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="ALTERN_SDK_NAME" VALUE="" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="myPassParentEnvs" VALUE="true" />
+      <envs />
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="false" />
+      <EXTENSION ID="JRubyRunConfigurationExtension" NailgunExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="TEST_FILE_MASK" VALUE="**/*.feature" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="TEST_TEST_TYPE" VALUE="TEST_SCRIPT" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="TESTS_FOLDER_PATH" VALUE="" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATH" VALUE="" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="TEST_TAGS_FILTER" VALUE="" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="TEST_NAME_FILTER" VALUE="" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="CUCUMBER_ARGS" VALUE="--color -r features" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="RUNNER_VERSION" VALUE="" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="FULL_BACKTRACE" VALUE="false" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="VERBOSE_OPTION" VALUE="false" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="DRB" VALUE="false" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="ZEUS" VALUE="false" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="SPRING" VALUE="false" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="CUCUMBER_RUNNER_PATH" VALUE="" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="USE_CUSTOM_RUNNER" VALUE="false" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="SETTINGS_VERSION" VALUE="2" />
       <method />
     </configuration>
     <configuration default="true" type="DjangoTestsConfigurationType" factoryName="Django tests">
@@ -406,6 +953,37 @@
       <kind value="DIRECTORY" />
       <method />
     </configuration>
+    <configuration default="true" type="JRubyCucumberRunConfigurationType" factoryName="JRuby Cucumber">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" value="-Dforce.jruby.jit=true -Djruby.debug.fullTrace=true" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="TEST_FILE_MASK" VALUE="**/*.feature" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="TEST_TEST_TYPE" VALUE="TEST_SCRIPT" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="TESTS_FOLDER_PATH" VALUE="" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATH" VALUE="" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="TEST_TAGS_FILTER" VALUE="" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="TEST_NAME_FILTER" VALUE="" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="CUCUMBER_ARGS" VALUE="--color -r features" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="RUNNER_VERSION" VALUE="" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="FULL_BACKTRACE" VALUE="false" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="VERBOSE_OPTION" VALUE="false" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="DRB" VALUE="false" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="ZEUS" VALUE="false" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="SPRING" VALUE="false" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="CUCUMBER_RUNNER_PATH" VALUE="" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="USE_CUSTOM_RUNNER" VALUE="false" />
+      <CUCUMBER_RUN_CONFIG_SETTINGS_ID NAME="SETTINGS_VERSION" VALUE="2" />
+      <method />
+    </configuration>
     <configuration default="true" type="JarApplication" factoryName="JAR Application">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <envs />
@@ -427,6 +1005,12 @@
       <envs />
       <method />
     </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerProtractor" factoryName="Protractor">
+      <config-file value="" />
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
     <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
       <method />
     </configuration>
@@ -438,6 +1022,34 @@
       <method />
     </configuration>
     <configuration default="true" type="PhpLocalRunConfigurationType" factoryName="PHP Console">
+      <method />
+    </configuration>
+    <configuration default="true" type="PyBehaveRunConfigurationType" factoryName="Behave">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="console" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="ADDITIONAL_ARGS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PyLettuceRunConfigurationType" factoryName="Lettuce">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="console" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="ADDITIONAL_ARGS" value="" />
       <method />
     </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
@@ -466,6 +1078,33 @@
       <option name="PORT" value="5005" />
       <method />
     </configuration>
+    <configuration default="true" type="TestUnitRunConfigurationType" factoryName="Test::Unit/Shoulda/Minitest">
+      <predefined_log_file id="RUBY_TESTUNIT" enabled="true" />
+      <module name="" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="WORK DIR" VALUE="" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="myPassParentEnvs" VALUE="true" />
+      <envs />
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="false" />
+      <EXTENSION ID="JRubyRunConfigurationExtension" NailgunExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TESTS_FOLDER_PATH" VALUE="" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATH" VALUE="" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_FILE_MASK" VALUE="" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_METHOD_NAME" VALUE="" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_TEST_TYPE" VALUE="TEST_SCRIPT" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="DRB" VALUE="false" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="ZEUS" VALUE="false" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="SPRING" VALUE="false" />
+      <RTEST_RUN_CONFIG_SETTINGS_ID NAME="RUNNER_OPTIONS" VALUE="" />
+      <method />
+    </configuration>
     <configuration default="true" type="Tox" factoryName="Tox">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -483,7 +1122,7 @@
       <method />
     </configuration>
     <configuration default="true" type="js.build_tools.npm" factoryName="npm">
-      <command value="run-script" />
+      <command value="run" />
       <scripts />
       <node-interpreter value="project" />
       <envs />
@@ -631,98 +1270,366 @@
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
   </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
   <component name="Talios.JiraConfigurationComponent" enableIssueTracking="false" autoRefresh="false" useExternalBrowser="false" refreshTimeout="0" annotateissues="false">
     <servers />
     <columns />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="26a51c17-f39e-47bb-af38-6c4252c70bd7" name="Default" comment="" />
-      <created>1476779219800</created>
+      <changelist id="374ccfc3-65e0-4773-9f94-72095bc46f8a" name="Default" comment="" />
+      <created>1484580884326</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1476779219800</updated>
+      <updated>1484580884326</updated>
+      <workItem from="1484580886078" duration="18763000" />
     </task>
     <servers />
   </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="18763000" />
+  </component>
   <component name="ToolWindowManager">
-    <frame x="1600" y="28" width="3840" height="2108" extended-state="6" />
+    <frame x="1600" y="28" width="3840" height="2096" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="PlantUML" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4490791" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="GfmBrowser" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32945737" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
-      <window_info id="Bitbucket Issues" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Tasks" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32945737" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="PlantUML" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.44886664" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="GfmBrowser" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Bitbucket Issues" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="FLOATING" visible="false" show_stripe_button="true" weight="0.32598275" sideWeight="0.5" order="21" side_tool="true" content_ui="tabs" x="2386" y="419" width="768" height="490" />
+      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16816026" sideWeight="0.4969697" order="17" side_tool="false" content_ui="tabs" />
+      <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22493638" sideWeight="0.24458532" order="20" side_tool="true" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960895" sideWeight="0.4989457" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Atlassian " active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15874274" sideWeight="0.75114274" order="21" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3253044" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.12756985" sideWeight="0.28884712" order="4" side_tool="true" content_ui="tabs" x="2516" y="580" width="361" height="382" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39410868" sideWeight="0.4947285" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32945737" sideWeight="0.5" order="17" side_tool="false" content_ui="tabs" />
+      <window_info id="SvgViewer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32999474" sideWeight="0.32575756" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Tasks" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32910106" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Regex Tester" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32945737" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="FLOATING" visible="false" show_stripe_button="true" weight="0.32598275" sideWeight="0.5" order="19" side_tool="true" content_ui="tabs" x="2386" y="419" width="768" height="490" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3271665" sideWeight="0.4978701" order="21" side_tool="false" content_ui="tabs" />
-      <window_info id="Floobits" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3518425" sideWeight="0.5021299" order="25" side_tool="false" content_ui="tabs" />
-      <window_info id="Jenkins" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32921588" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
-      <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24986821" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" x="3478" y="1059" width="84" height="66" />
-      <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Atlassian " active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32945737" sideWeight="0.5" order="26" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3253461" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3246124" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.15282215" sideWeight="0.49615383" order="6" side_tool="false" content_ui="tabs" x="2516" y="580" width="361" height="382" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="true" weight="0.3296875" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" x="432" y="94" width="250" height="577" />
-      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14178303" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32911393" sideWeight="0.5" order="22" side_tool="false" content_ui="tabs" />
-      <window_info id="Mongo Explorer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Jira Browser" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32911393" sideWeight="0.5" order="29" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="combo" />
-      <window_info id="Get Gist" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Regex" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32848838" sideWeight="0.5" order="23" side_tool="false" content_ui="tabs" />
-      <window_info id="Heroku" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Documentation" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32591876" sideWeight="0.5" order="24" side_tool="true" content_ui="tabs" x="3786" y="120" width="540" height="709" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
-      <window_info id="SQL" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Regex Tester" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32910106" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32706958" sideWeight="0.49420136" order="23" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="true" weight="0.32960895" sideWeight="0.5010543" order="19" side_tool="true" content_ui="tabs" x="5440" y="495" width="1920" height="1141" />
+      <window_info id="Floobits" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22493638" sideWeight="0.75541466" order="27" side_tool="false" content_ui="tabs" />
+      <window_info id="Jenkins" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1270427" sideWeight="0.4939394" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1711569" sideWeight="0.7111529" order="6" side_tool="false" content_ui="tabs" x="3478" y="1059" width="84" height="66" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3245302" sideWeight="0.49156564" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="true" weight="0.3296875" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" x="432" y="94" width="250" height="577" />
+      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14178303" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32911393" sideWeight="0.5" order="24" side_tool="false" content_ui="tabs" />
+      <window_info id="Mongo Explorer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Jira Browser" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32911393" sideWeight="0.5" order="30" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="6" side_tool="false" content_ui="combo" />
+      <window_info id="Get Gist" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Regex" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32848838" sideWeight="0.5" order="25" side_tool="false" content_ui="tabs" />
+      <window_info id="Heroku" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Documentation" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32591876" sideWeight="0.5" order="26" side_tool="true" content_ui="tabs" x="3786" y="120" width="540" height="709" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
+      <window_info id="SQL" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Gulp" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="CSS Styles" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960895" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="JRebel" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Navigate" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Graphical Navigator" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="JRebel Executor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="18" side_tool="false" content_ui="tabs" />
-      <window_info id="UML Diagrams" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.33013844" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
-      <window_info id="Phing Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2087327" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="TeamCity" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="27" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Graphical Navigator" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="JRebel Executor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="19" side_tool="false" content_ui="tabs" />
+      <window_info id="UML Diagrams" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.33013844" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
+      <window_info id="Phing Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2087327" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Issues - JIRA" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10670893" sideWeight="0.38494018" order="18" side_tool="true" content_ui="tabs" />
+      <window_info id="TeamCity" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32960895" sideWeight="0.5" order="28" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39437985" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Plugins" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="17" side_tool="false" content_ui="tabs" />
-      <window_info id="TypeScript Compiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20192307" sideWeight="0.11326861" order="15" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3255814" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Thumbnails" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32945737" sideWeight="0.5" order="28" side_tool="false" content_ui="tabs" />
-      <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27166504" sideWeight="0.5" order="20" side_tool="false" content_ui="tabs" />
+      <window_info id="Plugins" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="18" side_tool="false" content_ui="tabs" />
+      <window_info id="TypeScript Compiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20192307" sideWeight="0.11326861" order="16" side_tool="false" content_ui="tabs" />
+      <window_info id="Thumbnails" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32945737" sideWeight="0.5" order="29" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27166504" sideWeight="0.5" order="22" side_tool="false" content_ui="tabs" />
+      <window_info id="Time Tracking" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15893516" sideWeight="0.24885729" order="20" side_tool="true" content_ui="tabs" />
     </layout>
   </component>
-  <component name="Vcs.Log.UiProperties">
-    <option name="RECENTLY_FILTERED_USER_GROUPS">
-      <collection />
-    </option>
-    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
-      <collection />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="processedProjectFiles" value="true" />
+    <option name="exactExcludedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/commando.js" />
+        <option value="$PROJECT_DIR$/commando.js.map" />
+        <option value="$PROJECT_DIR$/commando/commands/all.js" />
+        <option value="$PROJECT_DIR$/commando/commands/all.js.map" />
+        <option value="$PROJECT_DIR$/commando/commands/config.js" />
+        <option value="$PROJECT_DIR$/commando/commands/config.js.map" />
+        <option value="$PROJECT_DIR$/commando/core/config.js" />
+        <option value="$PROJECT_DIR$/commando/core/config.js.map" />
+        <option value="$PROJECT_DIR$/src/core/config.js" />
+        <option value="$PROJECT_DIR$/src/core/config.js.map" />
+        <option value="$PROJECT_DIR$/src/core/kernel.js" />
+        <option value="$PROJECT_DIR$/src/core/kernel.js.map" />
+        <option value="$PROJECT_DIR$/src/definitions/definitions.js" />
+        <option value="$PROJECT_DIR$/src/definitions/definitions.js.map" />
+        <option value="$PROJECT_DIR$/src/io/descriptor.js" />
+        <option value="$PROJECT_DIR$/src/io/descriptor.js.map" />
+        <option value="$PROJECT_DIR$/src/io/output.js" />
+        <option value="$PROJECT_DIR$/src/io/output.js.map" />
+        <option value="$PROJECT_DIR$/gulpfile.js" />
+        <option value="$PROJECT_DIR$/bin/rclid.js" />
+        <option value="$PROJECT_DIR$/bin/rclid.js.map" />
+        <option value="$PROJECT_DIR$/src/index.js" />
+        <option value="$PROJECT_DIR$/src/index.js.map" />
+        <option value="$PROJECT_DIR$/src/io/input.js" />
+        <option value="$PROJECT_DIR$/src/io/input.js.map" />
+        <option value="$PROJECT_DIR$/src/io/index.js" />
+        <option value="$PROJECT_DIR$/src/io/index.js.map" />
+        <option value="$PROJECT_DIR$/src/core/helpers.js" />
+        <option value="$PROJECT_DIR$/src/core/helpers.js.map" />
+        <option value="$PROJECT_DIR$/src/core/index.js" />
+        <option value="$PROJECT_DIR$/src/core/index.js.map" />
+        <option value="$PROJECT_DIR$/src/core/bindings.js" />
+        <option value="$PROJECT_DIR$/src/core/bindings.js.map" />
+        <option value="$PROJECT_DIR$/src/core/log.js" />
+        <option value="$PROJECT_DIR$/src/core/log.js.map" />
+        <option value="$PROJECT_DIR$/src/core/cli.js" />
+        <option value="$PROJECT_DIR$/src/core/cli.js.map" />
+        <option value="$PROJECT_DIR$/src/commands/group.js" />
+        <option value="$PROJECT_DIR$/src/commands/group.js.map" />
+        <option value="$PROJECT_DIR$/src/commands/factory.js" />
+        <option value="$PROJECT_DIR$/src/commands/factory.js.map" />
+        <option value="$PROJECT_DIR$/src/commands/index.js" />
+        <option value="$PROJECT_DIR$/src/commands/index.js.map" />
+        <option value="$PROJECT_DIR$/src/commands/command.js" />
+        <option value="$PROJECT_DIR$/src/commands/command.js.map" />
+        <option value="$PROJECT_DIR$/src/commands/helpers/interaction.js" />
+        <option value="$PROJECT_DIR$/src/commands/helpers/interaction.js.map" />
+        <option value="$PROJECT_DIR$/src/commands/helpers/index.js" />
+        <option value="$PROJECT_DIR$/src/commands/helpers/index.js.map" />
+        <option value="$PROJECT_DIR$/src/definitions/argv.js" />
+        <option value="$PROJECT_DIR$/src/definitions/argv.js.map" />
+        <option value="$PROJECT_DIR$/src/definitions/parsers.js" />
+        <option value="$PROJECT_DIR$/src/definitions/parsers.js.map" />
+        <option value="$PROJECT_DIR$/src/definitions/index.js" />
+        <option value="$PROJECT_DIR$/src/definitions/index.js.map" />
+        <option value="$PROJECT_DIR$/src/definitions/signature.js" />
+        <option value="$PROJECT_DIR$/src/definitions/signature.js.map" />
+        <option value="$PROJECT_DIR$/src/definitions/parsed.js" />
+        <option value="$PROJECT_DIR$/src/definitions/parsed.js.map" />
+        <option value="$PROJECT_DIR$/commando/index.js" />
+        <option value="$PROJECT_DIR$/commando/index.js.map" />
+        <option value="$PROJECT_DIR$/commando/core/keys.js" />
+        <option value="$PROJECT_DIR$/commando/core/keys.js.map" />
+        <option value="$PROJECT_DIR$/commando/core/index.js" />
+        <option value="$PROJECT_DIR$/commando/core/index.js.map" />
+        <option value="$PROJECT_DIR$/commando/core/bindings.js" />
+        <option value="$PROJECT_DIR$/commando/core/bindings.js.map" />
+        <option value="$PROJECT_DIR$/commando/core/kernel.js" />
+        <option value="$PROJECT_DIR$/commando/core/kernel.js.map" />
+        <option value="$PROJECT_DIR$/commando/core/paths.js" />
+        <option value="$PROJECT_DIR$/commando/core/paths.js.map" />
+        <option value="$PROJECT_DIR$/commando/commands/con_ls.js" />
+        <option value="$PROJECT_DIR$/commando/commands/con_ls.js.map" />
+        <option value="$PROJECT_DIR$/commando/commands/con_rm.js" />
+        <option value="$PROJECT_DIR$/commando/commands/con_rm.js.map" />
+        <option value="$PROJECT_DIR$/commando/commands/con_edit.js" />
+        <option value="$PROJECT_DIR$/commando/commands/con_edit.js.map" />
+        <option value="$PROJECT_DIR$/commando/commands/dev.js" />
+        <option value="$PROJECT_DIR$/commando/commands/dev.js.map" />
+        <option value="$PROJECT_DIR$/commando/commands/con.js" />
+        <option value="$PROJECT_DIR$/commando/commands/con.js.map" />
+        <option value="$PROJECT_DIR$/commando/commands/git.js" />
+        <option value="$PROJECT_DIR$/commando/commands/git.js.map" />
+        <option value="$PROJECT_DIR$/commando/commands/on.js" />
+        <option value="$PROJECT_DIR$/commando/commands/on.js.map" />
+        <option value="$PROJECT_DIR$/commando/commands/con_cp.js" />
+        <option value="$PROJECT_DIR$/commando/commands/con_cp.js.map" />
+        <option value="$PROJECT_DIR$/commando/commands/index.js" />
+        <option value="$PROJECT_DIR$/commando/commands/index.js.map" />
+        <option value="$PROJECT_DIR$/commando/commands/con_add.js" />
+        <option value="$PROJECT_DIR$/commando/commands/con_add.js.map" />
+        <option value="$PROJECT_DIR$/commando/commands/dev_db.js" />
+        <option value="$PROJECT_DIR$/commando/commands/dev_db.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/cache.js" />
+        <option value="$PROJECT_DIR$/commando/services/cache.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/connection.js" />
+        <option value="$PROJECT_DIR$/commando/services/connection.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/index.js" />
+        <option value="$PROJECT_DIR$/commando/services/index.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/remote.js" />
+        <option value="$PROJECT_DIR$/commando/services/remote.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/udp.js" />
+        <option value="$PROJECT_DIR$/commando/services/udp.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/database.js" />
+        <option value="$PROJECT_DIR$/commando/services/database.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/bitbucket.js" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/bitbucket.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/plesk.js" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/plesk.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/jira.js" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/jira.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/jenkins.js" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/jenkins.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/ssh.js" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/ssh.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/github.js" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/github.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/packagist.js" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/packagist.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/index.js" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/index.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/bamboo.js" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/bamboo.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/google.js" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/google.js.map" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/bitbucket-server.js" />
+        <option value="$PROJECT_DIR$/commando/services/remotes/bitbucket-server.js.map" />
+        <option value="$PROJECT_DIR$/examples/mode.commands.js" />
+        <option value="$PROJECT_DIR$/examples/mode.commands.js.map" />
+        <option value="$PROJECT_DIR$/examples/mode.argument.signature.js" />
+        <option value="$PROJECT_DIR$/examples/mode.argument.signature.js.map" />
+        <option value="$PROJECT_DIR$/examples/commands.js" />
+        <option value="$PROJECT_DIR$/examples/commands.js.map" />
+        <option value="$PROJECT_DIR$/examples/mode.argument.js" />
+        <option value="$PROJECT_DIR$/examples/mode.argument.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/parser.js" />
+        <option value="$PROJECT_DIR$/.tmp/parser.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/signature.js" />
+        <option value="$PROJECT_DIR$/.tmp/signature.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/interfaces.js" />
+        <option value="$PROJECT_DIR$/.tmp/interfaces.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/index.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/index.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/parser.options.js" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/parser.options.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/parser.signature.js" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/parser.signature.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/definition.arguments.js" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/definition.arguments.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/parser.arguments.js" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/parser.arguments.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/parser.argv.js" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/parser.argv.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/index.js" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/index.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/definition.commands.js" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/definition.commands.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/parser.commands.js" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/parser.commands.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/definition.options.js" />
+        <option value="$PROJECT_DIR$/.tmp/definitions2/definition.options.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/services/connection.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/services/connection.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/services/remote.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/services/remote.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/services/auth.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/services/auth.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/auth_rm.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/auth_rm.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/jira_query.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/jira_query.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/auth.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/auth.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/auth_validate.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/auth_validate.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/auth_list.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/auth_list.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/jenkins.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/jenkins.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/git_repo:delete.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/git_repo:delete.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/git.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/git.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/git_repo:list.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/git_repo:list.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/jira.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/jira.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/jira_project.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/jira_project.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/auth_add.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/auth_add.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/jenkins_status.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/jenkins_status.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/git_repo:create.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/git_repo:create.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/auth_set.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/auth_set.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/dev.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/dev.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/auth_remotes.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/auth_remotes.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/git_mirror:create.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/commands/git_mirror:create.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/log.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/log.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/console.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/console.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/connections.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/connections.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/auth.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/auth.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/config.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/config.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/cli.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/cli.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/paths.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/paths.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/cli_utils.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/cli_utils.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/keys.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/keys.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/db.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app/db.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/services.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/services.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/main.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/main.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/src/app.js.map" />
+        <option value="$PROJECT_DIR$/.tmp/commando/bin/radic.js" />
+        <option value="$PROJECT_DIR$/.tmp/commando/bin/radic.js.map" />
+        <option value="$PROJECT_DIR$/commando/commands/connect.js" />
+        <option value="$PROJECT_DIR$/commando/commands/connect.js.map" />
+      </list>
     </option>
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="2" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
+  <component name="atlassian-ide-plugin-workspace">
+    <option name="defaultCredentials">
+      <UserCfgBean>
+        <option name="encodedPassword" value="MTIzNHZpamY=" />
+        <option name="username" value="radic" />
+      </UserCfgBean>
+    </option>
+  </component>
   <component name="atlassian-ide-plugin-workspace-issues">
+    <option name="filtersMap">
+      <map>
+        <entry>
+          <key>
+            <ServerIdImpl>
+              <option name="id" value="8a8aad95-5438-4d00-b17c-cf85bde1bf64" />
+            </ServerIdImpl>
+          </key>
+          <value>
+            <JiraCustomFilterMap />
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="view">
       <JiraViewConfigurationBean>
         <option name="viewFilterId" value="" />
@@ -730,133 +1637,232 @@
     </option>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/.gitignore">
+    <entry file="file://$PROJECT_DIR$/commando/core/index.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="5" selection-start-line="0" selection-start-column="5" selection-end-line="0" selection-end-column="5" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/commando.ts">
+    <entry file="file://$PROJECT_DIR$/commando/core/kernel.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1058">
-          <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/commando/index.ts">
+    <entry file="file://$PROJECT_DIR$/commando/core/keys.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="19" selection-start-line="0" selection-start-column="19" selection-end-line="0" selection-end-column="19" />
-          <folding />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1484582305238" expanded="true" signature="1680:1778" ph="[...]" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/commando/core/kernel.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-493">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="115">
+          <caret line="5" column="12" lean-forward="false" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/core/cli.ts">
+    <entry file="file://$PROJECT_DIR$/commando/core/keys.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="276">
-          <caret line="24" column="28" selection-start-line="24" selection-start-column="28" selection-end-line="24" selection-end-column="28" />
+        <state relative-caret-position="322">
+          <caret line="14" column="0" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/core/index.ts">
+    <entry file="file://$PROJECT_DIR$/commando/core/paths.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="17" column="4" lean-forward="false" selection-start-line="17" selection-start-column="4" selection-end-line="17" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/typescriptCompiler/external/lib.es6.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="531">
+          <caret line="985" column="79" lean-forward="false" selection-start-line="985" selection-start-column="79" selection-end-line="985" selection-end-column="79" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/@radic/util/lib/config.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1081">
+          <caret line="47" column="21" lean-forward="false" selection-start-line="47" selection-start-column="21" selection-end-line="47" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/commando/services/database.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/core/config.ts">
+    <entry file="file://$PROJECT_DIR$/node_modules/@radic/util/lib/config.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1597">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/types/winston.d.ts">
+    <entry file="file://$PROJECT_DIR$/src/io/input.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="13" column="27" selection-start-line="13" selection-start-column="27" selection-end-line="13" selection-end-column="27" />
+        <state relative-caret-position="23">
+          <caret line="77" column="4" lean-forward="false" selection-start-line="77" selection-start-column="4" selection-end-line="77" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/io/output.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1633">
+          <caret line="22" column="4" lean-forward="false" selection-start-line="22" selection-start-column="4" selection-end-line="22" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/commands/command.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="531">
+          <caret line="39" column="13" lean-forward="false" selection-start-line="39" selection-start-column="13" selection-end-line="39" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/share/radic-term/lib/lib/_main.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="138">
+          <caret line="6" column="1" lean-forward="true" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/share/radic-term/lib/_lib.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/testconnect.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="506">
+          <caret line="22" column="0" lean-forward="true" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/shelljs/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/@types/shelljs/types-metadata.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/@types/shelljs/index.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-4480">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/commando/services/connections.ts">
+    <entry file="file://$PROJECT_DIR$/types/index.d.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="989">
-          <caret line="215" column="0" selection-start-line="215" selection-start-column="0" selection-end-line="215" selection-end-column="0" />
+        <state relative-caret-position="92">
+          <caret line="4" column="64" lean-forward="false" selection-start-line="4" selection-start-column="64" selection-end-line="4" selection-end-column="64" />
           <folding>
-            <element signature="e#0#41#0" expanded="false" />
-            <element signature="n#Connection#0" expanded="false" />
-            <element signature="e#715#903#0" expanded="false" />
-            <element signature="n#!!block;n#constructor#0;n#Connection#0" expanded="false" />
-            <element signature="n#!!block;n#fill#0;n#Connection#0" expanded="false" />
-            <element signature="e#1077#1493#0" expanded="false" />
-            <element signature="e#1116#1483#0" expanded="false" />
-            <element signature="e#1288#1374#0" expanded="false" />
-            <element signature="n#!!block;n#create#0;n#Connection#0" expanded="false" />
-            <element signature="n#!!block;n#IConnectionRepository#0" expanded="false" />
-            <element signature="n#!!block;n#IConnectionFields#0" expanded="false" />
-            <element signature="n#ConnectionRepository#0" expanded="false" />
-            <element signature="n#!!block;n#createModel#0;n#ConnectionRepository#0" expanded="false" />
-            <element signature="n#!!block;n#add#0;n#ConnectionRepository#0" expanded="false" />
-            <element signature="n#!!block;n#getCountRecords#0;n#ConnectionRepository#0" expanded="false" />
-            <element signature="n#AuthMethod#0" expanded="false" />
-            <element signature="n#!!block;n#getKeyName#0;n#AuthMethod#0" expanded="false" />
-            <element signature="n#!!block;n#getSecretName#0;n#AuthMethod#0" expanded="false" />
-            <element signature="n#!!block;n#equals#0;n#AuthMethod#0" expanded="false" />
-            <element signature="e#2829#2881#0" expanded="false" />
-            <element signature="e#2926#2985#0" expanded="false" />
-            <element signature="n#!!block;n#getName#0;n#AuthMethod#0" expanded="false" />
-            <element signature="e#3100#3502#0" expanded="false" />
-            <element signature="n#!!block;n#name#0;n#AuthMethod#0" expanded="false" />
-            <element signature="n#!!block;n#keyName#0;n#AuthMethod#0" expanded="false" />
-            <element signature="n#!!block;n#IAuth#0" expanded="false" />
-            <element signature="n#Auth#0" expanded="false" />
-            <element signature="n#AuthFactory#0" expanded="false" />
-            <element signature="n#!!block;n#create#0;n#AuthFactory#0" expanded="false" />
-            <element signature="n#RemoteFactory#0" expanded="false" />
-            <element signature="n#!!block;n#register#0;n#RemoteFactory#0" expanded="false" />
-            <element signature="n#!!block;n#create#0;n#RemoteFactory#0" expanded="false" />
-            <element signature="n#!!block;n#has#0;n#RemoteFactory#0" expanded="false" />
-            <element signature="n#!!block;n#get#0;n#RemoteFactory#0" expanded="false" />
-            <element signature="n#!!block;n#IRemoteConstructor#0" expanded="false" />
-            <element signature="n#!!block;n#remote#0" expanded="false" />
-            <element signature="e#4669#4749#0" expanded="false" />
-            <element signature="n#!!block;n#IRemote#0" expanded="false" />
-            <element signature="n#Remote#0" expanded="false" />
-            <element signature="n#GithubRemote#0" expanded="false" />
+            <element signature="n#!!doc" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tsconfig.json">
+    <entry file="file://$PROJECT_DIR$/node_modules/@types/node/index.d.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="10" column="34" selection-start-line="10" selection-start-column="34" selection-end-line="10" selection-end-column="34" />
+        <state relative-caret-position="507">
+          <caret line="72" column="12" lean-forward="false" selection-start-line="72" selection-start-column="12" selection-end-line="72" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/connect">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="5" column="8" lean-forward="true" selection-start-line="5" selection-start-column="8" selection-end-line="5" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.r/r.conf.debug.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="18" column="19" lean-forward="false" selection-start-line="18" selection-start-column="19" selection-end-line="18" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/commando/commands/connect.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="787">
+          <caret line="106" column="32" lean-forward="false" selection-start-line="106" selection-start-column="32" selection-end-line="106" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/@radic/console-colors/node_modules/@radic/util/lib/config.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="736">
+          <caret line="32" column="4" lean-forward="false" selection-start-line="32" selection-start-column="4" selection-end-line="32" selection-end-column="4" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/commando/core/config.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="552">
+          <caret line="54" column="0" lean-forward="true" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/share/radic-term/bin/connect">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="53" column="36" lean-forward="true" selection-start-line="53" selection-start-column="36" selection-end-line="53" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/commando.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="5" column="0" lean-forward="true" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
           <folding />
         </state>
       </provider>

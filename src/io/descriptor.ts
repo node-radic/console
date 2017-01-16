@@ -15,7 +15,7 @@ export interface IDescriptor {
 
     getGroup(group): CliTable
     group(group: string | IGroup): this
-    getCommand(command): {args: CliTable,options: CliTable,usage: string, example: string, globalOptions: CliTable}
+    getCommand(command): { args: CliTable, options: CliTable, usage: string, example: string, globalOptions: CliTable }
     command(command: ICommand): this
 
     getCommandTree(from?: string): any[]
@@ -95,13 +95,21 @@ export class Descriptor implements IDescriptor {
 
 
     getGroup(group: IGroup | null): CliTable {
-        let children = this.factory.getGroupChildren(group ? group.name : null, group ? group.parent : undefined)
-        let table    = this.out.columns();
-        children.forEach((child) => {
-            table.push([ `{${child.type}}${child.name}{/${child.type}}`, `{description}${child.desc}{/description}` ]);
-        })
+        return this.getGroupChildren(group).all;
+    }
 
-        return table
+    protected getGroupChildren(group: IGroup | null): { commands: CliTable, groups: CliTable, all: CliTable } {
+        let children = this.factory.getGroupChildren(group ? group.name : null, group ? group.parent : undefined)
+        let all      = this.out.columns();
+        let commands = this.out.columns();
+        let groups   = this.out.columns();
+        children.forEach((child) => {
+            let row = [ `{${child.type}}${child.name}{/${child.type}}`, `{description}${child.desc}{/description}` ];
+            if ( child.type === 'command' ) commands.push(row)
+            if ( child.type === 'group' ) groups.push(row)
+            all.push(row);
+        })
+        return { commands, groups, all };
     }
 
     group(group: IGroup): this {
@@ -110,7 +118,8 @@ export class Descriptor implements IDescriptor {
     }
 
 
-    getCommand(command): {args: CliTable,options: CliTable,usage: string, example: string, globalOptions: CliTable} {
+    getCommand(command): { args: CliTable, options: CliTable, usage: string, example: string, globalOptions: CliTable } {
+        let group = this.getGroup()
         let args          = this.getArguments(command.definition),
             options       = this.getOptions(command.definition),
             usage         = this.getUsage(command.definition),
@@ -163,13 +172,13 @@ export class Descriptor implements IDescriptor {
         let table     = this.out.columns();
         let prefixKey = (key: string) => (key.length === 1 ? '-' : '--') + key
         Object.keys(opts).forEach((key: string) => {
-            let opt     = opts[ key ];
-            let keys:any    = [ prefixKey(key) ]
-            let aliases = definition.getOptions().alias[ key ] || []
-            keys        = keys.concat(aliases.map(prefixKey)).join('|')
+            let opt       = opts[ key ];
+            let keys: any = [ prefixKey(key) ]
+            let aliases   = definition.getOptions().alias[ key ] || []
 
-
-            table.push([ keys, opt.desc, `[{yellow}${opt.type}{/yellow}]` ])
+            keys = keys.concat(aliases.map(prefixKey));
+            keys.sort((a: string, b: string) => a.length - b.length);
+            table.push([ keys.join('{grey}|{/grey}'), opt.desc, `[{yellow}${opt.type}{/yellow}]` ])
         })
         return table
     }
@@ -186,7 +195,7 @@ export class Descriptor implements IDescriptor {
 
         Object.keys(args).forEach((name: string) => {
             let arg: any = args[ name ];
-            table.push([ `{argument}${name}{/argument}`, `{description}${arg.desc}{/description}`, arg.required ? '[{required}required{/required}]' : '' ]);
+            table.push([ `{argument}${name}{/argument}`, `{description}${arg.desc}{/description}`, arg.required ? '' : '[{optional}optional{/optional}]' ]);
         })
         return table;
     }

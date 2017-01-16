@@ -10,10 +10,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 const cryptico = require("cryptico");
 const fs = require("fs-extra");
-const kernel_1 = require("./kernel");
 const bindings_1 = require("./bindings");
 const paths_1 = require("./paths");
 const path_1 = require("path");
+const src_1 = require("../../src");
 let Keys = class Keys {
     constructor() {
         this._secret = cryptico.generateRSAKey('pass', 1024);
@@ -31,12 +31,8 @@ let Keys = class Keys {
     get secret() { return this._secret; }
     get public() { return this._public; }
 };
-__decorate([
-    kernel_1.inject(bindings_1.COMMANDO.PATHS), 
-    __metadata('design:type', Object)
-], Keys.prototype, "paths", void 0);
 Keys = __decorate([
-    kernel_1.injectable(), 
+    src_1.provideSingleton(bindings_1.COMMANDO.KEYS), 
     __metadata('design:paramtypes', [])
 ], Keys);
 exports.Keys = Keys;

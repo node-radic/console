@@ -12,8 +12,8 @@ const src_1 = require("../../src");
 const services_1 = require("../services");
 const con_1 = require("./con");
 let AddConnectionCommand = class AddConnectionCommand extends con_1.ConnectionCommand {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.usage = '$0 [name] <remote?> <method?> <key?> <secret> <extra??>';
         this.example = `
 $0 bb  bitbucket        basic   username    password

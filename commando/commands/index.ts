@@ -5,8 +5,8 @@ export * from './con_edit'
 export * from './con_ls'
 export * from './con_rm'
 
-
 export * from './config'
+export * from './connect'
 export * from './git'
 export * from './all'
 

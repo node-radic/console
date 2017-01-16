@@ -33,6 +33,18 @@ export class DevCommand extends Command {
     }
 }
 
+@command('paths', 'Show paths', 'paths', DevGroup)
+export class PathsDevCommand extends DevCommand {
+    @inject(COMMANDO.PATHS)
+    paths: any;
+
+    handle() {
+        let table = this.out.columns() //['key', 'value'])
+        Object.keys(this.paths).forEach(name => table.push([name, this.paths[name]);
+        this.line(table.toString());
+    }
+}
+
 @command('serve', 'Test udp server', 'Test udp server', DevGroup)
 export class ServeDevCommand extends DevCommand {
     @inject(COMMANDO.DGRAM_SERVER)

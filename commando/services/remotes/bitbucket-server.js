@@ -16,8 +16,8 @@ class BitbucketServerExtra extends remote_1.RemoteExtra {
 }
 exports.BitbucketServerExtra = BitbucketServerExtra;
 let BitbucketServerRemote = class BitbucketServerRemote extends remote_1.GitRestRemote {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.usesExtra = true;
         this.extraDefinition = new BitbucketServerExtra();
     }

@@ -83,8 +83,8 @@ GitInitCommand = __decorate([
 ], GitInitCommand);
 exports.GitInitCommand = GitInitCommand;
 let GitListCommand = class GitListCommand extends GitCommand {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.arguments = {};
         this.options = {};
     }
@@ -106,8 +106,8 @@ GitRepoGroup = __decorate([
 ], GitRepoGroup);
 exports.GitRepoGroup = GitRepoGroup;
 let DeleteGitRepoCommand = class DeleteGitRepoCommand extends GitCommand {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.arguments = {
             connection: { desc: 'Connection to use', type: 'string' },
             project: { desc: 'The project (aka "team" or "owner" or "organisation")', type: 'string' },
@@ -139,8 +139,8 @@ DeleteGitRepoCommand = __decorate([
 ], DeleteGitRepoCommand);
 exports.DeleteGitRepoCommand = DeleteGitRepoCommand;
 let MirrorGitRepoCommand = class MirrorGitRepoCommand extends GitCommand {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.arguments = {
             connection: { desc: 'Connection to use', type: 'string' },
             project: { desc: 'The project/team/owner', type: 'string' },
@@ -286,8 +286,8 @@ MirrorGitRepoCommand = __decorate([
 ], MirrorGitRepoCommand);
 exports.MirrorGitRepoCommand = MirrorGitRepoCommand;
 let CreateGitRepoCommand = class CreateGitRepoCommand extends MirrorGitRepoCommand {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.options = {
             m: { alias: 'mirrored', desc: 'Create a mirrored repository', boolean: true },
             a: { alias: 'add-mirror', desc: 'Add a mirrored repository', array: true },

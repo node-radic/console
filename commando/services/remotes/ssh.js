@@ -10,8 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 const remote_1 = require("../remote");
 class JiraExtra extends remote_1.RemoteExtra {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.name = 'url';
         this.prettyName = 'Jira Server Base URL';
     }
@@ -24,8 +24,8 @@ class JiraExtra extends remote_1.RemoteExtra {
 }
 exports.JiraExtra = JiraExtra;
 let SSHRemote = class SSHRemote extends remote_1.Remote {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.usesExtra = true;
     }
     getAuthMethods() { return [remote_1.AuthMethod.key]; }

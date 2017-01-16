@@ -11,8 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 const src_1 = require("../../src");
 const con_1 = require("./con");
 let CopyConnectionCommand = class CopyConnectionCommand extends con_1.ConnectionCommand {
-    constructor(...args) {
-        super(...args);
+    constructor() {
+        super(...arguments);
         this.arguments = {
             name: {}
         };

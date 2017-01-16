@@ -11,16 +11,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 const src_1 = require("../../src");
 const core_1 = require("../core");
 const src_2 = require("../../src");
-let ConfigGroup = class ConfigGroup extends src_1.Group {
-};
-ConfigGroup = __decorate([
-    src_1.group('config', 'Configuration', 'Manage the global and local configuration'), 
-    __metadata('design:paramtypes', [])
-], ConfigGroup);
+const util_1 = require("@radic/util");
+class ConfigGroup extends src_1.Group {
+}
 exports.ConfigGroup = ConfigGroup;
-let ListConfigCommand = class ListConfigCommand extends src_1.Command {
-    constructor(...args) {
-        super(...args);
+class ListConfigCommand extends src_1.Command {
+    constructor() {
+        super(...arguments);
         this.arguments = {
             type: { desc: 'The config type (console|commando)', type: 'string', default: 'commando' }
         };
@@ -35,10 +32,44 @@ let ListConfigCommand = class ListConfigCommand extends src_1.Command {
     console() {
         this.out.dump(this.config.raw());
     }
-};
-ListConfigCommand = __decorate([
-    src_1.command('list', 'List Configuration', 'Give the current working directory a bit of R.', ConfigGroup), 
-    __metadata('design:paramtypes', [])
-], ListConfigCommand);
+}
 exports.ListConfigCommand = ListConfigCommand;
+let ConfigCommand = class ConfigCommand extends src_1.Command {
+    constructor() {
+        super(...arguments);
+        this.arguments = {
+            key: { desc: 'The config key', type: 'string' },
+            value: { desc: 'The config key', type: 'string' },
+            type: { desc: 'The config key', type: 'string' }
+        };
+        this.options = {
+            list: { alias: 'l', desc: 'Output configuration as dot-notaded list', string: true },
+            tree: { alias: 't', desc: 'Output configuration as tree', string: true }
+        };
+    }
+    handle() {
+        let k = this.arg('key');
+        let v = this.arg('value');
+        let t = this.arg('type');
+        if (this.opt('l') || this.opt('t')) {
+            let items = this.config(this.arg('key'));
+            return this.out.dump(this.opt('l') ? util_1.dotize(items) : items);
+        }
+        if (!this.hasArg('value')) {
+            return this.out.dump(this.config(k));
+        }
+        if (!this.arg('type')) {
+            return this.fail(`Could not set value for [${k}]. Missing the the type (third argument).`);
+        }
+        if (t === 'number') {
+            v = parseInt(v);
+        }
+        this.config.set(k, JSON.parse(v));
+    }
+};
+ConfigCommand = __decorate([
+    src_1.command('config', 'Configuration Tool', 'Show, add, edit and remove configuration values.'), 
+    __metadata('design:paramtypes', [])
+], ConfigCommand);
+exports.ConfigCommand = ConfigCommand;
 //# sourceMappingURL=config.js.map

@@ -95,6 +95,7 @@
   "dependencies": {
     "@radic/console-colors": "^0.6.1",
     "@radic/util": "^1.4.0",
+    "@types/shelljs": "^0.3.33",
     "ansi-styles": "^2.2.1",
     "archy": "^1.0.0",
     "async": "^2.0.1",
@@ -117,6 +118,7 @@
     "moment": "^2.15.1",
     "reflect-metadata": "^0.1.8",
     "request-promise": "^4.1.1",
+    "shelljs": "^0.7.6",
     "underscore.string": "^3.3.4",
     "validatorjs": "^3.8.0",
     "winston": "^2.2.0",

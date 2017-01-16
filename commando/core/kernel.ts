@@ -1,15 +1,15 @@
 import COMMANDO from "./bindings";
 import { kernel } from "../../src";
-export { lazyInject, provide, provideSingleton, inject, injectable, decorate } from "../../src";
-export { kernel };
 import { config } from "./config";
 import { paths } from "./paths";
-import { Keys } from "./keys";
+// import { keys } from "./keys";
+export { lazyInject, provide, provideSingleton, inject, injectable, decorate } from "../../src";
+export { kernel };
 
 
 kernel.bind(COMMANDO.CONFIG).toFunction(config)
 kernel.bind(COMMANDO.PATHS).toConstantValue(paths)
-kernel.bind(COMMANDO.KEYS).to(Keys)
+// kernel.bind(COMMANDO.KEYS).toConstantValue(keys)
 
 
 // import { makeProvideDecorator } from "inversify-binding-decorators";

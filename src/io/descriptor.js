@@ -44,18 +44,29 @@ let Descriptor = class Descriptor {
         return this;
     }
     getGroup(group) {
+        return this.getGroupChildren(group).all;
+    }
+    getGroupChildren(group) {
         let children = this.factory.getGroupChildren(group ? group.name : null, group ? group.parent : undefined);
-        let table = this.out.columns();
+        let all = this.out.columns();
+        let commands = this.out.columns();
+        let groups = this.out.columns();
         children.forEach((child) => {
-            table.push([`{${child.type}}${child.name}{/${child.type}}`, `{description}${child.desc}{/description}`]);
+            let row = [`{${child.type}}${child.name}{/${child.type}}`, `{description}${child.desc}{/description}`];
+            if (child.type === 'command')
+                commands.push(row);
+            if (child.type === 'group')
+                groups.push(row);
+            all.push(row);
         });
-        return table;
+        return { commands, groups, all };
     }
     group(group) {
         this.out.line(this.getGroup(group).toString());
         return this;
     }
     getCommand(command) {
+        let group = this.getGroup();
         let args = this.getArguments(command.definition), options = this.getOptions(command.definition), usage = this.getUsage(command.definition), example = this.getExample(command.definition), globalOptions = this.getOptions(command.globalDefinition);
         return { args, options, usage, example, globalOptions };
     }
@@ -96,8 +107,9 @@ let Descriptor = class Descriptor {
             let opt = opts[key];
             let keys = [prefixKey(key)];
             let aliases = definition.getOptions().alias[key] || [];
-            keys = keys.concat(aliases.map(prefixKey)).join('|');
-            table.push([keys, opt.desc, `[{yellow}${opt.type}{/yellow}]`]);
+            keys = keys.concat(aliases.map(prefixKey));
+            keys.sort((a, b) => a.length - b.length);
+            table.push([keys.join('{grey}|{/grey}'), opt.desc, `[{yellow}${opt.type}{/yellow}]`]);
         });
         return table;
     }
@@ -110,7 +122,7 @@ let Descriptor = class Descriptor {
         let table = this.out.columns();
         Object.keys(args).forEach((name) => {
             let arg = args[name];
-            table.push([`{argument}${name}{/argument}`, `{description}${arg.desc}{/description}`, arg.required ? '[{required}required{/required}]' : '']);
+            table.push([`{argument}${name}{/argument}`, `{description}${arg.desc}{/description}`, arg.required ? '' : '[{optional}optional{/optional}]']);
         });
         return table;
     }

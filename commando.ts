@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import 'core-js'
+import 'shelljs/global'
 import { kernel, BINDINGS, IDescriptor } from "./src";
 import "./commando/index";
 
@@ -47,7 +48,7 @@ if ( parsed.global.opt('v') ) {
 }
 
 
-if ( parsed.opt('t') ) {
+if ( parsed.opt('T') ) {
     let descriptor = kernel.get<IDescriptor>(BINDINGS.DESCRIPTOR)
     descriptor.commandTree('Command Tree')
     cli.exit()
