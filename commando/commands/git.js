@@ -82,22 +82,6 @@ GitInitCommand = __decorate([
     __metadata('design:paramtypes', [])
 ], GitInitCommand);
 exports.GitInitCommand = GitInitCommand;
-let GitListCommand = class GitListCommand extends GitCommand {
-    constructor() {
-        super(...arguments);
-        this.arguments = {};
-        this.options = {};
-    }
-    handle() {
-        this.connections.filter();
-        this.out.line('This is the ls /  command');
-    }
-};
-GitListCommand = __decorate([
-    src_1.command('ls', 'Git List', 'List something', GitGroup), 
-    __metadata('design:paramtypes', [])
-], GitListCommand);
-exports.GitListCommand = GitListCommand;
 let GitRepoGroup = class GitRepoGroup extends src_1.Group {
 };
 GitRepoGroup = __decorate([
@@ -105,6 +89,90 @@ GitRepoGroup = __decorate([
     __metadata('design:paramtypes', [])
 ], GitRepoGroup);
 exports.GitRepoGroup = GitRepoGroup;
+let GitListCommand = class GitListCommand extends GitCommand {
+    constructor() {
+        super(...arguments);
+        this.arguments = {
+            connection: { desc: 'Connection to use', type: 'string' },
+            owner: { desc: 'The owner of the repos' }
+        };
+        this.options = {};
+    }
+    handle() {
+        let con, rem, ans;
+        this.askConnection().then((connection) => {
+            con = this.connections.get(connection);
+            rem = con.getRemote();
+            return new Promise((resolve, reject) => {
+                async.parallel({
+                    user(cb) {
+                        rem.getUser().catch(err => cb(err)).then(data => cb(null, data));
+                    },
+                    teams(cb) {
+                        rem.getUserTeams().catch(err => cb(err)).then((data) => cb(null, data));
+                    }
+                }, (err, results) => {
+                    if (err)
+                        return reject(err);
+                    resolve(results);
+                });
+            });
+        }).then((ut) => {
+            return new Promise((resolve, reject) => {
+                async.parallel({
+                    userRepositories(cb) {
+                        rem.getUserRepositories(ut.user.login.toLowerCase()).catch(err => cb(err)).then(data => cb(null, data));
+                    },
+                    teamRepositories(cb) {
+                        let tasks = {};
+                        ut.teams.forEach(team => tasks[team] = (cb) => {
+                            rem.getTeamRepositories(team).catch(err => cb(err)).then(data => cb(null, data));
+                        });
+                        async.parallel(tasks, (err, results) => {
+                            if (err)
+                                return cb(err);
+                            cb(null, results);
+                        });
+                    }
+                }, (err, results) => {
+                    if (err)
+                        return reject(err);
+                    let repos = {};
+                    const uname = ut.user.login.toLowerCase();
+                    repos[uname] = [];
+                    results.userRepositories.forEach(repo => repos[uname].push(repo.name));
+                    Object.keys(results.teamRepositories).forEach(key => {
+                        results.teamRepositories[key].forEach(repo => {
+                            let owner = repo.owner.login.toLowerCase();
+                            if (!repos[owner])
+                                repos[owner] = [];
+                            repos[owner].push(repo.name);
+                        });
+                    });
+                    resolve(repos);
+                });
+            });
+        }).then(repos => {
+            let out = repos;
+            if (this.hasArg('owner')) {
+                if (!repos[this.arg('owner')])
+                    return this.fail('no owner found');
+                this.line(' - ' + repos[this.arg('owner')].join('\n - '));
+            }
+            else {
+                Object.keys(repos).forEach(key => {
+                    this.line(key + ':');
+                    this.line(' - ' + repos[key].join('\n - '));
+                });
+            }
+        });
+    }
+};
+GitListCommand = __decorate([
+    src_1.command('ls', 'Git List', 'List something', GitRepoGroup), 
+    __metadata('design:paramtypes', [])
+], GitListCommand);
+exports.GitListCommand = GitListCommand;
 let DeleteGitRepoCommand = class DeleteGitRepoCommand extends GitCommand {
     constructor() {
         super(...arguments);

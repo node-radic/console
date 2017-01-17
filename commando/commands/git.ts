@@ -41,10 +41,10 @@ export abstract class GitCommand extends ConnectionCommand {
                 rem.getUser().catch(console.error.bind(console)).then((data: any) => {
                     this.out.header('getUser').dump(data)
                     return rem.getUserRepositories().catch(console.error.bind(console))
-                }).then((data: any)=> {
+                }).then((data: any) => {
                     this.out.header('getUserRepositories').dump(data)
                     return rem.getUserTeams().catch(console.error.bind(console))
-                }).then((data: any)=> {
+                }).then((data: any) => {
                     this.out.header('getUserTeams').dump(data)
                 })
             })
@@ -64,11 +64,17 @@ export class GitInitCommand extends GitCommand {
     }
 }
 
-@command('ls', 'Git List', 'List something', GitGroup)
+@group('repo', 'Git Repository Commands', 'Git repository commands', GitGroup)
+export class GitRepoGroup extends Group {
+
+}
+
+@command('ls', 'Git List', 'List something', GitRepoGroup)
 export class GitListCommand extends GitCommand {
 
     arguments = {
-        // arg: {desc: '', type: 'string', required: false, default: 'defaultValue'}
+        connection: { desc: 'Connection to use', type: 'string' },
+        owner     : { desc: 'The owner of the repos' }
     }
     options   = {
         // o: {alias: 'opt', desc: '', string: true, default: 'deefaultVAlue'}
@@ -76,16 +82,76 @@ export class GitListCommand extends GitCommand {
 
     handle() {
 
-        this.connections.filter()
-        this.out.line('This is the ls /  command')
+        let con: Connection, rem: GitRestRemote, ans: any
+
+        this.askConnection().then((connection) => {
+            con = this.connections.get(connection);
+            rem = con.getRemote<GitRestRemote>();
+            return new Promise((resolve, reject) => {
+                async.parallel({
+                    user(cb){
+                        rem.getUser().catch(err => cb(err)).then(data => cb(null, data))
+                    },
+                    teams(cb){
+                        rem.getUserTeams().catch(err => cb(err)).then((data:any) => cb(null, data))
+                    }
+                }, (err: Error, results: any) => {
+                    if ( err ) return reject(err);
+                    resolve(results)
+                })
+            })
+        }).then((ut: any) => {
+            return new Promise((resolve, reject) => {
+                async.parallel({
+                    userRepositories(cb){
+                        rem.getUserRepositories(ut.user.login.toLowerCase()).catch(err => cb(err)).then(data => cb(null, data))
+                    },
+                    teamRepositories(cb){
+                        let tasks: Dictionary<AsyncFunction<any>> = {}
+                        ut.teams.forEach(team => tasks[ team ] = (cb) => {
+                            rem.getTeamRepositories(team).catch(err => cb(err)).then(data => cb(null, data))
+                        });
+                        async.parallel(tasks, (err: Error, results: any) => {
+                            if ( err ) return cb(err);
+                            cb(null, results)
+                        })
+                    }
+                }, (err: Error, results: any) => {
+                    if(err) return reject(err);
+                    let repos      = {};
+                    const uname    = ut.user.login.toLowerCase();
+                    repos[ uname ] = [];
+                    results.userRepositories.forEach(repo => repos[ uname ].push(repo.name));
+
+                    Object.keys(results.teamRepositories).forEach(key => {
+                        results.teamRepositories[ key ].forEach(repo => {
+                            let owner = repo.owner.login.toLowerCase();
+                            if ( ! repos[ owner ] ) repos[ owner ] = [];
+                            repos[ owner ].push(repo.name);
+                        });
+                    });
+                    resolve(repos);
+                })
+            });
+        }).then(repos => {
+            let out = repos
+            if(this.hasArg('owner')){
+                if(!repos[this.arg('owner')]) return this.fail('no owner found')
+                // this.line(this.arg('owner') + ':');
+                this.line(' - ' + repos[this.arg('owner')].join('\n - '))
+            } else {
+                Object.keys(repos).forEach(key => {
+                    this.line(key + ':');
+                    this.line(' - ' + repos[ key ].join('\n - '))
+                });
+            }
+            // this.out.dump(out);
+        });
     }
+
+
 }
 
-
-@group('repo', 'Git Repository Commands', 'Git repository commands', GitGroup)
-export class GitRepoGroup extends Group {
-
-}
 @command('delete', 'Delete repository', 'Delete remote repository', GitRepoGroup)
 export class DeleteGitRepoCommand extends GitCommand {
 
@@ -233,8 +299,8 @@ export class MirrorGitRepoCommand extends GitCommand {
         })
     }
 
-    protected parseMirrors(project: string, repo: string, mirrors:string[]) : Mirror[] {
-        return mirrors.map((raw:string) => {
+    protected parseMirrors(project: string, repo: string, mirrors: string[]): Mirror[] {
+        return mirrors.map((raw: string) => {
             return this.parseMirror(raw, project, repo)
         })
     }
@@ -328,15 +394,15 @@ export class CreateGitRepoCommand extends MirrorGitRepoCommand {
         return this.createRepository(project, repo, rem).then(() => {
             return this.createMirrors(project, repo, mirrors)
         }).then(() => {
-            let jobs:any = []
-            this.parseMirrors(project, repo, mirrors).forEach((mirror:Mirror) => {
+            let jobs: any = []
+            this.parseMirrors(project, repo, mirrors).forEach((mirror: Mirror) => {
                 jobs.push((done) => this.createRepository(mirror.project, mirror.repo, mirror.rem).then(() => {
                     this.log.info(`Repository created on "${mirror.con.name}" > "${mirror.project}/${mirror.repo}"`)
                     done()
                 }))
             })
             async.waterfall(jobs, (err) => {
-                if(err) this.fail(err.message)
+                if ( err ) this.fail(err.message)
                 this.log.info('Mirrored repositories created')
             })
         })
