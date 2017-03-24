@@ -6,6 +6,10 @@
   dependencies:
     lodash "^4.15.0"
 
+"@types/eventemitter2":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@types/eventemitter2/-/eventemitter2-2.2.1.tgz#18715e1f658337912253837376e52fc6d1644e33"
+
 "@types/fs-extra@^0.0.37":
   version "0.0.37"
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-0.0.37.tgz#195f11bcd9a1b97d9e412c6b66899b545471a1f7"
@@ -264,6 +268,10 @@ decamelize@^1.0.0:
 escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
+
+eventemitter2:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/eventemitter2/-/eventemitter2-4.0.0.tgz#0754a5107f598ef36a21b56b2f08b047e8f895ec"
 
 external-editor@^2.0.1:
   version "2.0.1"

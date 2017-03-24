@@ -26,7 +26,7 @@ export class Container extends BaseContainer  {
      * @returns {T}
      */
     build<T>(cls: any, factoryMethod?: (context: interfaces.Context) => any): T {
-        this.ensureInjectable(cls);
+        Container.ensureInjectable(cls);
         let k = 'temporary.kernel.binding';
         if ( factoryMethod ) {
             this.bind(k).toFactory<any>(factoryMethod);
@@ -46,7 +46,7 @@ export class Container extends BaseContainer  {
      * @returns {T}
      */
     make<T>(cls: any): T {
-        this.ensureInjectable(cls);
+        Container.ensureInjectable(cls);
         let binding = cls.toString();
         if ( this.isBound(binding) ) {
             return this.get<T>(binding)
@@ -55,7 +55,7 @@ export class Container extends BaseContainer  {
         return this.get<T>(binding)
     }
 
-    protected ensureInjectable(cls: Function) {
+    static ensureInjectable(cls: Function) {
         try { decorate(injectable(), cls); } catch ( err ) {}
     }
 

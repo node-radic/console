@@ -29,6 +29,13 @@ export default class Parser {
         }
     }
 
+    group(argv: string[], config: interfaces.GroupConfig): Parsed {
+        return this.parse(argv, config.options);
+    }
+
+    command(argv: string[], config: interfaces.CommandConfig): Parsed {
+        return this.parse(argv, config.options, config.arguments);
+    }
 
     setArgumentTransformer(type: string, transformer: interfaces.ArgumentTypeTransformer) {
         this.argumentTypeTransformers[ type ] = transformer;
@@ -37,14 +44,14 @@ export default class Parser {
     protected parse(argv: string[], optionsConfig: { [name: string]: interfaces.OptionConfig }, argumentsConfig?: { [name: string]: interfaces.ArgumentConfig }): Parsed {
         let yargsOptionsConfig: interfaces.YargsOptionsConfig = this.transformOptions(optionsConfig);
         let yargsOutput: interfaces.YargsOutput               = parser.detailed(argv, yargsOptionsConfig);
-        let parsedOptions: ParsedOptions                      = new ParsedOptions(yargsOutput, optionsConfig);
+        let parsedOptions: ParsedOptions                      = new ParsedOptions(yargsOutput.argv, optionsConfig);
         let parsedArguments: ParsedArguments;
 
         if ( argumentsConfig !== undefined ) {
             parsedArguments = this.parseArguments(yargsOutput, argumentsConfig);
         }
 
-        return new Parsed(yargsOutput, parsedOptions, parsedArguments);
+        return new Parsed(argv, yargsOutput, parsedOptions, parsedArguments);
     }
 
     /** arguments are NOT parsed by yargs-parser, we'll have to do it ourself */
@@ -102,7 +109,7 @@ export default class Parser {
             number       : [],
             // config?: boolean
             coerce       : {},
-            count        : [],
+            count        : {},
             default      : {},
             narg         : {},
             normalize    : true,
@@ -122,18 +129,6 @@ export default class Parser {
         return options;
     }
 
-    group(argv: string[], config: interfaces.GroupConfig): Parsed {
-        return this.parse(argv, config.options);
-    }
-
-    command(argv: string[], config: interfaces.CommandConfig): Parsed {
-        return this.parse(argv, config.options, config.arguments);
-    }
-
-    resolve(argv: string[]){
-        const yargs:YargsOutput = parser.detailed(argv);
-        this.router.resolveFromArray(yargs.argv._);
-    }
 }
 
 

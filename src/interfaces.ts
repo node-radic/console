@@ -34,7 +34,7 @@ namespace interfaces {
         boolean?: string[]
         config?: boolean
         coerce?: { [key: string]: Function }
-        count?: string[]
+        count?: { [key: string]: number }
         string?: string[]
         number?: string[]
         default?: { [key: string]: any }
@@ -75,20 +75,18 @@ namespace interfaces {
     }
 
 
-
-
     /** Declaration of a option */
     export interface OptionConfig {
-        name?:string
+        name?: string
         alias?: string
-        desc?:string
+        desc?: string
 
         type?: OptionType
         array?: boolean
         default?: any
-        transformer?:(arg:any) => any
-        arguments?:number
-        count?:number
+        transformer?: (arg: any) => any
+        arguments?: number
+        count?: number
     }
 
     /** Declaration of a option on the Cli class  */
@@ -99,7 +97,7 @@ namespace interfaces {
     /** Declaration of a argument */
     export interface ArgumentConfig {
         name?: string
-        desc?:string
+        desc?: string
         required?: boolean
         type?: ArgumentType
         default?: any
@@ -119,14 +117,14 @@ namespace interfaces {
     /** Single group declaration configuration */
     export interface GroupConfig extends CliChildConfig {
         globalOptions?: { [name: string]: OptionConfig }
-        handle?: (group: Group) => boolean
+        handle?: (group: Group) => boolean | any
         children?: CliChildConfig[]
     }
 
     /** Single command declaration configuration */
     export interface CommandConfig extends CliChildConfig {
         arguments?: { [name: string]: ArgumentConfig }
-        handle?: (command: Command) => boolean
+        handle?: (command: Command) => boolean | any
     }
 
 
@@ -148,6 +146,23 @@ namespace interfaces {
     export interface ArgumentTypeTransformer {
         (val: any): any
     }
+
+
+    export interface CliChild<C> {
+        name: string
+        desc: string
+        options: interfaces.Options
+        handle: () => boolean | void
+        config: C
+    }
+
+    export interface Group extends CliChild<GroupConfig> {
+    }
+
+    export interface Command extends CliChild<CommandConfig> {
+        arguments: interfaces.Arguments
+    }
+
 
 }
 

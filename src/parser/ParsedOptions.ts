@@ -2,10 +2,15 @@
 import { interfaces } from "../interfaces";
 import { OptionType } from "../cli-children";
 import { TypeOf } from "../utils";
+import { Registry } from "../registry";
+import { Container } from "../ioc";
+import { config } from "../config";
 export default class ParsedOptions implements interfaces.Options {
     [key: string]: any
 
-    constructor(options: interfaces.YargsOutputArgv, protected _config: { [name: string]: interfaces.OptionConfig }) {
+
+    constructor(options: interfaces.YargsOutputArgv, public _config: { [name: string]: interfaces.OptionConfig }) {
+
         Object.keys(options).forEach(key => {
             if ( key === '_' ) return;
             this[ key ] = options[ key ];

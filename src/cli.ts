@@ -5,42 +5,53 @@ import { inspect, kindOf, Config, IConfigProperty } from "@radic/util";
 import { Parser, Parsed } from "./parser";
 import interfaces from './interfaces'
 import config from "./config";
-import { Router } from "./router";
+import { Router, Route } from "./router";
+import { Events } from "./events";
 export type CliMode = 'groups' | 'command';
 
 @Container.singleton('console.cli')
 export class Cli {
-    private _registry: Registry;
-    private _config: Config;
-    private _parser: Parser;
-            argv: string[]
-            parsed: Parsed
-            config: IConfigProperty
+    public argv: string[]
+    public parsed: Parsed
+    public config: IConfigProperty
+    public route: Route
 
-    constructor(@Container.inject('console.registry') registry: Registry,
-                @Container.inject('console.parser') parser: Parser,
-                @Container.inject('console.router') router: Router) {
-        this._registry = registry;
-        this._parser   = parser;
-        this.config    = config;
+    constructor(@Container.inject('console.registry') private _registry: Registry,
+                @Container.inject('console.parser') private _parser: Parser,
+                @Container.inject('console.router') private _router: Router,
+                @Container.inject('console.events') private _events: Events) {
+        this.config = config;
+    }
+
+    get events(): Events {
+        return this._events;
     }
 
     static getInstance(): Cli {
         return <Cli> Container.getInstance().make<Cli>('console.cli');
     }
 
-    parse(argv?: string[]) {
+    parse(argv?: string[]): Parsed {
         this.argv = argv || process.argv.slice(2);
+        this.events.emit(['parse:before', 'parse:before:' + this.config('mode')], this.argv);
         if ( this.config('mode') === "command" ) {
             this.parsed = this._parser.command(this.argv, this._registry.getRoot('command'));
-            return this.parsed;
-        } else if ( this.config('mode') === 'groups' ) {
+        } else {
             this.parsed = this._parser.group(this.argv, this._registry.getRoot('groups'));
-            let resolved = this._parser.resolve(this.argv);
-            if(resolved){
-
-            }
         }
+        this.events.emit(['parse:after', 'parse:after:' + this.config('mode')], this.parsed);
+        return this.parsed;
+    }
+
+    handle(): Route {
+        if ( this.config('mode') === 'command' ) {
+            throw new Error('Cannot use the handle method when mode === command');
+        }
+        if ( ! this.parsed ) {
+            throw new Error('Cannot handle, need to parse first');
+        }
+        const r = this.route = this._router.resolve(this.parsed);
+        return this.route;
     }
 
     dump(target?: any) {
@@ -59,8 +70,8 @@ export class Cli {
     }
 
     option(name: string, config: interfaces.RootOptionConfig = {}): this {
-        let global = config.global = config.global || false,
-            key = global && this.config('mode') === "group" ? 'globalOptions' : 'options';
+        let global = config.global = config.global || false;
+        let key = (global === true && this.config('mode') === "group") ? 'globalOptions' : 'options';
         delete config.global;
         this._registry.getRoot(this.config('mode'))[ key ][ name ] = config;
         return this;

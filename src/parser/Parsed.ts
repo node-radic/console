@@ -1,69 +1,75 @@
 import { interfaces } from "../interfaces";
-import  ParsedOptions  from "./ParsedOptions";
+import * as _ from 'lodash'
 import  ParsedArguments  from "./ParsedArguments";
+
 export default class Parsed {
-    public usesArguments: boolean = false;
-    public hasArguments: boolean  = false;
-    public options: string[] = [];
-    public arguments: string[] = [];
+    public usesArguments: boolean           = false;
+    public hasArguments: boolean            = false;
+    public options: { [name: string]: any } = {}
+    public arguments: string[]              = [];
+    public str: string
 
-    protected yargsOutput: interfaces.YargsOutput
-    protected _options: interfaces.Options | ParsedOptions
-    protected _arguments: interfaces.Arguments | ParsedArguments
+    protected _options: interfaces.Options
+    protected _arguments: interfaces.Arguments
 
 
+    constructor(public original: string[],
+                protected yargsOutput: interfaces.YargsOutput,
+                options: interfaces.Options,
+                args?: interfaces.Arguments) {
 
-    constructor(yargsOutput: interfaces.YargsOutput, options: interfaces.Options | ParsedOptions, args?: interfaces.Arguments | ParsedArguments) {
-        this.yargsOutput = yargsOutput;
-        this._options    = options;
+        this.str = original.join(' ');
 
-        this._arguments  = new ParsedArguments({}, {});
+        this._options = options;
+        this.options  = _.cloneDeep(yargsOutput.argv);
+        delete this.options._
+
+        this.arguments  = yargsOutput.argv._;
+        this._arguments = new ParsedArguments({}, {});
         if ( args ) {
             this.usesArguments = true;
             this._arguments    = args;
         }
     }
 
-    hasOption(name: string): boolean {
+    hasOpt(name: string): boolean {
         return this._options.has(name);
     }
 
-    getOption<T extends any>(name: string, defaultValueOverride?: any): T {
-        return this._options.get<T>(name, defaultValueOverride);
-
-    }
-
     /** Alias for getOption **/
-    option<T extends any>(name: string, defaultValueOverride?: any): T {
-        return this.getOption<T>(name, defaultValueOverride);
-    }
-
-
-    getArgument<T extends any>(name: string, defaultValueOverride?: any): T {
-        return this._arguments.get<T>(name, defaultValueOverride);
+    opt<T extends any>(name: string, defaultValueOverride?: any): T {
+        return this._options.get<T>(name, defaultValueOverride);
     }
 
     /** Alias for getArgument **/
-    argument<T extends any>(name: string, defaultValueOverride?: any): T {
-        return this.getArgument<T>(name, defaultValueOverride);
+    arg<T extends any>(name: string, defaultValueOverride?: any): T {
+        return this._arguments.get<T>(name, defaultValueOverride);
     }
 
-    hasArgument(name: string): boolean {
+    hasArg(name: string): boolean {
         return false;
     }
 
     /** Checks if argument or option exists name **/
     has(name: string): boolean {
-        return this.hasArgument(name) || this.hasOption(name)
+        return this.hasArg(name) || this.hasOpt(name)
     }
 
     /** Get argument or option named name. When similar named argument and option, argument will be prioritized.  **/
     get<T extends any>(name: string, defaultValueOverride?: any): T {
-        if ( this.hasArgument(name) ) {
-            return this.argument<T>(name);
-        } else if ( this.hasOption(name) ) {
-            return this.option<T>(name);
+        if ( this.hasArg(name) ) {
+            return this.arg<T>(name);
+        } else if ( this.hasOpt(name) ) {
+            return this.opt<T>(name);
         }
         return this._options.get<T>(name, defaultValueOverride);
+    }
+
+    getOptions(): interfaces.Options {
+        return this._options;
+    }
+
+    getArguments(): interfaces.Arguments {
+        return this._arguments;
     }
 }

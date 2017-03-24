@@ -4,7 +4,7 @@ import { TypeOf } from "../utils";
 export default class ParsedArguments implements interfaces.Arguments {
     [key: string]: any
 
-    constructor(args: { [name: string]: any }, protected _config: { [name: number]: interfaces.ArgumentConfig }) {
+    constructor(args: { [name: string]: any }, public _config: { [name: number]: interfaces.ArgumentConfig }) {
         Object.keys(args).forEach(key => {
             this[ key ] = args[ key ];
         })

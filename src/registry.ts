@@ -4,9 +4,6 @@ import interfaces from './interfaces'
 import { CliMode } from "./cli";
 import { merge } from 'lodash'
 import { getRandomId, inspect, kindOf } from '@radic/util'
-import { Group } from "./cli-children";
-import { randomBytes } from "crypto";
-import { isUndefined } from "util";
 
 
 
@@ -30,7 +27,8 @@ export class Registry {
 
     constructor() {
         this._rootGroup   = this.createGroup({
-            name: '_root'
+            name: '_root',
+            globalOptions: {}
         })
         this._rootCommand = this.createCommand({
             name: '_root'
@@ -69,6 +67,7 @@ export class Registry {
             desc.value = this.makeid()
             Object.defineProperty(fn, 'name', desc);
             options.cls = fn;
+
         }
         return options;
     }
@@ -85,9 +84,17 @@ export class Registry {
             arguments: {}
         }, options);
 
-        if ( kindOf(options.group) === 'object' ) {
-            options.group = options.group.cls;
+        if ( options.cls === null ) {
+            let fn     = function () {}
+            let desc   = Object.getOwnPropertyDescriptor(fn, 'name');
+            desc.value = this.makeid()
+            Object.defineProperty(fn, 'name', desc);
+            options.cls = fn;
+            if(options.handle !== null){
+                options.cls.prototype.handle = options.handle
+            }
         }
+        
         return options;
     }
 
