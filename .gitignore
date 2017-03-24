@@ -6,7 +6,7 @@ npm-debug.log
 !/types
 !/types/*
 !/src
-!/src/*
+!/src/parser
 !/src/**/*.ts
 !/.*
 !/*.*
