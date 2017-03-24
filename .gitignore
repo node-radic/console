@@ -1,0 +1,13 @@
+yarn-error.log
+npm-debug.log
+*
+!/lib
+!/lib/*
+!/types
+!/types/*
+!/src
+!/src/**/*.ts
+!/.*
+!/*.*
+!/examples
+!/examples/*

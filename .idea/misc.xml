@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="EclipseCodeFormatter">
+    <option name="defaultSettings" value="true" />
+    <option name="id" value="1453043409437" />
+    <option name="name" value="default" />
+  </component>
+  <component name="GradleLocalSettings">
+    <option name="modificationStamps">
+      <map>
+        <entry key="$USER_HOME$/minecraft/sponge" value="5670836678422" />
+        <entry key="$USER_HOME$/swiftapi" value="4292440623768" />
+        <entry key="$PROJECT_DIR$/../../../java/swiftapi2" value="2895878772686" />
+        <entry key="$PROJECT_DIR$/../../../projects/sponge" value="5672326194238" />
+        <entry key="$PROJECT_DIR$/../../../projects/sponge-plugin" value="2836163897075" />
+        <entry key="$PROJECT_DIR$/../../../projects/swiftapi" value="4292441554000" />
+      </map>
+    </option>
+  </component>
+  <component name="JavaScriptSettings">
+    <option name="languageLevel" value="ES6" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="Bundled (Maven 3)" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" />
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings />
+    </option>
+  </component>
+  <component name="UnicodeBrowser">
+    <option name="fontName" value="Hasklig" />
+  </component>
+</project>

@@ -1,0 +1,37 @@
+{
+    "name": "@radic/console",
+    "version": "0.0.1",
+    "description": "Console ",
+    "main": "lib/index.js",
+    "typings": "lib/index.d.ts",
+    "author": "Robin Radic",
+    "license": "MIT",
+    "scripts": {
+        "clean": "rm lib/*.{js,js.map,d.ts};",
+        "build": "npm run clean; tsc",
+        "reinstall": "rm -rf node_modules; rm yarn.lock; yarn install",
+        "docs": "rm -r docs &> /dev/null ; typedoc --includeDeclarations --target ES6 --exclude node_modules --exclude types/lodash --ignoreCompilerErrors --mode file --excludeExternals --excludePrivate --out docs ./lib/index.d."
+    },
+    "dependencies": {
+        "@radic/util": "^1.4.6",
+        "fs-extra": "^2.0.0",
+        "globule": "^1.1.0",
+        "inquirer": "^3.0.6",
+        "inversify": "^3.1.0",
+        "inversify-binding-decorators": "^3.0.0",
+        "inversify-inject-decorators": "^3.0.1",
+        "lodash": "^4.17.4",
+        "reflect-metadata": "^0.1.10",
+        "string": "^3.3.3",
+        "yargs-parser": "^5.0.0"
+    },
+    "devDependencies": {
+        "@types/fs-extra": "^0.0.37",
+        "@types/globule": "^1.1.1",
+        "@types/inquirer": "^0.0.32",
+        "@types/node": "^7.0.8",
+        "@types/string": "^0.0.28",
+        "typedoc": "^0.5.7",
+        "typescript": "^2.2.1"
+    }
+}
