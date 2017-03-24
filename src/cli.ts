@@ -35,6 +35,7 @@ export class Cli {
             this.parsed = this._parser.command(this.argv, this._registry.getRoot('command'));
             return this.parsed;
         } else if ( this.config('mode') === 'groups' ) {
+            this.parsed = this._parser.group(this.argv, this._registry.getRoot('groups'));
             let resolved = this._parser.resolve(this.argv);
             if(resolved){
 
