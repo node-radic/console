@@ -7,22 +7,21 @@ export type ArgumentType = 'string' | 'number' | 'boolean' ;
 
 export type CliChildType = 'group' | 'command'
 
-export interface G2roup {
 
-}
-export class InlineGroup implements Group {
+export abstract class Child<C> {
+    name: string
+    desc: string
     options: interfaces.Options
-}
-
-export class Group {
-    options: interfaces.Options
-}
-
-export class Command {
-    arguments: interfaces.Arguments
-    options: interfaces.Options
-    handle(){
+    handle() : boolean | any | void {
 
     }
+    config: C
 }
 
+
+export abstract class Group extends Child<interfaces.GroupConfig>{
+}
+
+export abstract class Command extends Child<interfaces.CommandConfig> {
+    arguments: interfaces.Arguments
+}

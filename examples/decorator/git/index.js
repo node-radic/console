@@ -19,25 +19,17 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-var src_1 = require("../../src");
-__export(require("./composer"));
-__export(require("./git"));
-var InitCommand = (function (_super) {
-    __extends(InitCommand, _super);
-    function InitCommand() {
+var src_1 = require("../../../src");
+__export(require("./fetch"));
+var GitGroup = (function (_super) {
+    __extends(GitGroup, _super);
+    function GitGroup() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    InitCommand.prototype.handle = function () {
-        console.log({ name: this.name });
-    };
-    return InitCommand;
-}(src_1.Command));
-InitCommand = __decorate([
-    src_1.command('init', {
-        arguments: {
-            name: { desc: 'Project name', type: 'string', required: true }
-        }
-    })
-], InitCommand);
-exports.InitCommand = InitCommand;
+    return GitGroup;
+}(src_1.Group));
+GitGroup = __decorate([
+    src_1.group('git')
+], GitGroup);
+exports.GitGroup = GitGroup;
 //# sourceMappingURL=index.js.map

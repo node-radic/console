@@ -7,4 +7,4 @@ export { Registry } from './registry'
 export { config } from './config'
 export { interfaces } from './interfaces'
 export { Events } from './events'
-
+export { command, group } from './decorators'

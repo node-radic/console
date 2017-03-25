@@ -148,20 +148,6 @@ namespace interfaces {
     }
 
 
-    export interface CliChild<C> {
-        name: string
-        desc: string
-        options: interfaces.Options
-        handle: () => boolean | void
-        config: C
-    }
-
-    export interface Group extends CliChild<GroupConfig> {
-    }
-
-    export interface Command extends CliChild<CommandConfig> {
-        arguments: interfaces.Arguments
-    }
 
 
 }

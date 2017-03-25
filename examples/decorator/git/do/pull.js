@@ -1,4 +1,14 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -6,35 +16,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var src_1 = require("../../src");
-var groups_1 = require("./groups");
-var GitFetchCommand = (function () {
-    function GitFetchCommand() {
-    }
-    return GitFetchCommand;
-}());
-GitFetchCommand = __decorate([
-    src_1.Registry.command('fetch', {
-        group: groups_1.GitGroup,
-        options: {
-            a: { alias: 'append', desc: 'append to .git/FETCH_HEAD instead of overwriting' },
-            'upload-pack': { type: 'string', desc: 'path to upload pack on remote end' }
-        }
-    })
-], GitFetchCommand);
-exports.GitFetchCommand = GitFetchCommand;
-var GitDoPullCommand = (function () {
+var src_1 = require("../../../../src");
+var index_1 = require("./index");
+var GitDoPullCommand = (function (_super) {
+    __extends(GitDoPullCommand, _super);
     function GitDoPullCommand() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     return GitDoPullCommand;
-}());
+}(src_1.Command));
 GitDoPullCommand = __decorate([
-    src_1.Registry.command('pull', {
-        group: groups_1.GitDoGroup,
+    src_1.command('pull', {
+        group: index_1.GitDoGroup,
         arguments: {
             name: { desc: 'Project name', type: 'string', required: true }
         }
     })
 ], GitDoPullCommand);
 exports.GitDoPullCommand = GitDoPullCommand;
-//# sourceMappingURL=git.js.map
+//# sourceMappingURL=pull.js.map
