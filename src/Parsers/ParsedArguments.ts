@@ -1,5 +1,5 @@
 import { interfaces } from "../interfaces";
-import { ArgumentType } from "../core/nodes";
+import { ArgumentType } from "../Nodes/nodes";
 import { TypeOf } from "../utils";
 export default class ParsedArguments implements interfaces.Arguments {
     [key: string]: any

@@ -1,6 +1,6 @@
 import { interfaces } from "./interfaces";
-import { Registry } from "./core/registry";
-import { Container } from "./core/ioc";
+import { NodeRepository } from "./Nodes/NodeRepository";
+import { Container } from "./Core/Container";
 import { kindOf } from "@radic/util";
 import { merge } from 'lodash'
 
@@ -32,7 +32,7 @@ function command(name: string, options: interfaces.CommandConfig): ClassDecorato
 function command(...args: any[]): ClassDecorator {
     return (cls) => {
         Container.getInstance()
-            .make<Registry>('console.registry')
+            .make<NodeRepository>('console.registry')
             .addCommand(makeOptions<interfaces.CommandConfig>(cls, args))
     }
 }
@@ -60,7 +60,7 @@ function group(name: string, options: interfaces.GroupConfig): ClassDecorator;
 function group(...args: any[]): ClassDecorator {
     return (cls) => {
         Container.getInstance()
-            .make<Registry>('console.registry')
+            .make<NodeRepository>('console.registry')
             .addGroup(makeOptions<interfaces.GroupConfig>(cls, args))
     }
 }

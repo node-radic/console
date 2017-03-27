@@ -1,7 +1,7 @@
-import { Container } from "./ioc";
+import { Container } from "../Core/Container";
 import * as _ from 'lodash';
 import interfaces from '../interfaces'
-import { CliMode } from "./cli";
+import { CliMode } from "../Core/Cli";
 import { merge } from 'lodash'
 import { getRandomId, inspect, kindOf } from '@radic/util'
 
@@ -11,7 +11,7 @@ import { getRandomId, inspect, kindOf } from '@radic/util'
  * Contains all the defined commands and groups
  */
 @Container.singleton('console.registry')
-export class Registry {
+export class NodeRepository {
     get commands(): interfaces.CommandConfig[] {
         return this._commands;
     }

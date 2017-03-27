@@ -1,5 +1,5 @@
 import{ EventEmitter2 } from 'eventemitter2'
-import { Container } from "./ioc";
+import { Container } from "./Container";
 
 Container.ensureInjectable(EventEmitter2);
 
@@ -17,3 +17,4 @@ export class Events extends EventEmitter2 {
         super(conf)
     }
 }
+export default Events;

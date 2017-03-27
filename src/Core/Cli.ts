@@ -1,12 +1,12 @@
 import { merge } from 'lodash'
-import { Container } from "./ioc";
-import { Registry } from "./registry";
+import { Container } from "./Container";
+import { NodeRepository } from "../Nodes/NodeRepository";
 import { inspect, kindOf, Config, IConfigProperty } from "@radic/util";
-import { Parser, Parsed } from "../parser";
+import { Parser, Parsed } from "./.";
 import interfaces from '../interfaces'
 import config from "../config";
-import { Router, Route } from "./router";
-import { Events } from "./events";
+import { Router, Route } from "../Nodes/Router";
+import { Events } from "./Events";
 export type CliMode = 'groups' | 'command';
 
 @Container.singleton('console.cli')
@@ -16,7 +16,7 @@ export class Cli {
     public config: IConfigProperty
     public route: Route
 
-    constructor(@Container.inject('console.registry') private _registry: Registry,
+    constructor(@Container.inject('console.registry') private _registry: NodeRepository,
                 @Container.inject('console.parser') private _parser: Parser,
                 @Container.inject('console.router') private _router: Router,
                 @Container.inject('console.events') private _events: Events) {
@@ -101,3 +101,4 @@ export class Cli {
 
     }
 }
+export default Cli;

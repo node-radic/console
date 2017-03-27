@@ -1,9 +1,9 @@
 
 import { interfaces } from "../interfaces";
-import { OptionType } from "../core/nodes";
+import { OptionType } from "../Nodes/nodes";
 import { TypeOf } from "../utils";
-import { Registry } from "../core/registry";
-import { Container } from "../core/ioc";
+import { NodeRepository } from "../Nodes/NodeRepository";
+import { Container } from "../Core/Container";
 import { config } from "../config";
 export default class ParsedOptions implements interfaces.Options {
     [key: string]: any

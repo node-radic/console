@@ -1,22 +1,22 @@
-import { Container } from "./ioc";
-import { Registry } from "./registry";
+import { Container } from "../Core/Container";
+import { NodeRepository } from "./NodeRepository";
 import { interfaces } from "../interfaces";
 import { isUndefined } from "util";
 import * as _ from 'lodash';
 import { defined, kindOf } from "@radic/util";
-import Parser from "../parser/Parser";
-import Parsed from "../parser/Parsed";
-import { Group, Command, Node } from "./nodes";
-import { Events } from "./events";
+import Parser from "../Parsers/Parser";
+import Parsed from "../Parsers/Parsed";
+import { Group, Command, AbstractNode } from "./nodes";
+import { Events } from "../Core/Events";
 
 
 @Container.singleton('console.router')
 export class Router {
 
-    constructor(@Container.inject('console.registry') protected registry: Registry) {
+    constructor(@Container.inject('console.registry') protected registry: NodeRepository) {
     }
 
-    static create(registry: Registry): Router {
+    static create(registry: NodeRepository): Router {
         return new Router(registry);
     }
 
@@ -119,8 +119,8 @@ export class Route {
 
         // filter out all non root options
         // and do something with globals
-        const registry: Registry = Container.getInstance().make<Registry>('console.registry');
-        this._root               = registry.getRoot<interfaces.GroupConfig>('groups');
+        const registry: NodeRepository = Container.getInstance().make<NodeRepository>('console.registry');
+        this._root                     = registry.getRoot<interfaces.GroupConfig>('groups');
 
         this.events.emit('route:created', this)
 
@@ -148,7 +148,7 @@ export class Route {
         }
     }
 
-    protected makeChild<T extends Node<any>>(setters: any = {}) : T {
+    protected makeChild<T extends AbstractNode<any>>(setters: any = {}) : T {
         let parsed  = this.parser[ this.item.type ].apply(this.parser, [ this.parsed.original, this.item ]);
         let child   = Container.getInstance().build<T>(this.item.cls);
         setters = _.merge({

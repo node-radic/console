@@ -1,5 +1,5 @@
-import { CliMode } from "./core/cli";
-import { OptionType, ArgumentType, Group, Command, NodeType } from "./core/nodes";
+import { CliMode } from "./Core/Cli";
+import { OptionType, ArgumentType, Group, Command, NodeType } from "./Nodes/nodes";
 namespace interfaces {
 
     /**  */

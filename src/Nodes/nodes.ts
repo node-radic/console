@@ -8,7 +8,7 @@ export type ArgumentType = 'string' | 'number' | 'boolean' ;
 export type NodeType = 'group' | 'command'
 
 
-export abstract class Node<C> {
+export abstract class AbstractNode<C> {
     name: string
     desc: string
     options: interfaces.Options
@@ -19,9 +19,9 @@ export abstract class Node<C> {
 }
 
 
-export abstract class Group extends Node<interfaces.GroupConfig>{
+export abstract class Group extends AbstractNode<interfaces.GroupConfig>{
 }
 
-export abstract class Command extends Node<interfaces.CommandConfig> {
+export abstract class Command extends AbstractNode<interfaces.CommandConfig> {
     arguments: interfaces.Arguments
 }

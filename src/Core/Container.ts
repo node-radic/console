@@ -93,3 +93,4 @@ const fprovide                = makeFluentProvideDecorator(Container.getInstance
 export const provideSingleton = (identifier: ServiceIdentifier) => {
     return fprovide(identifier).inSingletonScope().done()
 };
+export default Container;
