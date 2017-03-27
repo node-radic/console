@@ -2,9 +2,9 @@ import { merge } from 'lodash'
 import { Container } from "./ioc";
 import { Registry } from "./registry";
 import { inspect, kindOf, Config, IConfigProperty } from "@radic/util";
-import { Parser, Parsed } from "./parser";
-import interfaces from './interfaces'
-import config from "./config";
+import { Parser, Parsed } from "../parser";
+import interfaces from '../interfaces'
+import config from "../config";
 import { Router, Route } from "./router";
 import { Events } from "./events";
 export type CliMode = 'groups' | 'command';

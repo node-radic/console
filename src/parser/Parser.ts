@@ -1,14 +1,14 @@
 import * as parser from 'yargs-parser'
 import { merge } from 'lodash'
 import { defined, kindOf } from '@radic/util'
-import { Container } from "../ioc";
+import { Container } from "../core/ioc";
 import { interfaces } from "../interfaces";
 import Parsed from "./Parsed";
 import ParsedOptions from "./ParsedOptions";
 import ParsedArguments from "./ParsedArguments";
 import { config } from "../config";
 import YargsOutput = interfaces.YargsOutput;
-import { Router } from "../router";
+import { Router } from "../core/router";
 
 @Container.bind('console.parser')
 export default class Parser {

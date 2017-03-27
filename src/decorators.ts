@@ -1,6 +1,6 @@
 import { interfaces } from "./interfaces";
-import { Registry } from "./registry";
-import { Container } from "./ioc";
+import { Registry } from "./core/registry";
+import { Container } from "./core/ioc";
 import { kindOf } from "@radic/util";
 import { merge } from 'lodash'
 

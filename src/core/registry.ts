@@ -1,6 +1,6 @@
 import { Container } from "./ioc";
 import * as _ from 'lodash';
-import interfaces from './interfaces'
+import interfaces from '../interfaces'
 import { CliMode } from "./cli";
 import { merge } from 'lodash'
 import { getRandomId, inspect, kindOf } from '@radic/util'

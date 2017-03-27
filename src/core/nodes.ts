@@ -1,14 +1,14 @@
 // Single option declaration configuration for group configuration and command configuration
-import interfaces from './interfaces'
+import interfaces from '../interfaces'
 export type OptionType = 'string' | 'boolean' | 'number'
 
 // Single argument declaration configuration for command configuration
 export type ArgumentType = 'string' | 'number' | 'boolean' ;
 
-export type CliChildType = 'group' | 'command'
+export type NodeType = 'group' | 'command'
 
 
-export abstract class Child<C> {
+export abstract class Node<C> {
     name: string
     desc: string
     options: interfaces.Options
@@ -19,9 +19,9 @@ export abstract class Child<C> {
 }
 
 
-export abstract class Group extends Child<interfaces.GroupConfig>{
+export abstract class Group extends Node<interfaces.GroupConfig>{
 }
 
-export abstract class Command extends Child<interfaces.CommandConfig> {
+export abstract class Command extends Node<interfaces.CommandConfig> {
     arguments: interfaces.Arguments
 }

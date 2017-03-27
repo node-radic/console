@@ -1,5 +1,5 @@
-import { CliMode } from "./cli";
-import { OptionType, ArgumentType, Group, Command, CliChildType } from "./cli-children";
+import { CliMode } from "./core/cli";
+import { OptionType, ArgumentType, Group, Command, NodeType } from "./core/nodes";
 namespace interfaces {
 
     /**  */
@@ -106,7 +106,7 @@ namespace interfaces {
     /**  */
     export interface CliChildConfig extends Object {
         name?: string
-        type?: CliChildType
+        type?: NodeType
         group?: any
         cls?: any
         options?: { [name: string]: OptionConfig }

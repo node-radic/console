@@ -1,12 +1,12 @@
 import { Container } from "./ioc";
 import { Registry } from "./registry";
-import { interfaces } from "./interfaces";
+import { interfaces } from "../interfaces";
 import { isUndefined } from "util";
 import * as _ from 'lodash';
 import { defined, kindOf } from "@radic/util";
-import Parser from "./parser/Parser";
-import Parsed from "./parser/Parsed";
-import { Group, Command } from "./cli-children";
+import Parser from "../parser/Parser";
+import Parsed from "../parser/Parsed";
+import { Group, Command, Node } from "./nodes";
 import { Events } from "./events";
 
 
@@ -148,7 +148,7 @@ export class Route {
         }
     }
 
-    protected makeChild<T extends interfaces.CliChild<any>>(setters: any = {}) : T {
+    protected makeChild<T extends Node<any>>(setters: any = {}) : T {
         let parsed  = this.parser[ this.item.type ].apply(this.parser, [ this.parsed.original, this.item ]);
         let child   = Container.getInstance().build<T>(this.item.cls);
         setters = _.merge({
