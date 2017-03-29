@@ -1,6 +1,5 @@
-import { interfaces, group, Group } from "../../../../src";
-import { GitGroup } from "../index";
-export * from './pull'
+import { group, Group } from "../../src";
+import { GitGroup } from "./git";
 
 @group('do', {
     group: GitGroup
@@ -13,3 +12,5 @@ export class GitDoGroup extends Group {
     }
 }
 
+
+export * from './git_do_pull'

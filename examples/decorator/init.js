@@ -16,22 +16,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var src_1 = require("../../../../src");
-var index_1 = require("./index");
-var GitDoPullCommand = (function (_super) {
-    __extends(GitDoPullCommand, _super);
-    function GitDoPullCommand() {
+var src_1 = require("../../src");
+var InitCommand = (function (_super) {
+    __extends(InitCommand, _super);
+    function InitCommand() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    return GitDoPullCommand;
+    InitCommand.prototype.handle = function () {
+        console.log({ name: this.name });
+    };
+    return InitCommand;
 }(src_1.Command));
-GitDoPullCommand = __decorate([
-    src_1.command('pull', {
-        group: index_1.GitDoGroup,
+InitCommand = __decorate([
+    src_1.command('init', {
         arguments: {
             name: { desc: 'Project name', type: 'string', required: true }
         }
     })
-], GitDoPullCommand);
-exports.GitDoPullCommand = GitDoPullCommand;
-//# sourceMappingURL=pull.js.map
+], InitCommand);
+exports.InitCommand = InitCommand;
+//# sourceMappingURL=init.js.map

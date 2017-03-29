@@ -32,7 +32,6 @@ export class Container extends BaseContainer  {
             this.bind(k).toFactory<any>(factoryMethod);
         } else {
             this.bind(k).to(cls);
-
         }
         let instance = this.get<T>(k);
         this.unbind(k);
@@ -55,11 +54,24 @@ export class Container extends BaseContainer  {
         return this.get<T>(binding)
     }
 
-    static ensureInjectable(cls: Function) {
-        try { decorate(injectable(), cls); } catch ( err ) {}
+
+    static getParentClasses(cls: Function, classes: Function[] = []): Function[] {
+        if ( cls[ '__proto__' ] !== null ) {
+            classes.push(cls);
+            return Container.getParentClasses(cls[ '__proto__' ], classes)
+        }
+        return classes;
     }
 
-    static bind(id: ServiceIdentifier) {
+    static ensureInjectable(cls: Function) {
+        let parents = Container.getParentClasses(cls);
+
+        parents.shift();
+
+        try { decorate(injectable(), parents.shift()); } catch ( err ) {}
+    }
+
+    static bindTo(id: ServiceIdentifier) {
         return provide(id);
     }
 

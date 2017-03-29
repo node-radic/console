@@ -10,7 +10,7 @@ import { config } from "../config";
 import YargsOutput = interfaces.YargsOutput;
 import { Router } from "../core/router";
 
-@Container.bind('console.parser')
+@Container.bindTo('console.parser')
 export default class Parser {
 
     argumentTypeTransformers: { [name: string]: interfaces.ArgumentTypeTransformer };

@@ -31,6 +31,7 @@ function command(options: interfaces.CommandConfig): ClassDecorator;
 function command(name: string, options: interfaces.CommandConfig): ClassDecorator;
 function command(...args: any[]): ClassDecorator {
     return (cls) => {
+
         Container.getInstance()
             .make<Registry>('console.registry')
             .addCommand(makeOptions<interfaces.CommandConfig>(cls, args))

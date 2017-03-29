@@ -15,21 +15,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
 Object.defineProperty(exports, "__esModule", { value: true });
-var src_1 = require("../../../src");
-__export(require("./fetch"));
-var GitGroup = (function (_super) {
-    __extends(GitGroup, _super);
-    function GitGroup() {
+var src_1 = require("../../src");
+var git_1 = require("./git");
+var GitFetchCommand = (function (_super) {
+    __extends(GitFetchCommand, _super);
+    function GitFetchCommand() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    return GitGroup;
-}(src_1.Group));
-GitGroup = __decorate([
-    src_1.group('git')
-], GitGroup);
-exports.GitGroup = GitGroup;
-//# sourceMappingURL=index.js.map
+    GitFetchCommand.prototype.handle = function () {
+        console.log('a');
+    };
+    return GitFetchCommand;
+}(src_1.Command));
+GitFetchCommand = __decorate([
+    src_1.command('fetch', {
+        group: git_1.GitGroup,
+        options: {
+            a: { alias: 'append', desc: 'append to .git/FETCH_HEAD instead of overwriting' },
+            'upload-pack': { type: 'string', desc: 'path to upload pack on remote end' }
+        }
+    })
+], GitFetchCommand);
+exports.GitFetchCommand = GitFetchCommand;
+//# sourceMappingURL=git_fetch.js.map

@@ -21,13 +21,12 @@ cli.command('test', {
         console.log({ name: this.name });
     }
 });
-var parsed = cli.parse('test -a -vv -h'.split(' '));
-var route = cli.handle();
-route.execute();
+var parsed = cli.parse('git fetch -a -vv -h');
 if (parsed.opt('verbose')) {
 }
 if (parsed.opt('help')) {
 }
 if (parsed.opt('version')) {
 }
+cli.handle().execute();
 //# sourceMappingURL=decorator-example.js.map

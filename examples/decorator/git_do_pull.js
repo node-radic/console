@@ -15,27 +15,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
 Object.defineProperty(exports, "__esModule", { value: true });
-var src_1 = require("../../../../src");
-var index_1 = require("../index");
-__export(require("./pull"));
-var GitDoGroup = (function (_super) {
-    __extends(GitDoGroup, _super);
-    function GitDoGroup() {
+var src_1 = require("../../src");
+var git_do_1 = require("./git_do");
+var GitDoPullCommand = (function (_super) {
+    __extends(GitDoPullCommand, _super);
+    function GitDoPullCommand() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    GitDoGroup.prototype.handle = function () {
-        return undefined;
-    };
-    return GitDoGroup;
-}(src_1.Group));
-GitDoGroup = __decorate([
-    src_1.group('do', {
-        group: index_1.GitGroup
+    return GitDoPullCommand;
+}(src_1.Command));
+GitDoPullCommand = __decorate([
+    src_1.command('pull', {
+        group: git_do_1.GitDoGroup,
+        arguments: {
+            name: { desc: 'Project name', type: 'string', required: true }
+        }
     })
-], GitDoGroup);
-exports.GitDoGroup = GitDoGroup;
-//# sourceMappingURL=index.js.map
+], GitDoPullCommand);
+exports.GitDoPullCommand = GitDoPullCommand;
+//# sourceMappingURL=git_do_pull.js.map

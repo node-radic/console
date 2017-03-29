@@ -1,5 +1,6 @@
-import { GitGroup } from "../git";
-import { Command, command } from "../../../src";
+import { group, Group, command, Command } from "../../src";
+import { GitGroup } from "./git";
+
 
 @command('fetch', {
     group  : GitGroup,
@@ -16,5 +17,8 @@ export class GitFetchCommand extends Command {
     help: boolean
     append: boolean
     uploadPack: string
+    handle(){
+        console.log('a');
+    }
 }
 

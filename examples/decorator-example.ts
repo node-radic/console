@@ -24,9 +24,8 @@ cli.command('test', {
 })
 
 
-const parsed = cli.parse('test -a -vv -h'.split(' '));
-const route  = cli.handle();
-route.execute();
+const parsed = cli.parse('git fetch -a -vv -h');
+
 //
 // const parsed2      = cli.parse('git do -D -vv --tree -h'.split(' '));
 // const parsed2route = cli.handle();
@@ -37,7 +36,6 @@ route.execute();
 // const parsed4      = cli.parse('test -V'.split(' '));
 // const parsed4route = cli.handle();
 // parsed4route.execute();
-
 //
 // const parsed5 = cli.parse('git do'.split(' '));
 // const parsed5route   = cli.handle();
@@ -51,7 +49,6 @@ route.execute();
 // const parsed8 = cli.parse('git -V'.split(' '));
 // const parsed8route   = cli.handle();
 
-
 if ( parsed.opt('verbose') ) {
 
 }
@@ -63,6 +60,10 @@ if ( parsed.opt('help') ) {
 if ( parsed.opt('version') ) {
 
 }
+cli.handle().execute()
+
+
+
 //
 //
 // console.log('-----------------------------------------------------------------------------------------')

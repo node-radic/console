@@ -11,10 +11,8 @@ export type CliMode = 'groups' | 'command';
 
 @Container.singleton('console.cli')
 export class Cli {
-    public argv: string[]
-    public parsed: Parsed
     public config: IConfigProperty
-    public route: Route
+    protected parsed: Parsed;
 
     constructor(@Container.inject('console.registry') private _registry: Registry,
                 @Container.inject('console.parser') private _parser: Parser,
@@ -31,27 +29,29 @@ export class Cli {
         return <Cli> Container.getInstance().make<Cli>('console.cli');
     }
 
-    parse(argv?: string[]): Parsed {
-        this.argv = argv || process.argv.slice(2);
-        this.events.emit(['parse:before', 'parse:before:' + this.config('mode')], this.argv);
-        if ( this.config('mode') === "command" ) {
-            this.parsed = this._parser.command(this.argv, this._registry.getRoot('command'));
-        } else {
-            this.parsed = this._parser.group(this.argv, this._registry.getRoot('groups'));
+    parse(argv?: string[] | string): Parsed {
+        if ( kindOf(argv) === 'string' ) {
+            argv = (<string> argv).split(' ')
         }
-        this.events.emit(['parse:after', 'parse:after:' + this.config('mode')], this.parsed);
+        argv = <string[]> argv || process.argv.slice(2);
+        this.events.emit([ 'parse:before', 'parse:before:' + this.config('mode') ], argv);
+        if ( this.config('mode') === "command" ) {
+            this.parsed = this._parser.command(argv, this._registry.getRoot('command'));
+        } else {
+            this.parsed = this._parser.group(argv, this._registry.getRoot('groups'));
+        }
+        this.events.emit([ 'parse:after', 'parse:after:' + this.config('mode') ], this.parsed);
         return this.parsed;
     }
 
-    handle(): Route {
+    handle(parsed?:Parsed): Route {
         if ( this.config('mode') === 'command' ) {
             throw new Error('Cannot use the handle method when mode === command');
         }
         if ( ! this.parsed ) {
             throw new Error('Cannot handle, need to parse first');
         }
-        const r = this.route = this._router.resolve(this.parsed);
-        return this.route;
+        return this._router.resolve(parsed || this.parsed);
     }
 
     dump(target?: any) {

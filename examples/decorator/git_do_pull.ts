@@ -1,5 +1,5 @@
-import { Command, interfaces, command } from "../../../../src";
-import { GitDoGroup } from "./index";
+import { group, Group, command, Command } from "../../src";
+import { GitDoGroup } from "./git_do";
 
 
 @command('pull', {

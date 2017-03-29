@@ -1,0 +1,190 @@
+Index: src/core/ioc.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/core/ioc.ts	(revision )
++++ src/core/ioc.ts	(revision )
+@@ -5,7 +5,7 @@
+ 
+ export type ServiceIdentifier = interfaces.ServiceIdentifier<any>;
+ 
+-export class Container extends BaseContainer {
++export class Container extends BaseContainer  {
+     protected static instance: Container;
+ 
+     protected constructor(containerOptions?: interfaces.ContainerOptions) {
+@@ -55,25 +55,11 @@
+         return this.get<T>(binding)
+     }
+ 
+-    static getParentClasses(cls: Function, classes: Function[] = []): Function[] {
+-        if ( cls[ '__proto__' ] !== null ) {
+-            classes.push(cls);
+-            return Container.getParentClasses(cls[ '__proto__' ], classes)
+-        }
+-        return classes;
+-    }
+-
+     static ensureInjectable(cls: Function) {
+-        try { decorate(injectable(), cls); } catch ( err ) {
+-            if ( err ! instanceof TypeError ) {
+-                console.warn('Warning in ensureInjectable', { cls, err })
+-            }
++        try { decorate(injectable(), cls); } catch ( err ) {}
++    }
+ 
+-        }
+-        return cls;
+-    }
+-
+-    static provide(id: ServiceIdentifier) {
++    static bind(id: ServiceIdentifier) {
+         return provide(id);
+     }
+ 
+Index: src/core/nodes.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/core/nodes.ts	(revision )
++++ src/core/nodes.ts	(revision )
+@@ -22,7 +22,6 @@
+ export abstract class Group extends Node<interfaces.GroupConfig>{
+ }
+ 
+-
+ export abstract class Command extends Node<interfaces.CommandConfig> {
+     arguments: interfaces.Arguments
+ }
+Index: src/core/router.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/core/router.ts	(revision )
++++ src/core/router.ts	(revision )
+@@ -13,13 +13,11 @@
+ @Container.singleton('console.router')
+ export class Router {
+ 
+-    routeClass: typeof Route = Route
+-
+     constructor(@Container.inject('console.registry') protected registry: Registry) {
+     }
+ 
+-    static getInstance(): Router {
+-        return <Router> Container.getInstance().make('console.router')
++    static create(registry: Registry): Router {
++        return new Router(registry);
+     }
+ 
+     protected unflatten(array, parent: any = { cls: null }, tree: any[] = []) {
+@@ -69,25 +67,25 @@
+     resolve(parsed: Parsed): Route | null {
+         let arr: string[] = [].concat(parsed.arguments);
+ 
+-        let tree  = _.values(this.getTree()),
++        let tree  = this.getTree(),
+             stop  = false,
+             parts = [],
+             resolvedChild;
+ 
+         while ( stop === false && arr.length > 0 ) {
+-            let name  = arr.shift();
+-            let found = _.find(tree, { name });
++            let part  = arr.shift();
++            let found = _.find(tree, { name: part });
+             if ( found ) {
+                 resolvedChild = <any> found;
+-                parts.push(name);
++                parts.push(part);
+                 tree = found[ 'children' ] || {}
+             } else {
+                 stop = true;
+-                arr.unshift(name)
++                arr.unshift(part)
+             }
+         }
+ 
+-        return new this.routeClass(parsed, tree, parts, arr, resolvedChild);
++        return new Route(parsed, tree, parts, arr, resolvedChild);
+     }
+ }
+ 
+@@ -151,11 +149,9 @@
+     }
+ 
+     protected makeChild<T extends Node<any>>(setters: any = {}): T {
+-        let parsed  = this.parser[ this.item.type ].apply(this.parser, [ this.parsed.original, this.item ]);
+-        let parents = Container.getParentClasses(this.item.cls);
+-        Container.ensureInjectable(parents[ 2 ]);
+-        let child = Container.getInstance().make<T>(this.item.cls);
+-        setters   = _.merge({
++        let parsed = this.parser[ this.item.type ].apply(this.parser, [ this.parsed.original, this.item ]);
++        let child  = Container.getInstance().build<T>(this.item.cls);
++        setters    = _.merge({
+             name   : this.item.name,
+             desc   : this.item.desc,
+             options: parsed.options,
+Index: src/decorators.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/decorators.ts	(revision )
++++ src/decorators.ts	(revision )
+@@ -65,9 +65,4 @@
+     }
+ }
+ 
+-function singleton(id){
+-
+-}
+-
+-
+ export {command, group }
+\ No newline at end of file
+Index: examples/decorator/git/index.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- examples/decorator/git/index.ts	(revision )
++++ examples/decorator/git/index.ts	(revision )
+@@ -1,6 +1,5 @@
+ import { group, Group } from "../../../src";
+ export * from './fetch'
+-export * from './do'
+ 
+ @group('git')
+ export class GitGroup extends Group {
+Index: examples/decorator-example.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- examples/decorator-example.ts	(revision )
++++ examples/decorator-example.ts	(revision )
+@@ -24,7 +24,7 @@
+ })
+ 
+ 
+-const parsed = cli.parse('git fetch -a -vv -h'.split(' '));
++const parsed = cli.parse('test -a -vv -h'.split(' '));
+ 
+ //
+ // const parsed2      = cli.parse('git do -D -vv --tree -h'.split(' '));
+@@ -64,6 +64,11 @@
+ 
+ 
+ 
++cli.parse('git fetch')
++const route  = cli.handle();
++route.execute();
++
++
+ //
+ //
+ // console.log('-----------------------------------------------------------------------------------------')

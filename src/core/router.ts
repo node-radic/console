@@ -68,15 +68,18 @@ export class Router {
         let arr: string[] = [].concat(parsed.arguments);
 
         let tree  = this.getTree(),
+            items:interfaces.CliChildConfig[] = this.items,
             stop  = false,
             parts = [],
-            resolvedChild;
+            parentCls = null,
+            resolved:interfaces.CliChildConfig = null;
 
         while ( stop === false && arr.length > 0 ) {
             let part  = arr.shift();
-            let found = _.find(tree, { name: part });
+            let found:interfaces.CliChildConfig = _.find(items, { name: part, group: parentCls });
             if ( found ) {
-                resolvedChild = <any> found;
+                resolved = <any> found;
+                parentCls = resolved.cls
                 parts.push(part);
                 tree = found[ 'children' ] || {}
             } else {
@@ -85,7 +88,7 @@ export class Router {
             }
         }
 
-        return new Route(parsed, tree, parts, arr, resolvedChild);
+        return new Route(parsed, tree, parts, arr, resolved);
     }
 }
 
@@ -102,7 +105,7 @@ export class Route {
                 public tree: interfaces.CliChildConfig[],
                 public parts: string[],
                 public args: string[],
-                public item?: interfaces.CliChildConfig) {
+                public item?: interfaces.CliChildConfig | interfaces.CommandConfig) {
 
         this.events = Container.getInstance().make<Events>('console.events')
         this.parser = Container.getInstance().make<Parser>('console.parser')
@@ -141,22 +144,25 @@ export class Route {
     }
 
     protected executeCommand() {
-        let cfg           = <interfaces.CommandConfig> this.item;
+        let cfg     = <interfaces.CommandConfig> this.item;
         let command = this.makeChild({ arguments: cfg.arguments });
         if ( kindOf(command[ 'handle' ]) === 'function' ) {
             command[ 'handle' ].apply(command);
         }
     }
 
-    protected makeChild<T extends Node<any>>(setters: any = {}) : T {
-        let parsed  = this.parser[ this.item.type ].apply(this.parser, [ this.parsed.original, this.item ]);
-        let child   = Container.getInstance().build<T>(this.item.cls);
-        setters = _.merge({
-            name     : this.item.name,
-            desc     : this.item.desc,
-            options  : parsed.options,
-            config   : this.item
+    protected makeChild<T extends Node<any>>(setters: any = {}): T {
+        let parsed = this.parser[ this.item.type ].apply(this.parser, [ this.parsed.original, this.item ]);
+        let child  = Container.getInstance().build<T>(this.item.cls);
+        setters    = _.merge({
+            name   : this.item.name,
+            desc   : this.item.desc,
+            options: parsed.options,
+            config : this.item
         }, setters)
+        if ( this.item[ 'arguments' ] ) {
+            setters[ 'arguments' ] = this.item[ 'arguments' ]
+        }
         Object.keys(setters).forEach(key => {
             child[ key ] = setters[ key ]
         })
