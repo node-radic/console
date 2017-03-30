@@ -66,4 +66,12 @@ function group(...args: any[]): ClassDecorator {
     }
 }
 
+export function plugin(name):ClassDecorator{
+    return (cls) => {
+        Container.getInstance()
+            .make<Registry>('console.registry')
+            .addPlugin(name, cls);
+    }
+}
+
 export {command, group }

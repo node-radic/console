@@ -5,7 +5,7 @@ import { Container } from "./ioc";
 export type OptionType = 'string' | 'boolean' | 'number'
 
 // Single argument declaration configuration for command configuration
-export type ArgumentType = 'string' | 'number' | 'boolean' ;
+export type ArgumentType = 'string' | 'number' | 'boolean' | 'array';
 
 export type NodeType = 'group' | 'command'
 

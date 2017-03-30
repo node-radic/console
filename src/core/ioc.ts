@@ -114,3 +114,6 @@ export const singleton = (identifier: ServiceIdentifier) => {
 export const inject = (id:ServiceIdentifier) => {
     return _inject(id);
 }
+export const bindTo = (id:ServiceIdentifier) => {
+    return Container.bindTo(id);
+}

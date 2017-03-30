@@ -17,13 +17,29 @@ var git_1 = require("./git");
 var S = require("string");
 var src_2 = require("../../src");
 var cli_1 = require("../../src/core/cli");
+var Output_1 = require("../../src/helpers/Output");
+var Describer_1 = require("../../src/helpers/Describer");
 var GitFetchCommand = (function () {
-    function GitFetchCommand(cli) {
+    function GitFetchCommand(cli, out, describer) {
         this.cli = cli;
+        this.out = out;
+        this.describer = describer;
     }
     GitFetchCommand.prototype.handle = function () {
-        console.log('a', this);
+        this.out.writeln('{orange}Overview{/orange}');
+        if (this.help) {
+            var help = [this.describer.options(this._config.options)].join('\n');
+            this.out.writeln(help);
+            process.exit();
+        }
         console.log({ 'u': S('upload-pack').camelize().toString() });
+        this.out.success('Works good !!').nl.line('Continue like this..');
+    };
+    GitFetchCommand.prototype.writeColumns = function (data) {
+        this.out.columns(data, {
+            columnSplitter: '   ',
+            showHeaders: false
+        });
     };
     return GitFetchCommand;
 }());
@@ -40,7 +56,11 @@ GitFetchCommand = __decorate([
         }
     }),
     __param(0, src_2.inject('console.cli')),
-    __metadata("design:paramtypes", [cli_1.Cli])
+    __param(1, src_2.inject('console.helpers.output')),
+    __param(2, src_2.inject('console.helpers.describer')),
+    __metadata("design:paramtypes", [cli_1.Cli,
+        Output_1.default,
+        Describer_1.default])
 ], GitFetchCommand);
 exports.GitFetchCommand = GitFetchCommand;
 //# sourceMappingURL=git_fetch.js.map

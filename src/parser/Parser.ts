@@ -4,11 +4,12 @@ import { defined, kindOf } from '@radic/util'
 import { Container } from "../core/ioc";
 import { interfaces as i } from "../interfaces";
 import ParsedNode from "./ParsedNode";
-import ParsedOptions from "./OptionCollection";
-import ParsedArguments from "./ArgumentCollection";
+import OptionCollection from "./OptionCollection";
+import ArgumentCollection from "./ArgumentCollection";
 import { config } from "../config";
 import Router from "../core/Router";
 import { NodeType } from "../core/nodes";
+import { Cli } from "../core/cli";
 
 @Container.bindTo('console.parser')
 export default class Parser {
@@ -42,9 +43,9 @@ export default class Parser {
     }
 
     protected parseNode(argv: string[], config: i.NodeConfig | i.GroupConfig | i.CommandConfig): ParsedNode {
-        let yargsOutput: i.YargsOutput   = parser.detailed(argv, this.transformOptions(config.options));
-        let parsedOptions: ParsedOptions = this.parseOptions(yargsOutput, config.options)
-        let parsedArguments: ParsedArguments;
+        let yargsOutput: i.YargsOutput      = parser.detailed(argv, this.transformOptions(config.options));
+        let parsedOptions: OptionCollection = this.parseOptions(yargsOutput, config.options)
+        let parsedArguments: ArgumentCollection;
 
         if ( config.type === 'command' ) {
             parsedArguments = this.parseArguments(yargsOutput, (<i.CommandConfig> config).arguments);
@@ -53,14 +54,14 @@ export default class Parser {
         return new ParsedNode(argv, yargsOutput, config, parsedOptions, parsedArguments);
     }
 
-    protected parseOptions(yargsOutput: i.YargsOutput, optionsConfig: { [name: string]: i.OptionConfig }): ParsedOptions {
+    protected parseOptions(yargsOutput: i.YargsOutput, optionsConfig: { [name: string]: i.OptionConfig }): OptionCollection {
         let argv = cloneDeep(yargsOutput.argv)
         delete argv[ '_' ];
-        return new ParsedOptions(argv, optionsConfig);
+        return new OptionCollection(argv, optionsConfig);
     }
 
     /** arguments are NOT parsed by yargs-parser, we'll have to do it ourself */
-    protected parseArguments(yargsOutput: i.YargsOutput, argumentsConfig: { [name: string]: i.ArgumentConfig }): ParsedArguments {
+    protected parseArguments(yargsOutput: i.YargsOutput, argumentsConfig: { [name: string]: i.ArgumentConfig }): ArgumentCollection {
         let parsed: { [name: string]: any }         = {};
         let args                                    = yargsOutput.argv._;
         let defaultArgumentConfig: i.ArgumentConfig = {
@@ -70,13 +71,13 @@ export default class Parser {
         Object.keys(argumentsConfig).forEach((name: any, pos: number) => {
             let cfg: i.ArgumentConfig = merge({}, defaultArgumentConfig, argumentsConfig[ name ]);
             if ( cfg.required && cfg.default !== undefined ) {
-                yargsOutput.error = new Error(`Cannot define a default on required argument [${name}]`);
+                Cli.error(`Cannot define a default on required argument [${name}]`);
             }
             // Argument has no value: is required? has default? otherwise null it.
             if ( args[ pos ] === undefined ) {
                 if ( cfg.default !== undefined ) return parsed[ name ] = cfg.default;
 
-                if ( cfg.required ) throw new Error(`Argument ${pos} [${name}] is required`);
+                if ( cfg.required ) Cli.error(`Argument ${pos} [${name}] is required`);
 
                 if ( defined(cfg.type) && cfg.type === 'boolean' && config('parser.arguments.undefinedBooleanIsFalse', false) === true )
                     return parsed[ name ] = null;
@@ -99,7 +100,7 @@ export default class Parser {
             parsed[ name ] = args[ pos ];
         })
 
-        return new ParsedArguments(parsed, argumentsConfig);
+        return new ArgumentCollection(parsed, argumentsConfig);
 
     }
 
@@ -141,8 +142,10 @@ export default class Parser {
             if ( config.arguments ) options.narg[ name ] = config.arguments;
             if ( config.default ) options.default[ name ] = config.default
 
-            if(type !== undefined)
+            if ( type !== undefined ) {
                 options[ type ].push(name);
+                optionsConfig[ name ][ 'type' ] = type;
+            }
         })
         return options;
     }

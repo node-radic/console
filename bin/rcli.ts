@@ -1,5 +1,7 @@
+#!/usr/bin/env node
 import { Cli, Registry, interfaces as i, Command } from "../src";
-export * from './decorator'
+import * as path from "path";
+export * from '../example'
 
 const cli = Cli.getInstance();
 cli.config({ mode: 'groups' })
@@ -8,7 +10,8 @@ cli.config({ mode: 'groups' })
 cli.options({
     v: { alias: 'verbose', desc: 'be more verbose', global: true, count: 3 },
     h: { alias: 'help', desc: 'shows help', global: true },
-    V: { alias: 'version', desc: 'show version' }
+    V: { alias: 'version', desc: 'show version' },
+    D: { alias: 'debug', desc: 'enable debugging', global: true }
 })
 
 cli.command('test', {
@@ -17,35 +20,12 @@ cli.command('test', {
         V: { alias: 'variate', desc: 'enables output formatter' }
     },
     handle(){
-        console.log({name: this.name});
+        console.log({ name: this.name });
     }
 })
 
 
-const parsed = cli.parse('git fetch origin master -a -vv -h -V');
-
-//
-// const parsed2      = cli.parse('git do -D -vv --tree -h'.split(' '));
-// const parsed2route = cli.handle();
-// parsed2route.execute();
-// const parsed3 = cli.parse('git fetch 123312 -a -vv -h'.split(' '));
-// const parsed3route   = cli.handle();
-// //
-// const parsed4      = cli.parse('test -V'.split(' '));
-// const parsed4route = cli.handle();
-// parsed4route.execute();
-//
-// const parsed5 = cli.parse('git do'.split(' '));
-// const parsed5route   = cli.handle();
-//
-// const parsed6 = cli.parse('git 123312 -a -vv -h'.split(' '));
-// const parsed6route   = cli.handle();
-//
-// const parsed7 = cli.parse('-V'.split(' '));
-// const parsed7route   = cli.handle();
-//
-// const parsed8 = cli.parse('git -V'.split(' '));
-// const parsed8route   = cli.handle();
+const parsed = cli.parse();
 
 if ( parsed.opt('verbose') ) {
 
@@ -56,10 +36,9 @@ if ( parsed.opt('help') ) {
 }
 
 if ( parsed.opt('version') ) {
-
+    cli.out.writeln('rcli version ' + require(path.join(__dirname, '..', 'package.json')).version)
 }
 cli.handle().execute()
-
 
 
 //

@@ -21,6 +21,7 @@ export default class Registry {
 
     private _groups: i.GroupConfig[]     = []
     private _commands: i.CommandConfig[] = []
+    private _plugins: {[name:string]:any}
     private _rootGroup: i.GroupConfig;
     private _rootCommand: i.CommandConfig;
 
@@ -95,4 +96,10 @@ export default class Registry {
         return options;
     }
 
+    addPlugin(name:string, cls:any){
+        Container.getInstance().bind('console.plugins.' + name).to(cls)
+    }
+    enablePlugin(name:string){
+        Container.getInstance().make('console.plugins.' + name);
+    }
 }

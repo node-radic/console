@@ -1,4 +1,4 @@
-import { Container } from "./ioc";
+import { Container, inject, singleton } from "./ioc";
 import Registry from "./Registry";
 import { isUndefined } from "util";
 import * as _ from 'lodash';
@@ -11,15 +11,13 @@ import { interfaces as i } from "../interfaces";
 import Route from "./Route";
 
 
-@Container.singleton('console.router')
+@singleton('console.router')
 export default class Router {
 
-    constructor(@Container.inject('console.registry') protected registry: Registry) {
+    constructor(@inject('console.registry') protected registry: Registry,
+                @inject('console.events') protected events: Events) {
     }
 
-    static create(registry: Registry): Router {
-        return new Router(registry);
-    }
 
     protected unflatten(array, parent: any = { cls: null }, tree: any[] = []) {
         var children = _.filter(array, (child: any) => {
@@ -66,6 +64,7 @@ export default class Router {
      * @param parsedRoot
      */
     resolve(parsedRoot: ParsedNode): Route | null {
+        this.events.emit('router:resolve', parsedRoot, this)
         let leftoverArguments: string[] = [].concat(parsedRoot.arguments);
 
         let items: i.NodeConfig[]    = this.items,
@@ -87,7 +86,6 @@ export default class Router {
             }
         }
 
-
         // If we have resolved to a node config (command or group), we need to prepare :
         // - the argv should be filtered, the spend arguments should be removed.
         // - the resolved node config's options should merge in global options. We leave all options in the argv.
@@ -95,10 +93,11 @@ export default class Router {
         if ( resolved ) {
             argv             = argv.filter((val) => spendArguments.indexOf(val) === - 1);
             resolved.options = _.merge({}, this.registry.getRoot<i.GroupConfig>('groups').globalOptions, resolved.options);
-
         }
 
-        return new Route(argv, resolved);
+        const route = new Route(argv, resolved);
+        this.events.emit('router:resolved', route, this)
+        return route;
     }
 }
 

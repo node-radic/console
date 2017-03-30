@@ -5,6 +5,9 @@ import Parser from "../parser/Parser";
 import { Container } from "./ioc";
 import Events from "./Events";
 import {interfaces as i} from '../interfaces'
+import { isNumber, escapeRegExp, isUndefined } from "lodash";
+import { Cli } from "./cli";
+
 
 export default class Route {
     protected parser: Parser
@@ -19,7 +22,7 @@ export default class Route {
         // this.registry     = Container.getInstance().make<Registry>('console.registry')
 
         // this.hasArguments = leftoverArguments.length > 1;
-        this.isResolved = defined(item);
+        this.isResolved = defined(item) && item !== null;
 
         // The remaining arguments did not match any of the children in the group.
         // This equals bad input when doing on a group, a group does not accept arguments
@@ -29,13 +32,14 @@ export default class Route {
 
         this.events.emit('route:created', this)
 
+
     }
 
     execute() {
         if ( ! this.isResolved ) {
-            throw new Error('Could not resolve input to anything. ')
+            Cli.error('Could not resolve input to anything. ')
         }
-        this.events.emit('route:execute:' + this.item.type, this)
+        this.events.emit('route:execute', this)
         return this.item.type === 'group' ? this.executeGroup() : this.executeCommand();
     }
 

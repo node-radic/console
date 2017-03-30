@@ -4,6 +4,8 @@ import * as S from "string";
 import { interfaces as i, inject } from "../../src";
 import Registry from "../../src/core/Registry";
 import { Cli } from "../../src/core/cli";
+import Output from "../../src/helpers/Output";
+import Describer from "../../src/helpers/Describer";
 
 
 @command('fetch', {
@@ -23,24 +25,45 @@ export class GitFetchCommand {
     options: i.Options
     arguments: i.Arguments
 
+    _config: i.CommandConfig
     verbose: number
     help: boolean
 
     append: boolean
     uploadPack: string
 
-    remote:string
-    branch:string
+    remote: string
+    branch: string
 
 
-    constructor(@inject('console.cli') private cli: Cli,) {}
+    constructor(@inject('console.cli') public cli: Cli,
+                @inject('console.helpers.output') public out: Output,
+                @inject('console.helpers.describer') public describer: Describer
+    ) {}
 
     handle() {
-        console.log('a', this);
 
+        this.out.writeln('{orange}Overview{/orange}');
+
+        if(this.help){
+            let help = [ this.describer.options(this._config.options) ].join('\n')
+            this.out.writeln(help);
+            process.exit();
+        }
 
         // 'upload-pack-es'.split('-').map((part) => S(part).titleCase());
         console.log({ 'u': S('upload-pack').camelize().toString() });
+
+        this.out.success('Works good !!').nl.line('Continue like this..');
+
+    }
+
+
+    writeColumns(data) {
+        this.out.columns(data, {
+            columnSplitter: '   ',
+            showHeaders   : false
+        })
     }
 }
 

@@ -133,9 +133,9 @@ namespace interfaces {
         [name: string]: any
         has: (name: string) => boolean
         get: <T extends any>(name: string, defaultValue?: any) => T
-        getKeys() : string[]
-        isEmpty():boolean
-        getConfig(name:string) : OptionConfig
+        getKeys(): string[]
+        isEmpty(): boolean
+        getConfig(name: string): OptionConfig
     }
 
     /** parsed arguments from a command its arguments declarations */
@@ -143,8 +143,8 @@ namespace interfaces {
         [name: string]: any
         has: (name: string) => boolean
         get: <T extends any>(name: string, defaultValue?: any) => T
-        getKeys() : string[]
-        getConfig(name:string) : ArgumentConfig
+        getKeys(): string[]
+        getConfig(name: string): ArgumentConfig
 
     }
 
@@ -154,7 +154,21 @@ namespace interfaces {
     }
 
 
-
+    export interface OutputColumnsOptions {
+        columns?: string[]
+        minWidth?: number
+        maxWidth?: number
+        align?: 'left' | 'right' | 'center'
+        paddingChr?: string
+        columnSplitter?: string
+        preserveNewLines?: boolean
+        showHeaders?: boolean
+        dataTransform?: (data) => string
+        truncate?: boolean
+        truncateMarker?: string
+        widths?: { [name: string]: OutputColumnsOptions }
+        config?: { [name: string]: OutputColumnsOptions }
+    }
 
 }
 
