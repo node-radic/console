@@ -1,7 +1,7 @@
-import Parsed from "./Parsed";
-import ParsedArguments from "./ParsedArguments";
-import ParsedOptions from "./ParsedOptions";
+import ParsedNode from "./ParsedNode";
+import Arguments from "./Arguments";
+import Options from "./Options";
 import Parser from "./Parser";
 
 
-export { ParsedArguments, Parser, ParsedOptions, Parsed }
+export { Arguments, Parser, Options, ParsedNode }

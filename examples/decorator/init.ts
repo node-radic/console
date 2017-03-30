@@ -1,5 +1,4 @@
-import { ComposerGroup } from "./composer";
-import { Command, command, interfaces as i } from "../../src";
+import { Command, command} from "../../src";
 
 
 @command('init', {

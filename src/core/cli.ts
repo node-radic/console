@@ -2,23 +2,28 @@ import { merge } from 'lodash'
 import { Container } from "./ioc";
 import { Registry } from "./registry";
 import { inspect, kindOf, Config, IConfigProperty } from "@radic/util";
-import { Parser, Parsed } from "../parser";
+import { Parser, ParsedNode } from "../parser";
 import interfaces from '../interfaces'
 import config from "../config";
 import { Router, Route } from "./router";
 import { Events } from "./events";
+import { NodeFactory } from "./factory";
 export type CliMode = 'groups' | 'command';
 
 @Container.singleton('console.cli')
 export class Cli {
     public config: IConfigProperty
-    protected parsed: Parsed;
+    protected parsed: ParsedNode;
 
     constructor(@Container.inject('console.registry') private _registry: Registry,
                 @Container.inject('console.parser') private _parser: Parser,
                 @Container.inject('console.router') private _router: Router,
                 @Container.inject('console.events') private _events: Events) {
         this.config = config;
+    }
+
+    get mode(): CliMode {
+        return this.config('mode');
     }
 
     get events(): Events {
@@ -29,28 +34,36 @@ export class Cli {
         return <Cli> Container.getInstance().make<Cli>('console.cli');
     }
 
-    parse(argv?: string[] | string): Parsed {
+    parse(argv?: string[] | string): ParsedNode {
         if ( kindOf(argv) === 'string' ) {
             argv = (<string> argv).split(' ')
         }
         argv = <string[]> argv || process.argv.slice(2);
         this.events.emit([ 'parse:before', 'parse:before:' + this.config('mode') ], argv);
         if ( this.config('mode') === "command" ) {
-            this.parsed = this._parser.command(argv, this._registry.getRoot('command'));
+            this.parsed = this._parser.parseCommand(argv, this._registry.getRoot('command'));
         } else {
-            this.parsed = this._parser.group(argv, this._registry.getRoot('groups'));
+            this.parsed = this._parser.parseGroup(argv, this._registry.getRoot('groups'));
         }
         this.events.emit([ 'parse:after', 'parse:after:' + this.config('mode') ], this.parsed);
         return this.parsed;
     }
 
-    handle(parsed?:Parsed): Route {
+    handle(parsed?: ParsedNode): Route {
         if ( this.config('mode') === 'command' ) {
             throw new Error('Cannot use the handle method when mode === command');
         }
         if ( ! this.parsed ) {
             throw new Error('Cannot handle, need to parse first');
         }
+        // const route: Route = this._router.resolve(parsed || this.parsed);
+        // if ( ! route.isResolved ) {
+        //     throw new Error('not resolved')
+        // }
+        // let nodeFactory: NodeFactory;
+        // let node  = nodeFactory.make(route.item, route.args);
+        // let node2 = nodeFactory.makeFromRoute(route);
+
         return this._router.resolve(parsed || this.parsed);
     }
 
@@ -71,7 +84,7 @@ export class Cli {
 
     option(name: string, config: interfaces.RootOptionConfig = {}): this {
         let global = config.global = config.global || false;
-        let key = (global === true && this.config('mode') === "group") ? 'globalOptions' : 'options';
+        let key = (global === true && this.mode === "groups") ? 'globalOptions' : 'options';
         delete config.global;
         this._registry.getRoot(this.config('mode'))[ key ][ name ] = config;
         return this;

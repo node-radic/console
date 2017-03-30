@@ -1,21 +1,21 @@
 import * as parser from 'yargs-parser'
-import { merge } from 'lodash'
+import { merge, cloneDeep } from 'lodash'
 import { defined, kindOf } from '@radic/util'
 import { Container } from "../core/ioc";
-import { interfaces } from "../interfaces";
-import Parsed from "./Parsed";
-import ParsedOptions from "./ParsedOptions";
-import ParsedArguments from "./ParsedArguments";
+import { interfaces as i } from "../interfaces";
+import ParsedNode from "./ParsedNode";
+import ParsedOptions from "./Options";
+import ParsedArguments from "./Arguments";
 import { config } from "../config";
-import YargsOutput = interfaces.YargsOutput;
 import { Router } from "../core/router";
+import { NodeType } from "../core/nodes";
 
 @Container.bindTo('console.parser')
 export default class Parser {
 
-    argumentTypeTransformers: { [name: string]: interfaces.ArgumentTypeTransformer };
+    argumentTypeTransformers: { [name: string]: i.ArgumentTypeTransformer };
 
-    constructor(@Container.inject('console.router') protected router:Router) {
+    constructor(@Container.inject('console.router') protected router: Router) {
         this.argumentTypeTransformers = {
             boolean(val: any): boolean {
                 return val === 'true' || val === true || val === '1';
@@ -29,41 +29,46 @@ export default class Parser {
         }
     }
 
-    group(argv: string[], config: interfaces.GroupConfig): Parsed {
-        return this.parse(argv, config.options);
+    parseGroup(argv: string[], config: i.GroupConfig): ParsedNode {
+        return this.parseNode(argv, config);
     }
 
-    command(argv: string[], config: interfaces.CommandConfig): Parsed {
-        return this.parse(argv, config.options, config.arguments);
+    parseCommand(argv: string[], config: i.CommandConfig): ParsedNode {
+        return this.parseNode(argv, config);
     }
 
-    setArgumentTransformer(type: string, transformer: interfaces.ArgumentTypeTransformer) {
+    setArgumentTransformer(type: string, transformer: i.ArgumentTypeTransformer) {
         this.argumentTypeTransformers[ type ] = transformer;
     }
 
-    protected parse(argv: string[], optionsConfig: { [name: string]: interfaces.OptionConfig }, argumentsConfig?: { [name: string]: interfaces.ArgumentConfig }): Parsed {
-        let yargsOptionsConfig: interfaces.YargsOptionsConfig = this.transformOptions(optionsConfig);
-        let yargsOutput: interfaces.YargsOutput               = parser.detailed(argv, yargsOptionsConfig);
-        let parsedOptions: ParsedOptions                      = new ParsedOptions(yargsOutput.argv, optionsConfig);
+    protected parseNode(argv: string[], config: i.NodeConfig | i.GroupConfig | i.CommandConfig): ParsedNode {
+        let yargsOutput: i.YargsOutput   = parser.detailed(argv, this.transformOptions(config.options));
+        let parsedOptions: ParsedOptions = this.parseOptions(yargsOutput, config.options)
         let parsedArguments: ParsedArguments;
 
-        if ( argumentsConfig !== undefined ) {
-            parsedArguments = this.parseArguments(yargsOutput, argumentsConfig);
+        if ( config.type === 'command' ) {
+            parsedArguments = this.parseArguments(yargsOutput, (<i.CommandConfig> config).arguments);
         }
 
-        return new Parsed(argv, yargsOutput, parsedOptions, parsedArguments);
+        return new ParsedNode(argv, yargsOutput, config, parsedOptions, parsedArguments);
+    }
+
+    protected parseOptions(yargsOutput: i.YargsOutput, optionsConfig: { [name: string]: i.OptionConfig }): ParsedOptions {
+        let argv = cloneDeep(yargsOutput.argv)
+        delete argv[ '_' ];
+        return new ParsedOptions(argv, optionsConfig);
     }
 
     /** arguments are NOT parsed by yargs-parser, we'll have to do it ourself */
-    protected parseArguments(yargsOutput: interfaces.YargsOutput, argumentsConfig: { [name: string]: interfaces.ArgumentConfig }): ParsedArguments {
-        let parsed: { [name: string]: any }                  = {};
-        let args                                             = yargsOutput.argv._;
-        let defaultArgumentConfig: interfaces.ArgumentConfig = {
+    protected parseArguments(yargsOutput: i.YargsOutput, argumentsConfig: { [name: string]: i.ArgumentConfig }): ParsedArguments {
+        let parsed: { [name: string]: any }         = {};
+        let args                                    = yargsOutput.argv._;
+        let defaultArgumentConfig: i.ArgumentConfig = {
             required: false,
             default : undefined
         }
         Object.keys(argumentsConfig).forEach((name: any, pos: number) => {
-            let cfg: interfaces.ArgumentConfig = merge({}, defaultArgumentConfig, argumentsConfig[ name ]);
+            let cfg: i.ArgumentConfig = merge({}, defaultArgumentConfig, argumentsConfig[ name ]);
             if ( cfg.required && cfg.default !== undefined ) {
                 yargsOutput.error = new Error(`Cannot define a default on required argument [${name}]`);
             }
@@ -100,8 +105,8 @@ export default class Parser {
 
 
     /** transforms my option structure to the yargs-parser option structure */
-    protected transformOptions(optionsConfig: { [name: string]: interfaces.OptionConfig }): interfaces.YargsOptionsConfig {
-        let options: interfaces.YargsOptionsConfig = {
+    protected transformOptions(optionsConfig: { [name: string]: i.OptionConfig }): i.YargsOptionsConfig {
+        let options: i.YargsOptionsConfig = {
             alias        : {},
             array        : [],
             boolean      : [],
@@ -117,14 +122,27 @@ export default class Parser {
         };
         Object.keys(optionsConfig).forEach(name => {
             let config = optionsConfig[ name ];
-            options[ config.type || 'boolean' ].push(name);
+            let type   = config.type || 'boolean';
+
             options.alias[ name ] = [];
-            if ( config.alias ) options.alias[ name ].push(config.alias);
-            if ( config.array ) options.array.push(name);
+
+            if ( config.count ) {
+                options.count[ name ] = config.count
+                type                  = undefined
+            }
+
+            if ( config.alias ) {
+                if ( kindOf(config.alias) === 'string' ) config.alias = [ <string> config.alias ];
+                (<string[]> config.alias).forEach(alias => options.alias[ name ].push(alias));
+            }
+
+            if ( config.array === true ) options.array.push(name);
             if ( config.transformer ) options.coerce[ name ] = config.transformer;
             if ( config.arguments ) options.narg[ name ] = config.arguments;
             if ( config.default ) options.default[ name ] = config.default
-            if ( config.count ) options.count[ name ] = config.count
+
+            if(type !== undefined)
+                options[ type ].push(name);
         })
         return options;
     }

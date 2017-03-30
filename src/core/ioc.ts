@@ -1,4 +1,4 @@
-import { inject, Container as BaseContainer, decorate, injectable, interfaces } from "inversify";
+import { inject as _inject, Container as BaseContainer, decorate, injectable, interfaces } from "inversify";
 import { makeProvideDecorator, makeFluentProvideDecorator } from "inversify-binding-decorators";
 import getDecorators from "inversify-inject-decorators";
 
@@ -80,7 +80,7 @@ export class Container extends BaseContainer  {
     }
 
     static singleton(id: ServiceIdentifier) {
-        return provideSingleton(id);
+        return singleton(id);
     }
 
     static inject(id: ServiceIdentifier): (target: any, targetKey: string, index?: number | undefined) => void {
@@ -94,6 +94,10 @@ export class Container extends BaseContainer  {
     static decorate(decorator: (ClassDecorator | ParameterDecorator), target: any, parameterIndex?: number) {
         return decorate(decorator, target, parameterIndex);
     }
+
+    static constant(id: string, val: any) {
+        Container.getInstance().bind(id).toConstantValue(val);
+    }
 }
 
 const container: Container = Container.getInstance();
@@ -102,6 +106,11 @@ const container: Container = Container.getInstance();
 export const lazyInject       = getDecorators(Container.getInstance()).lazyInject;
 export const provide          = makeProvideDecorator(Container.getInstance());
 const fprovide                = makeFluentProvideDecorator(Container.getInstance());
-export const provideSingleton = (identifier: ServiceIdentifier) => {
+
+export const singleton = (identifier: ServiceIdentifier) => {
     return fprovide(identifier).inSingletonScope().done()
 };
+
+export const inject = (id:ServiceIdentifier) => {
+    return _inject(id);
+}

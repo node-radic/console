@@ -1,5 +1,7 @@
 // Single option declaration configuration for group configuration and command configuration
-import interfaces from '../interfaces'
+import { merge } from 'lodash'
+import { interfaces as i } from '../interfaces'
+import { Container } from "./ioc";
 export type OptionType = 'string' | 'boolean' | 'number'
 
 // Single argument declaration configuration for command configuration
@@ -11,17 +13,46 @@ export type NodeType = 'group' | 'command'
 export abstract class Node<C> {
     name: string
     desc: string
-    options: interfaces.Options
-    handle() : boolean | any | void {
+    options: i.Options
+
+    handle(): boolean | any | void {
 
     }
+
     config: C
 }
 
 
-export abstract class Group extends Node<interfaces.GroupConfig>{
+export abstract class Group extends Node<i.GroupConfig> {
 }
 
-export abstract class Command extends Node<interfaces.CommandConfig> {
-    arguments: interfaces.Arguments
+export abstract class Command extends Node<i.CommandConfig> {
+    arguments: i.Arguments
 }
+
+
+const defaultNodeConfig: i.NodeConfig = {
+    name   : null,
+    type   : null,
+    group  : null,
+    cls    : null,
+    options: {},
+    aliases: [],
+    desc   : ''
+}
+
+const defaultGroupConfig: i.GroupConfig = merge({}, defaultNodeConfig, <i.GroupConfig> {
+    type  : 'group',
+    globalOptions: {},
+    handle       : null
+})
+
+const defaultCommandConfig: i.CommandConfig = merge({}, defaultNodeConfig, <i.CommandConfig> {
+    type  : 'command',
+    arguments: {},
+    handle   : null,
+
+})
+
+Container.constant('console.nodes.defaults.group', defaultGroupConfig)
+Container.constant('console.nodes.defaults.command', defaultCommandConfig)

@@ -78,7 +78,7 @@ namespace interfaces {
     /** Declaration of a option */
     export interface OptionConfig {
         name?: string
-        alias?: string
+        alias?: string | string[]
         desc?: string
 
         type?: OptionType
@@ -104,7 +104,7 @@ namespace interfaces {
     }
 
     /**  */
-    export interface CliChildConfig extends Object {
+    export interface NodeConfig { //extends Object
         name?: string
         type?: NodeType
         group?: any
@@ -115,14 +115,14 @@ namespace interfaces {
     }
 
     /** Single group declaration configuration */
-    export interface GroupConfig extends CliChildConfig {
+    export interface GroupConfig extends NodeConfig {
         globalOptions?: { [name: string]: OptionConfig }
         handle?: (group: Group) => boolean | any
-        children?: CliChildConfig[]
+        children?: NodeConfig[]
     }
 
     /** Single command declaration configuration */
-    export interface CommandConfig extends CliChildConfig {
+    export interface CommandConfig extends NodeConfig {
         arguments?: { [name: string]: ArgumentConfig }
         handle?: (command: Command) => boolean | any
     }
@@ -133,6 +133,9 @@ namespace interfaces {
         [name: string]: any
         has: (name: string) => boolean
         get: <T extends any>(name: string, defaultValue?: any) => T
+        getKeys() : string[]
+        isEmpty():boolean
+        getConfig(name:string) : OptionConfig
     }
 
     /** parsed arguments from a command its arguments declarations */
@@ -140,6 +143,9 @@ namespace interfaces {
         [name: string]: any
         has: (name: string) => boolean
         get: <T extends any>(name: string, defaultValue?: any) => T
+        getKeys() : string[]
+        getConfig(name:string) : ArgumentConfig
+
     }
 
     /**  */

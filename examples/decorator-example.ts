@@ -19,12 +19,11 @@ cli.command('test', {
     },
     handle(){
         console.log({name: this.name});
-
     }
 })
 
 
-const parsed = cli.parse('git fetch -a -vv -h');
+const parsed = cli.parse('git fetch origin master -a -vv -h -V');
 
 //
 // const parsed2      = cli.parse('git do -D -vv --tree -h'.split(' '));

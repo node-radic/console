@@ -1,13 +1,13 @@
 import { Container } from "./ioc";
 import { Registry } from "./registry";
-import { interfaces } from "../interfaces";
 import { isUndefined } from "util";
 import * as _ from 'lodash';
 import { defined, kindOf } from "@radic/util";
 import Parser from "../parser/Parser";
-import Parsed from "../parser/Parsed";
 import { Group, Command, Node } from "./nodes";
 import { Events } from "./events";
+import ParsedNode from "../parser/ParsedNode";
+import { interfaces as i } from "../interfaces";
 
 
 @Container.singleton('console.router')
@@ -38,7 +38,7 @@ export class Router {
     }
 
 
-    get items(): interfaces.CliChildConfig[] {
+    get items(): i.NodeConfig[] {
         return [].concat(this.registry.commands, this.registry.groups);
     }
 
@@ -47,9 +47,9 @@ export class Router {
     }
 
 
-    getNamedTree(array?: interfaces.CliChildConfig[], tree = {}) {
+    getNamedTree(array?: i.NodeConfig[], tree = {}) {
         if ( isUndefined(array) ) array = this.unflatten(this.items);
-        array.forEach((item: interfaces.CommandConfig) => {
+        array.forEach((item: i.CommandConfig) => {
             if ( item.type === "group" ) {
                 tree[ item.name ] = {};
                 this.getNamedTree(item[ 'children' ], tree[ item.name ])
@@ -62,68 +62,65 @@ export class Router {
 
     /**
      * Resolves command or group from an array of arguments (useful for parsing the argv._ array)
-     * @param parsed
+     * @param parsedRoot
      */
-    resolve(parsed: Parsed): Route | null {
-        let arr: string[] = [].concat(parsed.arguments);
+    resolve(parsedRoot: ParsedNode): Route | null {
+        let leftoverArguments: string[] = [].concat(parsedRoot.arguments);
 
-        let tree  = this.getTree(),
-            items:interfaces.CliChildConfig[] = this.items,
-            stop  = false,
-            parts = [],
-            parentCls = null,
-            resolved:interfaces.CliChildConfig = null;
+        let items: i.NodeConfig[]    = this.items,
+            stop: boolean            = false,
+            spendArguments: string[] = [],
+            parentCls: Function      = null,
+            resolved: i.NodeConfig   = null;
 
-        while ( stop === false && arr.length > 0 ) {
-            let part  = arr.shift();
-            let found:interfaces.CliChildConfig = _.find(items, { name: part, group: parentCls });
+        while ( stop === false && leftoverArguments.length > 0 ) {
+            let part                = leftoverArguments.shift();
+            let found: i.NodeConfig = _.find(items, { name: part, group: parentCls });
             if ( found ) {
-                resolved = <any> found;
+                resolved  = found;
                 parentCls = resolved.cls
-                parts.push(part);
-                tree = found[ 'children' ] || {}
+                spendArguments.push(part);
             } else {
                 stop = true;
-                arr.unshift(part)
+                leftoverArguments.unshift(part)
             }
         }
 
-        return new Route(parsed, tree, parts, arr, resolved);
+
+        // If we have resolved to a node config (command or group), we need to prepare :
+        // - the argv should be filtered, the spend arguments should be removed.
+        // - the resolved node config's options should merge in global options. We leave all options in the argv.
+        let argv = parsedRoot.argv;
+        if ( resolved ) {
+            argv             = argv.filter((val) => spendArguments.indexOf(val) === - 1);
+            resolved.options = _.merge({}, this.registry.getRoot<i.GroupConfig>('groups').globalOptions, resolved.options);
+
+        }
+
+        return new Route(argv, resolved);
     }
 }
 
 export class Route {
     protected parser: Parser
     protected events: Events;
-    protected _root: interfaces.GroupConfig;
+    isResolved: boolean = false;
 
-    isResolved: boolean          = false;
-    hasArguments: boolean        = false;
-    hasInvalidArguments: boolean = false;
-
-    constructor(protected parsed: Parsed,
-                public tree: interfaces.CliChildConfig[],
-                public parts: string[],
-                public args: string[],
-                public item?: interfaces.CliChildConfig | interfaces.CommandConfig) {
+    constructor(public argv: string[],
+                public item?: i.NodeConfig | i.GroupConfig | i.CommandConfig) {
 
         this.events = Container.getInstance().make<Events>('console.events')
         this.parser = Container.getInstance().make<Parser>('console.parser')
         // this.registry     = Container.getInstance().make<Registry>('console.registry')
 
-        this.hasArguments = args.length > 1;
-        this.isResolved   = defined(item);
+        // this.hasArguments = leftoverArguments.length > 1;
+        this.isResolved = defined(item);
 
         // The remaining arguments did not match any of the children in the group.
         // This equals bad input when doing on a group, a group does not accept arguments
-        if ( this.isResolved && this.hasArguments && item.type === 'group' ) {
-            this.hasInvalidArguments = true;
-        }
-
-        // filter out all non root options
-        // and do something with globals
-        const registry: Registry = Container.getInstance().make<Registry>('console.registry');
-        this._root               = registry.getRoot<interfaces.GroupConfig>('groups');
+        // if ( this.isResolved && this.hasArguments && item.type === 'group' ) {
+        //     this.hasInvalidArguments = true;
+        // }
 
         this.events.emit('route:created', this)
 
@@ -133,39 +130,32 @@ export class Route {
         if ( ! this.isResolved ) {
             throw new Error('Could not resolve input to anything. ')
         }
+        this.events.emit('route:execute:' + this.item.type, this)
         return this.item.type === 'group' ? this.executeGroup() : this.executeCommand();
     }
 
+
     protected executeGroup() {
-        let group = this.makeChild();
+        let parsed = this.parser.parseGroup(this.argv, this.item);
+        this.events.emit('route:execute:group:parsed', this)
+        let group = parsed.getNodeInstance<Group>()
+        this.events.emit('route:execute:group:created', this)
+
         if ( kindOf(group[ 'handle' ]) === 'function' ) {
             group[ 'handle' ].apply(group);
         }
+        this.events.emit('route:execute:group:handled', this)
     }
 
     protected executeCommand() {
-        let cfg     = <interfaces.CommandConfig> this.item;
-        let command = this.makeChild({ arguments: cfg.arguments });
+        let parsed: ParsedNode = this.parser.parseCommand(this.argv, this.item);
+        this.events.emit('route:execute:command:parsed', this)
+        let command = parsed.getNodeInstance<Command>()
+        this.events.emit('route:execute:command:created', this)
+
         if ( kindOf(command[ 'handle' ]) === 'function' ) {
             command[ 'handle' ].apply(command);
         }
-    }
-
-    protected makeChild<T extends Node<any>>(setters: any = {}): T {
-        let parsed = this.parser[ this.item.type ].apply(this.parser, [ this.parsed.original, this.item ]);
-        let child  = Container.getInstance().build<T>(this.item.cls);
-        setters    = _.merge({
-            name   : this.item.name,
-            desc   : this.item.desc,
-            options: parsed.options,
-            config : this.item
-        }, setters)
-        if ( this.item[ 'arguments' ] ) {
-            setters[ 'arguments' ] = this.item[ 'arguments' ]
-        }
-        Object.keys(setters).forEach(key => {
-            child[ key ] = setters[ key ]
-        })
-        return child;
+        this.events.emit('route:execute:command:handled', this)
     }
 }

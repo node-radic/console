@@ -4,7 +4,7 @@ import { Container } from "./core/ioc";
 import { kindOf } from "@radic/util";
 import { merge } from 'lodash'
 
-function makeOptions<T extends interfaces.CliChildConfig>(cls: any, args: any[]): T {
+function makeOptions<T extends interfaces.NodeConfig>(cls: any, args: any[]): T {
     let len        = args.length;
     let options: T = <T> {};
 

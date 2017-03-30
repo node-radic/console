@@ -1,6 +1,6 @@
 import 'reflect-metadata'
-export { ServiceIdentifier, Container } from './core/ioc'
-export { Parser, ParsedOptions, ParsedArguments, Parsed } from './parser'
+export { ServiceIdentifier, Container, provide, singleton, inject } from './core/ioc'
+export { Parser, Options, Arguments, ParsedNode } from './parser'
 export { Cli, CliMode } from './core/cli'
 export { Group, Command } from './core/nodes'
 export { Registry } from './core/registry'

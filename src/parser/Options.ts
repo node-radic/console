@@ -1,13 +1,12 @@
-
 import { interfaces } from "../interfaces";
 import { OptionType } from "../core/nodes";
 import { TypeOf } from "../utils";
 import { Registry } from "../core/registry";
 import { Container } from "../core/ioc";
 import { config } from "../config";
-export default class ParsedOptions implements interfaces.Options {
-    [key: string]: any
+export default class Options implements interfaces.Options {
 
+    [key: string]: any
 
     constructor(options: interfaces.YargsOutputArgv, public _config: { [name: string]: interfaces.OptionConfig }) {
 
@@ -22,11 +21,19 @@ export default class ParsedOptions implements interfaces.Options {
     }
 
     get<T>(name: string, defaultValueOverride?: any): T {
-        return this.has(name) ? this[ name ] : defaultValueOverride !== undefined ? defaultValueOverride : undefined;
+        return this.has(name) ? this[ name ] : defaultValueOverride;
     };
 
-    getConfig(name:string) : interfaces.OptionConfig {
-        return this._config[name];
+    isEmpty():boolean{
+        return this.getKeys().length === 0
+    }
+
+    getKeys(): string[] {
+        return Object.keys(this);
+    }
+
+    getConfig(name: string): interfaces.OptionConfig {
+        return this._config[ name ];
     }
 
     protected typeOf(name: string): TypeOf<string, OptionType> {

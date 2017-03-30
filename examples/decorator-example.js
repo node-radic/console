@@ -21,7 +21,7 @@ cli.command('test', {
         console.log({ name: this.name });
     }
 });
-var parsed = cli.parse('git fetch -a -vv -h');
+var parsed = cli.parse('git fetch origin master -a -vv -h -V');
 if (parsed.opt('verbose')) {
 }
 if (parsed.opt('help')) {
