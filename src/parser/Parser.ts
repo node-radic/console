@@ -4,10 +4,10 @@ import { defined, kindOf } from '@radic/util'
 import { Container } from "../core/ioc";
 import { interfaces as i } from "../interfaces";
 import ParsedNode from "./ParsedNode";
-import ParsedOptions from "./Options";
-import ParsedArguments from "./Arguments";
+import ParsedOptions from "./OptionCollection";
+import ParsedArguments from "./ArgumentCollection";
 import { config } from "../config";
-import { Router } from "../core/router";
+import Router from "../core/Router";
 import { NodeType } from "../core/nodes";
 
 @Container.bindTo('console.parser')

@@ -2,7 +2,7 @@ import { group, Group, command, Command } from "../../src";
 import { GitGroup } from "./git";
 import * as S from "string";
 import { interfaces as i, inject } from "../../src";
-import { Registry } from "../../src/core/registry";
+import Registry from "../../src/core/Registry";
 import { Cli } from "../../src/core/cli";
 
 

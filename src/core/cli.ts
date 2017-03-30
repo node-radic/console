@@ -1,13 +1,13 @@
 import { merge } from 'lodash'
 import { Container } from "./ioc";
-import { Registry } from "./registry";
+import Registry from "./Registry";
 import { inspect, kindOf, Config, IConfigProperty } from "@radic/util";
 import { Parser, ParsedNode } from "../parser";
 import interfaces from '../interfaces'
 import config from "../config";
-import { Router, Route } from "./router";
-import { Events } from "./events";
-import { NodeFactory } from "./factory";
+import Router from "./Router";
+import Events  from "./Events";
+import Route from "./Route";
 export type CliMode = 'groups' | 'command';
 
 @Container.singleton('console.cli')

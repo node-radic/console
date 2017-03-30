@@ -1,5 +1,4 @@
-import { Cli, Registry, interfaces as i } from "../src";
-import { Command } from "../src/core/nodes";
+import { Cli, Registry, interfaces as i, Command } from "../src";
 export * from './decorator'
 
 const cli = Cli.getInstance();

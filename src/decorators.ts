@@ -1,5 +1,5 @@
 import { interfaces } from "./interfaces";
-import { Registry } from "./core/registry";
+import Registry from "./core/Registry";
 import { Container } from "./core/ioc";
 import { kindOf } from "@radic/util";
 import { merge } from 'lodash'

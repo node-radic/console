@@ -1,10 +1,8 @@
-import { interfaces } from "../interfaces";
-import { ArgumentType } from "../core/nodes";
 import { TypeOf } from "../utils";
-export default class Arguments implements interfaces.Arguments {
+abstract class InputCollection<I extends any, T>{
     [key: string]: any
 
-    constructor(args: { [name: string]: any }, public _config: { [name: number]: interfaces.ArgumentConfig }) {
+    constructor(args: { [name: string]: any }, public _config: { [key: string]: I }) {
         Object.keys(args).forEach(key => {
             this[ key ] = args[ key ];
         })
@@ -18,7 +16,7 @@ export default class Arguments implements interfaces.Arguments {
         return this.has(name) ? this[ name ] : defaultValueOverride;
     };
 
-    isEmpty():boolean{
+    isEmpty(): boolean {
         return this.getKeys().length === 0
     }
 
@@ -26,12 +24,16 @@ export default class Arguments implements interfaces.Arguments {
         return Object.keys(this);
     }
 
-    getConfig(name:string) : interfaces.ArgumentConfig {
-        return this._config[name];
+    getConfig(name: string): I {
+        return this._config[ name ];
     }
 
-    protected typeOf(name: string): TypeOf<string, ArgumentType> {
+    typeOf(name: string): TypeOf<string, T> {
         return TypeOf.create(this._config[ name ].type)
     }
 }
 
+export default InputCollection
+
+
+// class Aa extends InputCollection<interfaces.Arguments, ArgumentType> {}

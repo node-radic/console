@@ -10,7 +10,7 @@ import { getRandomId, inspect, kindOf } from '@radic/util'
  * Contains all the defined commands and groups
  */
 @Container.singleton('console.registry')
-export class Registry {
+export default class Registry {
     get commands(): i.CommandConfig[] {
         return this._commands;
     }

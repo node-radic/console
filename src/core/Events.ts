@@ -12,7 +12,7 @@ Container.getInstance().bind('console.events.config').toConstantValue({
 })
 
 @Container.singleton('console.events')
-export class Events extends EventEmitter2 {
+export default class Events extends EventEmitter2 {
     constructor(@Container.inject('console.events.config') conf: EventEmitter2Configuration) {
         super(conf)
     }

@@ -1,9 +1,9 @@
 import { interfaces as i } from "../interfaces";
 import * as _ from 'lodash'
-import  ParsedArguments  from "./Arguments";
+import  ParsedArguments  from "./ArgumentCollection";
 import { Container } from "../core/ioc";
 import { inject } from "../index";
-import { Registry } from "../core/registry";
+import Registry  from "../core/Registry";
 import Parser from "./Parser";
 import { injectable } from "inversify";
 
