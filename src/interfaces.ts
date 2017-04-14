@@ -103,6 +103,11 @@ namespace interfaces {
         default?: any
     }
 
+    export interface RootConfig {
+        globalOptions: { [name: string]: OptionConfig }
+        cls?: any
+    }
+
     /**  */
     export interface NodeConfig { //extends Object
         name?: string
@@ -112,6 +117,14 @@ namespace interfaces {
         options?: { [name: string]: OptionConfig }
         aliases?: string[]
         desc?: string
+    }
+
+
+    export interface Node<C extends NodeConfig> {
+        name: string
+        desc: string
+        options: Options
+        config: C
     }
 
     /** Single group declaration configuration */

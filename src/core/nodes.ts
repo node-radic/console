@@ -9,17 +9,16 @@ export type ArgumentType = 'string' | 'number' | 'boolean' | 'array';
 
 export type NodeType = 'group' | 'command'
 
+export abstract class Node<C> implements i.Node<C> {
 
-export abstract class Node<C> {
     name: string
     desc: string
     options: i.Options
+    config: C
 
     handle(): boolean | any | void {
 
     }
-
-    config: C
 }
 
 
@@ -42,13 +41,13 @@ const defaultNodeConfig: i.NodeConfig = {
 }
 
 const defaultGroupConfig: i.GroupConfig = merge({}, defaultNodeConfig, <i.GroupConfig> {
-    type  : 'group',
+    type         : 'group',
     globalOptions: {},
     handle       : null
 })
 
 const defaultCommandConfig: i.CommandConfig = merge({}, defaultNodeConfig, <i.CommandConfig> {
-    type  : 'command',
+    type     : 'command',
     arguments: {},
     handle   : null,
 

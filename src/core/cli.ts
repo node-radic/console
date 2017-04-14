@@ -59,6 +59,9 @@ export class Cli {
             this.parsed = this._parser.parseGroup(argv, this._registry.getRoot('groups'));
         }
         this.events.emit([ 'parse:after', 'parse:after:' + this.config('mode') ], this.parsed);
+        if(this.mode === 'groups' && this.config('autoExecute')){
+            this.handle().execute();
+        }
         return this.parsed;
     }
 

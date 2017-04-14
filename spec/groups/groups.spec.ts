@@ -1,0 +1,21 @@
+import { inspect } from "@radic/util";
+import ParsedNode from "../../src/parser/ParsedNode";
+import Route from "../../src/core/Route";
+describe("groups", () => {
+    let groupsFixture = require('./fixture');
+    let cli = groupsFixture.cli;
+    cli.config({autoExecute: false, mode: 'groups'})
+    describe('command in group "yarn install" ', () => {
+        let parsed:ParsedNode, route:Route ;
+        it('parse returns valid parsed node', () => {
+            parsed = cli.parse('yarn install');
+            expect(parsed).toBeDefined()
+        })
+        it('handle makes the route', ()=>{
+            route = cli.handle();
+            expect(route).toBeDefined()
+        })
+        it('the route is resolved correctly', ()=>expect(route.isResolved).toBeTruthy())
+        route.execute()
+    });
+});

@@ -1,4 +1,6 @@
 import { TypeOf } from "../utils";
+import { isUndefined } from "util";
+import { defined } from "@radic/util";
 abstract class InputCollection<I extends any, T>{
     [key: string]: any
 
@@ -12,8 +14,11 @@ abstract class InputCollection<I extends any, T>{
         return this[ name ] !== undefined
     }
 
-    get<T>(name: string, defaultValueOverride: any = null): T {
-        return this.has(name) ? this[ name ] : defaultValueOverride;
+    get<T>(name: string, defaultValueOverride?: any ): T {
+        if(this.has(name)) return this[ name ];
+        if(defined(defaultValueOverride)) return defaultValueOverride
+        let def = this.getConfig(name).default;
+        if(defined(def)) return def
     };
 
     isEmpty(): boolean {

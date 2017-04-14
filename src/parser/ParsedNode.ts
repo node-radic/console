@@ -83,11 +83,12 @@ export default class ParsedNode {
         delete this.options._
 
         this.arguments  = yargsOutput.argv._;
-        this.hasArguments = Object.keys(this.arguments).length > 0
+
         this._arguments = new ParsedArguments({}, {});
         if ( args ) {
             this.usesArguments = true;
             this._arguments    = args;
+            this.hasArguments = Object.keys(args).length > 0
         }
     }
 

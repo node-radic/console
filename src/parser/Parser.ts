@@ -38,9 +38,16 @@ export default class Parser {
         return this.parseNode(argv, config);
     }
 
+
+
     setArgumentTransformer(type: string, transformer: i.ArgumentTypeTransformer) {
         this.argumentTypeTransformers[ type ] = transformer;
     }
+
+    parse(argv: string[], config: i.NodeConfig | i.GroupConfig | i.CommandConfig): ParsedNode {
+        return this.parseNode(argv, config)
+    }
+
 
     protected parseNode(argv: string[], config: i.NodeConfig | i.GroupConfig | i.CommandConfig): ParsedNode {
         let yargsOutput: i.YargsOutput      = parser.detailed(argv, this.transformOptions(config.options));

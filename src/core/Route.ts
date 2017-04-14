@@ -4,18 +4,21 @@ import ParsedNode from "../parser/ParsedNode";
 import Parser from "../parser/Parser";
 import { Container } from "./ioc";
 import Events from "./Events";
-import {interfaces as i} from '../interfaces'
+import { interfaces as i } from '../interfaces'
 import { isNumber, escapeRegExp, isUndefined } from "lodash";
 import { Cli } from "./cli";
 
 
-export default class Route {
+export default class Route<C extends i.NodeConfig, T extends i.Node<C>> {
     protected parser: Parser
+
     protected events: Events;
               isResolved: boolean = false;
 
+    parsed: ParsedNode;
+
     constructor(public argv: string[],
-                public item?: i.NodeConfig | i.GroupConfig | i.CommandConfig) {
+                public item?: C) {
 
         this.events = Container.getInstance().make<Events>('console.events')
         this.parser = Container.getInstance().make<Parser>('console.parser')
@@ -32,6 +35,7 @@ export default class Route {
 
         this.events.emit('route:created', this)
 
+        this.parsed = this.parser.parse(this.argv, this.item);
 
     }
 
@@ -40,31 +44,12 @@ export default class Route {
             Cli.error('Could not resolve input to anything. ')
         }
         this.events.emit('route:execute', this)
-        return this.item.type === 'group' ? this.executeGroup() : this.executeCommand();
+        if ( kindOf(this.node[ 'handle' ]) === 'function' ) {
+            this.node[ 'handle' ].apply(this.node);
+        }
     }
 
-
-    protected executeGroup() {
-        let parsed = this.parser.parseGroup(this.argv, this.item);
-        this.events.emit('route:execute:group:parsed', this)
-        let group = parsed.getNodeInstance<Group>()
-        this.events.emit('route:execute:group:created', this)
-
-        if ( kindOf(group[ 'handle' ]) === 'function' ) {
-            group[ 'handle' ].apply(group);
-        }
-        this.events.emit('route:execute:group:handled', this)
-    }
-
-    protected executeCommand() {
-        let parsed: ParsedNode = this.parser.parseCommand(this.argv, this.item);
-        this.events.emit('route:execute:command:parsed', this)
-        let command = parsed.getNodeInstance<Command>()
-        this.events.emit('route:execute:command:created', this)
-
-        if ( kindOf(command[ 'handle' ]) === 'function' ) {
-            command[ 'handle' ].apply(command);
-        }
-        this.events.emit('route:execute:command:handled', this)
+    get node(): T {
+        return this.parsed.getNodeInstance<T>()
     }
 }

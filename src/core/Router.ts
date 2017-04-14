@@ -2,7 +2,7 @@ import { Container, inject, singleton } from "./ioc";
 import Registry from "./Registry";
 import { isUndefined } from "util";
 import * as _ from 'lodash';
-import { defined, kindOf } from "@radic/util";
+import { IConfigProperty,defined, kindOf } from "@radic/util";
 import Parser from "../parser/Parser";
 import { Group, Command, Node } from "./nodes";
 import Events  from "./Events";
@@ -14,7 +14,8 @@ import Route from "./Route";
 @singleton('console.router')
 export default class Router {
 
-    constructor(@inject('console.registry') protected registry: Registry,
+    constructor(@inject('console.config') protected config: IConfigPropertyy,
+                @inject('console.registry') protected registry: Registry,
                 @inject('console.events') protected events: Events) {
     }
 
@@ -70,7 +71,7 @@ export default class Router {
         let items: i.NodeConfig[]    = this.items,
             stop: boolean            = false,
             spendArguments: string[] = [],
-            parentCls: Function      = null,
+            parentCls: Function      =  this.registry.root.cls,
             resolved: i.NodeConfig   = null;
 
         while ( stop === false && leftoverArguments.length > 0 ) {

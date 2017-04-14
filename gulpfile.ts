@@ -176,12 +176,11 @@ gulp.task("build-test", function () {
 });
 
 gulp.task("jasmine", function () {
-    return gulp.src([
-        "src/**/*.spec.js"
-    ])
+    let jasmineJson = require('./jasmine.json')
+    return gulp.src(jasmineJson.spec_files)
         .pipe(jasmine({
             reporter: new SpecReporter(),
-            config  : require('./jasmine.json')
+            config  : jasmineJson
         }))
 });
 //

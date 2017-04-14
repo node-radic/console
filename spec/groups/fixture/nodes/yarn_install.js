@@ -9,10 +9,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var decorators_1 = require("../../src/decorators");
+var decorators_1 = require("../../../../src/decorators");
 var yarn_1 = require("./yarn");
-var ioc_1 = require("../../src/core/ioc");
-var Output_1 = require("../../src/helpers/Output");
+var ioc_1 = require("../../../../src/core/ioc");
+var Output_1 = require("../../../../src/helpers/Output");
 var YarnInstallCommand = (function () {
     function YarnInstallCommand() {
     }
@@ -21,7 +21,7 @@ var YarnInstallCommand = (function () {
             this.installPackages(this.packages);
         }
         else {
-            var pkg_1 = require('package.json');
+            var pkg_1 = require('./package.json');
             var packages = Object.keys(pkg_1.dependencies).map(function (name) {
                 return name + '@' + pkg_1.dependencies[name];
             });

@@ -1,7 +1,7 @@
-import { command } from "../../src/decorators";
+import { command } from "../../../../src/decorators";
 import { YarnGroup } from "./yarn";
-import { inject } from "../../src/core/ioc";
-import Output from "../../src/helpers/Output";
+import { inject } from "../../../../src/core/ioc";
+import Output from "../../../../src/helpers/Output";
 
 @command('install', {
     group: YarnGroup,
@@ -29,7 +29,7 @@ export class YarnInstallCommand {
         if(this.packages.length > 0){
             this.installPackages(this.packages);
         } else {
-            const pkg = require('package.json')
+            const pkg = require('./package.json')
             const packages = Object.keys(pkg.dependencies).map((name) => {
                 return name + '@' + pkg.dependencies[name]
             })

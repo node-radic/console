@@ -3,6 +3,8 @@ import Registry from "./core/Registry";
 import { Container } from "./core/ioc";
 import { kindOf } from "@radic/util";
 import { merge } from 'lodash'
+import { CliMode } from "./core/cli";
+import { NodeType } from "./core/nodes";
 
 function makeOptions<T extends interfaces.NodeConfig>(cls: any, args: any[]): T {
     let len        = args.length;
@@ -66,6 +68,15 @@ function group(...args: any[]): ClassDecorator {
     }
 }
 
+function root(config: interfaces.RootConfig): ClassDecorator {
+    return (cls) => {
+        config.cls = cls;
+        Container.getInstance()
+            .make<Registry>('console.registry')
+            .setRoot(config);
+    }
+}
+
 export function plugin(name):ClassDecorator{
     return (cls) => {
         Container.getInstance()
@@ -74,4 +85,4 @@ export function plugin(name):ClassDecorator{
     }
 }
 
-export {command, group }
+export {command, group, root }
