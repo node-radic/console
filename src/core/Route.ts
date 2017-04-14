@@ -14,6 +14,7 @@ export default class Route<C extends i.NodeConfig, T extends i.Node<C>> {
 
     protected events: Events;
               isResolved: boolean = false;
+              isExecuted: boolean = false;
 
     parsed: ParsedNode;
 
@@ -40,6 +41,8 @@ export default class Route<C extends i.NodeConfig, T extends i.Node<C>> {
     }
 
     execute() {
+        if(this.isExecuted) return
+        this.isExecuted = true
         if ( ! this.isResolved ) {
             Cli.error('Could not resolve input to anything. ')
         }

@@ -15,7 +15,10 @@ describe("groups", function () {
             expect(route).toBeDefined();
         });
         it('the route is resolved correctly', function () { return expect(route.isResolved).toBeTruthy(); });
-        route.execute();
+        it('the route executes the node', function () {
+            route.execute();
+            expect(route.isExecuted).toBeTruthy();
+        });
     });
 });
 //# sourceMappingURL=groups.spec.js.map
