@@ -1,10 +1,9 @@
 import { Container, inject, singleton } from "./ioc";
-import * as _ from 'lodash';
-import i from '../interfaces'
+import * as _ from "lodash";
+import i from "../interfaces";
 import { CliMode } from "./cli";
-import { merge } from 'lodash'
-import { getRandomId, inspect, kindOf } from '@radic/util'
-import { NodeType } from "./nodes";
+import { IConfigProperty } from "../config";
+import { interfaces } from "inversify";
 
 
 /**
@@ -22,15 +21,14 @@ export default class Registry {
 
     private _groups: i.GroupConfig[]     = []
     private _commands: i.CommandConfig[] = []
-    private _plugins: {[name:string]:any}
+    private _plugins: { [name: string]: any }
     private _root: i.RootConfig
     private _rootGroup: i.GroupConfig;
     private _rootCommand: i.CommandConfig;
 
-    constructor(
-        @inject('console.nodes.defaults.group') private _groupDefaults:i.GroupConfig,
-        @inject('console.nodes.defaults.command') private _commandDefaults:i.CommandConfig
-    ) {
+    constructor(@inject('console.nodes.defaults.group') private _groupDefaults: i.GroupConfig,
+                @inject('console.nodes.defaults.command') private _commandDefaults: i.CommandConfig,
+                @inject('console.config') private _config: IConfigProperty) {
         this._rootGroup   = this.createGroupConfig({
             name         : '_root',
             globalOptions: {}
@@ -38,6 +36,10 @@ export default class Registry {
         this._rootCommand = this.createCommandConfig({
             name: '_root'
         })
+    }
+
+    get container(): Container {
+        return Container.getInstance();
     }
 
     getRoot<T extends i.NodeConfig>(mode: CliMode): T {
@@ -94,28 +96,51 @@ export default class Registry {
 
     addCommand(options: i.CommandConfig): i.CommandConfig {
         let isRoot = this.isRoot(options);
-        options = this.createCommandConfig(options);
+        options    = this.createCommandConfig(options);
         this._commands.push(options);
         return options;
     }
 
-    protected isRoot(options: i.NodeConfig):boolean {
+    addHelper<T>(options: i.HelperOptions): i.HelperOptions {
+        const defaults = {
+            name     : null,
+            cls      : null,
+            singleton: false,
+            config   : {}
+        }
+        options        = _.merge({}, defaults, options);
+        this._config.set('helpers.' + options.name, options.config);
+
+        Container.ensureInjectable(options.cls);
+        let binding = this.container
+            .bind('console.helpers.' + options.name)
+            .to(options.cls);
+        if ( options.singleton ) binding.inSingletonScope();
+        binding.onActivation((ctx: interfaces.Context, helperClass: Function): any => {
+            helperClass[ 'config' ] = this._config('helpers.' + options.name);
+            return helperClass;
+        })
+        return options;
+    }
+
+    protected isRoot(options: i.NodeConfig): boolean {
         let found = _.find([].concat(this.groups, this.commands), 'cls', options.cls);
         return <any> found;
     }
-    setRoot(options: i.RootConfig){
+
+    setRoot(options: i.RootConfig) {
         this._root = options;
     }
 
-    get root():i.RootConfig{
+    get root(): i.RootConfig {
         return this._root
     }
 
-    addPlugin(name:string, cls:any){
+    addPlugin(name: string, cls: any) {
         Container.getInstance().bind('console.plugins.' + name).to(cls)
     }
 
-    enablePlugin(name:string){
+    enablePlugin(name: string) {
         Container.getInstance().make('console.plugins.' + name);
     }
 }

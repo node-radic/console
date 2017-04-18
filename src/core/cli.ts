@@ -1,5 +1,4 @@
-import { merge } from 'lodash'
-import { Container, inject } from "./ioc";
+import { Container, inject, singleton } from "./ioc";
 import Registry from "./Registry";
 import { inspect, kindOf, Config, IConfigProperty } from "@radic/util";
 import { Parser, ParsedNode } from "../parser";
@@ -8,15 +7,14 @@ import config from "../config";
 import Router from "./Router";
 import Events  from "./Events";
 import Route from "./Route";
-import Output from "../helpers/Output";
 export type CliMode = 'groups' | 'command';
 
-@Container.singleton('console.cli')
+@singleton('console.cli')
 export class Cli {
 
     static error(msg: string) {
         if ( config.get('prettyError', true) ) {
-            Cli.getInstance().out.error('An error occurred!').writeln(msg);
+            // Cli.getInstance().out.error('An error occurred!').writeln(msg);
             process.exit(1);
         }
         throw new Error(msg);
@@ -30,8 +28,7 @@ export class Cli {
     constructor(@inject('console.registry') private _registry: Registry,
                 @inject('console.parser') private _parser: Parser,
                 @inject('console.router') private _router: Router,
-                @inject('console.events') private _events: Events,
-                @inject('console.helpers.output') public out: Output) {
+                @inject('console.events') private _events: Events) {
         this.config = config;
     }
 
@@ -44,7 +41,7 @@ export class Cli {
     }
 
     static getInstance(): Cli {
-        return <Cli> Container.getInstance().make<Cli>('console.cli');
+        return Container.getInstance().make<Cli>('console.cli');
     }
 
     parse(argv?: string[] | string): ParsedNode {
@@ -65,7 +62,7 @@ export class Cli {
         return this.parsed;
     }
 
-    handle(parsed?: ParsedNode): Route {
+    handle<C extends any, T extends any>(parsed?: ParsedNode): Route<C|any,T|any> {
         if ( this.config('mode') === 'command' ) {
             Cli.error('Cannot use the handle method when mode === command');
         }
@@ -89,11 +86,17 @@ export class Cli {
 
 
     group(name: string, config: interfaces.GroupConfig = {}): interfaces.GroupConfig {
+        if ( this.mode !== 'groups' ) {
+            throw new Error('Cannot declare groups for the CLI when not using "groups" mode.');
+        }
         config.name = name
         return this._registry.addGroup(config);
     }
 
     command(name: string, config: interfaces.CommandConfig): interfaces.CommandConfig {
+        if ( this.mode !== 'groups' ) {
+            throw new Error('Cannot declare commands for the CLI when not using "groups" mode.');
+        }
         config.name = name;
         return this._registry.addCommand(config);
     }
@@ -115,7 +118,7 @@ export class Cli {
 
     argument(name, config: interfaces.ArgumentConfig = {}): this {
         if ( this.config('mode') !== 'command' ) {
-            throw new Error('Cannot declare arguments for the CLI when using group mode. Use command mode instead');
+            throw new Error('Cannot declare arguments for the CLI when not using command mode.');
         }
         this._registry.getRoot<interfaces.CommandConfig>("command").arguments[ name ] = config;
         return this;
@@ -128,12 +131,5 @@ export class Cli {
         }
         return this;
 
-    }
-
-    plugins(...names: string[]) {
-        if ( names.length === 1 && kindOf(names[ 0 ]) === 'array' ) {
-            names = <any> names[ 0 ];
-        }
-        names.forEach(name => this._registry.enablePlugin(name))
     }
 }

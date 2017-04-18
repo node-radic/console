@@ -13,27 +13,24 @@ var decorators_1 = require("../../../../src/decorators");
 var yarn_1 = require("./yarn");
 var ioc_1 = require("../../../../src/core/ioc");
 var Output_1 = require("../../../../src/helpers/Output");
+var Input_1 = require("../../../../src/helpers/Input");
+var Describer_1 = require("../../../../src/helpers/Describer");
 var YarnInstallCommand = (function () {
     function YarnInstallCommand() {
     }
     YarnInstallCommand.prototype.handle = function () {
-        if (this.packages.length > 0) {
-            this.installPackages(this.packages);
-        }
-        else {
-            var pkg_1 = require('./package.json');
-            var packages = Object.keys(pkg_1.dependencies).map(function (name) {
-                return name + '@' + pkg_1.dependencies[name];
-            });
-            this.installPackages(packages);
-        }
-        this.out.line("packages: " + this.packages.join(', '));
+        var desc = this.desc.command(this);
+        this.out.dump(desc);
+    };
+    YarnInstallCommand.prototype.dumpStuff = function () {
+        this.out.line('{green}THIS:{reset}');
+        this.out.dump(this);
+        this.out.line('{green}CONFIG:{reset}');
+        this.out.dump(this.config.get('helpers.input'));
+        this.out.line('{green}THIS.in:{reset}');
+        this.out.dump(this.in);
         if (this.global)
             this.out.success('global');
-    };
-    YarnInstallCommand.prototype.installPackages = function (packages) {
-        if (this.global) {
-        }
     };
     return YarnInstallCommand;
 }());
@@ -41,6 +38,18 @@ __decorate([
     ioc_1.inject('console.helpers.output'),
     __metadata("design:type", Output_1.default)
 ], YarnInstallCommand.prototype, "out", void 0);
+__decorate([
+    ioc_1.inject('console.helpers.input'),
+    __metadata("design:type", Input_1.default)
+], YarnInstallCommand.prototype, "in", void 0);
+__decorate([
+    ioc_1.inject('console.helpers.describer'),
+    __metadata("design:type", Describer_1.default)
+], YarnInstallCommand.prototype, "desc", void 0);
+__decorate([
+    ioc_1.inject('console.config'),
+    __metadata("design:type", Function)
+], YarnInstallCommand.prototype, "config", void 0);
 YarnInstallCommand = __decorate([
     decorators_1.command('install', {
         group: yarn_1.YarnGroup,

@@ -1,31 +1,64 @@
-import { merge } from 'lodash'
-import { IConfigProperty, kindOf } from "@radic/util";
-import { Parser } from '@radic/console-colors';
-import { bindTo, Container, inject } from "../core/ioc";
+import { merge } from "lodash";
+import { kindOf } from "@radic/util";
+import { Parser } from "@radic/console-colors";
 import { inspect } from "util";
 import * as Table from "cli-table2";
 import * as archy from "archy";
-import { interfaces as i } from '../interfaces'
-const tty = require('tty');
-
+import { interfaces as i } from "../interfaces";
+import { helper } from "../decorators";
+const tty       = require('tty');
 const columnify = require('columnify')
 const truwrap   = require('truwrap');
-
 
 // truwrap({})
 
 
-@bindTo('console.helpers.output')
+@helper('output', {
+    singleton: true,
+    config   : {
+        quiet     : false,
+        styles    : {
+            title   : 'yellow bold',
+            subtitle: 'yellow',
+
+            success    : 'green lighten 20 bold',
+            warning    : 'orange lighten 20 bold',
+            error      : 'red lighten 20 bold',
+            header     : 'darkorange bold',
+            group      : 'steelblue bold',
+            command    : 'darkcyan',
+            description: 'darkslategray',
+            argument   : 'yellow darken 25',
+
+            optional: 'yellow',
+            type    : 'yellow'
+        },
+        tableStyle: {
+            FAT : {
+                'top'     : '═', 'top-mid': '╤', 'top-left': '╔', 'top-right': '╗'
+                , 'bottom': '═', 'bottom-mid': '╧', 'bottom-left': '╚', 'bottom-right': '╝'
+                , 'left'  : '║', 'left-mid': '╟', 'mid': '─', 'mid-mid': '┼'
+                , 'right' : '║', 'right-mid': '╢', 'middle': '│'
+            },
+            SLIM: { chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' } },
+            NONE: {
+                'top'     : '', 'top-mid': '', 'top-left': '', 'top-right': ''
+                , 'bottom': '', 'bottom-mid': '', 'bottom-left': '', 'bottom-right': ''
+                , 'left'  : '', 'left-mid': '', 'mid': '', 'mid-mid': ''
+                , 'right' : '', 'right-mid': '', 'middle': ' '
+            }
+        }
+    }
+})
 export default class Output {
 
-    @inject('console.config')
-    config: IConfigProperty
+    config: i.HelperOptionsConfig;
 
     _parser: Parser;
     get parser(): Parser {
         if ( ! this._parser ) {
             this._parser = new Parser;
-            this._parser.colors.styles(this.config('helpers.output.styles'));
+            this._parser.colors.styles(this.config.styles);
         }
         return this._parser
     }
@@ -37,6 +70,7 @@ export default class Output {
     macros: { [name: string]: Function }
 
     write(text: string): this {
+        if ( this.config.quiet ) return this
 
         if ( this.useParser && this.colorsEnabled )
             text = this.parser.parse(text)

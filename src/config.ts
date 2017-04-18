@@ -4,10 +4,10 @@ import { Container } from "./core/ioc";
 const defaultConfig: interfaces.CliConfig | any = {
     mode  : "groups",
     autoExecute: true,
+    prettyErrors: true,
     log: {
         level: 'debug'
     },
-    prettyErrors: true,
     text: {
 
     },
@@ -32,47 +32,13 @@ const defaultConfig: interfaces.CliConfig | any = {
     router: {
 
     },
+
+
     helpers: {
-        output: {
-            styles: {
-                title   : 'yellow bold',
-                subtitle: 'yellow',
-
-                success    : 'green lighten 20 bold',
-                warning : 'orange lighten 20 bold',
-                error    : 'red lighten 20 bold',
-
-
-                header     : 'darkorange bold',
-                group      : 'steelblue bold',
-                command    : 'darkcyan',
-                description: 'darkslategray',
-                argument   : 'yellow darken 25',
-
-                optional : 'yellow',
-                type : 'yellow'
-            },
-            tableStyle: {
-                FAT : {
-                    'top'     : '═', 'top-mid': '╤', 'top-left': '╔', 'top-right': '╗'
-                    , 'bottom': '═', 'bottom-mid': '╧', 'bottom-left': '╚', 'bottom-right': '╝'
-                    , 'left'  : '║', 'left-mid': '╟', 'mid': '─', 'mid-mid': '┼'
-                    , 'right' : '║', 'right-mid': '╢', 'middle': '│'
-                },
-                SLIM: { chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' } },
-                NONE: {
-                    'top'     : '', 'top-mid': '', 'top-left': '', 'top-right': ''
-                    , 'bottom': '', 'bottom-mid': '', 'bottom-left': '', 'bottom-right': ''
-                    , 'left'  : '', 'left-mid': '', 'mid': '', 'mid-mid': ''
-                    , 'right' : '', 'right-mid': '', 'middle': ' '
-                }
-            }
-        },
-
     }
 }
 const _config                             = new Config(defaultConfig)
-export const config                       = Config.makeProperty(_config);
+const config                       = Config.makeProperty(_config);
 export default config;
-
+export {IConfigProperty}
 Container.getInstance().bind<IConfigProperty>('console.config').toConstantValue(config);

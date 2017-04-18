@@ -1,12 +1,12 @@
-import { inspect } from "@radic/util";
-import ParsedNode from "../../src/parser/ParsedNode";
-import Route from "../../src/core/Route";
+
+import {ParsedNode,Route } from "../../src";
+
 describe("groups", () => {
     let groupsFixture = require('./fixture');
     let cli           = groupsFixture.cli;
     cli.config({ autoExecute: false, mode: 'groups' })
     describe('command in group "yarn install" ', () => {
-        let parsed: ParsedNode, route: Route;
+        let parsed: ParsedNode, route: Route<any, any>;
         it('parse returns valid parsed node', () => {
             parsed = cli.parse('yarn install');
             expect(parsed).toBeDefined()

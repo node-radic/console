@@ -14,7 +14,7 @@ import Route from "./Route";
 @singleton('console.router')
 export default class Router {
 
-    constructor(@inject('console.config') protected config: IConfigPropertyy,
+    constructor(@inject('console.config') protected config: IConfigProperty,
                 @inject('console.registry') protected registry: Registry,
                 @inject('console.events') protected events: Events) {
     }
@@ -64,7 +64,7 @@ export default class Router {
      * Resolves command or group from an array of arguments (useful for parsing the argv._ array)
      * @param parsedRoot
      */
-    resolve(parsedRoot: ParsedNode): Route | null {
+    resolve(parsedRoot: ParsedNode): Route<any, any> | null {
         this.events.emit('router:resolve', parsedRoot, this)
         let leftoverArguments: string[] = [].concat(parsedRoot.arguments);
 

@@ -74,6 +74,17 @@ namespace interfaces {
         configuration?: any
     }
 
+    export interface HelperOptionsConfig {
+        [name: string]: any
+
+    }
+
+    export interface HelperOptions {
+        name?: string
+        cls?: any
+        singleton?: boolean
+        config?: HelperOptionsConfig
+    }
 
     /** Declaration of a option */
     export interface OptionConfig {
@@ -148,7 +159,9 @@ namespace interfaces {
         get: <T extends any>(name: string, defaultValue?: any) => T
         getKeys(): string[]
         isEmpty(): boolean
-        getConfig(name: string): OptionConfig
+        config(name: string): OptionConfig
+        getConfig(): { [name: string]: OptionConfig }
+
     }
 
     /** parsed arguments from a command its arguments declarations */
@@ -157,7 +170,8 @@ namespace interfaces {
         has: (name: string) => boolean
         get: <T extends any>(name: string, defaultValue?: any) => T
         getKeys(): string[]
-        getConfig(name: string): ArgumentConfig
+        config(name: string): ArgumentConfig
+        getConfig(): { [name: string]: ArgumentConfig }
 
     }
 

@@ -54,6 +54,11 @@ export class Container extends BaseContainer  {
         return this.get<T>(binding)
     }
 
+    when(){
+
+        // this.applyMiddleware((planAndResolve:interfaces.PlanAndResolve<any>))
+    }
+
 
     static getParentClasses(cls: Function, classes: Function[] = []): Function[] {
         if ( cls[ '__proto__' ] !== null ) {

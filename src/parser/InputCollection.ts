@@ -4,7 +4,7 @@ import { defined } from "@radic/util";
 abstract class InputCollection<I extends any, T>{
     [key: string]: any
 
-    constructor(args: { [name: string]: any }, public _config: { [key: string]: I }) {
+    constructor(args: { [name: string]: any }, public __config: { [key: string]: I }) {
         Object.keys(args).forEach(key => {
             this[ key ] = args[ key ];
         })
@@ -17,7 +17,7 @@ abstract class InputCollection<I extends any, T>{
     get<T>(name: string, defaultValueOverride?: any ): T {
         if(this.has(name)) return this[ name ];
         if(defined(defaultValueOverride)) return defaultValueOverride
-        let def = this.getConfig(name).default;
+        let def = this.config(name).default;
         if(defined(def)) return def
     };
 
@@ -29,12 +29,16 @@ abstract class InputCollection<I extends any, T>{
         return Object.keys(this);
     }
 
-    getConfig(name: string): I {
-        return this._config[ name ];
+    config(name?: string): I {
+        return this.__config[ name ]
+    }
+
+    getConfig(): { [key: string]: I } {
+        return this.__config;
     }
 
     typeOf(name: string): TypeOf<string, T> {
-        return TypeOf.create(this._config[ name ].type)
+        return TypeOf.create(this.__config[ name ].type)
     }
 }
 

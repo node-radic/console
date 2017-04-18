@@ -77,12 +77,15 @@ function root(config: interfaces.RootConfig): ClassDecorator {
     }
 }
 
-export function plugin(name):ClassDecorator{
+function helper(name: string): ClassDecorator;
+function helper(options: interfaces.HelperOptions): ClassDecorator;
+function helper(name: string, options: interfaces.HelperOptions): ClassDecorator;
+function helper(...args: any[]): ClassDecorator {
     return (cls) => {
         Container.getInstance()
             .make<Registry>('console.registry')
-            .addPlugin(name, cls);
+            .addHelper(makeOptions(cls, args));
     }
 }
 
-export {command, group, root }
+export {command, group, root, helper }

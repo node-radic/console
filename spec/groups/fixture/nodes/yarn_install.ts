@@ -2,6 +2,9 @@ import { command } from "../../../../src/decorators";
 import { YarnGroup } from "./yarn";
 import { inject } from "../../../../src/core/ioc";
 import Output from "../../../../src/helpers/Output";
+import Input from "../../../../src/helpers/Input";
+import { IConfigProperty } from "@radic/util";
+import Describer from "../../../../src/helpers/Describer";
 
 @command('install', {
     group: YarnGroup,
@@ -24,28 +27,32 @@ export class YarnInstallCommand {
     // DI
     @inject('console.helpers.output') out:Output
 
+    @inject('console.helpers.input') in:Input
+
+    @inject('console.helpers.describer') desc:Describer
+
+    @inject('console.config') config:IConfigProperty;
+
     handle(){
+        let desc = this.desc.command(this)
+        this.out.dump(desc);
 
-        if(this.packages.length > 0){
-            this.installPackages(this.packages);
-        } else {
-            const pkg = require('./package.json')
-            const packages = Object.keys(pkg.dependencies).map((name) => {
-                return name + '@' + pkg.dependencies[name]
-            })
-            this.installPackages(packages);
-        }
-        this.out.line(`packages: ${this.packages.join(', ')}`);
-
-        if(this.global) this.out.success('global');
+        // this.in.ask('hello??').then((answer) => {
+        //     this.out.dump(answer);
+        // })
     }
 
-    installPackages(packages:string[]){
+    dumpStuff(){
 
-        if(this.global){
-            //...
-        }
+        // this.out.line(`packages: ${this.packages.join(', ')}`);
+        this.out.line('{green}THIS:{reset}')
+        this.out.dump(this);
 
-        // ...
+        this.out.line('{green}CONFIG:{reset}')
+        this.out.dump(this.config.get('helpers.input'))
+
+        this.out.line('{green}THIS.in:{reset}')
+        this.out.dump(this.in);
+        if(this.global) this.out.success('global');
     }
 }
