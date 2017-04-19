@@ -1,11 +1,11 @@
 import { interfaces as i } from "../interfaces";
-import * as _ from 'lodash'
-import  ParsedArguments  from "./ArgumentCollection";
+import * as _ from "lodash";
+import ParsedArguments from "./ArgumentCollection";
 import { Container } from "../core/ioc";
-import { inject } from "../index";
-import Registry  from "../core/Registry";
+import Registry from "../core/Registry";
 import Parser from "./Parser";
 import { injectable } from "inversify";
+import { kindOf } from "@radic/util";
 
 @injectable()
 export default class ParsedNode {
@@ -14,6 +14,7 @@ export default class ParsedNode {
     public options: { [name: string]: any } = {}
     public arguments: string[]              = [];
     public str: string
+
 
     protected _nodeInstance: any;
 
@@ -26,16 +27,17 @@ export default class ParsedNode {
 
     make<T>(): T {
         const c        = this.config;
-        const registry      = Container.getInstance().make<Registry>('console.registry')
-        const parser        = Container.getInstance().make<Parser>('console.parser')
-        let node: T         = Container.getInstance().build<T>(c.cls);
-
+        const registry = Container.getInstance().make<Registry>('console.registry')
+        const parser   = Container.getInstance().make<Parser>('console.parser')
+        let isRoot     = registry.root.cls === c.cls;
+        let node: T    = Container.getInstance().build<T>(c.cls);
 
         let setters = {
             _config: c,
             options: this._options
         }
-        let parsed: ParsedNode;
+
+        const addSetter = (key: string, val: any) => { if ( setters[ key ] === undefined ) setters[ key ] = val; }
 
         if ( c.type === 'group' ) {
             // parsed = parser.parseGroup(this.argv, c);
@@ -45,18 +47,24 @@ export default class ParsedNode {
             if ( this.hasArguments ) {
                 this.getArguments().getKeys().forEach(key => {
                     // @todo: if command[key] is not undefined, let it behave like a defaultOverride / fallback: command[ key ] = parsed.arg(key, command[ key ])
-                    if ( setters[ key ] === undefined ) {
-                        setters[ key ] = this.arg(key)
-                    }
+                    addSetter(key, this.arg(key));
                 })
             }
         }
 
-        this.getOptions().getKeys().forEach(key => {
-            if ( setters[ key ] === undefined ) {
-                setters[ key ] = this.opt(key)
-            }
-        })
+        this.getOptions().getKeys().forEach(key => addSetter(key, this.opt(key)))
+
+        if ( ! isRoot ) {
+            let rootOptionsConfig: any = registry.root.instance.getOptions().getConfig();
+            Object.keys(rootOptionsConfig).forEach(key => {
+                let config: i.RootOptionConfig = rootOptionsConfig[ key ];
+                if ( ! config.global ) return;
+                let opt = registry.root.instance.opt(key);
+                addSetter(key, opt)
+                if ( kindOf(config.alias) === 'array' ) (<string[]> config.alias).forEach(alias => addSetter(alias, opt));
+                else if ( kindOf(config.alias) === 'string' ) addSetter(<string> config.alias, opt);
+            })
+        }
 
         Object.keys(setters).forEach(key => {
             node[ key ] = setters[ key ]
@@ -82,13 +90,13 @@ export default class ParsedNode {
         this.options  = _.cloneDeep(yargsOutput.argv);
         delete this.options._
 
-        this.arguments  = yargsOutput.argv._;
+        this.arguments = yargsOutput.argv._;
 
         this._arguments = new ParsedArguments({}, {});
         if ( args ) {
             this.usesArguments = true;
             this._arguments    = args;
-            this.hasArguments = Object.keys(args).length > 0
+            this.hasArguments  = Object.keys(args).length > 0
         }
     }
 
@@ -133,5 +141,8 @@ export default class ParsedNode {
         return this._arguments;
     }
 
+    getConfig(): i.NodeConfig {
+        return this.config;
+    }
 
 }

@@ -35,7 +35,8 @@ export class YarnInstallCommand {
 
     handle(){
         let desc = this.desc.command(this)
-        this.out.dump(desc);
+        // this.out.dumpp(desc);
+        // this.out.success('ok');
 
         // this.in.ask('hello??').then((answer) => {
         //     this.out.dump(answer);

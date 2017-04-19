@@ -1,5 +1,6 @@
 import { CliMode } from "./core/cli";
-import { OptionType, ArgumentType, Group, Command, NodeType } from "./core/nodes";
+import { ArgumentType, Command, Group, NodeType, OptionType } from "./core/nodes";
+import ParsedNode from "./parser/ParsedNode";
 namespace interfaces {
 
     /**  */
@@ -79,12 +80,29 @@ namespace interfaces {
 
     }
 
+    /**
+     * Helper decorator options
+     *
+     * @interface
+     * @see helper The helper decorator function
+     */
     export interface HelperOptions {
+        /** set by the decorator */
         name?: string
+        /** set by the decorator */
         cls?: any
+        /** flag binding in container as singleton */
         singleton?: boolean
-        listeners?: {[event:string] : string }
-        configKey?:string
+        /** Enables listeners, ... */
+        enabled?: boolean
+        /** Bind events to methods */
+        listeners?: { [event: string]: string }
+        /** the key used to inject the parsed configuration into the instance of the helper. default 'config' **/
+        configKey?: string
+
+        /**
+         * sdfsdf
+         */
         config?: HelperOptionsConfig
     }
 
@@ -119,6 +137,7 @@ namespace interfaces {
     export interface RootConfig {
         globalOptions: { [name: string]: OptionConfig }
         cls?: any
+        instance?: ParsedNode | null
     }
 
     /**  */
@@ -162,7 +181,7 @@ namespace interfaces {
         getKeys(): string[]
         isEmpty(): boolean
         config(name: string): OptionConfig
-        getConfig(): { [name: string]: OptionConfig }
+        getConfig(): { [name: string]: OptionConfig | RootOptionConfig }
 
     }
 

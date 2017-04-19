@@ -8,11 +8,25 @@ import { Group, Command, Node } from "./nodes";
 import Events  from "./Events";
 import ParsedNode from "../parser/ParsedNode";
 import { interfaces as i } from "../interfaces";
-import Route from "./Route";
+import NodeResolverResult from "./NodeResolverResult";
+
+/* rename to?
+Router:
+- Resolver
+- NodeResolver
+- NodeHierarchyResolver
+
+Route:
+- NodeResolution
+- Resolved
+- ResolvedNode
+-
 
 
+NodeResolver -> ResolvedNode
+ */
 @singleton('console.router')
-export default class Router {
+export default class NodeResolver {
 
     constructor(@inject('console.config') protected config: IConfigProperty,
                 @inject('console.registry') protected registry: Registry,
@@ -64,8 +78,9 @@ export default class Router {
      * Resolves command or group from an array of arguments (useful for parsing the argv._ array)
      * @param parsedRoot
      */
-    resolve(parsedRoot: ParsedNode): Route<any, any> | null {
+    resolve(parsedRoot: ParsedNode): NodeResolverResult<any, any> | null {
         this.events.emit('router:resolve', parsedRoot, this)
+
         let leftoverArguments: string[] = [].concat(parsedRoot.arguments);
 
         let items: i.NodeConfig[]    = this.items,
@@ -73,6 +88,12 @@ export default class Router {
             spendArguments: string[] = [],
             parentCls: Function      =  this.registry.root.cls,
             resolved: i.NodeConfig   = null;
+
+        // if no arguments, then its the root node
+        if(parsedRoot.arguments.length === 0){
+            stop = true
+            resolved = this.registry.root
+        }
 
         while ( stop === false && leftoverArguments.length > 0 ) {
             let part                = leftoverArguments.shift();
@@ -93,10 +114,10 @@ export default class Router {
         let argv = parsedRoot.argv;
         if ( resolved ) {
             argv             = argv.filter((val) => spendArguments.indexOf(val) === - 1);
-            resolved.options = _.merge({}, this.registry.getRoot<i.GroupConfig>('groups').globalOptions, resolved.options);
+            // resolved.options = _.merge({}, this.registry.root.globalOptions, resolved.options);
         }
 
-        const route = new Route(argv, resolved);
+        const route = new NodeResolverResult(argv, resolved);
         this.events.emit('router:resolved', route, this)
         return route;
     }

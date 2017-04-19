@@ -3,10 +3,25 @@ export * from './nodes'
 export * from './root'
 
 export const cli = Cli.getInstance();
-cli.events.on('route:execute', (route: Route<any, any>) => {
-    // cli.get<Output>('console.helpers.output').dump(route);
-    return 324
-})
+cli
+    // .helpers('input', 'output')
+    .helpers('input')
+    .helper('output', {
+        quiet : false,
+        colors: true,
+        styles    : {
+            success: 'blue lighten 20 bold', //'green lighten 20 bold',
+        }
+    })
+    .helper('describer', {
+        option: {
+            key: 'h',
+            aliases: ['help']
+        }
+    })
+
+
+
 export default cli;
 
 

@@ -1,22 +1,22 @@
 import * as parser from 'yargs-parser'
 import { merge, cloneDeep } from 'lodash'
-import { defined, kindOf } from '@radic/util'
-import { Container } from "../core/ioc";
+import { defined, IConfigProperty, kindOf } from '@radic/util'
+import { bindTo, Container, inject } from "../core/ioc";
 import { interfaces as i } from "../interfaces";
 import ParsedNode from "./ParsedNode";
 import OptionCollection from "./OptionCollection";
 import ArgumentCollection from "./ArgumentCollection";
-import { config } from "../config";
-import Router from "../core/Router";
-import { NodeType } from "../core/nodes";
 import { Cli } from "../core/cli";
+import Registry from "../core/Registry";
 
-@Container.bindTo('console.parser')
+@bindTo('console.parser')
 export default class Parser {
 
     argumentTypeTransformers: { [name: string]: i.ArgumentTypeTransformer };
 
-    constructor(@Container.inject('console.router') protected router: Router) {
+    constructor(
+        @inject('console.config') protected config: IConfigProperty,
+        @inject('console.registry') protected registry: Registry) {
         this.argumentTypeTransformers = {
             boolean(val: any): boolean {
                 return val === 'true' || val === true || val === '1';
@@ -29,15 +29,6 @@ export default class Parser {
             }
         }
     }
-
-    parseGroup(argv: string[], config: i.GroupConfig): ParsedNode {
-        return this.parseNode(argv, config);
-    }
-
-    parseCommand(argv: string[], config: i.CommandConfig): ParsedNode {
-        return this.parseNode(argv, config);
-    }
-
 
 
     setArgumentTransformer(type: string, transformer: i.ArgumentTypeTransformer) {
@@ -86,7 +77,7 @@ export default class Parser {
 
                 if ( cfg.required ) Cli.error(`Argument ${pos} [${name}] is required`);
 
-                if ( defined(cfg.type) && cfg.type === 'boolean' && config('parser.arguments.undefinedBooleanIsFalse', false) === true )
+                if ( defined(cfg.type) && cfg.type === 'boolean' && this.config('parser.arguments.undefinedBooleanIsFalse', false) === true )
                     return parsed[ name ] = null;
             }
 
@@ -126,7 +117,15 @@ export default class Parser {
             default      : {},
             narg         : {},
             normalize    : true,
-            configuration: {}
+            configuration: {
+                'short-option-groups': true,
+                'camel-case-expansion': true,
+                'dot-notation': true,
+                'parse-numbers': true,
+                'boolean-negation': true,
+                'duplicate-arguments-array': true,
+                'flatten-duplicate-arrays': true,
+            }
         };
         Object.keys(optionsConfig).forEach(name => {
             let config = optionsConfig[ name ];

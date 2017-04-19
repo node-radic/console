@@ -20,7 +20,6 @@ var YarnInstallCommand = (function () {
     }
     YarnInstallCommand.prototype.handle = function () {
         var desc = this.desc.command(this);
-        this.out.dump(desc);
     };
     YarnInstallCommand.prototype.dumpStuff = function () {
         this.out.line('{green}THIS:{reset}');

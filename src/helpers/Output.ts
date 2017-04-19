@@ -16,18 +16,23 @@ const truwrap   = require('truwrap');
 @helper('output', {
     singleton: true,
     config   : {
-        quiet     : false,
+        quiet : false,
+        colors: true,
+
         styles    : {
             title   : 'yellow bold',
             subtitle: 'yellow',
 
-            success    : 'green lighten 20 bold',
-            warning    : 'orange lighten 20 bold',
-            error      : 'red lighten 20 bold',
+            success: 'green lighten 20 bold',
+            warning: 'orange lighten 20 bold',
+            error  : 'red lighten 20 bold',
+
             header     : 'darkorange bold',
             group      : 'steelblue bold',
             command    : 'darkcyan',
             description: 'darkslategray',
+            desc       : '<%= helpers.output.styles.description %>', // alias
+
             argument   : 'yellow darken 25',
 
             optional: 'yellow',
@@ -51,10 +56,10 @@ const truwrap   = require('truwrap');
     }
 })
 export default class Output {
-
     config: i.HelperOptionsConfig;
-
+    macros: { [name: string]: Function }
     _parser: Parser;
+
     get parser(): Parser {
         if ( ! this._parser ) {
             this._parser = new Parser;
@@ -63,16 +68,30 @@ export default class Output {
         return this._parser
     }
 
+    parse(text: string, force: boolean = false) {
 
-    useParser: boolean     = true
-    colorsEnabled: boolean = true
+        if ( this.config.colors || force ) {
+            text = this.parser.parse(text)
+        } else if ( ! this.config.colors ) {
+            // @todo parser clean
+            // text = this.parser.clean(text);
+        }
+        return text;
+    }
 
-    macros: { [name: string]: Function }
+    protected styleString(style, text) {
+        this.writeln(`{${style}}${text}{/${style}}`)
+    }
+
+    get nl(): this {
+        this.writeln()
+        return this
+    }
 
     write(text: string): this {
         if ( this.config.quiet ) return this
 
-        if ( this.useParser && this.colorsEnabled )
+        if ( this.config.colors )
             text = this.parser.parse(text)
 
         // if ( ! this.colorsEnabled )
@@ -92,17 +111,13 @@ export default class Output {
         return this
     }
 
-    get nl(): this {
-        this.line()
-        return this
-    }
-
-    protected styleString(style, text) {
-        this.writeln(`{${style}}${text}{/${style}}`)
-    }
-
     dump(...args: any[]): void {
-        args.forEach((arg) => this.writeln(inspect(arg, { colors: this.colorsEnabled, depth: 5, showHidden: true })))
+        args.forEach((arg) => this.writeln(inspect(arg, { colors: this.config.colors, depth: 5, showHidden: true })))
+    }
+
+    /** dump parsed stuff, so no colors **/
+    dumpp(...args: any[]): void {
+        args.forEach((arg) => this.writeln(inspect(arg, { colors: false, depth: 5, showHidden: true })))
     }
 
     macro(name: string, fn?: Function) {
@@ -113,21 +128,6 @@ export default class Output {
     tree(label: string, nodes: any[]): this {
         let tree = archy(<archy.Data> { label, nodes });
         return this.line(tree)
-    }
-
-    success(text: string): this {
-        this.styleString('success', text)
-        return this
-    }
-
-    error(text: string): this {
-        this.styleString('error', text)
-        return this
-    }
-
-    warning(text: string): this {
-        this.styleString('error', text)
-        return this
     }
 
     table(options: any = {}): any [] {
@@ -153,8 +153,18 @@ export default class Output {
     }
 
 
-    setUseParser(use: boolean) {
-        this.useParser = use;
+    success(text: string): this {
+        this.styleString('success', text)
+        return this
     }
 
+    error(text: string): this {
+        this.styleString('error', text)
+        return this
+    }
+
+    warning(text: string): this {
+        this.styleString('error', text)
+        return this
+    }
 }

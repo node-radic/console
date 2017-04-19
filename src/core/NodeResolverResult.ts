@@ -14,27 +14,18 @@ export default class Route<C extends i.NodeConfig, T extends i.Node<C>> {
               isResolved: boolean = false;
               isExecuted: boolean = false;
 
-    parsed: ParsedNode;
+    parsedNode: ParsedNode;
 
     constructor(public argv: string[],
                 public item?: C) {
 
-        this.events = Container.getInstance().make<Events>('console.events')
-        this.parser = Container.getInstance().make<Parser>('console.parser')
-        // this.registry     = Container.getInstance().make<Registry>('console.registry')
-
-        // this.hasArguments = leftoverArguments.length > 1;
+        this.events     = Container.getInstance().make<Events>('console.events')
+        this.parser     = Container.getInstance().make<Parser>('console.parser')
         this.isResolved = defined(item) && item !== null;
-
-        // The remaining arguments did not match any of the children in the group.
-        // This equals bad input when doing on a group, a group does not accept arguments
-        // if ( this.isResolved && this.hasArguments && item.type === 'group' ) {
-        //     this.hasInvalidArguments = true;
-        // }
-
         this.events.emit('route:created', this)
-
-        this.parsed = this.parser.parse(this.argv, this.item);
+        if ( this.isResolved ) {
+            this.parsedNode = this.parser.parse(argv, item);
+        }
 
     }
 
@@ -45,17 +36,19 @@ export default class Route<C extends i.NodeConfig, T extends i.Node<C>> {
     execute() {
         this.events.emit('route:execute', this) // emit event here before isExecuted to provide Route cancelation
         if ( this.isExecuted ) return
-        this.isExecuted = true
         if ( ! this.isResolved ) {
             Cli.error('Could not resolve input to anything. ')
         }
-        if ( kindOf(this.node[ 'handle' ]) === 'function' ) {
-            this.node[ 'handle' ].apply(this.node);
+        if ( kindOf(this.parsedNodeInstance[ 'handle' ]) === 'function' ) {
+            this.events.emit('route:execute:handle', this)
+            if ( this.isExecuted ) return
+            this.parsedNodeInstance[ 'handle' ].apply(this.parsedNodeInstance);
         }
+        this.isExecuted = true
         this.events.emit('route:executed', this)
     }
 
-    get node(): T {
-        return this.parsed.getNodeInstance<T>()
+    get parsedNodeInstance(): T {
+        return this.parsedNode.getNodeInstance<T>()
     }
 }

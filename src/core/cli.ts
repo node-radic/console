@@ -1,12 +1,12 @@
 import { Container, inject, ServiceIdentifier, singleton } from "./ioc";
 import Registry from "./Registry";
-import { inspect, kindOf, Config, IConfigProperty } from "@radic/util";
-import { Parser, ParsedNode } from "../parser";
-import interfaces from '../interfaces'
+import { IConfigProperty, inspect, kindOf } from "@radic/util";
+import { ParsedNode, Parser } from "../parser";
+import interfaces from "../interfaces";
 import config from "../config";
-import Router from "./Router";
-import Events  from "./Events";
-import Route from "./Route";
+import Router from "./NodeResolver";
+import Events from "./Events";
+import Route from "./NodeResolverResult";
 export type CliMode = 'groups' | 'command';
 
 @singleton('console.cli')
@@ -22,7 +22,7 @@ export class Cli {
 
     public config: IConfigProperty
 
-    protected parsed: ParsedNode;
+    protected parsedRootNode: ParsedNode;
 
     constructor(@inject('console.registry') private _registry: Registry,
                 @inject('console.parser') private _parser: Parser,
@@ -44,43 +44,30 @@ export class Cli {
     }
 
     parse(argv?: string[] | string): ParsedNode {
-        this.events.emit('parse', argv);
-        if ( kindOf(argv) === 'string' ) {
-            argv = (<string> argv).split(' ')
-        }
+        this.events.emit('parse', argv, this);
+        if ( kindOf(argv) === 'string' ) argv = (<string> argv).split(' ')
         argv = <string[]> argv || process.argv.slice(2);
-        this.events.emit([ 'parse:before', 'parse:before:' + this.config('mode') ], argv);
-        if ( this.config('mode') === "command" ) {
-            this.parsed = this._parser.parseCommand(argv, this._registry.getRoot('command'));
-        } else {
-            this.parsed = this._parser.parseGroup(argv, this._registry.getRoot('groups'));
-        }
-        this.events.emit([ 'parse:after', 'parse:after:' + this.config('mode') ], this.parsed);
-        if(this.mode === 'groups' && this.config('autoExecute')){
+
+        this.parsedRootNode = this._registry.root.instance  = this._parser.parse(argv, this._registry.root);
+
+        if ( this.mode === 'groups' && this.config('autoExecute') ) {
             this.handle().execute();
         }
-        this.events.emit('parsed', this.parsed);
-        return this.parsed;
+
+        this.events.emit('parsed', this.parsedRootNode, this);
+        return this.parsedRootNode;
     }
 
-    handle<C extends any, T extends any>(parsed?: ParsedNode): Route<C|any,T|any> {
-        this.events.emit('handle', parsed);
+    handle<C extends any, T extends any>(parsed?: ParsedNode): Route<C | any, T | any> {
+        this.events.emit('handle', parsed, this);
         if ( this.config('mode') === 'command' ) {
             Cli.error('Cannot use the handle method when mode === command');
         }
-        if ( ! this.parsed ) {
+        if ( ! this.parsedRootNode ) {
             Cli.error('Cannot handle, need to parse first');
         }
-        // const route: Route = this._router.resolve(parsed || this.parsed);
-        // if ( ! route.isResolved ) {
-        //     throw new Error('not resolved')
-        // }
-        // let nodeFactory: NodeFactory;
-        // let node  = nodeFactory.make(route.item, route.args);
-        // let node2 = nodeFactory.makeFromRoute(route);
-
-        const route = this._router.resolve(parsed || this.parsed);
-        this.events.emit('handled', route);
+        const route = this._router.resolve(parsed || this.parsedRootNode);
+        this.events.emit('handled', route, this);
         return route;
     }
 
@@ -109,7 +96,8 @@ export class Cli {
         let global = config.global = config.global || false;
         let key = (global === true && this.mode === "groups") ? 'globalOptions' : 'options';
         delete config.global;
-        this._registry.getRoot(this.config('mode'))[ key ][ name ] = config;
+
+        this._registry.root.options[ name ] = config;
         return this;
     }
 
@@ -124,9 +112,8 @@ export class Cli {
         if ( this.config('mode') !== 'command' ) {
             throw new Error('Cannot declare arguments for the CLI when not using command mode.');
         }
-        this._registry.getRoot<interfaces.CommandConfig>("command").arguments[ name ] = config;
+        this._registry.root.arguments[ name ] = config;
         return this;
-
     }
 
     arguments(config: { [name: string]: interfaces.ArgumentConfig }): this {
@@ -134,10 +121,19 @@ export class Cli {
             Object.keys(config).forEach(name => this.argument(name, config[ name ]));
         }
         return this;
-
     }
 
-    get<T>(id:ServiceIdentifier):T{
+    helper(name: string, config?: interfaces.HelperOptionsConfig): this {
+        this._registry.enableHelper(name, config)
+        return this;
+    }
+
+    helpers(...names:string[]):this{
+        names.forEach(name => this.helper(name));
+        return this
+    }
+
+    get<T>(id: ServiceIdentifier): T {
         return Container.getInstance().get<T>(id);
     }
 }

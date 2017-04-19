@@ -1,19 +1,24 @@
-import { find, merge } from "lodash";
+import { merge } from "lodash";
 import { Container, inject } from "../core/ioc";
 import { interfaces as i } from "../interfaces";
 import Output from "./Output";
 import { helper } from "../decorators";
-import { kindOf } from "@radic/util";
 import Registry from "../core/Registry";
-import Route from "../core/Route";
+import Route from "../core/NodeResolverResult";
 
 @helper('describer', {
-    config: {},
+    config   : {
+        option: {
+            key: false,
+            aliases: []
+        }
+    },
     listeners: {
         'route:execute': 'onRouteExecute'
     }
 })
 export default class Describer {
+    config: any;
 
     constructor(@inject('console.helpers.output') protected out: Output) {}
 
@@ -24,7 +29,7 @@ export default class Describer {
     }
 
 
-    options(options: { [name: string]: i.OptionConfig }) : Array<{keys:string[], desc:string, type:string}> {
+    options(options: { [name: string]: i.OptionConfig }): Array<{ keys: string[], desc: string, type: string }> {
         let opts: any = [];
         let prefixKey = (key: string) => (key.length === 1 ? '-' : '--') + key
         Object.keys(options).forEach((key) => {
@@ -33,9 +38,12 @@ export default class Describer {
             let aliases        = []; //definition.getOptions().alias[ key ] || []
             keys               = keys.concat(aliases.map(prefixKey));
             keys.sort((a: string, b: string) => a.length - b.length);
-            let type = `[{yellow}${opt.type}{/yellow}]`
-            type     = opt.type === undefined ? '' : type;
-            opts.push({keys:  keys.join('{grey}|{/grey}'), desc: opt.desc, type })
+
+            opts.push({
+                keys: keys.join('{grey}|{/grey}'),
+                desc: `[{desc}${opt.desc}{/desc}]`,
+                type: opt.type === undefined ? '' : `[{type}${opt.type}{/type}]`
+            })
         })
 
         return opts;
@@ -54,15 +62,17 @@ export default class Describer {
     }
 
 
-    command(command: i.Node<i.CommandConfig>|any){
+    command(command: i.Node<i.CommandConfig> | any) {
         let options = this.options(command.options.getConfig());
         return options;
     }
 
 
-    onRouteExecute(route:Route<any, any>){
-        console.log('route in describer', route);
-        
+    onRouteExecute(route: Route<i.NodeConfig, i.Node<i.NodeConfig>>) {
+        if(!this.config.option.key) return;
+        if ( route.item.cls === this.registry.root.cls ) {
+            console.log('ROOT');
+        }
         return 555
     }
 }
