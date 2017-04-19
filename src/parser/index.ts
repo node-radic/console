@@ -1,6 +1,7 @@
 import ParsedNode from "./ParsedNode";
-import ArgumentCollection from "./ArgumentCollection";
-import OptionCollection from "./OptionCollection";
+export { ArgumentCollection, InputCollection, OptionCollection } from "./InputCollection";
 import Parser from "./Parser";
 
-export { ArgumentCollection, Parser, OptionCollection, ParsedNode }
+export {
+    Parser, ParsedNode
+}

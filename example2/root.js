@@ -39,8 +39,8 @@ Root = __decorate([
     }),
     __param(0, src_1.inject('console.cli')),
     __param(1, src_1.inject('console.helpers.output')),
-    __metadata("design:paramtypes", [src_1.Cli, typeof (_a = typeof src_1.Output !== "undefined" && src_1.Output) === "function" && _a || Object])
+    __metadata("design:paramtypes", [src_1.Cli,
+        src_1.Output])
 ], Root);
 exports.Root = Root;
-var _a;
 //# sourceMappingURL=root.js.map

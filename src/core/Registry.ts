@@ -4,6 +4,8 @@ import i from "../interfaces";
 import { CliMode } from "./cli";
 import { IConfigProperty } from "../config";
 import { interfaces } from "inversify";
+import Events from "./Events";
+import { kindOf } from "@radic/util";
 
 
 /**
@@ -28,7 +30,8 @@ export default class Registry {
 
     constructor(@inject('console.nodes.defaults.group') private _groupDefaults: i.GroupConfig,
                 @inject('console.nodes.defaults.command') private _commandDefaults: i.CommandConfig,
-                @inject('console.config') private _config: IConfigProperty) {
+                @inject('console.config') private _config: IConfigProperty,
+                @inject('console.events') private _events: Events) {
         this._rootGroup   = this.createGroupConfig({
             name         : '_root',
             globalOptions: {}
@@ -102,24 +105,45 @@ export default class Registry {
     }
 
     addHelper<T>(options: i.HelperOptions): i.HelperOptions {
-        const defaults = {
+        // merge default options
+        const defaults  = {
             name     : null,
             cls      : null,
             singleton: false,
+            listeners: {},
+            configKey: 'config',
             config   : {}
         }
-        options        = _.merge({}, defaults, options);
+        options         = _.merge({}, defaults, options);
+
+        // set the helper config in the global config, so it can be overridden
         this._config.set('helpers.' + options.name, options.config);
 
+        // bind the helper into the container
+        let bindingName = 'console.helpers.' + options.name;
         Container.ensureInjectable(options.cls);
         let binding = this.container
-            .bind('console.helpers.' + options.name)
+            .bind(bindingName)
             .to(options.cls);
         if ( options.singleton ) binding.inSingletonScope();
+
+        // when resolving, get the (possibly overridden) config and add it to the helper
         binding.onActivation((ctx: interfaces.Context, helperClass: Function): any => {
-            helperClass[ 'config' ] = this._config('helpers.' + options.name);
+            helperClass[ options.configKey ] = this._config('helpers.' + options.name);
             return helperClass;
         })
+
+        // add the event listeners and bind them to the given function names
+        Object.keys(options.listeners).forEach(eventName => {
+            let fnName = options.listeners[ eventName ];
+            this._events.on(eventName, (...args: any[]) => {
+                let instance = this.container.make(bindingName);
+                if ( kindOf(instance[ fnName ]) === 'function' ) {
+                    instance[ fnName ].apply(instance, args);
+                }
+            })
+        })
+
         return options;
     }
 

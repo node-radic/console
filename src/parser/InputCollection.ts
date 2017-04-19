@@ -1,7 +1,14 @@
 import { TypeOf } from "../utils";
-import { isUndefined } from "util";
+import { interfaces } from "../interfaces";
+import { ArgumentType } from "../core/nodes";
 import { defined } from "@radic/util";
-abstract class InputCollection<I extends any, T>{
+import { OptionType } from "../core/nodes";
+
+
+export default InputCollection
+
+
+export abstract class InputCollection<I extends any, T>{
     [key: string]: any
 
     constructor(args: { [name: string]: any }, public __config: { [key: string]: I }) {
@@ -42,7 +49,14 @@ abstract class InputCollection<I extends any, T>{
     }
 }
 
-export default InputCollection
 
 
 // class Aa extends InputCollection<interfaces.Arguments, ArgumentType> {}
+
+export class ArgumentCollection extends InputCollection<interfaces.ArgumentConfig, ArgumentType> implements interfaces.Arguments {
+
+}
+
+export class OptionCollection extends InputCollection<interfaces.OptionConfig, OptionType> implements interfaces.Options {
+
+}

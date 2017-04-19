@@ -41,7 +41,6 @@
         "@radic/console-colors": "^0.9.0",
         "@radic/util": "^1.4.6",
         "@types/archy": "^0.0.30",
-        "@types/eventemitter2": "^2.2.1",
         "@types/fs-extra": "^0.0.37",
         "@types/globule": "^1.1.1",
         "@types/gulp": "^3.8.32",

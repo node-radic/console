@@ -1,4 +1,4 @@
-import { Container, inject, singleton } from "./ioc";
+import { Container, inject, ServiceIdentifier, singleton } from "./ioc";
 import Registry from "./Registry";
 import { inspect, kindOf, Config, IConfigProperty } from "@radic/util";
 import { Parser, ParsedNode } from "../parser";
@@ -24,7 +24,6 @@ export class Cli {
 
     protected parsed: ParsedNode;
 
-
     constructor(@inject('console.registry') private _registry: Registry,
                 @inject('console.parser') private _parser: Parser,
                 @inject('console.router') private _router: Router,
@@ -45,6 +44,7 @@ export class Cli {
     }
 
     parse(argv?: string[] | string): ParsedNode {
+        this.events.emit('parse', argv);
         if ( kindOf(argv) === 'string' ) {
             argv = (<string> argv).split(' ')
         }
@@ -59,10 +59,12 @@ export class Cli {
         if(this.mode === 'groups' && this.config('autoExecute')){
             this.handle().execute();
         }
+        this.events.emit('parsed', this.parsed);
         return this.parsed;
     }
 
     handle<C extends any, T extends any>(parsed?: ParsedNode): Route<C|any,T|any> {
+        this.events.emit('handle', parsed);
         if ( this.config('mode') === 'command' ) {
             Cli.error('Cannot use the handle method when mode === command');
         }
@@ -77,7 +79,9 @@ export class Cli {
         // let node  = nodeFactory.make(route.item, route.args);
         // let node2 = nodeFactory.makeFromRoute(route);
 
-        return this._router.resolve(parsed || this.parsed);
+        const route = this._router.resolve(parsed || this.parsed);
+        this.events.emit('handled', route);
+        return route;
     }
 
     dump(target?: any) {
@@ -131,5 +135,9 @@ export class Cli {
         }
         return this;
 
+    }
+
+    get<T>(id:ServiceIdentifier):T{
+        return Container.getInstance().get<T>(id);
     }
 }

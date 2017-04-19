@@ -1,4 +1,5 @@
-import {Output , inject, group, root, Cli } from "../../../src";
+import { Cli, group, inject, root } from "../../../src";
+import Output from "../../../src/helpers/Output";
 
 @group({
     options: {
@@ -21,7 +22,7 @@ export class Root {
 
     handle() {
         if ( this.version ) {
-            this.out.line(this.cli['version'])
+            this.out.line(this.cli[ 'version' ])
         }
     }
 }

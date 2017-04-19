@@ -83,6 +83,8 @@ namespace interfaces {
         name?: string
         cls?: any
         singleton?: boolean
+        listeners?: {[event:string] : string }
+        configKey?:string
         config?: HelperOptionsConfig
     }
 

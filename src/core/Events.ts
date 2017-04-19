@@ -1,5 +1,6 @@
-import{ EventEmitter2 } from 'eventemitter2'
+import { ConstructorOptions, EventEmitter2 } from "eventemitter2";
 import { Container } from "./ioc";
+import { defined } from "@radic/util";
 
 Container.ensureInjectable(EventEmitter2);
 
@@ -13,7 +14,25 @@ Container.getInstance().bind('console.events.config').toConstantValue({
 
 @Container.singleton('console.events')
 export default class Events extends EventEmitter2 {
-    constructor(@Container.inject('console.events.config') conf: EventEmitter2Configuration) {
+    constructor(@Container.inject('console.events.config') conf: ConstructorOptions) {
         super(conf)
     }
+
+    dispatch(name, ...args: any[]): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            this.emitAsync(name, this).then((ret: any) => {
+                if ( false === defined(ret) || ret !== false ) {
+                    return resolve(true);
+                }
+                resolve(false);
+            })
+        })
+    }
+
+    enableDebug(){
+        this.onAny((...args:any[]) => {
+            console.log('event:', args[0])
+        })
+    }
+
 }

@@ -1,11 +1,9 @@
 import { defined, kindOf } from "@radic/util";
-import { Command, Group } from "./nodes";
 import ParsedNode from "../parser/ParsedNode";
 import Parser from "../parser/Parser";
 import { Container } from "./ioc";
 import Events from "./Events";
-import { interfaces as i } from '../interfaces'
-import { isNumber, escapeRegExp, isUndefined } from "lodash";
+import { interfaces as i } from "../interfaces";
 import { Cli } from "./cli";
 
 
@@ -40,16 +38,21 @@ export default class Route<C extends i.NodeConfig, T extends i.Node<C>> {
 
     }
 
+    cancel() {
+        this.isExecuted = true;
+    }
+
     execute() {
-        if(this.isExecuted) return
+        this.events.emit('route:execute', this) // emit event here before isExecuted to provide Route cancelation
+        if ( this.isExecuted ) return
         this.isExecuted = true
         if ( ! this.isResolved ) {
             Cli.error('Could not resolve input to anything. ')
         }
-        this.events.emit('route:execute', this)
         if ( kindOf(this.node[ 'handle' ]) === 'function' ) {
             this.node[ 'handle' ].apply(this.node);
         }
+        this.events.emit('route:executed', this)
     }
 
     get node(): T {

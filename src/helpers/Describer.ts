@@ -5,9 +5,13 @@ import Output from "./Output";
 import { helper } from "../decorators";
 import { kindOf } from "@radic/util";
 import Registry from "../core/Registry";
+import Route from "../core/Route";
 
 @helper('describer', {
-    config: {}
+    config: {},
+    listeners: {
+        'route:execute': 'onRouteExecute'
+    }
 })
 export default class Describer {
 
@@ -50,8 +54,15 @@ export default class Describer {
     }
 
 
-    command(command: i.Node<i.CommandConfig>){
+    command(command: i.Node<i.CommandConfig>|any){
         let options = this.options(command.options.getConfig());
         return options;
+    }
+
+
+    onRouteExecute(route:Route<any, any>){
+        console.log('route in describer', route);
+        
+        return 555
     }
 }

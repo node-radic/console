@@ -13,6 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var src_1 = require("../../../src");
+var Output_1 = require("../../../src/helpers/Output");
 var Root = (function () {
     function Root(cli, out) {
         this.cli = cli;
@@ -39,8 +40,8 @@ Root = __decorate([
     }),
     __param(0, src_1.inject('console.cli')),
     __param(1, src_1.inject('console.helpers.output')),
-    __metadata("design:paramtypes", [src_1.Cli, typeof (_a = typeof src_1.Output !== "undefined" && src_1.Output) === "function" && _a || Object])
+    __metadata("design:paramtypes", [src_1.Cli,
+        Output_1.default])
 ], Root);
 exports.Root = Root;
-var _a;
 //# sourceMappingURL=root.js.map
