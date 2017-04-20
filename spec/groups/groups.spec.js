@@ -5,19 +5,17 @@ describe("groups", function () {
     var cli = groupsFixture.cli;
     cli.config({ autoExecute: false, mode: 'groups' });
     describe('command in group "yarn install" ', function () {
-        var parsed, resolverResult;
-        it('parse returns valid parsed node', function () {
-            parsed = cli.parse('yarn install');
-            expect(parsed).toBeDefined();
+        var parsedRootNode, parsedNode;
+        it('parse returns valid parsed root node', function () {
+            parsedRootNode = cli.parse('yarn install');
+            expect(parsedRootNode).toBeDefined();
         });
-        it('handle makes the route', function () {
-            resolverResult = cli.handle();
-            expect(resolverResult).toBeDefined();
+        it('resolve returns a resolved and parsed node', function () {
+            parsedNode = cli.resolve();
+            expect(parsedNode).toBeDefined();
         });
-        it('the route is resolved correctly', function () { return expect(resolverResult.isResolved).toBeTruthy(); });
-        it('the route executes the node', function () {
-            resolverResult.execute();
-            expect(resolverResult.isExecuted).toBeTruthy();
+        it('handle executes the resolved parsed node', function () {
+            expect(cli.handle(parsedNode)).toBeTruthy();
         });
     });
 });

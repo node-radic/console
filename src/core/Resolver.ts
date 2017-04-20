@@ -7,21 +7,8 @@ import { Events } from "./Events";
 import { ParsedNode } from "../parser/ParsedNode";
 import { interfaces as i } from "../interfaces";
 
-/* rename to?
- NodeResolver:
- - Resolver
- - NodeResolver
- - NodeHierarchyResolver
-
- NodeResolverResult:
- - NodeResolution
- - Resolved
- - ResolvedNode
- -
 
 
- NodeResolver -> ResolvedNode
- */
 @singleton('console.resolver')
 export class Resolver {
 

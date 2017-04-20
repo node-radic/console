@@ -1,24 +1,22 @@
-
-import {ParsedNode,ResolverResult } from "../../src";
+import {Cli, ParsedNode,ResolverResult } from "../../src";
 
 describe("groups", () => {
     let groupsFixture = require('./fixture');
-    let cli           = groupsFixture.cli;
+    let cli:Cli           = groupsFixture.cli;
     cli.config({ autoExecute: false, mode: 'groups' })
     describe('command in group "yarn install" ', () => {
-        let parsed: ParsedNode, resolverResult: ResolverResult<any, any>;
-        it('parse returns valid parsed node', () => {
-            parsed = cli.parse('yarn install');
-            expect(parsed).toBeDefined()
+        let parsedRootNode: ParsedNode, parsedNode: ParsedNode;
+        it('parse returns valid parsed root node', () => {
+            parsedRootNode = cli.parse('yarn install');
+            expect(parsedRootNode).toBeDefined()
         })
-        it('handle makes the route', () => {
-            resolverResult = cli.handle();
-            expect(resolverResult).toBeDefined()
+        it('resolve returns a resolved and parsed node', () => {
+            parsedNode = cli.resolve();
+            expect(parsedNode).toBeDefined()
         })
-        it('the route is resolved correctly', () => expect(resolverResult.isResolved).toBeTruthy())
-        it('the route executes the node', () => {
-            resolverResult.execute();
-            expect(resolverResult.isExecuted).toBeTruthy()
+        it('handle executes the resolved parsed node', () => {
+            expect(cli.handle(parsedNode)).toBeTruthy()
+
         })
 
     });

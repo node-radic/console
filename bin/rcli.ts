@@ -8,4 +8,4 @@ import cli from '../spec/groups/fixture/index'
 
 let parsedRootNode = cli.parse()
 
-cli.handle()
+cli.resolve()

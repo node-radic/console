@@ -6,7 +6,6 @@ import config from "../config";
 import { Registry } from "./Registry";
 import { Resolver } from "./Resolver";
 import { Events } from "./Events";
-import { ResolverResult } from "./ResolverResult";
 export type CliMode = 'groups' | 'command';
 
 @singleton('console.cli')
@@ -64,35 +63,37 @@ export class Cli {
         return this.parsedRootNode;
     }
 
-    handle<C extends any, T extends any>(parsed?: ParsedNode){
+    resolve<C extends any, T extends any>(): ParsedNode {
 
-        this.events.emit('handle', parsed);
+        this.events.emit('resolve', this.parsedRootNode);
         if ( this.config('mode') === 'command' ) {
             Cli.error('Cannot use the handle method when mode === command');
         }
         if ( ! this.parsedRootNode ) {
-            Cli.error('Cannot handle, need to parse first');
+            Cli.error('Cannot resolve, need to parse first');
         }
 
-        const resolverResult = this._resolver.resolve(parsed || this.parsedRootNode);
-        this.events.emit('handle:resolve', resolverResult);
+        const resolverResult = this._resolver.resolve(this.parsedRootNode);
+        this.events.emit('resolved', resolverResult);
 
         if ( resolverResult === null ) {
             Cli.error('Could not resolve input to anything. ')
         }
 
-        const parsedNode   = this._parser.parse(resolverResult.argv, resolverResult.node);
+        const parsedNode = this._parser.parse(resolverResult.argv, resolverResult.node);
+        this.events.emit('resolved:parsed', parsedNode)
+        return parsedNode;
+    }
+
+    handle(parsedNode: ParsedNode):boolean {
         const nodeInstance = parsedNode.getNodeInstance();
-        this.events.emit('handle:parsed', parsedNode) // emit event here before isExecuted to provide NodeResolverResult cancelation
-
-
-        if ( kindOf(nodeInstance[ 'handle' ]) === 'function' && this.config('autoExecute') ) {
-            this.events.emit('handle:call', this)
+        if ( kindOf(nodeInstance[ 'handle' ]) === 'function') {
+            this.events.emit('handle', parsedNode)
             nodeInstance[ 'handle' ].apply(nodeInstance);
+            this.events.emit('handled', parsedNode);
+            return true;
         }
-
-        this.events.emit('handled', resolverResult);
-
+        return false;
     }
 
     dump(target?: any) {
