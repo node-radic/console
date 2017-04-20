@@ -1,7 +1,0 @@
-export * from 'inversify'
-export {BINDINGS} from './bindings'
-export * from './config'
-export * from './kernel'
-export * from './cli'
-export * from './log'
-export * from './helpers'
