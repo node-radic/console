@@ -1,7 +1,6 @@
 import * as gulp from "gulp";
 import * as fs from 'fs';
 import * as ghPages from 'gulp-gh-pages'
-import  typedoc from './build/gulp/typedoc'
 import { inspect } from "@radic/util";
 //import * as gulp from 'gulp'
 
@@ -34,7 +33,7 @@ let c = {
 
 gulp.task('clean', [ 'clean:src', 'clean:build' ])
 gulp.task('clean:build', () => gulp.src([ 'dist', 'dts', 'es', 'lib', 'umd', 'coverage', '.publish', 'docs' ]).pipe(clean()))
-gulp.task('clean:src', () => gulp.src([ '{src,spec}/*.{js,js.map}', '*.{js,js.map}' ]).pipe(clean()))
+gulp.task('clean:src', () => gulp.src([ '{src,spec}/*.{js,js.map}', '*.{js,js.map}', '!gulpfile.js' ]).pipe(clean()))
 
 //******************************************************************************
 //* LINT

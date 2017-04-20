@@ -86,4 +86,10 @@ function helper(...args: any[]): ClassDecorator {
     }
 }
 
+function option(desc:string): PropertyDecorator {
+    return (target: Object, propertyKey: string | symbol) => {
+        let c = Container.getInstance();
+    }
+}
+
 export { command, group, root, helper }

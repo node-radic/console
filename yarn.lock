@@ -3400,9 +3400,9 @@ typedoc-default-themes@^0.4.2:
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/typedoc-default-themes/-/typedoc-default-themes-0.4.3.tgz#39014c515585f27e59773d29e8921a5b8b89d4c0"
 
-typedoc@^0.5.7:
-  version "0.5.9"
-  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.5.9.tgz#e34982438b657a890cfd85e88258b3d875982410"
+typedoc@^0.5.10:
+  version "0.5.10"
+  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.5.10.tgz#4bd60c53c423811931fc519ffb36e58338824335"
   dependencies:
     "@types/fs-extra" "0.0.33"
     "@types/handlebars" "^4.0.31"
@@ -3420,19 +3420,15 @@ typedoc@^0.5.7:
     progress "^1.1.8"
     shelljs "^0.7.0"
     typedoc-default-themes "^0.4.2"
-    typescript "2.2.1"
+    typescript "2.2.2"
 
 typescript@^1.8.9:
   version "1.8.10"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-1.8.10.tgz#b475d6e0dff0bf50f296e5ca6ef9fbb5c7320f1e"
 
-typescript@^2.2.2:
+typescript@^2.2.2, typescript@2.2.2:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.2.2.tgz#606022508479b55ffa368b58fee963a03dfd7b0c"
-
-typescript@2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.2.1.tgz#4862b662b988a4c8ff691cc7969622d24db76ae9"
 
 uglify-js@^2.6, uglify-js@^2.6.1, uglify-js@~2.8.10:
   version "2.8.18"

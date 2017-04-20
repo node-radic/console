@@ -1,6 +1,6 @@
 {
     "name": "@radic/console",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "Console ",
     "main": "src/index.js",
     "typings": "lib/index.d.ts",
@@ -18,7 +18,7 @@
         "minor": "mversion minor -m",
         "major": "mversion major -m",
         "reinstall": "rm -rf node_modules; rm yarn.lock; yarn install",
-        "docs": "rm -r docs &> /dev/null ; typedoc --includeDeclarations --target ES6 --exclude node_modules --exclude types/lodash --ignoreCompilerErrors --mode file --excludeExternals --excludePrivate --readme docs.md --out docs ./lib/index.d.ts"
+        "docs": "rm -r docs &> /dev/null ; typedoc --includeDeclarations --target ES6 --exclude spec example example2 node_modules types/lodash --ignoreCompilerErrors --mode file --excludeExternals --excludePrivate --readme docs.md --out docs ./lib/index.d.ts"
     },
     "dependencies": {
         "archy": "^1.0.0",
@@ -79,7 +79,7 @@
         "rollup-plugin-uglify": "^1.0.1",
         "run-sequence": "^1.2.2",
         "through2": "^2.0.3",
-        "typedoc": "^0.5.7",
+        "typedoc": "^0.5.10",
         "typescript": "^2.2.1",
         "vinyl-buffer": "^1.0.0",
         "vinyl-source-stream": "^1.1.0"

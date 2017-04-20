@@ -9,3 +9,4 @@ src/**/*.js.map
 .publish
 /docs
 /console.iml
+/bin
