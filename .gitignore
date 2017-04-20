@@ -6,3 +6,5 @@ npm-debug.log
 src/**/*.js
 src/**/*.js.map
 /lib
+.publish
+/docs
