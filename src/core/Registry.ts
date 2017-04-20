@@ -3,7 +3,7 @@ import * as _ from "lodash";
 import i from "../interfaces";
 import { IConfigProperty } from "../config";
 import { interfaces } from "inversify";
-import Events from "./Events";
+import { Events } from "./Events";
 import { kindOf } from "@radic/util";
 
 
@@ -11,7 +11,7 @@ import { kindOf } from "@radic/util";
  * Contains all the defined commands and groups
  */
 @singleton('console.registry')
-export default class Registry {
+export class Registry {
     get commands(): i.CommandConfig[] {
         return this._commands;
     }
@@ -39,7 +39,7 @@ export default class Registry {
         return Container.getInstance();
     }
 
-    get root(): i.RootConfig {
+    get root(): i.RootConfig | any {
         return this._root
     }
 

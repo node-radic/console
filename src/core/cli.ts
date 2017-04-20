@@ -1,12 +1,12 @@
 import { Container, inject, ServiceIdentifier, singleton } from "./ioc";
-import Registry from "./Registry";
 import { IConfigProperty, inspect, kindOf } from "@radic/util";
 import { ParsedNode, Parser } from "../parser";
 import interfaces from "../interfaces";
 import config from "../config";
-import Router from "./NodeResolver";
-import Events from "./Events";
-import Route from "./NodeResolverResult";
+import { Registry } from "./Registry";
+import { NodeResolver } from "./NodeResolver";
+import { Events } from "./Events";
+import { NodeResolverResult } from "./NodeResolverResult";
 export type CliMode = 'groups' | 'command';
 
 @singleton('console.cli')
@@ -20,15 +20,16 @@ export class Cli {
         throw new Error(msg);
     }
 
-    public config: IConfigProperty
+    // public config: IConfigProperty
 
     protected parsedRootNode: ParsedNode;
 
     constructor(@inject('console.registry') private _registry: Registry,
                 @inject('console.parser') private _parser: Parser,
-                @inject('console.router') private _router: Router,
-                @inject('console.events') private _events: Events) {
-        this.config = config;
+                @inject('console.resolver') private _router: NodeResolver,
+                @inject('console.events') private _events: Events,
+                @inject('console.config') public config: IConfigProperty) {
+        // this.config = config;
     }
 
     get mode(): CliMode {
@@ -48,7 +49,7 @@ export class Cli {
         if ( kindOf(argv) === 'string' ) argv = (<string> argv).split(' ')
         argv = <string[]> argv || process.argv.slice(2);
 
-        this.parsedRootNode = this._registry.root.instance  = this._parser.parse(argv, this._registry.root);
+        this.parsedRootNode = this._registry.root.instance = this._parser.parse(argv, this._registry.root);
 
         if ( this.mode === 'groups' && this.config('autoExecute') ) {
             this.handle().execute();
@@ -58,7 +59,7 @@ export class Cli {
         return this.parsedRootNode;
     }
 
-    handle<C extends any, T extends any>(parsed?: ParsedNode): Route<C | any, T | any> {
+    handle<C extends any, T extends any>(parsed?: ParsedNode): NodeResolverResult<C | any, T | any> {
         this.events.emit('handle', parsed, this);
         if ( this.config('mode') === 'command' ) {
             Cli.error('Cannot use the handle method when mode === command');
@@ -128,7 +129,7 @@ export class Cli {
         return this;
     }
 
-    helpers(...names:string[]):this{
+    helpers(...names: string[]): this {
         names.forEach(name => this.helper(name));
         return this
     }

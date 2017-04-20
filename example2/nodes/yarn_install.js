@@ -39,7 +39,7 @@ var YarnInstallCommand = (function () {
 }());
 __decorate([
     ioc_1.inject('console.helpers.output'),
-    __metadata("design:type", Output_1.default)
+    __metadata("design:type", typeof (_a = typeof Output_1.default !== "undefined" && Output_1.default) === "function" && _a || Object)
 ], YarnInstallCommand.prototype, "out", void 0);
 YarnInstallCommand = __decorate([
     decorators_1.command('install', {
@@ -53,4 +53,5 @@ YarnInstallCommand = __decorate([
     })
 ], YarnInstallCommand);
 exports.YarnInstallCommand = YarnInstallCommand;
+var _a;
 //# sourceMappingURL=yarn_install.js.map

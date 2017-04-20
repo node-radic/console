@@ -7,6 +7,7 @@
         "emitDecoratorMetadata": true,
         "sourceMap": true,
         "module": "commonjs",
+        "skipLibCheck": true,
         "moduleResolution": "node",
         "target": "es5",
         "lib": ["es2017", "es2017.object"],
@@ -20,7 +21,6 @@
         "./node_modules",
         "./build.ts",
         "./src/*.d.ts",
-        "./lib",
         "./docs"
     ]
 }

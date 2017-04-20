@@ -1,6 +1,6 @@
 import { CliMode } from "./core/cli";
 import { ArgumentType, Command, Group, NodeType, OptionType } from "./core/nodes";
-import ParsedNode from "./parser/ParsedNode";
+import { ParsedNode } from "./parser/ParsedNode";
 namespace interfaces {
 
     /**  */

@@ -1,10 +1,8 @@
 import { interfaces } from "./interfaces";
-import Registry from "./core/Registry";
+import { Registry } from "./core/Registry";
 import { Container } from "./core/ioc";
 import { kindOf } from "@radic/util";
-import { merge } from 'lodash'
-import { CliMode } from "./core/cli";
-import { NodeType } from "./core/nodes";
+import { merge } from "lodash";
 
 function makeOptions<T extends interfaces.NodeConfig>(cls: any, args: any[]): T {
     let len        = args.length;
@@ -88,4 +86,4 @@ function helper(...args: any[]): ClassDecorator {
     }
 }
 
-export {command, group, root, helper }
+export { command, group, root, helper }

@@ -1,7 +1,4 @@
-import ParsedNode from "./ParsedNode";
-export { ArgumentCollection, InputCollection, OptionCollection } from "./InputCollection";
-import Parser from "./Parser";
+export * from "./ParsedNode";
+export { ArgumentCollection, InputCollection, OptionCollection } from "./InputCollections";
+export * from "./Parser";
 
-export {
-    Parser, ParsedNode
-}

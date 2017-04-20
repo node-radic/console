@@ -1,5 +1,4 @@
-import { Cli, group, inject, root } from "../../../src";
-import Output from "../../../src/helpers/Output";
+import {Output, Cli, group, inject, root } from "../../../src";
 
 @group({
     options: {

@@ -1,23 +1,23 @@
 import { merge } from "lodash";
 import { Container, inject } from "../core/ioc";
 import { interfaces as i } from "../interfaces";
-import Output from "./Output";
 import { helper } from "../decorators";
-import Registry from "../core/Registry";
-import Route from "../core/NodeResolverResult";
+import { Output } from "./Output";
+import { Registry } from "../core/Registry";
+import { NodeResolverResult } from "../core/NodeResolverResult";
 
 @helper('describer', {
     config   : {
         option: {
-            key: false,
+            key    : false,
             aliases: []
         }
     },
     listeners: {
-        'route:execute': 'onRouteExecute'
+        'route:execute': 'onNodeResolverResultExecute'
     }
 })
-export default class Describer {
+export class Describer {
     config: any;
 
     constructor(@inject('console.helpers.output') protected out: Output) {}
@@ -68,8 +68,8 @@ export default class Describer {
     }
 
 
-    onRouteExecute(route: Route<i.NodeConfig, i.Node<i.NodeConfig>>) {
-        if(!this.config.option.key) return;
+    onNodeResolverResultExecute(route: NodeResolverResult<i.NodeConfig, i.Node<i.NodeConfig>>) {
+        if ( ! this.config.option.key ) return;
         if ( route.item.cls === this.registry.root.cls ) {
             console.log('ROOT');
         }

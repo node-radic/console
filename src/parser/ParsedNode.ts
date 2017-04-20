@@ -1,14 +1,14 @@
 import { interfaces as i } from "../interfaces";
 import * as _ from "lodash";
-import ParsedArguments from "./ArgumentCollection";
+import {ArgumentCollection } from "./InputCollections";
 import { Container } from "../core/ioc";
-import Registry from "../core/Registry";
-import Parser from "./Parser";
+import { Registry } from "../core/Registry";
+import { Parser } from "./Parser";
 import { injectable } from "inversify";
 import { kindOf } from "@radic/util";
 
 @injectable()
-export default class ParsedNode {
+export class ParsedNode {
     public usesArguments: boolean           = false;
     public hasArguments: boolean            = false;
     public options: { [name: string]: any } = {}
@@ -92,7 +92,7 @@ export default class ParsedNode {
 
         this.arguments = yargsOutput.argv._;
 
-        this._arguments = new ParsedArguments({}, {});
+        this._arguments = new ArgumentCollection({}, {});
         if ( args ) {
             this.usesArguments = true;
             this._arguments    = args;

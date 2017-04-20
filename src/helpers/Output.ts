@@ -55,7 +55,7 @@ const truwrap   = require('truwrap');
         }
     }
 })
-export default class Output {
+export class Output {
     config: i.HelperOptionsConfig;
     macros: { [name: string]: Function }
     _parser: Parser;

@@ -7,7 +7,7 @@ import * as inquirer from "inquirer";
         testMe: true
     }
 })
-export default class Input {
+export class Input {
 
     constructor(@inject('console.config') protected config) {}
 

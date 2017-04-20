@@ -1,5 +1,5 @@
 import { ConstructorOptions, EventEmitter2 } from "eventemitter2";
-import { Container } from "./ioc";
+import { Container, singleton } from "./ioc";
 import { defined } from "@radic/util";
 
 Container.ensureInjectable(EventEmitter2);
@@ -12,8 +12,8 @@ Container.getInstance().bind('console.events.config').toConstantValue({
 
 })
 
-@Container.singleton('console.events')
-export default class Events extends EventEmitter2 {
+@singleton('console.events')
+export  class Events extends EventEmitter2 {
     constructor(@Container.inject('console.events.config') conf: ConstructorOptions) {
         super(conf)
     }

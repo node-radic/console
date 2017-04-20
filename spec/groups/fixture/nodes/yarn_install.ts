@@ -1,10 +1,10 @@
 import { command } from "../../../../src/decorators";
 import { YarnGroup } from "./yarn";
 import { inject } from "../../../../src/core/ioc";
-import Output from "../../../../src/helpers/Output";
-import Input from "../../../../src/helpers/Input";
+import {Output } from "../../../../src/helpers/Output";
+import {Input } from "../../../../src/helpers/Input";
+import {Describer } from "../../../../src/helpers/Describer";
 import { IConfigProperty } from "@radic/util";
-import Describer from "../../../../src/helpers/Describer";
 
 @command('install', {
     group: YarnGroup,

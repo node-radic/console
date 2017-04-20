@@ -35,15 +35,15 @@ var YarnInstallCommand = (function () {
 }());
 __decorate([
     ioc_1.inject('console.helpers.output'),
-    __metadata("design:type", Output_1.default)
+    __metadata("design:type", Output_1.Output)
 ], YarnInstallCommand.prototype, "out", void 0);
 __decorate([
     ioc_1.inject('console.helpers.input'),
-    __metadata("design:type", Input_1.default)
+    __metadata("design:type", Input_1.Input)
 ], YarnInstallCommand.prototype, "in", void 0);
 __decorate([
     ioc_1.inject('console.helpers.describer'),
-    __metadata("design:type", Describer_1.default)
+    __metadata("design:type", Describer_1.Describer)
 ], YarnInstallCommand.prototype, "desc", void 0);
 __decorate([
     ioc_1.inject('console.config'),
@@ -61,4 +61,3 @@ YarnInstallCommand = __decorate([
     })
 ], YarnInstallCommand);
 exports.YarnInstallCommand = YarnInstallCommand;
-//# sourceMappingURL=yarn_install.js.map

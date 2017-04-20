@@ -1,4 +1,4 @@
-import { Cli, Route } from "../../../src";
+import { Cli, NodeResolverResult } from "../../../src";
 export * from './nodes'
 export * from './root'
 

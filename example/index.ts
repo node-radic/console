@@ -35,7 +35,6 @@ if ( parsed.opt('help') ) {
 }
 
 if ( parsed.opt('version') ) {
-    cli.out.writeln('rcli version ' + require(path.join(__dirname, '..', 'package.json')).version)
 }
 
 

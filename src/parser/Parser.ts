@@ -1,22 +1,20 @@
-import * as parser from 'yargs-parser'
-import { merge, cloneDeep } from 'lodash'
-import { defined, IConfigProperty, kindOf } from '@radic/util'
-import { bindTo, Container, inject } from "../core/ioc";
+import * as parser from "yargs-parser";
+import { cloneDeep, merge } from "lodash";
+import { defined, IConfigProperty, kindOf } from "@radic/util";
+import { bindTo, inject } from "../core/ioc";
 import { interfaces as i } from "../interfaces";
-import ParsedNode from "./ParsedNode";
-import OptionCollection from "./OptionCollection";
-import ArgumentCollection from "./ArgumentCollection";
+import { ParsedNode } from "./ParsedNode";
+import { Registry } from "../core/Registry";
+import {ArgumentCollection ,OptionCollection }from "./InputCollections";
 import { Cli } from "../core/cli";
-import Registry from "../core/Registry";
 
 @bindTo('console.parser')
-export default class Parser {
+export class Parser {
 
     argumentTypeTransformers: { [name: string]: i.ArgumentTypeTransformer };
 
-    constructor(
-        @inject('console.config') protected config: IConfigProperty,
-        @inject('console.registry') protected registry: Registry) {
+    constructor(@inject('console.config') protected config: IConfigProperty,
+                @inject('console.registry') protected registry: Registry) {
         this.argumentTypeTransformers = {
             boolean(val: any): boolean {
                 return val === 'true' || val === true || val === '1';
@@ -118,13 +116,13 @@ export default class Parser {
             narg         : {},
             normalize    : true,
             configuration: {
-                'short-option-groups': true,
-                'camel-case-expansion': true,
-                'dot-notation': true,
-                'parse-numbers': true,
-                'boolean-negation': true,
+                'short-option-groups'      : true,
+                'camel-case-expansion'     : true,
+                'dot-notation'             : true,
+                'parse-numbers'            : true,
+                'boolean-negation'         : true,
                 'duplicate-arguments-array': true,
-                'flatten-duplicate-arrays': true,
+                'flatten-duplicate-arrays' : true,
             }
         };
         Object.keys(optionsConfig).forEach(name => {

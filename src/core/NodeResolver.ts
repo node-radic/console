@@ -1,32 +1,30 @@
-import { Container, inject, singleton } from "./ioc";
-import Registry from "./Registry";
+import { inject, singleton } from "./ioc";
 import { isUndefined } from "util";
-import * as _ from 'lodash';
-import { IConfigProperty,defined, kindOf } from "@radic/util";
-import Parser from "../parser/Parser";
-import { Group, Command, Node } from "./nodes";
-import Events  from "./Events";
-import ParsedNode from "../parser/ParsedNode";
+import * as _ from "lodash";
+import { IConfigProperty } from "@radic/util";
+import { Registry } from "./Registry";
+import { Events } from "./Events";
+import { ParsedNode } from "../parser/ParsedNode";
+import { NodeResolverResult } from "./NodeResolverResult";
 import { interfaces as i } from "../interfaces";
-import NodeResolverResult from "./NodeResolverResult";
 
 /* rename to?
-Router:
-- Resolver
-- NodeResolver
-- NodeHierarchyResolver
+ NodeResolver:
+ - Resolver
+ - NodeResolver
+ - NodeHierarchyResolver
 
-Route:
-- NodeResolution
-- Resolved
-- ResolvedNode
--
+ NodeResolverResult:
+ - NodeResolution
+ - Resolved
+ - ResolvedNode
+ -
 
 
-NodeResolver -> ResolvedNode
+ NodeResolver -> ResolvedNode
  */
-@singleton('console.router')
-export default class NodeResolver {
+@singleton('console.resolver')
+export class NodeResolver {
 
     constructor(@inject('console.config') protected config: IConfigProperty,
                 @inject('console.registry') protected registry: Registry,
@@ -86,12 +84,12 @@ export default class NodeResolver {
         let items: i.NodeConfig[]    = this.items,
             stop: boolean            = false,
             spendArguments: string[] = [],
-            parentCls: Function      =  this.registry.root.cls,
+            parentCls: Function      = this.registry.root.cls,
             resolved: i.NodeConfig   = null;
 
         // if no arguments, then its the root node
-        if(parsedRoot.arguments.length === 0){
-            stop = true
+        if ( parsedRoot.arguments.length === 0 ) {
+            stop     = true
             resolved = this.registry.root
         }
 
@@ -113,7 +111,7 @@ export default class NodeResolver {
         // - the resolved node config's options should merge in global options. We leave all options in the argv.
         let argv = parsedRoot.argv;
         if ( resolved ) {
-            argv             = argv.filter((val) => spendArguments.indexOf(val) === - 1);
+            argv = argv.filter((val) => spendArguments.indexOf(val) === - 1);
             // resolved.options = _.merge({}, this.registry.root.globalOptions, resolved.options);
         }
 

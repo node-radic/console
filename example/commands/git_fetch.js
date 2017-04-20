@@ -58,9 +58,8 @@ GitFetchCommand = __decorate([
     __param(0, src_2.inject('console.cli')),
     __param(1, src_2.inject('console.helpers.output')),
     __param(2, src_2.inject('console.helpers.describer')),
-    __metadata("design:paramtypes", [cli_1.Cli,
-        Output_1.default,
-        Describer_1.default])
+    __metadata("design:paramtypes", [cli_1.Cli, typeof (_a = typeof Output_1.default !== "undefined" && Output_1.default) === "function" && _a || Object, typeof (_b = typeof Describer_1.default !== "undefined" && Describer_1.default) === "function" && _b || Object])
 ], GitFetchCommand);
 exports.GitFetchCommand = GitFetchCommand;
+var _a, _b;
 //# sourceMappingURL=git_fetch.js.map

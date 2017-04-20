@@ -4,7 +4,6 @@ function __export(m) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 var src_1 = require("../src");
-var path = require("path");
 __export(require("./commands"));
 exports.cli = src_1.Cli.getInstance();
 exports.cli.config({ mode: 'groups' });
@@ -29,6 +28,5 @@ if (parsed.opt('verbose')) {
 if (parsed.opt('help')) {
 }
 if (parsed.opt('version')) {
-    exports.cli.out.writeln('rcli version ' + require(path.join(__dirname, '..', 'package.json')).version);
 }
 //# sourceMappingURL=index.js.map

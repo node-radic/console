@@ -1,13 +1,13 @@
 import { defined, kindOf } from "@radic/util";
-import ParsedNode from "../parser/ParsedNode";
-import Parser from "../parser/Parser";
+import { ParsedNode } from "../parser/ParsedNode";
+import { Parser } from "../parser/Parser";
+import { Events } from "./Events";
 import { Container } from "./ioc";
-import Events from "./Events";
 import { interfaces as i } from "../interfaces";
 import { Cli } from "./cli";
 
 
-export default class Route<C extends i.NodeConfig, T extends i.Node<C>> {
+export class NodeResolverResult<C extends i.NodeConfig, T extends i.Node<C>> {
     protected parser: Parser
 
     protected events: Events;
@@ -34,7 +34,7 @@ export default class Route<C extends i.NodeConfig, T extends i.Node<C>> {
     }
 
     execute() {
-        this.events.emit('route:execute', this) // emit event here before isExecuted to provide Route cancelation
+        this.events.emit('route:execute', this) // emit event here before isExecuted to provide NodeResolverResult cancelation
         if ( this.isExecuted ) return
         if ( ! this.isResolved ) {
             Cli.error('Could not resolve input to anything. ')

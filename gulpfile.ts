@@ -123,25 +123,26 @@ gulp.task("build-lib", function () {
 
 gulp.task('build-umd', [ 'build-lib' ], (cb) => {
     pump([
+
         gulp.src('lib/**/*.js'),
         rollup({
             entry     : './lib/index.js',
             format    : 'umd',
-            moduleName: 'radic.util',
+            moduleName: 'radic.console',
             globals   : { lodash: '_' }
         }),
         gulp.dest('./'),
         clean(),
-        rename('radic.util.js'),
+        rename('radic.console.js'),
         gulp.dest('./')
     ], cb)
 });
 
 gulp.task('build-umd:minify', [ 'build-umd' ], (cb) => {
     pump([
-        gulp.src('./radic.util.js'),
+        gulp.src('./radic.console.js'),
         uglify(),
-        rename('radic.util.min.js'),
+        rename('radic.console.min.js'),
         gulp.dest('./')
     ], cb)
 })
@@ -175,6 +176,7 @@ gulp.task("build-test", function () {
         .js.pipe(gulp.dest("spec/"));
 });
 
+
 gulp.task("jasmine", function () {
     let jasmineJson = require('./jasmine.json')
     return gulp.src(jasmineJson.spec_files)
@@ -204,8 +206,9 @@ gulp.task("test", function (cb) {
 gulp.task("build", (cb) => {
     runSequence(
         "clean",
-        [ "build-src", "build-lib", 'build-umd', 'build-umd:minify' ],   // tests + build es and lib
+        [ "build-src", "build-lib"],   // tests + build es and lib
         "build-test", cb);
+    // , "build-umd", "build-umd:minify"
 });
 
 gulp.task("default", (cb) => {

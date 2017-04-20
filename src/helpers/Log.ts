@@ -1,12 +1,11 @@
 import { Winston } from "winston";
 import * as winston from 'winston'
 
-export {Log, Winston }
 export interface LogCallback {
     (error?: any, level?: string, msg?: string, meta?: any): void;
 }
 
-export default class Log {
+export class Log {
     protected _winston: Winston;
     get winston(): Winston {
         return this._winston;
