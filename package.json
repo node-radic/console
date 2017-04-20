@@ -12,11 +12,12 @@
         "start": "gulp",
         "test": "gulp test",
         "clean": "gulp clean",
+        "ghpages": "gulp ghpages",
         "patch": "mversion patch -m",
         "minor": "mversion minor -m",
         "major": "mversion major -m",
         "reinstall": "rm -rf node_modules; rm yarn.lock; yarn install",
-        "docs": "rm -r docs &> /dev/null ; typedoc --includeDeclarations --target ES6 --exclude node_modules --exclude types/lodash --ignoreCompilerErrors --mode file --excludeExternals --excludePrivate --out docs ./lib/index.d.ts"
+        "docs": "rm -r docs &> /dev/null ; typedoc --includeDeclarations --target ES6 --exclude node_modules --exclude types/lodash --ignoreCompilerErrors --mode file --excludeExternals --excludePrivate --readme docs.md --out docs ./lib/index.d.ts"
     },
     "dependencies": {
         "archy": "^1.0.0",

@@ -219,7 +219,7 @@ gulp.task("default", (cb) => {
         cb);
 });
 
-gulp.task('deploy', (cb) => {
+gulp.task('ghpages', (cb) => {
     return gulp.src('./docs/**/*')
         .pipe(ghPages());
 })

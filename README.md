@@ -1,6 +1,6 @@
 # Radic Console
-todo
-[[ TOC ]]
+**typedoc** https://node-radic.github.io/console
+
 
 ## Decorators
 
