@@ -44,6 +44,15 @@ export class Cli {
         return Container.getInstance().make<Cli>('console.cli');
     }
 
+    /**
+     * Parses the input using the options defined in the root node (group or command, depending on mode) and returns the result.
+     * Without input, process.argv will be used.
+     * ```
+     * const parsedRootNode:ParsedNode = cli.parse();
+     * ```
+     * @param {string[]|string} argv
+     * @returns {ParsedNode}
+     */
     parse(argv?: string[] | string): ParsedNode {
         this.events.emit('parse', argv, this);
         if ( kindOf(argv) === 'string' ) argv = (<string> argv).split(' ')
@@ -51,12 +60,12 @@ export class Cli {
 
         this.parsedRootNode = this._registry.root.instance = this._parser.parse(argv, this._registry.root);
 
-
         this.events.emit('parsed', this.parsedRootNode);
         return this.parsedRootNode;
     }
 
     handle<C extends any, T extends any>(parsed?: ParsedNode){
+
         this.events.emit('handle', parsed);
         if ( this.config('mode') === 'command' ) {
             Cli.error('Cannot use the handle method when mode === command');

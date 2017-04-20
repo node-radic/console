@@ -1,7 +1,8 @@
 import * as gulp from "gulp";
 import * as fs from 'fs';
-import * as path from 'path'
-
+import * as ghPages from 'gulp-gh-pages'
+import  typedoc from './build/gulp/typedoc'
+import { inspect } from "@radic/util";
 //import * as gulp from 'gulp'
 
 /**
@@ -217,3 +218,8 @@ gulp.task("default", (cb) => {
         "test",
         cb);
 });
+
+gulp.task('deploy', (cb) => {
+    return gulp.src('./docs/**/*')
+        .pipe(ghPages());
+})
