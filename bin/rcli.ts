@@ -6,4 +6,6 @@ import cli from '../spec/groups/fixture/index'
 // cli.handle().execute()
 
 
-cli.parse()
+let parsedRootNode = cli.parse()
+
+cli.handle()

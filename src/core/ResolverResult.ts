@@ -7,7 +7,7 @@ import { interfaces as i } from "../interfaces";
 import { Cli } from "./cli";
 
 
-export class NodeResolverResult<C extends i.NodeConfig, T extends i.Node<C>> {
+export class ResolverResult<C extends i.NodeConfig, T extends i.Node<C>> {
     protected parser: Parser
 
     protected events: Events;
@@ -22,7 +22,9 @@ export class NodeResolverResult<C extends i.NodeConfig, T extends i.Node<C>> {
         this.events     = Container.getInstance().make<Events>('console.events')
         this.parser     = Container.getInstance().make<Parser>('console.parser')
         this.isResolved = defined(item) && item !== null;
+
         this.events.emit('route:created', this)
+
         if ( this.isResolved ) {
             this.parsedNode = this.parser.parse(argv, item);
         }

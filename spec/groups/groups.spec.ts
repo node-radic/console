@@ -1,12 +1,12 @@
 
-import {ParsedNode,NodeResolverResult } from "../../src";
+import {ParsedNode,ResolverResult } from "../../src";
 
 describe("groups", () => {
     let groupsFixture = require('./fixture');
     let cli           = groupsFixture.cli;
     cli.config({ autoExecute: false, mode: 'groups' })
     describe('command in group "yarn install" ', () => {
-        let parsed: ParsedNode, resolverResult: NodeResolverResult<any, any>;
+        let parsed: ParsedNode, resolverResult: ResolverResult<any, any>;
         it('parse returns valid parsed node', () => {
             parsed = cli.parse('yarn install');
             expect(parsed).toBeDefined()

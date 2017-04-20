@@ -4,9 +4,9 @@ import { ParsedNode, Parser } from "../parser";
 import interfaces from "../interfaces";
 import config from "../config";
 import { Registry } from "./Registry";
-import { NodeResolver } from "./NodeResolver";
+import { Resolver } from "./Resolver";
 import { Events } from "./Events";
-import { NodeResolverResult } from "./NodeResolverResult";
+import { ResolverResult } from "./ResolverResult";
 export type CliMode = 'groups' | 'command';
 
 @singleton('console.cli')
@@ -26,7 +26,7 @@ export class Cli {
 
     constructor(@inject('console.registry') private _registry: Registry,
                 @inject('console.parser') private _parser: Parser,
-                @inject('console.resolver') private _router: NodeResolver,
+                @inject('console.resolver') private _resolver: Resolver,
                 @inject('console.events') private _events: Events,
                 @inject('console.config') public config: IConfigProperty) {
         // this.config = config;
@@ -51,25 +51,39 @@ export class Cli {
 
         this.parsedRootNode = this._registry.root.instance = this._parser.parse(argv, this._registry.root);
 
-        if ( this.mode === 'groups' && this.config('autoExecute') ) {
-            this.handle().execute();
-        }
 
-        this.events.emit('parsed', this.parsedRootNode, this);
+        this.events.emit('parsed', this.parsedRootNode);
         return this.parsedRootNode;
     }
 
-    handle<C extends any, T extends any>(parsed?: ParsedNode): NodeResolverResult<C | any, T | any> {
-        this.events.emit('handle', parsed, this);
+    handle<C extends any, T extends any>(parsed?: ParsedNode){
+        this.events.emit('handle', parsed);
         if ( this.config('mode') === 'command' ) {
             Cli.error('Cannot use the handle method when mode === command');
         }
         if ( ! this.parsedRootNode ) {
             Cli.error('Cannot handle, need to parse first');
         }
-        const route = this._router.resolve(parsed || this.parsedRootNode);
-        this.events.emit('handled', route, this);
-        return route;
+
+        const resolverResult = this._resolver.resolve(parsed || this.parsedRootNode);
+        this.events.emit('handle:resolve', resolverResult);
+
+        if ( resolverResult === null ) {
+            Cli.error('Could not resolve input to anything. ')
+        }
+
+        const parsedNode   = this._parser.parse(resolverResult.argv, resolverResult.node);
+        const nodeInstance = parsedNode.getNodeInstance();
+        this.events.emit('handle:parsed', parsedNode) // emit event here before isExecuted to provide NodeResolverResult cancelation
+
+
+        if ( kindOf(nodeInstance[ 'handle' ]) === 'function' && this.config('autoExecute') ) {
+            this.events.emit('handle:call', this)
+            nodeInstance[ 'handle' ].apply(nodeInstance);
+        }
+
+        this.events.emit('handled', resolverResult);
+
     }
 
     dump(target?: any) {

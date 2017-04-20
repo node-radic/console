@@ -4,7 +4,7 @@ import { interfaces as i } from "../interfaces";
 import { helper } from "../decorators";
 import { Output } from "./Output";
 import { Registry } from "../core/Registry";
-import { NodeResolverResult } from "../core/NodeResolverResult";
+import { ResolverResult } from "../core/ResolverResult";
 
 @helper('describer', {
     config   : {
@@ -14,7 +14,7 @@ import { NodeResolverResult } from "../core/NodeResolverResult";
         }
     },
     listeners: {
-        'route:execute': 'onNodeResolverResultExecute'
+    //    'route:execute': 'onNodeResolverResultExecute'
     }
 })
 export class Describer {
@@ -68,7 +68,7 @@ export class Describer {
     }
 
 
-    onNodeResolverResultExecute(route: NodeResolverResult<i.NodeConfig, i.Node<i.NodeConfig>>) {
+    onNodeResolverResultExecute(route: ResolverResult<i.NodeConfig, i.Node<i.NodeConfig>>) {
         if ( ! this.config.option.key ) return;
         if ( route.item.cls === this.registry.root.cls ) {
             console.log('ROOT');
