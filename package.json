@@ -79,6 +79,7 @@
         "rollup-plugin-uglify": "^1.0.1",
         "run-sequence": "^1.2.2",
         "through2": "^2.0.3",
+        "ts-node": "^3.0.2",
         "typedoc": "^0.5.10",
         "typescript": "^2.2.1",
         "vinyl-buffer": "^1.0.0",

@@ -21,6 +21,7 @@
         "./node_modules",
         "./build.ts",
         "./src/*.d.ts",
-        "./docs"
+        "./docs",
+        "./gulpfile.ts"
     ]
 }
