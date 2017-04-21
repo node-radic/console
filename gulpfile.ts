@@ -1,17 +1,34 @@
 import * as gulp from "gulp";
-import * as fs from 'fs';
-import * as ghPages from 'gulp-gh-pages'
-import { inspect } from "@radic/util";
-//import * as gulp from 'gulp'
+import * as fs from "fs-extra";
+import * as tsc from "gulp-typescript";
+import { resolve } from "path";
+import * as _ from 'lodash'
 
-/**
- * @type {gulp}
- */
-var //gulp        = require("gulp"),
+const c = {
+    src          : [ 'src/**/*.ts' ],
+    fileName     : 'console',
+    moduleName   : '@radic/console',
+    umdModuleName: 'radic.console'
+};
+
+const binFile = `#!/usr/bin/env node
+import cli from '../spec/groups/fixture/index'
+let parsedRootNode = cli.parse()
+let parsedNode = cli.resolve()
+
+cli.handle(parsedNode);`
+
+const tsProject = {
+    lib : tsc.createProject("tsconfig.json", { module: "es2015", declaration: true, typescript: require("typescript") }),
+    src : tsc.createProject("tsconfig.json", { typescript: require("typescript") }),
+    test: tsc.createProject("tsconfig.json", { typescript: require("typescript") })
+};
+
+
+const
     pump         = require('pump'),
     source       = require("vinyl-source-stream"),
     buffer       = require("vinyl-buffer"),
-    tsc          = require("gulp-typescript"),
     sourcemaps   = require("gulp-sourcemaps"),
     uglify       = require("gulp-uglify"),
     rollup       = require('gulp-rollup'),
@@ -21,27 +38,16 @@ var //gulp        = require("gulp"),
     jasmine      = require("gulp-jasmine"),
     clean        = require('gulp-clean'),
     SpecReporter = require('jasmine-spec-reporter'),
-    _            = require('lodash')
+    ghPages      = require("gulp-gh-pages")
 ;
 
-const c = {
-    src          : [ 'src/**/*.ts' ],
-    fileName     : 'console',
-    moduleName   : '@radic/console',
-    umdModuleName: 'radic.console'
-};
-
-const tsProject = {
-    lib : tsc.createProject("tsconfig.json", { module: "es2015", declaration: true, typescript: require("typescript") }),
-    src : tsc.createProject("tsconfig.json", { typescript: require("typescript") }),
-    test: tsc.createProject("tsconfig.json", { typescript: require("typescript") })
-};
-
 gulp.task('clean', [ 'clean:src', 'clean:build' ]);
+
 gulp.task('clean:build', () => gulp.src([ 'dist', 'dts', 'es', 'lib', 'umd', 'coverage', '.publish', 'docs' ]).pipe(clean()));
+
 gulp.task('clean:src', () => gulp.src([ '{src,spec}/*.{js,js.map}', '*.{js,js.map}' ]).pipe(clean()));
 
-gulp.task("build-lib", function () {
+gulp.task("build:lib", () => {
     return gulp.src([
         "src/**/*.ts",
         "!src/**/*.spec.ts"
@@ -53,7 +59,7 @@ gulp.task("build-lib", function () {
         .pipe(gulp.dest("lib/"))
 });
 
-gulp.task('build-umd', [ 'build-lib' ], (cb) => {
+gulp.task('build:umd', [ 'build:lib' ], (cb) => {
     pump([
 
         gulp.src('lib/**/*.js'),
@@ -70,7 +76,7 @@ gulp.task('build-umd', [ 'build-lib' ], (cb) => {
     ], cb)
 });
 
-gulp.task('build-umd:minify', [ 'build-umd' ], (cb) => {
+gulp.task('build:umd:minify', [ 'build:umd' ], (cb) => {
     pump([
         gulp.src('./radic.console.js'),
         uglify(),
@@ -79,7 +85,7 @@ gulp.task('build-umd:minify', [ 'build-umd' ], (cb) => {
     ], cb)
 });
 
-gulp.task("build-src", function () {
+gulp.task("build:src", () => {
     return gulp.src([
         "src/**/*.ts"
     ])
@@ -90,7 +96,7 @@ gulp.task("build-src", function () {
         .js.pipe(gulp.dest("src/"));
 });
 
-gulp.task("build-test", function () {
+gulp.task("build:test", () => {
     return gulp.src([
         "spec/**/*.ts"
     ])
@@ -101,25 +107,24 @@ gulp.task("build-test", function () {
         .js.pipe(gulp.dest("spec/"));
 });
 
-gulp.task("jasmine", function () {
+gulp.task("build", (cb) => {
+    runSequence(
+        "clean",
+        [ "build:src", "build:lib" ],   // tests + build es and lib
+        "build:test", cb);
+    // , "build:umd", "build:umd:minify"
+});
+
+
+gulp.task("test", () => {
+    // runSequence("jasmine", cb);
+
     let jasmineJson = require('./jasmine.json');
     return gulp.src(jasmineJson.spec_files)
         .pipe(jasmine({
             reporter: new SpecReporter(),
             config  : jasmineJson
         }))
-});
-
-gulp.task("test", function (cb) {
-    runSequence("jasmine", cb);
-});
-
-gulp.task("build", (cb) => {
-    runSequence(
-        "clean",
-        [ "build-src", "build-lib" ],   // tests + build es and lib
-        "build-test", cb);
-    // , "build-umd", "build-umd:minify"
 });
 
 gulp.task("default", (cb) => {
@@ -129,7 +134,16 @@ gulp.task("default", (cb) => {
         cb);
 });
 
-gulp.task('ghpages', (cb) => {
+gulp.task('ghpages', () => {
     return gulp.src('./docs/**/*')
         .pipe(ghPages());
 });
+
+gulp.task('create-bin', (cb) => {
+    fs.ensureDirSync(resolve(__dirname, 'bin'));
+    fs.writeFile(resolve(__dirname, 'bin', 'rcli.ts'), binFile, { encoding: 'utf-8' }, (err: NodeJS.ErrnoException) => {
+        if ( err ) throw err;
+        cb();
+    })
+})
+

@@ -10,15 +10,15 @@
     "repository": "https://github.com/node-radic/console",
     "scripts": {
         "build": "gulp build",
-        "start": "gulp",
         "test": "gulp test",
         "clean": "gulp clean",
-        "ghpages": "gulp ghpages",
-        "patch": "mversion patch -m",
-        "minor": "mversion minor -m",
-        "major": "mversion major -m",
-        "reinstall": "rm -rf node_modules; rm yarn.lock; yarn install",
-        "docs": "rm -r docs &> /dev/null ; typedoc --includeDeclarations --target ES6 --exclude spec example example2 node_modules types/lodash --ignoreCompilerErrors --mode file --excludeExternals --excludePrivate --readme docs.md --out docs ./lib/index.d.ts"
+        "dev:ghpages": "npm run dev:docs; gulp ghpages",
+        "dev:init": "npm run dev:install; gulp build; npm run docs; gulp create-bin",
+        "dev:install": "rm -rf node_modules; rm yarn.lock; yarn install",
+        "dev:docs": "rm -r docs &> /dev/null ; typedoc --includeDeclarations --target ES6 --exclude spec example example2 node_modules types/lodash --ignoreCompilerErrors --mode file --excludeExternals --excludePrivate --readme docs.md --out docs ./lib/index.d.ts",
+        "deploy:patch": "mversion patch -m",
+        "deploy:minor": "mversion minor -m",
+        "deploy:major": "mversion major -m"
     },
     "dependencies": {
         "archy": "^1.0.0",
