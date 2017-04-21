@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>HelperOptions | @radic/console</title>
+	<title>DecoratedConfig | @radic/console</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,35 +57,32 @@
 					<a href="../modules/interfaces.html">interfaces</a>
 				</li>
 				<li>
-					<a href="interfaces.helperoptions.html">HelperOptions</a>
+					<a href="interfaces.decoratedconfig.html">DecoratedConfig</a>
 				</li>
 			</ul>
-			<h1>Interface HelperOptions</h1>
+			<h1>Interface DecoratedConfig&lt;C, C&gt;</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Helper decorator options</p>
-					</div>
-					<dl class="tsd-comment-tags">
-						<dt>interface</dt>
-						<dd></dd>
-						<dt>see</dt>
-						<dd><p>helper The helper decorator function</p>
-						</dd>
-					</dl>
-				</div>
+			<section class="tsd-panel tsd-type-parameters">
+				<h3>Type parameters</h3>
+				<ul class="tsd-type-parameters">
+					<li>
+						<h4>C<span class="tsd-signature-symbol">: </span><a href="interfaces.optionconfig.html" class="tsd-signature-type">OptionConfig</a><span class="tsd-signature-symbol"> | </span><a href="interfaces.argumentconfig.html" class="tsd-signature-type">ArgumentConfig</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></h4>
+					</li>
+					<li>
+						<h4>C<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">OptionConfig</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">ArgumentConfig</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></h4>
+					</li>
+				</ul>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">HelperOptions</span>
+						<span class="target">DecoratedConfig</span>
 					</li>
 				</ul>
 			</section>
@@ -96,13 +93,11 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="interfaces.helperoptions.html#cls" class="tsd-kind-icon">cls</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="interfaces.helperoptions.html#config" class="tsd-kind-icon">config</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="interfaces.helperoptions.html#configkey" class="tsd-kind-icon">config<wbr>Key</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="interfaces.helperoptions.html#enabled" class="tsd-kind-icon">enabled</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="interfaces.helperoptions.html#listeners" class="tsd-kind-icon">listeners</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="interfaces.helperoptions.html#name" class="tsd-kind-icon">name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="interfaces.helperoptions.html#singleton" class="tsd-kind-icon">singleton</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="interfaces.decoratedconfig.html#cls" class="tsd-kind-icon">cls</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="interfaces.decoratedconfig.html#config" class="tsd-kind-icon">config</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="interfaces.decoratedconfig.html#key" class="tsd-kind-icon">key</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="interfaces.decoratedconfig.html#target" class="tsd-kind-icon">target</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="interfaces.decoratedconfig.html#type" class="tsd-kind-icon">type</a></li>
 							</ul>
 						</section>
 					</div>
@@ -112,123 +107,58 @@
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="cls" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> cls</h3>
-					<div class="tsd-signature tsd-kind-icon">cls<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<h3>cls</h3>
+					<div class="tsd-signature tsd-kind-icon">cls<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/15b5b27/src/interfaces.ts#L93">src/interfaces.ts:93</a></li>
-							<li>Defined in lib/interfaces.d.ts:81</li>
+							<li>Defined in <a href="https://github.com/node-radic/console/blob/15b5b27/src/interfaces.ts#L159">src/interfaces.ts:159</a></li>
+							<li>Defined in lib/interfaces.d.ts:131</li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>set by the decorator</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="config" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> config</h3>
-					<div class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HelperOptionsConfig</span></div>
+					<h3>config</h3>
+					<div class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">C</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/15b5b27/src/interfaces.ts#L106">src/interfaces.ts:106</a></li>
-							<li>Defined in lib/interfaces.d.ts:88</li>
+							<li>Defined in <a href="https://github.com/node-radic/console/blob/15b5b27/src/interfaces.ts#L161">src/interfaces.ts:161</a></li>
+							<li>Defined in lib/interfaces.d.ts:133</li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>sdfsdf</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="configkey" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> config<wbr>Key</h3>
-					<div class="tsd-signature tsd-kind-icon">config<wbr>Key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="key" class="tsd-anchor"></a>
+					<h3>key</h3>
+					<div class="tsd-signature tsd-kind-icon">key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/15b5b27/src/interfaces.ts#L101">src/interfaces.ts:101</a></li>
-							<li>Defined in lib/interfaces.d.ts:87</li>
+							<li>Defined in <a href="https://github.com/node-radic/console/blob/15b5b27/src/interfaces.ts#L160">src/interfaces.ts:160</a></li>
+							<li>Defined in lib/interfaces.d.ts:132</li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>the key used to inject the parsed configuration into the instance of the helper. default &#39;config&#39;</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="enabled" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> enabled</h3>
-					<div class="tsd-signature tsd-kind-icon">enabled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="target" class="tsd-anchor"></a>
+					<h3>target</h3>
+					<div class="tsd-signature tsd-kind-icon">target<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/15b5b27/src/interfaces.ts#L97">src/interfaces.ts:97</a></li>
-							<li>Defined in lib/interfaces.d.ts:83</li>
+							<li>Defined in <a href="https://github.com/node-radic/console/blob/15b5b27/src/interfaces.ts#L158">src/interfaces.ts:158</a></li>
+							<li>Defined in lib/interfaces.d.ts:130</li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Enables listeners, ...</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="listeners" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> listeners</h3>
-					<div class="tsd-signature tsd-kind-icon">listeners<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<a name="type" class="tsd-anchor"></a>
+					<h3>type</h3>
+					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/15b5b27/src/interfaces.ts#L99">src/interfaces.ts:99</a></li>
-							<li>Defined in lib/interfaces.d.ts:84</li>
+							<li>Defined in <a href="https://github.com/node-radic/console/blob/15b5b27/src/interfaces.ts#L162">src/interfaces.ts:162</a></li>
+							<li>Defined in lib/interfaces.d.ts:134</li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Bind events to methods</p>
-						</div>
-					</div>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-index-signature">
-								<h5><span class="tsd-signature-symbol">[</span>event: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">string</span></h5>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="name" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> name</h3>
-					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/15b5b27/src/interfaces.ts#L91">src/interfaces.ts:91</a></li>
-							<li>Defined in lib/interfaces.d.ts:80</li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>set by the decorator</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="singleton" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> singleton</h3>
-					<div class="tsd-signature tsd-kind-icon">singleton<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/15b5b27/src/interfaces.ts#L95">src/interfaces.ts:95</a></li>
-							<li>Defined in lib/interfaces.d.ts:82</li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>flag binding in container as singleton</p>
-						</div>
-					</div>
 				</section>
 			</section>
 		</div>
@@ -263,42 +193,36 @@
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
 						<a href="interfaces.commandconfig.html" class="tsd-kind-icon">Command<wbr>Config</a>
 					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="interfaces.decoratedconfig.html" class="tsd-kind-icon">Decorated<wbr>Config</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module">
-						<a href="interfaces.groupconfig.html" class="tsd-kind-icon">Group<wbr>Config</a>
-					</li>
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface tsd-parent-kind-module">
-						<a href="interfaces.helperoptions.html" class="tsd-kind-icon">Helper<wbr>Options</a>
+					<li class="current tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
+						<a href="interfaces.decoratedconfig.html" class="tsd-kind-icon">Decorated<wbr>Config</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="interfaces.helperoptions.html#cls" class="tsd-kind-icon">cls</a>
+								<a href="interfaces.decoratedconfig.html#cls" class="tsd-kind-icon">cls</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="interfaces.helperoptions.html#config" class="tsd-kind-icon">config</a>
+								<a href="interfaces.decoratedconfig.html#config" class="tsd-kind-icon">config</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="interfaces.helperoptions.html#configkey" class="tsd-kind-icon">config<wbr>Key</a>
+								<a href="interfaces.decoratedconfig.html#key" class="tsd-kind-icon">key</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="interfaces.helperoptions.html#enabled" class="tsd-kind-icon">enabled</a>
+								<a href="interfaces.decoratedconfig.html#target" class="tsd-kind-icon">target</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="interfaces.helperoptions.html#listeners" class="tsd-kind-icon">listeners</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="interfaces.helperoptions.html#name" class="tsd-kind-icon">name</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="interfaces.helperoptions.html#singleton" class="tsd-kind-icon">singleton</a>
+								<a href="interfaces.decoratedconfig.html#type" class="tsd-kind-icon">type</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="interfaces.groupconfig.html" class="tsd-kind-icon">Group<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="interfaces.helperoptions.html" class="tsd-kind-icon">Helper<wbr>Options</a>
+					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
 						<a href="interfaces.helperoptionsconfig.html" class="tsd-kind-icon">Helper<wbr>Options<wbr>Config</a>
 					</li>
