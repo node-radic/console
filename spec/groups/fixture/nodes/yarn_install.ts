@@ -1,4 +1,4 @@
-import { command } from "../../../../src/decorators";
+import { command, option } from "../../../../src/decorators";
 import { YarnGroup } from "./yarn";
 import { inject } from "../../../../src/core/ioc";
 import {Output } from "../../../../src/helpers/Output";
@@ -19,7 +19,25 @@ export class YarnInstallCommand {
     // options
     g:boolean
     // or
-    global:boolean
+
+    @option('A glob boolean = false', 'g')
+    global:boolean = false;
+
+    @option('A man string', 'm')
+    man:string;
+
+    @option('A foo number = 5')
+    foo:number = 5;
+
+
+    @option('Array of booleans', Boolean)
+    arbool:boolean[];
+
+    @option('Array of string', String)
+    arstr:string[];
+
+    @option('Array of number', Number)
+    arnr:number[];
 
     // arguments
     packages:string[];
@@ -35,7 +53,8 @@ export class YarnInstallCommand {
 
     handle(){
         let desc = this.desc.command(this)
-        // this.out.dumpp(desc);
+        this.out.dumpp(desc)
+
         // this.out.success('ok');
 
         // this.in.ask('hello??').then((answer) => {

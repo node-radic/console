@@ -20,9 +20,11 @@ export class Registry {
         return this._groups;
     }
 
-    private _groups: i.GroupConfig[]                      = []
-    private _commands: i.CommandConfig[]                  = []
-    private _helpers: { [name: string]: i.HelperOptions } = {}
+    private _groups: i.GroupConfig[]                          = []
+    private _commands: i.CommandConfig[]                      = []
+    private _options: i.DecoratedConfig<i.OptionConfig>[]     = [];
+    private _arguments: i.DecoratedConfig<i.ArgumentConfig>[] = [];
+    private _helpers: { [name: string]: i.HelperOptions }     = {}
     private _root: i.RootConfig
 
     constructor(@inject('console.nodes.defaults.group') private _groupDefaults: i.GroupConfig,
@@ -65,6 +67,14 @@ export class Registry {
         options = this.createCommandConfig(options);
         this._commands.push(options);
         return options;
+    }
+
+    addOption(config: i.DecoratedConfig<i.OptionConfig>) {
+        this._options.push(config);
+    }
+
+    addArgument(config: i.DecoratedConfig<i.ArgumentConfig>) {
+        this._arguments.push(config);
     }
 
     addHelper<T>(options: i.HelperOptions): i.HelperOptions {
@@ -155,6 +165,22 @@ export class Registry {
                 options.cls.prototype.handle = options.handle
             }
         }
+
+        _.filter(this._options, { cls: options.cls }).forEach((opt: i.DecoratedConfig<i.OptionConfig>) => {
+            // join name and aliases, sort by str length and pick the top to get shortest
+            if ( opt.config.alias === undefined ) opt.config.alias = [];
+            let alias: any[] = [ opt.key ].concat(kindOf(opt.config.alias) !== 'array' ? [ <string> opt.config.alias ] : opt.config.alias).sort((a: string, b: string) => a.length - b.length)
+            let name         = alias.shift();
+            let type         = opt.type.name.toString().toLowerCase()
+            if ( opt.config.type !== undefined ) {
+                opt.config.array = true;
+                type             = opt.config.type
+            }
+
+            options.options[ name ] = _.merge(opt.config, { alias, type });
+
+            // @todo: default value
+        })
 
         return options;
     }

@@ -17,9 +17,12 @@ var Input_1 = require("../../../../src/helpers/Input");
 var Describer_1 = require("../../../../src/helpers/Describer");
 var YarnInstallCommand = (function () {
     function YarnInstallCommand() {
+        this.global = false;
+        this.foo = 5;
     }
     YarnInstallCommand.prototype.handle = function () {
         var desc = this.desc.command(this);
+        this.out.dumpp(desc);
     };
     YarnInstallCommand.prototype.dumpStuff = function () {
         this.out.line('{green}THIS:{reset}');
@@ -33,6 +36,30 @@ var YarnInstallCommand = (function () {
     };
     return YarnInstallCommand;
 }());
+__decorate([
+    decorators_1.option('A glob boolean = false', 'g'),
+    __metadata("design:type", Boolean)
+], YarnInstallCommand.prototype, "global", void 0);
+__decorate([
+    decorators_1.option('A man string', 'm'),
+    __metadata("design:type", String)
+], YarnInstallCommand.prototype, "man", void 0);
+__decorate([
+    decorators_1.option('A foo number = 5'),
+    __metadata("design:type", Number)
+], YarnInstallCommand.prototype, "foo", void 0);
+__decorate([
+    decorators_1.option('Array of booleans', Boolean),
+    __metadata("design:type", Array)
+], YarnInstallCommand.prototype, "arbool", void 0);
+__decorate([
+    decorators_1.option('Array of string', String),
+    __metadata("design:type", Array)
+], YarnInstallCommand.prototype, "arstr", void 0);
+__decorate([
+    decorators_1.option('Array of number', Number),
+    __metadata("design:type", Array)
+], YarnInstallCommand.prototype, "arnr", void 0);
 __decorate([
     ioc_1.inject('console.helpers.output'),
     __metadata("design:type", Output_1.Output)

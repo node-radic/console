@@ -109,12 +109,14 @@ namespace interfaces {
     /** Declaration of a option */
     export interface OptionConfig {
         name?: string
-        alias?: string | string[]
-        desc?: string
-
-        type?: OptionType
-        array?: boolean
         default?: any
+        type?: OptionType
+
+        desc?: string
+        alias?: string | string[]
+
+        array?: boolean
+
         transformer?: (arg: any) => any
         arguments?: number
         count?: number
@@ -151,6 +153,15 @@ namespace interfaces {
         desc?: string
     }
 
+
+    export interface DecoratedConfig<C extends OptionConfig | ArgumentConfig | any> {
+        target: Object
+        cls: Function
+        key: string | symbol
+        config: C
+        type: any
+
+    }
 
     export interface Node<C extends NodeConfig> {
         name: string

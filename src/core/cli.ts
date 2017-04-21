@@ -96,11 +96,6 @@ export class Cli {
         return false;
     }
 
-    dump(target?: any) {
-        inspect(target || this);
-    }
-
-
     group(name: string, config: interfaces.GroupConfig = {}): interfaces.GroupConfig {
         if ( this.mode !== 'groups' ) {
             throw new Error('Cannot declare groups for the CLI when not using "groups" mode.');

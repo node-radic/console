@@ -1,6 +1,22 @@
 # Console
 
+## Overview
+### Modes
+The Cli instance can be in **command** or __groups__ mode.
+
+#### Mode: command
+
+#### Mode: groups
+
+- Groups [`@group`](interfaces/interfaces.groupconfig.html) and commands [`@command`](interfaces/interfaces.commandconfig.html) are 'nodes'.
+- One of those nodes needs to the Root `@root` node
+
+
 ## groups and commands
+
+```
+
+```
 
 ```
 import {command} from '@radic/console'
