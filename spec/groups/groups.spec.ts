@@ -1,4 +1,4 @@
-import {Cli, ParsedNode,ResolverResult } from "../../src";
+import {Cli, ParsedNode } from "../../src";
 
 describe("groups", () => {
     let groupsFixture = require('./fixture');
@@ -11,7 +11,7 @@ describe("groups", () => {
             expect(parsedRootNode).toBeDefined()
         })
         it('resolve returns a resolved and parsed node', () => {
-            parsedNode = cli.resolve();
+            parsedNode = <any> cli.resolve();
             expect(parsedNode).toBeDefined()
         })
         it('handle executes the resolved parsed node', () => {

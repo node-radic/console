@@ -1,6 +1,5 @@
 import { interfaces as i } from "../interfaces";
 import * as _ from "lodash";
-import {ArgumentCollection } from "./InputCollections";
 import { Container } from "../core/ioc";
 import { Registry } from "../core/Registry";
 import { Parser } from "./Parser";
@@ -8,33 +7,32 @@ import { injectable } from "inversify";
 import { kindOf } from "@radic/util";
 
 @injectable()
-export class ParsedNode {
+export class ParsedNode<T extends i.NodeConfig> {
     public usesArguments: boolean           = false;
     public hasArguments: boolean            = false;
     public options: { [name: string]: any } = {}
     public arguments: string[]              = [];
     public str: string
 
-
+    protected _options: i.Options
+    protected _arguments: i.Arguments
     protected _nodeInstance: any;
 
-    getNodeInstance<T>(): T {
+    getNodeInstance(): i.Node<T> {
         if ( ! this._nodeInstance ) {
-            this._nodeInstance = this.make<T>()
+            this._nodeInstance = this.make()
         }
         return this._nodeInstance;
     }
 
-    make<T>(): T {
-        const c        = this.config;
-        const registry = Container.getInstance().make<Registry>('console.registry')
-        const parser   = Container.getInstance().make<Parser>('console.parser')
-        let isRoot     = registry.root.cls === c.cls;
-        let node: T    = Container.getInstance().build<T>(c.cls);
+    protected make(): i.Node<T> {
+        const c             = this.config;
+        const registry      = Container.getInstance().make<Registry>('console.registry')
+        const parser        = Container.getInstance().make<Parser>('console.parser')
+        let isRoot          = registry.root.cls === c.cls;
+        let node: i.Node<T> = Container.getInstance().build<i.Node<T>>(c.cls);
 
         let setters = {
-            _config: c,
-            options: this._options
         }
 
         const addSetter = (key: string, val: any) => { if ( setters[ key ] === undefined ) setters[ key ] = val; }
@@ -42,7 +40,6 @@ export class ParsedNode {
         if ( c.type === 'group' ) {
             // parsed = parser.parseGroup(this.argv, c);
         } else if ( c.type === 'command' ) {
-
             setters[ 'arguments' ] = this._arguments
             if ( this.hasArguments ) {
                 this.getArguments().getKeys().forEach(key => {
@@ -57,7 +54,7 @@ export class ParsedNode {
         if ( ! isRoot ) {
             let rootOptionsConfig: any = registry.root.instance.getOptions().getConfig();
             Object.keys(rootOptionsConfig).forEach(key => {
-                let config: i.RootOptionConfig = rootOptionsConfig[ key ];
+                let config: i.OptionConfig = rootOptionsConfig[ key ];
                 if ( ! config.global ) return;
                 let opt = registry.root.instance.opt(key);
                 addSetter(key, opt)
@@ -70,17 +67,14 @@ export class ParsedNode {
             node[ key ] = setters[ key ]
         })
 
+        node['parsed'] = this;
+
         return node;
     }
 
-
-    _options: i.Options
-    _arguments: i.Arguments
-
-
     constructor(public argv: string[],
-                protected yargsOutput: i.YargsOutput,
-                protected config: i.NodeConfig | i.GroupConfig | i.CommandConfig,
+                protected yargsOutput: i.ParserOutput,
+                public config: T,
                 options: i.Options,
                 args?: i.Arguments) {
 
@@ -90,10 +84,8 @@ export class ParsedNode {
         this.options  = _.cloneDeep(yargsOutput.argv);
         delete this.options._
 
-        this.arguments = yargsOutput.argv._;
-
-        this._arguments = new ArgumentCollection({}, {});
         if ( args ) {
+            this.arguments     = yargsOutput.argv._;
             this.usesArguments = true;
             this._arguments    = args;
             this.hasArguments  = Object.keys(args).length > 0
@@ -105,43 +97,46 @@ export class ParsedNode {
     }
 
     /** Alias for getOption **/
-    opt<T extends any>(name: string, defaultValueOverride: any = null): T {
-        return this._options.get<T>(name, defaultValueOverride);
-    }
-
-    /** Alias for getArgument **/
-    arg<T extends any>(name: string, defaultValueOverride: any = null): T {
-        return this._arguments.get<T>(name, defaultValueOverride);
+    opt<O extends any>(name: string, defaultValueOverride: any = null): O {
+        return this._options.get<O>(name, defaultValueOverride);
     }
 
     hasArg(name: string): boolean {
+        if ( ! this.usesArguments ) return false;
         return false;
     }
 
-    /** Checks if argument or option exists name **/
-    has(name: string): boolean {
-        return this.hasArg(name) || this.hasOpt(name)
+    /** Alias for getArgument **/
+    arg<A extends any>(name: string, defaultValueOverride: any = null): A {
+        if ( ! this.usesArguments ) return undefined;
+        return this._arguments.get<A>(name, defaultValueOverride);
     }
-
-    /** Get argument or option named name. When similar named argument and option, argument will be prioritized.  **/
-    get<T extends any>(name: string, defaultValueOverride?: any): T {
-        if ( this.hasArg(name) ) {
-            return this.arg<T>(name);
-        } else if ( this.hasOpt(name) ) {
-            return this.opt<T>(name);
-        }
-        return this._options.get<T>(name, defaultValueOverride);
-    }
+    //
+    // /** Checks if argument or option exists name **/
+    // has(name: string): boolean {
+    //     return this.hasArg(name) || this.hasOpt(name)
+    // }
+    //
+    // /** Get argument or option named name. When similar named argument and option, argument will be prioritized.  **/
+    // get<G extends any>(name: string, defaultValueOverride?: any): G {
+    //     if ( this.hasArg(name) ) {
+    //         return this.arg<G>(name, defaultValueOverride);
+    //     } else if ( this.hasOpt(name) ) {
+    //         return this.opt<G>(name, defaultValueOverride);
+    //     }
+    //     return this._options.get<G>(name, defaultValueOverride);
+    // }
 
     getOptions(): i.Options {
         return this._options;
     }
 
     getArguments(): i.Arguments {
+        if ( ! this.usesArguments ) return undefined;
         return this._arguments;
     }
 
-    getConfig(): i.NodeConfig {
+    getConfig(): T {
         return this.config;
     }
 

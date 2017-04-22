@@ -21,8 +21,11 @@ var YarnInstallCommand = (function () {
         this.foo = 5;
     }
     YarnInstallCommand.prototype.handle = function () {
-        var desc = this.desc.command(this);
-        this.out.dumpp(desc);
+        var desc = this.desc.command(this.parsed);
+        this.out.columns(desc, {
+            columnSplitter: '   ',
+            showHeaders: false
+        });
     };
     YarnInstallCommand.prototype.dumpStuff = function () {
         this.out.line('{green}THIS:{reset}');
@@ -45,19 +48,19 @@ __decorate([
     __metadata("design:type", String)
 ], YarnInstallCommand.prototype, "man", void 0);
 __decorate([
-    decorators_1.option('A foo number = 5'),
+    decorators_1.option('A foo number = 5', 'f'),
     __metadata("design:type", Number)
 ], YarnInstallCommand.prototype, "foo", void 0);
 __decorate([
-    decorators_1.option('Array of booleans', Boolean),
+    decorators_1.option('Array of booleans', Boolean, 'b'),
     __metadata("design:type", Array)
 ], YarnInstallCommand.prototype, "arbool", void 0);
 __decorate([
-    decorators_1.option('Array of string', String),
+    decorators_1.option('Array of string', String, 's'),
     __metadata("design:type", Array)
 ], YarnInstallCommand.prototype, "arstr", void 0);
 __decorate([
-    decorators_1.option('Array of number', Number),
+    decorators_1.option('Array of number', Number, 'n'),
     __metadata("design:type", Array)
 ], YarnInstallCommand.prototype, "arnr", void 0);
 __decorate([

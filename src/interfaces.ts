@@ -1,5 +1,5 @@
 import { CliMode } from "./core/cli";
-import { ArgumentType, Command, Group, NodeType, OptionType } from "./core/nodes";
+import { ArgumentType, NodeType, OptionType } from "./core/nodes";
 import { ParsedNode } from "./parser/ParsedNode";
 namespace interfaces {
 
@@ -9,7 +9,7 @@ namespace interfaces {
         mode?: CliMode
         /** arguments config **/
         parser?: {
-            yargs?: YargsConfiguration,
+            yargs?: ParserConfiguration,
             arguments?: {
                 nullUndefined?: boolean
                 undefinedBooleanIsFalse?: boolean
@@ -18,7 +18,7 @@ namespace interfaces {
     }
 
     /** yargs-parser configuration */
-    export interface YargsConfiguration {
+    export interface ParserConfiguration {
         'short-option-groups'?: boolean
         'camel-case-expansion'?: boolean
         'dot-notation'?: boolean
@@ -29,7 +29,7 @@ namespace interfaces {
     }
 
     /** yargs-parser configuration */
-    export interface YargsOptionsConfig extends Object {
+    export interface ParserOptionsConfig extends Object {
         alias?: { [key: string]: string[] }
         array?: string[]
         boolean?: string[]
@@ -43,32 +43,18 @@ namespace interfaces {
 
         envPrefix?: string
         normalize?: boolean
-        configuration?: YargsConfiguration
+        configuration?: ParserConfiguration
     }
 
     /** yargs-parser detailed output arv */
-    export interface YargsOutputArgv {
+    export interface ParserOutputArgv {
         _?: any[],
         [key: string]: any
     }
 
     /** yargs-parser parsed argv detailed output */
-    export interface YargsOutput {
-        argv?: YargsOutputArgv
-        error?: Error
-        aliases?: any[]
-        newAliases?: any[]
-        configuration?: any
-    }
-
-    /** Output from Parser */
     export interface ParserOutput {
-        argv?: YargsOutputArgv
-        optionsConfig?: { [name: string]: OptionConfig }
-        optionsParserConfig?: YargsOptionsConfig
-        options?: Options
-        argumentsConfig?: { [name: string]: ArgumentConfig }
-        arguments?: Arguments
+        argv?: ParserOutputArgv
         error?: Error
         aliases?: any[]
         newAliases?: any[]
@@ -116,16 +102,13 @@ namespace interfaces {
         alias?: string | string[]
 
         array?: boolean
+        global?: boolean
 
         transformer?: (arg: any) => any
         arguments?: number
         count?: number
     }
 
-    /** Declaration of a option on the Cli class  */
-    export interface RootOptionConfig extends OptionConfig {
-        global?: boolean
-    }
 
     /** Declaration of a argument */
     export interface ArgumentConfig {
@@ -136,51 +119,48 @@ namespace interfaces {
         default?: any
     }
 
-    export interface RootConfig {
-        globalOptions: { [name: string]: OptionConfig }
-        cls?: any
-        instance?: ParsedNode | null
+
+
+    export interface DecoratedConfig<C extends OptionConfig | ArgumentConfig > {
+        cls?: Function
+        key?: string | symbol
+        config?: C
+        type?: any
     }
+
 
     /**  */
     export interface NodeConfig { //extends Object
+        [name: string]: any
         name?: string
         type?: NodeType
         group?: any
         cls?: any
         options?: { [name: string]: OptionConfig }
+        instance?: ParsedNode<this> | null
         aliases?: string[]
         desc?: string
     }
 
-
-    export interface DecoratedConfig<C extends OptionConfig | ArgumentConfig | any> {
-        target: Object
-        cls: Function
-        key: string | symbol
-        config: C
-        type: any
-
-    }
-
-    export interface Node<C extends NodeConfig> {
-        name: string
-        desc: string
-        options: Options
-        config: C
-    }
-
     /** Single group declaration configuration */
-    export interface GroupConfig extends NodeConfig {
+    export interface GroupNodeConfig extends NodeConfig {
         globalOptions?: { [name: string]: OptionConfig }
-        handle?: (group: Group) => boolean | any
-        children?: NodeConfig[]
+        handle?: () => void
     }
 
     /** Single command declaration configuration */
-    export interface CommandConfig extends NodeConfig {
+    export interface CommandNodeConfig extends NodeConfig {
         arguments?: { [name: string]: ArgumentConfig }
-        handle?: (command: Command) => boolean | any
+        handle?: () => void
+    }
+
+
+    export interface NodesDefaults {
+        argument: ArgumentConfig
+        option: OptionConfig
+        node: NodeConfig
+        group: GroupNodeConfig
+        command: CommandNodeConfig
     }
 
 
@@ -192,7 +172,7 @@ namespace interfaces {
         getKeys(): string[]
         isEmpty(): boolean
         config(name: string): OptionConfig
-        getConfig(): { [name: string]: OptionConfig | RootOptionConfig }
+        getConfig(): { [name: string]: OptionConfig  }
 
     }
 
@@ -212,7 +192,6 @@ namespace interfaces {
         (val: any): any
     }
 
-
     export interface OutputColumnsOptions {
         columns?: string[]
         minWidth?: number
@@ -227,6 +206,11 @@ namespace interfaces {
         truncateMarker?: string
         widths?: { [name: string]: OutputColumnsOptions }
         config?: { [name: string]: OutputColumnsOptions }
+    }
+
+    export interface Node<C extends NodeConfig> {
+        parsed?: ParsedNode<C>
+        handle?: () => void
     }
 
 }

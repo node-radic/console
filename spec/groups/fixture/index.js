@@ -17,10 +17,7 @@ exports.cli
     }
 })
     .helper('describer', {
-    option: {
-        key: 'h',
-        aliases: ['help']
-    }
+    help: ['h', 'help']
 });
 exports.default = exports.cli;
 //# sourceMappingURL=index.js.map

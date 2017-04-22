@@ -122,7 +122,10 @@ gulp.task("test", () => {
     let jasmineJson = require('./jasmine.json');
     return gulp.src(jasmineJson.spec_files)
         .pipe(jasmine({
-            reporter: new SpecReporter(),
+            reporter: new SpecReporter({
+                displayStacktrace: true,
+                displaySpecDuration: true
+            }),
             config  : jasmineJson
         }))
 });

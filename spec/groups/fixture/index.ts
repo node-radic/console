@@ -1,4 +1,4 @@
-import { Cli, ResolverResult } from "../../../src";
+import { Cli } from "../../../src";
 export * from './nodes'
 export * from './root'
 
@@ -14,12 +14,8 @@ cli
         }
     })
     .helper('describer', {
-        option: {
-            key: 'h',
-            aliases: ['help']
-        }
+        help: ['h', 'help']
     })
-
 
 
 export default cli;

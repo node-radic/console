@@ -27,56 +27,72 @@ function makeOptions<T extends interfaces.NodeConfig>(cls: any, args: any[]): T 
     return options
 }
 
+let decorateAsRoot   = false;
+let decorateAsGlobal = false;
 
-function command(name: string): ClassDecorator;
-function command(options: interfaces.CommandConfig): ClassDecorator;
-function command(name: string, options: interfaces.CommandConfig): ClassDecorator;
-function command(...args: any[]): ClassDecorator {
-    return (cls) => {
-
-        Container.getInstance()
-            .make<Registry>('console.registry')
-            .addCommand(makeOptions<interfaces.CommandConfig>(cls, args))
-    }
-}
-
+declare type RootDecorator = <TFunction extends Function>(target: TFunction) => TFunction | void;
 
 /**
- *
- * Decorator for groups
- *
- * ```
- * \@Container.group('git', <GroupConfig> {
-     *      desc: 'Git operations',
-     *      //...
-     * })
- * export class GitGroup {
-     *      //...
-     * }
- * ```
  * @decorator
- *
+ * @export
  */
+function root(): ClassDecorator {
+    decorateAsRoot = true;
+    return (cls) => {
+        decorateAsRoot = false;
+    }
+}
+
+/**
+ * @decorator
+ * @export
+ */
+function global(): PropertyDecorator {
+    decorateAsGlobal = true;
+    return (target: Object, key: string | symbol) => {
+        decorateAsGlobal = false;
+    }
+}
+
+/** @private */
+const registry = (cls?:any): Registry => {
+    let reg = Container.getInstance().make<Registry>('console.registry');
+    if(cls && decorateAsRoot) reg.setRoot(cls);
+    return reg;
+}
+
+
+function command(name: string): ClassDecorator;
+function command(options: interfaces.CommandNodeConfig): ClassDecorator;
+function command(name: string, options: interfaces.CommandNodeConfig): ClassDecorator;
+/**
+ * @decorator
+ * @export
+ */
+function command(...args: any[]): ClassDecorator {
+    return (cls) => {
+        registry(cls).addCommand(makeOptions<interfaces.CommandNodeConfig>(cls, args))
+    }
+}
+
+/**
+ * @decorator
+ * @export
+ */
+function group():ClassDecorator
 function group(name: string): ClassDecorator;
-function group(options: interfaces.GroupConfig): ClassDecorator;
-function group(name: string, options: interfaces.GroupConfig): ClassDecorator;
+function group(options: interfaces.GroupNodeConfig): ClassDecorator;
+function group(name: string, options: interfaces.GroupNodeConfig): ClassDecorator;
 function group(...args: any[]): ClassDecorator {
     return (cls) => {
-        Container.getInstance()
-            .make<Registry>('console.registry')
-            .addGroup(makeOptions<interfaces.GroupConfig>(cls, args))
+        registry(cls).addGroup(makeOptions<interfaces.GroupNodeConfig>(cls, args))
     }
 }
 
-function root(config: interfaces.RootConfig): ClassDecorator {
-    return (cls) => {
-        config.cls = cls;
-        Container.getInstance()
-            .make<Registry>('console.registry')
-            .setRoot(config);
-    }
-}
-
+/**
+ * @decorator
+ * @export
+ */
 function helper(name: string): ClassDecorator;
 function helper(options: interfaces.HelperOptions): ClassDecorator;
 function helper(name: string, options: interfaces.HelperOptions): ClassDecorator;
@@ -88,37 +104,42 @@ function helper(...args: any[]): ClassDecorator {
     }
 }
 
+/**
+ * @decorator
+ * @export
+ */
 function option(config?: interfaces.OptionConfig): PropertyDecorator;
 function option(desc: string, config?: interfaces.OptionConfig): PropertyDecorator;
 function option(desc: string, alias: string | string[], config?: interfaces.OptionConfig): PropertyDecorator;
-function option(desc: string, type:Function, config?: interfaces.OptionConfig): PropertyDecorator;
-function option(desc: string, type:Function, alias: string | string[], config?: interfaces.OptionConfig): PropertyDecorator;
+function option(desc: string, type: Function, config?: interfaces.OptionConfig): PropertyDecorator;
+function option(desc: string, type: Function, alias: string | string[], config?: interfaces.OptionConfig): PropertyDecorator;
 function option(...args: any[]): PropertyDecorator {
-    let len = args.length
-    let config:interfaces.OptionConfig = {};
-    let argt = args.map(arg => kindOf(arg));
-    let type:Function;
+    let len                             = args.length
+    let config: interfaces.OptionConfig = {
+        global: decorateAsGlobal
+    };
+    let argt                            = args.map(arg => kindOf(arg));
+    let type: Function;
 
-    if(len > 0 && argt[0] === 'string') config.desc = args[0];
-    if(len > 1 && (argt[1] === 'string' || argt[1] === 'array')) config.alias = args[1];
-    if(len > 1 && argt[1] === 'function') type = args[1];
-    if(len > 2 && (argt[2] === 'string' || argt[2] === 'array')) config.alias = args[2];
+    if ( len > 0 && argt[ 0 ] === 'string' ) config.desc = args[ 0 ];
+    if ( len > 1 && (argt[ 1 ] === 'string' || argt[ 1 ] === 'array') ) config.alias = args[ 1 ];
+    if ( len > 1 && argt[ 1 ] === 'function' ) type = args[ 1 ];
+    if ( len > 2 && (argt[ 2 ] === 'string' || argt[ 2 ] === 'array') ) config.alias = args[ 2 ];
 
-    if(type) config.type = <OptionType> type.name.toLowerCase()
+    if ( type ) config.type = <OptionType> type.name.toLowerCase()
 
     // config is ALWAYS last parameter, so we can do it like this
-    if(len > 0 && argt[len-1] === 'object') merge(config, args[len-1]);
-
+    if ( len > 0 && argt[ len - 1 ] === 'object' ) merge(config, args[ len - 1 ]);
 
 
     return (target: Object, key: string | symbol) => {
         let type = Reflect.getMetadata('design:type', target, key);
         Container.getInstance()
             .make<Registry>('console.registry')
-            .addOption({ target, cls: target.constructor, key, config, type })
+            .addOption({ cls: target.constructor, key, config, type })
 
     }
 }
 
 
-export { command, group, root, helper, option }
+export { command, group, root, helper, option, global }

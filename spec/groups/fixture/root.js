@@ -19,24 +19,27 @@ var Root = (function () {
         this.out = out;
     }
     Root.prototype.handle = function () {
+        if (this.noColors) {
+            this.out.config.colors = false;
+        }
         if (this.version) {
-            this.out.line(this.cli['version']);
+            this.out.line('1.4.6');
         }
     };
     return Root;
 }());
+__decorate([
+    src_1.global(),
+    src_1.option('Disable the use of colors', 'C'),
+    __metadata("design:type", Boolean)
+], Root.prototype, "noColors", void 0);
+__decorate([
+    src_1.option('Show version', 'V'),
+    __metadata("design:type", Boolean)
+], Root.prototype, "version", void 0);
 Root = __decorate([
-    src_1.group({
-        options: {
-            V: { alias: 'version', desc: 'Show application version' }
-        }
-    }),
-    src_1.root({
-        globalOptions: {
-            h: { alias: 'help', desc: 'Show this help text' },
-            v: { alias: 'verbose', desc: 'Be more verbose', count: 3 }
-        }
-    }),
+    src_1.root(),
+    src_1.group(),
     __param(0, src_1.inject('console.cli')),
     __param(1, src_1.inject('console.helpers.output')),
     __metadata("design:paramtypes", [src_1.Cli,

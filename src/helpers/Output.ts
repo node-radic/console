@@ -18,7 +18,7 @@ const truwrap   = require('truwrap');
     config   : {
         quiet : false,
         colors: true,
-
+        resetOnNewline: true,
         styles    : {
             title   : 'yellow bold',
             subtitle: 'yellow',
@@ -93,6 +93,8 @@ export class Output {
 
         if ( this.config.colors )
             text = this.parser.parse(text)
+        else
+            text = this.parser.clean(text);
 
         // if ( ! this.colorsEnabled )
         // text = this.parser.clean
@@ -102,6 +104,7 @@ export class Output {
     }
 
     writeln(text: string = ''): this {
+        if(this.config.resetOnNewline) this.write('{reset}')
         this.write(text + "\n")
         return this
     }
@@ -134,7 +137,7 @@ export class Output {
         return new Table(kindOf(options) === 'array' ? { head: options } : options)
     }
 
-    columns(data: any, options: i.OutputColumnsOptions = {}) {
+    columns(data: any, options: i.OutputColumnsOptions = {}, ret:boolean = false) {
         let defaults: i.OutputColumnsOptions = {
             minWidth        : 20,
             maxWidth        : 120,
@@ -149,7 +152,9 @@ export class Output {
             // defaults.minWidth = (process.stdout[ 'getWindowSize' ]()[ 0 ] / 1.1) / iCol;
             // defaults.minWidth = defaults.minWidth > defaults.maxWidth ? defaults.maxWidth : defaults.minWidth;
         }
-        return columnify(data, merge({}, defaults, options));
+        let res = columnify(data, merge({}, defaults, options));
+        if(ret) return res;
+        this.writeln(res);
     }
 
 

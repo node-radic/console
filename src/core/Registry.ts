@@ -1,5 +1,6 @@
 import { Container, inject, singleton } from "./ioc";
 import * as _ from "lodash";
+import * as S from "string";
 import i from "../interfaces";
 import { IConfigProperty } from "../config";
 import { interfaces } from "inversify";
@@ -12,28 +13,28 @@ import { kindOf } from "@radic/util";
  */
 @singleton('console.registry')
 export class Registry {
-    get commands(): i.CommandConfig[] {
+    get commands(): i.CommandNodeConfig[] {
         return this._commands;
     }
 
-    get groups(): i.GroupConfig[] {
+    get groups(): i.GroupNodeConfig[] {
         return this._groups;
     }
 
-    private _groups: i.GroupConfig[]                          = []
-    private _commands: i.CommandConfig[]                      = []
+    private _groups: i.GroupNodeConfig[]                      = []
+    private _commands: i.CommandNodeConfig[]                  = []
     private _options: i.DecoratedConfig<i.OptionConfig>[]     = [];
     private _arguments: i.DecoratedConfig<i.ArgumentConfig>[] = [];
     private _helpers: { [name: string]: i.HelperOptions }     = {}
-    private _root: i.RootConfig
 
-    constructor(@inject('console.nodes.defaults.group') private _groupDefaults: i.GroupConfig,
-                @inject('console.nodes.defaults.command') private _commandDefaults: i.CommandConfig,
+    private _root: i.NodeConfig
+    private _rootCls: any;
+
+    constructor(@inject('console.defaults.nodes') private _defaults: i.NodesDefaults,
                 @inject('console.config') private _config: IConfigProperty,
                 @inject('console.events') private _events: Events) {
-        this._root = <i.RootConfig> this.createGroupConfig(<any> {
-            name    : '_root',
-            instance: null
+        this._root = this.createGroupConfig(<any> {
+            name    : '_root'
         })
     }
 
@@ -41,41 +42,133 @@ export class Registry {
         return Container.getInstance();
     }
 
-    get root(): i.RootConfig | any {
+    get root(): i.NodeConfig | i.CommandNodeConfig | i.GroupNodeConfig {
         return this._root
     }
 
-    setRoot(options: i.RootConfig) {
-        // wacky stuff here
-        let rootGroup: any = this.createGroupConfig(options);
-        Object.keys(options.globalOptions).forEach(key => {
-            rootGroup.options[ key ]        = options.globalOptions[ key ];
-            rootGroup.options[ key ].global = true;
-        })
-        this._root = <i.RootConfig> rootGroup;
+    get rootCls(): any {
+        return this._rootCls;
+    }
+
+    setRoot(cls: any) {
+        this._rootCls = cls;
+    }
+
+    protected checkAndAddRoot(options: i.NodeConfig): boolean {
+
+        if ( this._rootCls === undefined ) throw new Error('Cannot add node. Declare a root node first.')
+        if ( options.cls === this._rootCls ) {
+            this._root = options;
+            return true;
+        }
+        return false;
     }
 
 
-    addGroup(options: i.GroupConfig): i.GroupConfig {
-        // let isRoot = this.isRoot(options);
-        this._groups.push(options = this.createGroupConfig(options));
+    addGroup(options: i.GroupNodeConfig): i.GroupNodeConfig {
+        options = this.createGroupConfig(options)
+        if ( this.checkAndAddRoot(options) === false ) {
+            this._groups.push(options);
+        }
         return options;
     }
 
-    addCommand(options: i.CommandConfig): i.CommandConfig {
-        // let isRoot = this.isRoot(options);
+
+    protected createGroupConfig(config: i.GroupNodeConfig = {}): i.GroupNodeConfig {
+        config = _.merge({}, this._defaults.group, config);
+        if ( config.cls === null ) {
+            let fn     = function () {}
+            let desc   = Object.getOwnPropertyDescriptor(fn, 'name');
+            desc.value = this.makeid()
+            Object.defineProperty(fn, 'name', desc);
+            config.cls = fn;
+        }
+
+        this.addDecoratedOptionsTo(config);
+
+        return config;
+    }
+
+    addCommand(options: i.CommandNodeConfig): i.CommandNodeConfig {
         options = this.createCommandConfig(options);
-        this._commands.push(options);
+        if ( this.checkAndAddRoot(options) === false ) {
+            this._commands.push(options);
+        }
         return options;
     }
 
-    addOption(config: i.DecoratedConfig<i.OptionConfig>) {
+    protected createCommandConfig(config: i.CommandNodeConfig = {}) {
+        config = _.merge({}, this._defaults.command, config);
+
+        if ( config.cls === null ) {
+            let fn     = function () {}
+            let desc   = Object.getOwnPropertyDescriptor(fn, 'name');
+            desc.value = this.makeid()
+            Object.defineProperty(fn, 'name', desc);
+            config.cls = fn;
+            if ( config.handle !== null ) {
+                config.cls.prototype.handle = config.handle
+            }
+        }
+
+        this.addDecoratedOptionsTo(config);
+        this.addDecoratedArgumentsTo(config);
+
+        return config;
+    }
+
+    addOption(config: i.DecoratedConfig<i.OptionConfig> = {}) {
+        config = _.merge({
+            config: this._defaults.option
+        }, config);
         this._options.push(config);
     }
 
-    addArgument(config: i.DecoratedConfig<i.ArgumentConfig>) {
+    addArgument(config: i.DecoratedConfig<i.ArgumentConfig> = {}) {
+        config = _.merge({
+            config: this._defaults.argument
+        }, config);
         this._arguments.push(config);
     }
+
+
+    protected makeid(len: number = 15) {
+        let text       = "";
+        const possible = "abcdefghijklmnopqrstuvwxyz";
+
+        for ( let i = 0; i < len; i ++ )
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    }
+
+    protected addDecoratedOptionsTo(config: i.NodeConfig) {
+        _.filter(this._options, { cls: config.cls }).forEach((opt: i.DecoratedConfig<i.OptionConfig>) => {
+            let key = S(opt.key).dasherize().toString();
+            // join name and aliases, sort by str length and pick the top to get shortest
+            if ( opt.config.alias === undefined ) opt.config.alias = [];
+            let alias: any[] = [ key ].concat(kindOf(opt.config.alias) !== 'array' ? [ <string> opt.config.alias ] : opt.config.alias).sort((a: string, b: string) => a.length - b.length)
+            let name         = alias.shift();
+            let type         = opt.type.name.toString().toLowerCase()
+            if ( opt.config.type !== undefined && type === 'array' ) {
+                opt.config.array = true;
+                type             = opt.config.type
+            }
+            config.options[ name ] = _.merge(opt.config, { alias, type });
+            // @todo: default value
+        })
+        Object.keys(config.options).forEach(key => {
+            if(config.options[key].global){
+
+            }
+        })
+        return config;
+    }
+
+    protected addDecoratedArgumentsTo(options: i.CommandNodeConfig) {
+
+    }
+
 
     addHelper<T>(options: i.HelperOptions): i.HelperOptions {
         // merge default options
@@ -116,73 +209,19 @@ export class Registry {
             return helperClass;
         })
 
+        let instance;
         // add the event listeners and bind them to the given function names
         Object.keys(options.listeners).forEach(eventName => {
             let fnName = options.listeners[ eventName ];
+
             this._events.on(eventName, (...args: any[]) => {
-                let instance = this.container.make(bindingName);
+                instance = instance || this.container.make(bindingName);
                 if ( kindOf(instance[ fnName ]) === 'function' ) {
                     instance[ fnName ].apply(instance, args);
                 }
             })
         })
 
-    }
-
-
-    protected makeid(len: number = 15) {
-        var text     = "";
-        var possible = "abcdefghijklmnopqrstuvwxyz";
-
-        for ( var i = 0; i < len; i ++ )
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-        return text;
-    }
-
-    protected createGroupConfig(options: i.GroupConfig = {}): i.GroupConfig {
-        options = _.merge({}, this._groupDefaults, options);
-        if ( options.cls === null ) {
-            let fn     = function () {}
-            let desc   = Object.getOwnPropertyDescriptor(fn, 'name');
-            desc.value = this.makeid()
-            Object.defineProperty(fn, 'name', desc);
-            options.cls = fn;
-        }
-        return options;
-    }
-
-    protected createCommandConfig(options: i.CommandConfig = {}) {
-        options = _.merge({}, this._commandDefaults, options);
-
-        if ( options.cls === null ) {
-            let fn     = function () {}
-            let desc   = Object.getOwnPropertyDescriptor(fn, 'name');
-            desc.value = this.makeid()
-            Object.defineProperty(fn, 'name', desc);
-            options.cls = fn;
-            if ( options.handle !== null ) {
-                options.cls.prototype.handle = options.handle
-            }
-        }
-
-        _.filter(this._options, { cls: options.cls }).forEach((opt: i.DecoratedConfig<i.OptionConfig>) => {
-            // join name and aliases, sort by str length and pick the top to get shortest
-            if ( opt.config.alias === undefined ) opt.config.alias = [];
-            let alias: any[] = [ opt.key ].concat(kindOf(opt.config.alias) !== 'array' ? [ <string> opt.config.alias ] : opt.config.alias).sort((a: string, b: string) => a.length - b.length)
-            let name         = alias.shift();
-            let type         = opt.type.name.toString().toLowerCase()
-            if ( opt.config.type !== undefined ) {
-                opt.config.array = true;
-                type             = opt.config.type
-            }
-
-            options.options[ name ] = _.merge(opt.config, { alias, type });
-
-            // @todo: default value
-        })
-
-        return options;
     }
 
 }

@@ -21,6 +21,8 @@
         "deploy:major": "npm run test && mversion major -m && npm run deploy:docs"
     },
     "dependencies": {
+        "@radic/console-colors": "^0.9.0",
+        "@radic/util": "^1.4.6",
         "archy": "^1.0.0",
         "cli-table2": "^0.2.0",
         "columnify": "latest",
@@ -41,8 +43,6 @@
         "yargs-parser": "^5.0.0"
     },
     "devDependencies": {
-        "@radic/console-colors": "^0.9.0",
-        "@radic/util": "^1.4.6",
         "@types/archy": "^0.0.30",
         "@types/fs-extra": "^0.0.37",
         "@types/globule": "^1.1.1",

@@ -5,6 +5,8 @@ import {Output } from "../../../../src/helpers/Output";
 import {Input } from "../../../../src/helpers/Input";
 import {Describer } from "../../../../src/helpers/Describer";
 import { IConfigProperty } from "@radic/util";
+import { ParsedNode } from "../../../../src/parser/ParsedNode";
+import { interfaces as i } from "../../../../src/interfaces";
 
 @command('install', {
     group: YarnGroup,
@@ -26,21 +28,23 @@ export class YarnInstallCommand {
     @option('A man string', 'm')
     man:string;
 
-    @option('A foo number = 5')
+    @option('A foo number = 5', 'f')
     foo:number = 5;
 
 
-    @option('Array of booleans', Boolean)
+    @option('Array of booleans', Boolean, 'b')
     arbool:boolean[];
 
-    @option('Array of string', String)
+    @option('Array of string', String, 's')
     arstr:string[];
 
-    @option('Array of number', Number)
+    @option('Array of number', Number, 'n')
     arnr:number[];
 
     // arguments
     packages:string[];
+
+    parsed:ParsedNode<i.CommandNodeConfig>;
 
     // DI
     @inject('console.helpers.output') out:Output
@@ -52,8 +56,13 @@ export class YarnInstallCommand {
     @inject('console.config') config:IConfigProperty;
 
     handle(){
-        let desc = this.desc.command(this)
-        this.out.dumpp(desc)
+        let desc = this.desc.command(this.parsed)
+        // this.out.dumpp(desc)
+
+        this.out.columns(desc, {
+            columnSplitter: '   ',
+            showHeaders   : false
+        })
 
         // this.out.success('ok');
 

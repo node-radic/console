@@ -33,31 +33,31 @@ export class Parser {
         this.argumentTypeTransformers[ type ] = transformer;
     }
 
-    parse(argv: string[], config: i.NodeConfig | i.GroupConfig | i.CommandConfig): ParsedNode {
+    parse(argv: string[], config: i.NodeConfig | i.GroupNodeConfig | i.CommandNodeConfig): ParsedNode<i.GroupNodeConfig | i.CommandNodeConfig> {
         return this.parseNode(argv, config)
     }
 
 
-    protected parseNode(argv: string[], config: i.NodeConfig | i.GroupConfig | i.CommandConfig): ParsedNode {
-        let yargsOutput: i.YargsOutput      = parser.detailed(argv, this.transformOptions(config.options));
+    protected parseNode(argv: string[], config: i.NodeConfig | i.GroupNodeConfig | i.CommandNodeConfig): ParsedNode<i.GroupNodeConfig | i.CommandNodeConfig> {
+        let yargsOutput: i.ParserOutput     = parser.detailed(argv, this.transformOptions(config.options));
         let parsedOptions: OptionCollection = this.parseOptions(yargsOutput, config.options)
         let parsedArguments: ArgumentCollection;
 
         if ( config.type === 'command' ) {
-            parsedArguments = this.parseArguments(yargsOutput, (<i.CommandConfig> config).arguments);
+            parsedArguments = this.parseArguments(yargsOutput, (<i.CommandNodeConfig> config).arguments);
         }
 
         return new ParsedNode(argv, yargsOutput, config, parsedOptions, parsedArguments);
     }
 
-    protected parseOptions(yargsOutput: i.YargsOutput, optionsConfig: { [name: string]: i.OptionConfig }): OptionCollection {
+    protected parseOptions(yargsOutput: i.ParserOutput, optionsConfig: { [name: string]: i.OptionConfig }): OptionCollection {
         let argv = cloneDeep(yargsOutput.argv)
         delete argv[ '_' ];
         return new OptionCollection(argv, optionsConfig);
     }
 
     /** arguments are NOT parsed by yargs-parser, we'll have to do it ourself */
-    protected parseArguments(yargsOutput: i.YargsOutput, argumentsConfig: { [name: string]: i.ArgumentConfig }): ArgumentCollection {
+    protected parseArguments(yargsOutput: i.ParserOutput, argumentsConfig: { [name: string]: i.ArgumentConfig }): ArgumentCollection {
         let parsed: { [name: string]: any }         = {};
         let args                                    = yargsOutput.argv._;
         let defaultArgumentConfig: i.ArgumentConfig = {
@@ -97,13 +97,12 @@ export class Parser {
         })
 
         return new ArgumentCollection(parsed, argumentsConfig);
-
     }
 
 
     /** transforms my option structure to the yargs-parser option structure */
-    protected transformOptions(optionsConfig: { [name: string]: i.OptionConfig }): i.YargsOptionsConfig {
-        let options: i.YargsOptionsConfig = {
+    protected transformOptions(optionsConfig: { [name: string]: i.OptionConfig }): i.ParserOptionsConfig {
+        let options: i.ParserOptionsConfig = {
             alias        : {},
             array        : [],
             boolean      : [],

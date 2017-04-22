@@ -1,7 +1,7 @@
 import { Container, inject, ServiceIdentifier, singleton } from "./ioc";
-import { IConfigProperty, inspect, kindOf } from "@radic/util";
+import { IConfigProperty, kindOf } from "@radic/util";
 import { ParsedNode, Parser } from "../parser";
-import interfaces from "../interfaces";
+import { interfaces as i } from "../interfaces";
 import config from "../config";
 import { Registry } from "./Registry";
 import { Resolver } from "./Resolver";
@@ -21,7 +21,7 @@ export class Cli {
 
     // public config: IConfigProperty
 
-    protected parsedRootNode: ParsedNode;
+    protected parsedRootNode: ParsedNode<any>;
 
     constructor(@inject('console.registry') private _registry: Registry,
                 @inject('console.parser') private _parser: Parser,
@@ -52,42 +52,50 @@ export class Cli {
      * @param {string[]|string} argv
      * @returns {ParsedNode}
      */
-    parse(argv?: string[] | string): ParsedNode {
-        this.events.emit('parse', argv, this);
+    parse(argv?: string[] | string): ParsedNode<i.GroupNodeConfig> {
         if ( kindOf(argv) === 'string' ) argv = (<string> argv).split(' ')
         argv = <string[]> argv || process.argv.slice(2);
 
+        this.events.emit('parse', argv, this._registry.root);
         this.parsedRootNode = this._registry.root.instance = this._parser.parse(argv, this._registry.root);
-
         this.events.emit('parsed', this.parsedRootNode);
+
         return this.parsedRootNode;
     }
 
-    resolve<C extends any, T extends any>(): ParsedNode {
-
+    resolve(): ParsedNode<i.GroupNodeConfig | i.CommandNodeConfig> | boolean {
         this.events.emit('resolve', this.parsedRootNode);
-        if ( this.config('mode') === 'command' ) {
+
+        if ( this.mode === 'command' ) {
             Cli.error('Cannot use the handle method when mode === command');
         }
         if ( ! this.parsedRootNode ) {
             Cli.error('Cannot resolve, need to parse first');
         }
 
-        const resolverResult = this._resolver.resolve(this.parsedRootNode);
-        this.events.emit('resolved', resolverResult);
-
-        if ( resolverResult === null ) {
-            Cli.error('Could not resolve input to anything. ')
+        // no arguments? no use to resolve another parsed node. Return the parsed root node so it'll be used when calling handle.
+        if ( this.parsedRootNode.arguments.length === 0 ) {
+            this.events.emit('resolve:root', this.parsedRootNode)
+            return this.parsedRootNode;
         }
 
+        const resolverResult = this._resolver.resolve(this.parsedRootNode);
+
+        if ( resolverResult === null ) {
+            this.events.emit('resolve:nothing', this.parsedRootNode)
+            return false;
+        }
+        this.events.emit('resolve:found', resolverResult);
+
         const parsedNode = this._parser.parse(resolverResult.argv, resolverResult.node);
-        this.events.emit('resolved:parsed', parsedNode)
+        this.events.emit('resolve:parsed', parsedNode)
         return parsedNode;
     }
 
-    handle(parsedNode: ParsedNode):boolean {
-        const nodeInstance = parsedNode.getNodeInstance();
-        if ( kindOf(nodeInstance[ 'handle' ]) === 'function') {
+    handle(parsedNode: ParsedNode<i.GroupNodeConfig | i.CommandNodeConfig> | boolean): boolean {
+        if ( ! parsedNode ) parsedNode = this.parsedRootNode;
+        const nodeInstance = (<ParsedNode<i.GroupNodeConfig | i.CommandNodeConfig>> parsedNode).getNodeInstance();
+        if ( kindOf(nodeInstance[ 'handle' ]) === 'function' ) {
             this.events.emit('handle', parsedNode)
             nodeInstance[ 'handle' ].apply(nodeInstance);
             this.events.emit('handled', parsedNode);
@@ -96,7 +104,7 @@ export class Cli {
         return false;
     }
 
-    group(name: string, config: interfaces.GroupConfig = {}): interfaces.GroupConfig {
+    group(name: string, config: i.GroupNodeConfig = {}): i.GroupNodeConfig {
         if ( this.mode !== 'groups' ) {
             throw new Error('Cannot declare groups for the CLI when not using "groups" mode.');
         }
@@ -104,7 +112,7 @@ export class Cli {
         return this._registry.addGroup(config);
     }
 
-    command(name: string, config: interfaces.CommandConfig): interfaces.CommandConfig {
+    command(name: string, config: i.CommandNodeConfig): i.CommandNodeConfig {
         if ( this.mode !== 'groups' ) {
             throw new Error('Cannot declare commands for the CLI when not using "groups" mode.');
         }
@@ -112,23 +120,29 @@ export class Cli {
         return this._registry.addCommand(config);
     }
 
-    option(name: string, config: interfaces.RootOptionConfig = {}): this {
-        let global = config.global = config.global || false;
-        let key = (global === true && this.mode === "groups") ? 'globalOptions' : 'options';
-        delete config.global;
+    option(key: string, config: i.OptionConfig = {}): this {
+        let type;
+        if ( config.type === undefined ) type = Boolean;
+        else if ( config.type === 'boolean' ) type = Boolean;
+        else if ( config.type === 'string' ) type = String;
+        else if ( config.type === 'number' ) type = Number;
 
-        this._registry.root.options[ name ] = config;
+        this._registry.addOption({
+            cls: this._registry.rootCls,
+            type, key, config
+        })
+        //.root.options[ name ] = config;
         return this;
     }
 
-    options(options: { [name: string]: interfaces.RootOptionConfig }): this {
+    options(options: { [name: string]: i.OptionConfig }): this {
         if ( kindOf(options) !== 'array' ) {
             Object.keys(options).forEach(name => this.option(name, options[ name ]));
         }
         return this;
     }
 
-    argument(name, config: interfaces.ArgumentConfig = {}): this {
+    argument(name, config: i.ArgumentConfig = {}): this {
         if ( this.config('mode') !== 'command' ) {
             throw new Error('Cannot declare arguments for the CLI when not using command mode.');
         }
@@ -136,14 +150,14 @@ export class Cli {
         return this;
     }
 
-    arguments(config: { [name: string]: interfaces.ArgumentConfig }): this {
+    arguments(config: { [name: string]: i.ArgumentConfig }): this {
         if ( kindOf(config) !== 'array' ) {
             Object.keys(config).forEach(name => this.argument(name, config[ name ]));
         }
         return this;
     }
 
-    helper(name: string, config?: interfaces.HelperOptionsConfig): this {
+    helper(name: string, config?: i.HelperOptionsConfig): this {
         this._registry.enableHelper(name, config)
         return this;
     }

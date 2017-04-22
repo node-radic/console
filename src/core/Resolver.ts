@@ -47,7 +47,7 @@ export class Resolver {
 
     getNamedTree(array?: i.NodeConfig[], tree = {}) {
         if ( isUndefined(array) ) array = this.unflatten(this.items);
-        array.forEach((item: i.CommandConfig) => {
+        array.forEach((item: i.CommandNodeConfig) => {
             if ( item.type === "group" ) {
                 tree[ item.name ] = {};
                 this.getNamedTree(item[ 'children' ], tree[ item.name ])
@@ -62,7 +62,7 @@ export class Resolver {
      * Resolves command or group from an array of arguments (useful for parsing the argv._ array)
      * @param parsedRoot
      */
-    resolve(parsedRoot: ParsedNode): { argv: string[], node: i.NodeConfig } | null {
+    resolve(parsedRoot: ParsedNode<i.NodeConfig>): { argv: string[], node: i.NodeConfig } | null {
         this.events.emit('router:resolve', parsedRoot, this)
 
         let leftoverArguments: string[] = [].concat(parsedRoot.arguments);
