@@ -1,5 +1,5 @@
 import { ConstructorOptions, EventEmitter2 } from "eventemitter2";
-import { Container, singleton } from "./ioc";
+import { Container, singleton } from "./Container";
 import { defined } from "@radic/util";
 
 Container.ensureInjectable(EventEmitter2);

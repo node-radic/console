@@ -1,6 +1,6 @@
 import { clone, merge } from "lodash";
 import { interfaces as i } from "../interfaces";
-import { Container } from "./ioc";
+import { Container } from "./Container";
 
 // Single option declaration configuration for group configuration and command configuration
 export type OptionType = 'string' | 'boolean' | 'number'

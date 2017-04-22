@@ -1,6 +1,6 @@
 import { interfaces as i } from "../interfaces";
 import * as _ from "lodash";
-import { Container } from "../core/ioc";
+import { Container } from "../core/Container";
 import { Registry } from "../core/Registry";
 import { Parser } from "./Parser";
 import { injectable } from "inversify";

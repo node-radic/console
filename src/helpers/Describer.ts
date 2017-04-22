@@ -1,5 +1,5 @@
 import { merge } from "lodash";
-import { Container, inject } from "../core/ioc";
+import { Container, inject } from "../core/Container";
 import { interfaces as i } from "../interfaces";
 import { helper } from "../decorators";
 import { Output } from "./Output";

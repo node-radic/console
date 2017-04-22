@@ -1,12 +1,12 @@
 import * as parser from "yargs-parser";
 import { cloneDeep, merge } from "lodash";
 import { defined, IConfigProperty, kindOf } from "@radic/util";
-import { bindTo, inject } from "../core/ioc";
+import { bindTo, inject } from "../core/Container";
 import { interfaces as i } from "../interfaces";
 import { ParsedNode } from "./ParsedNode";
 import { Registry } from "../core/Registry";
 import {ArgumentCollection ,OptionCollection }from "./InputCollections";
-import { Cli } from "../core/cli";
+import { Cli } from "../core/Cli";
 
 @bindTo('console.parser')
 export class Parser {

@@ -1,6 +1,6 @@
 import { command, option } from "../../../../src/decorators";
 import { YarnGroup } from "./yarn";
-import { inject } from "../../../../src/core/ioc";
+import { inject } from "../../../../src/core/Container";
 import {Output } from "../../../../src/helpers/Output";
 import {Input } from "../../../../src/helpers/Input";
 import {Describer } from "../../../../src/helpers/Describer";

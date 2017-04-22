@@ -1,4 +1,4 @@
-import { Container, inject, ServiceIdentifier, singleton } from "./ioc";
+import { Container, inject, ServiceIdentifier, singleton } from "./Container";
 import { IConfigProperty, kindOf } from "@radic/util";
 import { ParsedNode, Parser } from "../parser";
 import { interfaces as i } from "../interfaces";

@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var decorators_1 = require("../../../../src/decorators");
 var yarn_1 = require("./yarn");
-var ioc_1 = require("../../../../src/core/ioc");
+var Container_1 = require("../../../../src/core/Container");
 var Output_1 = require("../../../../src/helpers/Output");
 var Input_1 = require("../../../../src/helpers/Input");
 var Describer_1 = require("../../../../src/helpers/Describer");
@@ -64,19 +64,19 @@ __decorate([
     __metadata("design:type", Array)
 ], YarnInstallCommand.prototype, "arnr", void 0);
 __decorate([
-    ioc_1.inject('console.helpers.output'),
+    Container_1.inject('console.helpers.output'),
     __metadata("design:type", Output_1.Output)
 ], YarnInstallCommand.prototype, "out", void 0);
 __decorate([
-    ioc_1.inject('console.helpers.input'),
+    Container_1.inject('console.helpers.input'),
     __metadata("design:type", Input_1.Input)
 ], YarnInstallCommand.prototype, "in", void 0);
 __decorate([
-    ioc_1.inject('console.helpers.describer'),
+    Container_1.inject('console.helpers.describer'),
     __metadata("design:type", Describer_1.Describer)
 ], YarnInstallCommand.prototype, "desc", void 0);
 __decorate([
-    ioc_1.inject('console.config'),
+    Container_1.inject('console.config'),
     __metadata("design:type", Function)
 ], YarnInstallCommand.prototype, "config", void 0);
 YarnInstallCommand = __decorate([

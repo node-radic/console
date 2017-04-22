@@ -1,4 +1,4 @@
-import { inject } from "../core/ioc";
+import { inject } from "../core/Container";
 import { helper } from "../decorators";
 import * as inquirer from "inquirer";
 

@@ -1,4 +1,4 @@
-import { inject, singleton } from "./ioc";
+import { inject, singleton } from "./Container";
 import { isUndefined } from "util";
 import * as _ from "lodash";
 import { IConfigProperty } from "@radic/util";

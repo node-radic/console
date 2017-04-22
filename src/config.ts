@@ -1,6 +1,6 @@
 import { Config, IConfigProperty } from '@radic/util'
 import interfaces from './interfaces'
-import { Container } from "./core/ioc";
+import { Container } from "./core/Container";
 const defaultConfig: interfaces.CliConfig | any = {
     mode  : "groups",
     autoExecute: true,

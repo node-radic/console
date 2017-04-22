@@ -1,4 +1,4 @@
-import { Container, inject, singleton } from "./ioc";
+import { Container, inject, singleton } from "./Container";
 import * as _ from "lodash";
 import * as S from "string";
 import i from "../interfaces";
