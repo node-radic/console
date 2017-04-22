@@ -1,6 +1,6 @@
 import { clone, merge } from "lodash";
 import { interfaces as i } from "../interfaces";
-import { Container } from "./Container";
+import { bindTo } from "./Container";
 
 // Single option declaration configuration for group configuration and command configuration
 export type OptionType = 'string' | 'boolean' | 'number'
@@ -47,8 +47,8 @@ const command: i.CommandNodeConfig = merge({}, node, <i.CommandNodeConfig> {
 
 })
 
-
-class Defaults implements i.NodesDefaults {
+@bindTo('console.defaults.nodes')
+export class Defaults implements i.NodesDefaults {
     get argument(): i.ArgumentConfig { return clone(argument) }
 
     get option(): i.OptionConfig { return clone(option) }
@@ -60,4 +60,3 @@ class Defaults implements i.NodesDefaults {
     get command(): i.CommandNodeConfig { return clone(command) }
 }
 
-Container.constant('console.defaults.nodes', new Defaults())

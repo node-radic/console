@@ -1,6 +1,6 @@
+export * from './nodes'
 export * from './Container'
 export * from './Cli'
-export * from './nodes'
 export * from './Events'
 export * from './Registry'
 export * from './Resolver'

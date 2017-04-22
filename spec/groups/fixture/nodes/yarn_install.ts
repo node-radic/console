@@ -1,17 +1,11 @@
-import { command, option } from "../../../../src/decorators";
+import { command, Describer, inject, Input, interfaces as i, option, Output, ParsedNode } from "../../../../src";
 import { YarnGroup } from "./yarn";
-import { inject } from "../../../../src/core/Container";
-import {Output } from "../../../../src/helpers/Output";
-import {Input } from "../../../../src/helpers/Input";
-import {Describer } from "../../../../src/helpers/Describer";
 import { IConfigProperty } from "@radic/util";
-import { ParsedNode } from "../../../../src/parser/ParsedNode";
-import { interfaces as i } from "../../../../src/interfaces";
 
 @command('install', {
-    group: YarnGroup,
-    options: {
-        g: { alias: 'global', desc: 'Install packages globally'}  // by default, type will be 'boolean'
+    group    : YarnGroup,
+    options  : {
+        g: { alias: 'global', desc: 'Install packages globally' }  // by default, type will be 'boolean'
     },
     arguments: {
         packages: { desc: 'One or more packages to install', required: false, type: 'array', default: [] }
@@ -19,43 +13,43 @@ import { interfaces as i } from "../../../../src/interfaces";
 })
 export class YarnInstallCommand {
     // options
-    g:boolean
+    g: boolean
     // or
 
     @option('A glob boolean = false', 'g')
-    global:boolean = false;
+    global: boolean = false;
 
     @option('A man string', 'm')
-    man:string;
+    man: string;
 
     @option('A foo number = 5', 'f')
-    foo:number = 5;
+    foo: number = 5;
 
 
     @option('Array of booleans', Boolean, 'b')
-    arbool:boolean[];
+    arbool: boolean[];
 
     @option('Array of string', String, 's')
-    arstr:string[];
+    arstr: string[];
 
     @option('Array of number', Number, 'n')
-    arnr:number[];
+    arnr: number[];
 
     // arguments
-    packages:string[];
+    packages: string[];
 
-    parsed:ParsedNode<i.CommandNodeConfig>;
+    parsed: ParsedNode<i.CommandNodeConfig>;
 
     // DI
-    @inject('console.helpers.output') out:Output
+    @inject('console.helpers.output') out: Output
 
-    @inject('console.helpers.input') in:Input
+    @inject('console.helpers.input') in: Input
 
-    @inject('console.helpers.describer') desc:Describer
+    @inject('console.helpers.describer') desc: Describer
 
-    @inject('console.config') config:IConfigProperty;
+    @inject('console.config') config: IConfigProperty;
 
-    handle(){
+    handle() {
         let desc = this.desc.command(this.parsed)
         // this.out.dumpp(desc)
 
@@ -71,7 +65,7 @@ export class YarnInstallCommand {
         // })
     }
 
-    dumpStuff(){
+    dumpStuff() {
 
         // this.out.line(`packages: ${this.packages.join(', ')}`);
         this.out.line('{green}THIS:{reset}')
@@ -82,6 +76,6 @@ export class YarnInstallCommand {
 
         this.out.line('{green}THIS.in:{reset}')
         this.out.dump(this.in);
-        if(this.global) this.out.success('global');
+        if ( this.global ) this.out.success('global');
     }
 }

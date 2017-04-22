@@ -5,7 +5,7 @@ describe("groups", () => {
     let cli:Cli           = groupsFixture.cli;
     cli.config({ autoExecute: false, mode: 'groups' })
     describe('command in group "yarn install" ', () => {
-        let parsedRootNode: ParsedNode, parsedNode: ParsedNode;
+        let parsedRootNode: ParsedNode<any>, parsedNode: ParsedNode<any>;
         it('parse returns valid parsed root node', () => {
             parsedRootNode = cli.parse('yarn install');
             expect(parsedRootNode).toBeDefined()

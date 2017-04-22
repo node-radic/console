@@ -5,8 +5,21 @@ import { interfaces as i } from "../interfaces";
 import config from "../config";
 import { Registry } from "./Registry";
 import { Resolver } from "./Resolver";
-import { Events } from "./Events";
+import { Event, Events, HaltEvent } from "./Events";
 export type CliMode = 'groups' | 'command';
+
+
+export class CliParseEvent extends HaltEvent {
+    constructor(public argv: string[], public nodeConfig: i.NodeConfig) {
+        super('cli:parse');
+    }
+}
+export class CliParsedEvent extends Event {
+    constructor(public parsedRootNode: ParsedNode<i.NodeConfig>) {
+        super('cli:parsed');
+    }
+}
+
 
 @singleton('console.cli')
 export class Cli {
@@ -52,19 +65,21 @@ export class Cli {
      * @param {string[]|string} argv
      * @returns {ParsedNode}
      */
-    parse(argv?: string[] | string): ParsedNode<i.GroupNodeConfig> {
+    parse(argv?: string[] | string): ParsedNode<i.NodeConfig> {
         if ( kindOf(argv) === 'string' ) argv = (<string> argv).split(' ')
         argv = <string[]> argv || process.argv.slice(2);
 
-        this.events.emit('parse', argv, this._registry.root);
-        this.parsedRootNode = this._registry.root.instance = this._parser.parse(argv, this._registry.root);
-        this.events.emit('parsed', this.parsedRootNode);
+        if ( this.events.fire(new CliParseEvent(argv, this._registry.root)).halt ) return;
 
-        return this.parsedRootNode;
+        let parsedRootNode = this._parser.parse(argv, this._registry.root);
+
+        return this.parsedRootNode =
+            this._registry.root.instance =
+                this.events.fire(new CliParsedEvent(parsedRootNode)).parsedRootNode;
     }
 
     resolve(): ParsedNode<i.GroupNodeConfig | i.CommandNodeConfig> | boolean {
-        this.events.emit('resolve', this.parsedRootNode);
+        this.events.emit('cli:resolve', this.parsedRootNode);
 
         if ( this.mode === 'command' ) {
             Cli.error('Cannot use the handle method when mode === command');
@@ -74,21 +89,21 @@ export class Cli {
         }
 
         // no arguments? no use to resolve another parsed node. Return the parsed root node so it'll be used when calling handle.
-        if ( this.parsedRootNode.arguments.length === 0 ) {
-            this.events.emit('resolve:root', this.parsedRootNode)
+        if ( this.parsedRootNode.argv.length === 0 ) {
+            this.events.emit('cli:resolve:root', this.parsedRootNode)
             return this.parsedRootNode;
         }
 
         const resolverResult = this._resolver.resolve(this.parsedRootNode);
 
         if ( resolverResult === null ) {
-            this.events.emit('resolve:nothing', this.parsedRootNode)
+            this.events.emit('cli:resolve:nothing', this.parsedRootNode)
             return false;
         }
-        this.events.emit('resolve:found', resolverResult);
+        this.events.emit('cli:resolve:found', resolverResult);
 
         const parsedNode = this._parser.parse(resolverResult.argv, resolverResult.node);
-        this.events.emit('resolve:parsed', parsedNode)
+        this.events.emit('cli:resolve:parsed', parsedNode)
         return parsedNode;
     }
 
@@ -96,9 +111,9 @@ export class Cli {
         if ( ! parsedNode ) parsedNode = this.parsedRootNode;
         const nodeInstance = (<ParsedNode<i.GroupNodeConfig | i.CommandNodeConfig>> parsedNode).getNodeInstance();
         if ( kindOf(nodeInstance[ 'handle' ]) === 'function' ) {
-            this.events.emit('handle', parsedNode)
+            this.events.emit('cli:handle', parsedNode)
             nodeInstance[ 'handle' ].apply(nodeInstance);
-            this.events.emit('handled', parsedNode);
+            this.events.emit('cli:handled', parsedNode);
             return true;
         }
         return false;

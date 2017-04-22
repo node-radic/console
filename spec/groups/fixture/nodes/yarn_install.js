@@ -9,12 +9,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var decorators_1 = require("../../../../src/decorators");
+var src_1 = require("../../../../src");
 var yarn_1 = require("./yarn");
-var Container_1 = require("../../../../src/core/Container");
-var Output_1 = require("../../../../src/helpers/Output");
-var Input_1 = require("../../../../src/helpers/Input");
-var Describer_1 = require("../../../../src/helpers/Describer");
 var YarnInstallCommand = (function () {
     function YarnInstallCommand() {
         this.global = false;
@@ -40,47 +36,47 @@ var YarnInstallCommand = (function () {
     return YarnInstallCommand;
 }());
 __decorate([
-    decorators_1.option('A glob boolean = false', 'g'),
+    src_1.option('A glob boolean = false', 'g'),
     __metadata("design:type", Boolean)
 ], YarnInstallCommand.prototype, "global", void 0);
 __decorate([
-    decorators_1.option('A man string', 'm'),
+    src_1.option('A man string', 'm'),
     __metadata("design:type", String)
 ], YarnInstallCommand.prototype, "man", void 0);
 __decorate([
-    decorators_1.option('A foo number = 5', 'f'),
+    src_1.option('A foo number = 5', 'f'),
     __metadata("design:type", Number)
 ], YarnInstallCommand.prototype, "foo", void 0);
 __decorate([
-    decorators_1.option('Array of booleans', Boolean, 'b'),
+    src_1.option('Array of booleans', Boolean, 'b'),
     __metadata("design:type", Array)
 ], YarnInstallCommand.prototype, "arbool", void 0);
 __decorate([
-    decorators_1.option('Array of string', String, 's'),
+    src_1.option('Array of string', String, 's'),
     __metadata("design:type", Array)
 ], YarnInstallCommand.prototype, "arstr", void 0);
 __decorate([
-    decorators_1.option('Array of number', Number, 'n'),
+    src_1.option('Array of number', Number, 'n'),
     __metadata("design:type", Array)
 ], YarnInstallCommand.prototype, "arnr", void 0);
 __decorate([
-    Container_1.inject('console.helpers.output'),
-    __metadata("design:type", Output_1.Output)
+    src_1.inject('console.helpers.output'),
+    __metadata("design:type", src_1.Output)
 ], YarnInstallCommand.prototype, "out", void 0);
 __decorate([
-    Container_1.inject('console.helpers.input'),
-    __metadata("design:type", Input_1.Input)
+    src_1.inject('console.helpers.input'),
+    __metadata("design:type", src_1.Input)
 ], YarnInstallCommand.prototype, "in", void 0);
 __decorate([
-    Container_1.inject('console.helpers.describer'),
-    __metadata("design:type", Describer_1.Describer)
+    src_1.inject('console.helpers.describer'),
+    __metadata("design:type", src_1.Describer)
 ], YarnInstallCommand.prototype, "desc", void 0);
 __decorate([
-    Container_1.inject('console.config'),
+    src_1.inject('console.config'),
     __metadata("design:type", Function)
 ], YarnInstallCommand.prototype, "config", void 0);
 YarnInstallCommand = __decorate([
-    decorators_1.command('install', {
+    src_1.command('install', {
         group: yarn_1.YarnGroup,
         options: {
             g: { alias: 'global', desc: 'Install packages globally' }

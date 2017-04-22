@@ -6,6 +6,10 @@ import * as Table from "cli-table2";
 import * as archy from "archy";
 import { interfaces as i } from "../interfaces";
 import { helper } from "../decorators";
+import { Registry } from "../core/Registry";
+import { Container } from "../core/Container";
+import { prepareOption } from "../utils";
+import { CliParseEvent } from "../core/Cli";
 const tty       = require('tty');
 const columnify = require('columnify')
 const truwrap   = require('truwrap');
@@ -16,10 +20,18 @@ const truwrap   = require('truwrap');
 @helper('output', {
     singleton: true,
     config   : {
-        quiet : false,
-        colors: true,
+        quiet         : false,
+        quietOption   : {
+            enabled: false,
+            keys   : [ 'q', 'quiet' ]
+        },
+        colors        : true,
+        colorsOption  : {
+            enabled: false,
+            keys   : [ 'C', 'no-colors' ]
+        },
         resetOnNewline: true,
-        styles    : {
+        styles        : {
             title   : 'yellow bold',
             subtitle: 'yellow',
 
@@ -33,12 +45,12 @@ const truwrap   = require('truwrap');
             description: 'darkslategray',
             desc       : '<%= helpers.output.styles.description %>', // alias
 
-            argument   : 'yellow darken 25',
+            argument: 'yellow darken 25',
 
             optional: 'yellow',
             type    : 'yellow'
         },
-        tableStyle: {
+        tableStyle    : {
             FAT : {
                 'top'     : '═', 'top-mid': '╤', 'top-left': '╔', 'top-right': '╗'
                 , 'bottom': '═', 'bottom-mid': '╧', 'bottom-left': '╚', 'bottom-right': '╝'
@@ -53,6 +65,9 @@ const truwrap   = require('truwrap');
                 , 'right' : '', 'right-mid': '', 'middle': ' '
             }
         }
+    },
+    listeners: {
+        'cli:parse': 'onParse'
     }
 })
 export class Output {
@@ -73,8 +88,7 @@ export class Output {
         if ( this.config.colors || force ) {
             text = this.parser.parse(text)
         } else if ( ! this.config.colors ) {
-            // @todo parser clean
-            // text = this.parser.clean(text);
+            text = this.parser.clean(text);
         }
         return text;
     }
@@ -104,7 +118,7 @@ export class Output {
     }
 
     writeln(text: string = ''): this {
-        if(this.config.resetOnNewline) this.write('{reset}')
+        if ( this.config.resetOnNewline ) this.write('{reset}')
         this.write(text + "\n")
         return this
     }
@@ -137,7 +151,7 @@ export class Output {
         return new Table(kindOf(options) === 'array' ? { head: options } : options)
     }
 
-    columns(data: any, options: i.OutputColumnsOptions = {}, ret:boolean = false) {
+    columns(data: any, options: i.OutputColumnsOptions = {}, ret: boolean = false) {
         let defaults: i.OutputColumnsOptions = {
             minWidth        : 20,
             maxWidth        : 120,
@@ -153,7 +167,7 @@ export class Output {
             // defaults.minWidth = defaults.minWidth > defaults.maxWidth ? defaults.maxWidth : defaults.minWidth;
         }
         let res = columnify(data, merge({}, defaults, options));
-        if(ret) return res;
+        if ( ret ) return res;
         this.writeln(res);
     }
 
@@ -171,5 +185,38 @@ export class Output {
     warning(text: string): this {
         this.styleString('error', text)
         return this
+    }
+
+
+    protected get registry(): Registry {
+        return Container.getInstance().make<Registry>('console.registry');
+    }
+
+
+    onParse(event:CliParseEvent) {
+        if ( this.config.quietOption.enabled ) {
+            this.addQuietOption(event.nodeConfig);
+        }
+        if ( this.config.colorsOption.enabled ) {
+            this.addColorsOption(event.nodeConfig);
+        }
+    }
+
+    protected addQuietOption(nodeConfig: i.NodeConfig) {
+        this.registry.addOption(prepareOption(
+            this.config.quietOption.keys,
+            nodeConfig, {
+                config: { global: true, desc: 'Disables printing to console' }
+            }
+        ))
+    }
+
+    protected addColorsOption(nodeConfig: i.NodeConfig) {
+        this.registry.addOption(prepareOption(
+            this.config.colorsOption.keys,
+            nodeConfig, {
+                config: { global: true, desc: 'Disable text colors' }
+            }
+        ))
     }
 }

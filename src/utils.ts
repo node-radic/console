@@ -1,4 +1,6 @@
 import * as _ from "lodash";
+import {interfaces as i} from './interfaces'
+
 export class TypeOf<V, T> {
     constructor(private val: V) {}
 
@@ -21,3 +23,14 @@ function collect(...params: any[]): _.LoDashExplicitWrapper<any> {
 
 export { collect }
 
+
+export function prepareOption(keys: string[], nodeConfig: i.NodeConfig, decoratedConfig: i.DecoratedConfig<i.OptionConfig>): i.DecoratedConfig<i.OptionConfig> {
+    let alias: string[] = keys;
+    let name: string    = alias.sort((a, b) => a.length - b.length).shift()
+    return _.merge({
+        type  : Boolean,
+        config: { name, alias },
+        key   : name,
+        cls   : nodeConfig.cls
+    }, decoratedConfig)
+}

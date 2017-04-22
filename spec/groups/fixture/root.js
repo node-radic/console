@@ -19,20 +19,13 @@ var Root = (function () {
         this.out = out;
     }
     Root.prototype.handle = function () {
-        if (this.noColors) {
-            this.out.config.colors = false;
-        }
+        this.out.success('This is the @root group.');
         if (this.version) {
             this.out.line('1.4.6');
         }
     };
     return Root;
 }());
-__decorate([
-    src_1.global(),
-    src_1.option('Disable the use of colors', 'C'),
-    __metadata("design:type", Boolean)
-], Root.prototype, "noColors", void 0);
 __decorate([
     src_1.option('Show version', 'V'),
     __metadata("design:type", Boolean)

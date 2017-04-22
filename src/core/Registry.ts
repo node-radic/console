@@ -6,6 +6,7 @@ import { IConfigProperty } from "../config";
 import { interfaces } from "inversify";
 import { Events } from "./Events";
 import { kindOf } from "@radic/util";
+import { Defaults } from "./nodes";
 
 
 /**
@@ -30,11 +31,11 @@ export class Registry {
     private _root: i.NodeConfig
     private _rootCls: any;
 
-    constructor(@inject('console.defaults.nodes') private _defaults: i.NodesDefaults,
+    constructor(@inject('console.defaults.nodes') private _defaults: Defaults,
                 @inject('console.config') private _config: IConfigProperty,
                 @inject('console.events') private _events: Events) {
         this._root = this.createGroupConfig(<any> {
-            name    : '_root'
+            name: '_root'
         })
     }
 
@@ -84,7 +85,7 @@ export class Registry {
             config.cls = fn;
         }
 
-        this.addDecoratedOptionsTo(config);
+        this.findAndAddOptions(config);
 
         return config;
     }
@@ -111,24 +112,60 @@ export class Registry {
             }
         }
 
-        this.addDecoratedOptionsTo(config);
-        this.addDecoratedArgumentsTo(config);
+        this.findAndAddOptions(config);
+        this.findAndAddArguments(config);
 
         return config;
     }
 
-    addOption(config: i.DecoratedConfig<i.OptionConfig> = {}) {
-        config = _.merge({
+    addOption(optionConfig: i.DecoratedConfig<i.OptionConfig> = {}) {
+        optionConfig = _.merge({
             config: this._defaults.option
-        }, config);
-        this._options.push(config);
+        }, optionConfig);
+        let nodeConfig = _.find([ this.root ].concat(this.groups, this.commands), { cls: optionConfig.cls })
+        if ( nodeConfig ) {
+            this.addOptionToNodeConfig(nodeConfig, optionConfig);
+        }
+        this._options.push(optionConfig);
     }
 
-    addArgument(config: i.DecoratedConfig<i.ArgumentConfig> = {}) {
-        config = _.merge({
+    protected addOptionToNodeConfig(config: i.NodeConfig, opt: i.DecoratedConfig<i.OptionConfig>) {
+        let key = S(opt.key).dasherize().toString();
+        // join name and aliases, sort by str length and pick the top to get shortest
+        if ( opt.config.alias === undefined ) opt.config.alias = [];
+        let alias: any[] = [ key ].concat(kindOf(opt.config.alias) !== 'array' ? [ <string> opt.config.alias ] : opt.config.alias).sort((a: string, b: string) => a.length - b.length)
+        let name         = alias.shift();
+        let type         = opt.type.name.toString().toLowerCase()
+        if ( opt.config.type !== undefined && type === 'array' ) {
+            opt.config.array = true;
+            type             = opt.config.type
+        }
+        config.options[ name ] = _.merge(opt.config, { alias, type });
+    }
+
+    protected findAndAddOptions(config: i.NodeConfig) {
+        _.filter(this._options, { cls: config.cls }).forEach((opt: i.DecoratedConfig<i.OptionConfig>) => {
+            this.addOptionToNodeConfig(config, opt);
+        })
+
+        Object.keys(config.options).forEach(key => {
+            if ( config.options[ key ].global ) {
+
+            }
+        })
+        return config;
+    }
+
+
+    addArgument(argumentConfig: i.DecoratedConfig<i.ArgumentConfig> = {}) {
+        argumentConfig = _.merge({
             config: this._defaults.argument
-        }, config);
-        this._arguments.push(config);
+        }, argumentConfig);
+        this._arguments.push(argumentConfig);
+        let nodeConfig = _.find([ this.root ].concat(this.groups, this.commands), { cls: argumentConfig.cls })
+        if ( nodeConfig ) {
+            this.addArgumentToNodeConfig(nodeConfig, argumentConfig);
+        }
     }
 
 
@@ -142,31 +179,14 @@ export class Registry {
         return text;
     }
 
-    protected addDecoratedOptionsTo(config: i.NodeConfig) {
-        _.filter(this._options, { cls: config.cls }).forEach((opt: i.DecoratedConfig<i.OptionConfig>) => {
-            let key = S(opt.key).dasherize().toString();
-            // join name and aliases, sort by str length and pick the top to get shortest
-            if ( opt.config.alias === undefined ) opt.config.alias = [];
-            let alias: any[] = [ key ].concat(kindOf(opt.config.alias) !== 'array' ? [ <string> opt.config.alias ] : opt.config.alias).sort((a: string, b: string) => a.length - b.length)
-            let name         = alias.shift();
-            let type         = opt.type.name.toString().toLowerCase()
-            if ( opt.config.type !== undefined && type === 'array' ) {
-                opt.config.array = true;
-                type             = opt.config.type
-            }
-            config.options[ name ] = _.merge(opt.config, { alias, type });
-            // @todo: default value
-        })
-        Object.keys(config.options).forEach(key => {
-            if(config.options[key].global){
+    protected addArgumentToNodeConfig(options: i.CommandNodeConfig, opt: i.DecoratedConfig<i.ArgumentConfig>) {
 
-            }
-        })
-        return config;
     }
 
-    protected addDecoratedArgumentsTo(options: i.CommandNodeConfig) {
-
+    protected findAndAddArguments(config: i.CommandNodeConfig){
+        _.filter(this._arguments, { cls: config.cls }).forEach((opt: i.DecoratedConfig<i.ArgumentConfig>) => {
+            this.addArgumentToNodeConfig(config, opt);
+        })
     }
 
 

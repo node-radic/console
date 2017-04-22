@@ -10,14 +10,16 @@ exports.cli = src_1.Cli.getInstance();
 exports.cli
     .helpers('input')
     .helper('output', {
-    quiet: false,
-    colors: true,
+    quietOption: { enabled: true },
+    colorsOption: { enabled: true },
     styles: {
         success: 'blue lighten 20 bold',
     }
 })
     .helper('describer', {
-    help: ['h', 'help']
+    helpOption: {
+        enabled: true
+    }
 });
 exports.default = exports.cli;
 //# sourceMappingURL=index.js.map
