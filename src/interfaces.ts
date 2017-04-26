@@ -90,6 +90,8 @@ namespace interfaces {
          * sdfsdf
          */
         config?: HelperOptionsConfig
+
+        bindings?: { [key:string]:string }
     }
 
     /** Declaration of a option */

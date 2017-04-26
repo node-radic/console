@@ -21,5 +21,10 @@ exports.cli
         enabled: true
     }
 });
-exports.default = exports.cli;
+function start() {
+    var parsedRootNode = exports.cli.parse();
+    var parsedNode = exports.cli.resolve();
+    exports.cli.handle(parsedNode);
+}
+exports.default = start;
 //# sourceMappingURL=index.js.map

@@ -6,7 +6,8 @@ describe("groups", () => {
     cli.config({ autoExecute: false, mode: 'groups' })
     describe('command in group "yarn install" ', () => {
         let parsedRootNode: ParsedNode<any>, parsedNode: ParsedNode<any>;
-        it('parse returns valid parsed root node', () => {
+
+        it('can parse and return a parsed root node', () => {
             parsedRootNode = cli.parse('yarn install');
             expect(parsedRootNode).toBeDefined()
         })

@@ -1,6 +1,7 @@
+import * as _ from "lodash";
 import { merge } from "lodash";
 import { Container, inject } from "../core/Container";
-import { interfaces as i } from "../interfaces";
+import { interfaces as i} from "../interfaces";
 import { helper } from "../decorators";
 import { Output } from "./Output";
 import { Registry } from "../core/Registry";
@@ -25,6 +26,9 @@ export interface DescribedOptions {
             enabled: false,
             keys   : [ 'h', 'help' ]
         },
+        templates : {
+            command: ``
+        },
         styles    : {
             optionKeys         : '#999',
             optionKeysSeperator: '#ff6a4d',
@@ -38,12 +42,15 @@ export interface DescribedOptions {
         'cli:parsed'        : 'onParsed',
         'cli:resolve:root'  : 'onResolveRoot',
         'cli:resolve:parsed': 'onResolveParsed'
-    }
+    },
+    bindings : {}
 })
 export class Describer {
+
     config: any;
 
-    constructor(@inject('console.helpers.output') protected out: Output) {}
+    constructor(@inject('console.helpers.output') protected out: Output) {
+    }
 
     protected get registry(): Registry {
         return Container.getInstance().make<Registry>('console.registry');
@@ -56,7 +63,113 @@ export class Describer {
         }, options), true);
     }
 
-    options(options: { [name: string]: i.OptionConfig }): DescribedOptions {
+    options(options: { [name: string]: i.OptionConfig }): string {
+        let describedOptions: any = [];
+        let prefixKey             = (key: string) => `${key.length === 1 ? '-' : '--'}${key}` //{optionKey}${key}{/optionKey}`
+        Object.keys(options).forEach((key) => {
+            let opt            = options[ key ];
+            let keys: string[] = [ prefixKey(key) ]
+            opt.alias          = opt.alias || [];
+            let aliases: any   = kindOf(opt.alias) === 'array' ? opt.alias : [ opt.alias ]; //definition.getOptions().alias[ key ] || []
+            keys               = keys.concat(aliases.map(prefixKey));
+            keys.sort((a: string, b: string) => a.length - b.length);
+            let type = opt.type === undefined ? '' : `[{optionType}${opt.type}{/optionType}]`;
+            if ( opt.array ) {
+                type = `[{optionArrayType}Array<{/optionArrayType}{optionType}${opt.type}{/optionType}{optionArrayType}>{/optionArrayType}]`
+            }
+            let result = {
+                keys: `{optionKeys}${keys.join('{/optionKeys}{optionKeysSeperator}|{/optionKeysSeperator}{optionKeys}')}{/optionKeys}`,
+                desc: `{optionDesc}${opt.desc}{/optionDesc}`,
+                type
+            }
+            describedOptions.push(result);
+        })
+
+        return this.columns(describedOptions)
+    }
+
+
+    arguments(args: { [name: string]: i.ArgumentConfig }) {
+        let descs: any[] = [];
+        Reflect.ownKeys(args).forEach(name => {
+            let arg = args[ name ];
+
+        })
+    }
+
+    command(command: ParsedNode<i.CommandNodeConfig>) {
+        let {local, global} = this.splitOptions(command.config.options)
+        let args          = this.arguments(command.config.arguments);
+        return `{bold}${command.config.name}{/bold}
+${command.config.desc}
+
+{bold}Options{/bold}
+${this.options(local)}
+
+{bold}Global options:{/bold}
+${this.options(global)}`;
+    }
+
+    protected splitOptions(options: { [name: string]: i.OptionConfig }): { local: { [name: string]: i.OptionConfig }, global: { [name: string]: i.OptionConfig } } {
+        let local: any  = _.pickBy(options, (opt) => opt.global === false);
+        let global: any = _.pickBy(options, (opt) => opt.global === true);
+        return { local, global }
+    }
+
+    group(group: ParsedNode<i.GroupNodeConfig>) {
+        let {local, global} = this.splitOptions(group.config.options)
+        return `{bold}${group.config.name}{/bold}
+${group.config.desc}
+
+{bold}Options{/bold}
+${this.options(local)}
+
+{bold}Global options:{/bold}
+${this.options(global)}`;
+
+    }
+
+    onParse(event: CliParseEvent) {
+        let c = this.out.parser.colors;
+        let s = merge(this.out.config.styles, this.config.styles)
+        c.styles(s)
+
+        if ( this.config.helpOption.enabled ) {
+            this.addHelpOption(event.nodeConfig);
+        }
+    }
+
+    onResolveRoot(rootNodeConfig: ParsedNode<i.NodeConfig>) {
+        this.handleHelpOption(rootNodeConfig);
+    }
+
+    onResolveParsed(nodeConfig: ParsedNode<i.GroupNodeConfig | i.CommandNodeConfig>) {
+        this.handleHelpOption(nodeConfig);
+    }
+
+    protected addHelpOption(nodeConfig: i.NodeConfig) {
+        this.registry.addOption(prepareOption(
+            this.config.helpOption.keys,
+            nodeConfig, {
+                config: { global: true, desc: 'Show this text' }
+            }
+        ))
+    }
+
+    protected handleHelpOption(node: ParsedNode<i.NodeConfig>) {
+        let output = '';
+        if ( this.config.helpOption.enabled !== false && node.opt(this.config.helpOption.keys[ 0 ]) ) {
+            if ( node.usesArguments ) {
+                output = this.command(node)
+            } else {
+                output = this.group(node)
+            }
+        }
+        this.out.line(output);
+    }
+
+
+    goptions(options: { [name: string]: i.OptionConfig }): DescribedOptions {
         let local: any  = [];
         let global: any = []
         let prefixKey   = (key: string) => `${key.length === 1 ? '-' : '--'}${key}` //{optionKey}${key}{/optionKey}`
@@ -91,74 +204,5 @@ ${this.columns(global)}`
         }
     }
 
-    arguments(args: i.Arguments) {
-        args.getKeys().forEach(name => {
-            args.config(name);
-        })
-    }
-
-    command(command: ParsedNode<i.CommandNodeConfig>) {
-        let options = this.options(command.config.options);
-        return {
-            options,
-            dump: () => {
-                this.out.line(`{bold}${command.config.name}{/bold}
-${command.config.desc}
-
-${options}`)
-            }
-        };
-    }
-
-    group(group: ParsedNode<i.GroupNodeConfig>) {
-        let options = this.options(group.config.options);
-        return {
-            options,
-            dump: () => {
-                this.out.line(`{bold}${group.config.name}{/bold}
-${group.config.desc}
-
-${options}`)
-            }
-        };
-    }
-
-
-    onParse(event: CliParseEvent) {
-        let c = this.out.parser.colors;
-        let s = merge(this.out.config.styles, this.config.styles)
-        c.styles(s)
-
-        if ( this.config.helpOption.enabled ) {
-            this.addHelpOption(event.nodeConfig);
-        }
-    }
-
-    onResolveRoot(rootNodeConfig: ParsedNode<i.NodeConfig>) {
-        this.handleHelpOption(rootNodeConfig);
-    }
-
-    onResolveParsed(nodeConfig: ParsedNode<i.GroupNodeConfig | i.CommandNodeConfig>) {
-        this.handleHelpOption(nodeConfig);
-    }
-
-    protected addHelpOption(nodeConfig: i.NodeConfig) {
-        this.registry.addOption(prepareOption(
-            this.config.helpOption.keys,
-            nodeConfig, {
-                config: { global: true, desc: 'Show this text' }
-            }
-        ))
-    }
-
-    protected handleHelpOption(node: ParsedNode<i.NodeConfig>) {
-        if ( this.config.helpOption.enabled !== false && node.opt(this.config.helpOption.keys[ 0 ]) ) {
-            if ( node.usesArguments ) {
-                this.command(node).dump();
-            } else {
-                this.group(node).dump();
-            }
-        }
-    }
 
 }

@@ -20,6 +20,12 @@ cli
         }
     })
 
-export default cli;
+
+
+export default function start() {
+    let parsedRootNode = cli.parse()
+    let parsedNode     = cli.resolve()
+    cli.handle(parsedNode);
+}
 
 

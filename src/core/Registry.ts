@@ -119,7 +119,7 @@ export class Registry {
     }
 
     addOption(optionConfig: i.DecoratedConfig<i.OptionConfig> = {}) {
-        optionConfig = _.merge({
+        optionConfig   = _.merge({
             config: this._defaults.option
         }, optionConfig);
         let nodeConfig = _.find([ this.root ].concat(this.groups, this.commands), { cls: optionConfig.cls })
@@ -183,7 +183,7 @@ export class Registry {
 
     }
 
-    protected findAndAddArguments(config: i.CommandNodeConfig){
+    protected findAndAddArguments(config: i.CommandNodeConfig) {
         _.filter(this._arguments, { cls: config.cls }).forEach((opt: i.DecoratedConfig<i.ArgumentConfig>) => {
             this.addArgumentToNodeConfig(config, opt);
         })
@@ -199,7 +199,8 @@ export class Registry {
             enabled  : false,
             listeners: {},
             configKey: 'config',
-            config   : {}
+            config   : {},
+            bindings : {}
         }
         options        = _.merge({}, defaults, options);
 
