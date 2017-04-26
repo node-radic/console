@@ -1,4 +1,4 @@
-import { clone, merge } from "lodash";
+import { cloneDeep, merge } from "lodash";
 import { interfaces as i } from "../interfaces";
 import { bindTo } from "./Container";
 
@@ -49,14 +49,14 @@ const command: i.CommandNodeConfig = merge({}, node, <i.CommandNodeConfig> {
 
 @bindTo('console.defaults.nodes')
 export class Defaults implements i.NodesDefaults {
-    get argument(): i.ArgumentConfig { return clone(argument) }
+    getArgument(): i.ArgumentConfig { return cloneDeep(argument) }
 
-    get option(): i.OptionConfig { return clone(option) }
+    getOption(): i.OptionConfig { return cloneDeep(option) }
 
-    get node(): i.NodeConfig { return clone(node) }
+    getNode(): i.NodeConfig { return cloneDeep(node) }
 
-    get group(): i.GroupNodeConfig { return clone(group) }
+    getGroup(): i.GroupNodeConfig { return cloneDeep(group) }
 
-    get command(): i.CommandNodeConfig { return clone(command) }
+    getCommand(): i.CommandNodeConfig { return cloneDeep(command) }
 }
 

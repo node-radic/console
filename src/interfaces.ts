@@ -91,7 +91,7 @@ namespace interfaces {
          */
         config?: HelperOptionsConfig
 
-        bindings?: { [key:string]:string }
+        bindings?: { [key: string]: string }
     }
 
     /** Declaration of a option */
@@ -122,8 +122,7 @@ namespace interfaces {
     }
 
 
-
-    export interface DecoratedConfig<C extends OptionConfig | ArgumentConfig > {
+    export interface DecoratedConfig<C extends OptionConfig | ArgumentConfig> {
         cls?: Function
         key?: string | symbol
         config?: C
@@ -158,11 +157,11 @@ namespace interfaces {
 
 
     export interface NodesDefaults {
-        argument: ArgumentConfig
-        option: OptionConfig
-        node: NodeConfig
-        group: GroupNodeConfig
-        command: CommandNodeConfig
+        getArgument(): ArgumentConfig
+        getOption(): OptionConfig
+        getNode(): NodeConfig
+        getGroup(): GroupNodeConfig
+        getCommand(): CommandNodeConfig
     }
 
 
@@ -174,7 +173,7 @@ namespace interfaces {
         getKeys(): string[]
         isEmpty(): boolean
         config(name: string): OptionConfig
-        getConfig(): { [name: string]: OptionConfig  }
+        getConfig(): { [name: string]: OptionConfig }
 
     }
 

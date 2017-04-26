@@ -76,7 +76,7 @@ export class Registry {
 
 
     protected createGroupConfig(config: i.GroupNodeConfig = {}): i.GroupNodeConfig {
-        config = _.merge({}, this._defaults.group, config);
+        config = _.merge({}, this._defaults.getGroup(), config);
         if ( config.cls === null ) {
             let fn     = function () {}
             let desc   = Object.getOwnPropertyDescriptor(fn, 'name');
@@ -99,7 +99,7 @@ export class Registry {
     }
 
     protected createCommandConfig(config: i.CommandNodeConfig = {}) {
-        config = _.merge({}, this._defaults.command, config);
+        config = _.merge({}, this._defaults.getCommand(), config);
 
         if ( config.cls === null ) {
             let fn     = function () {}
@@ -120,7 +120,7 @@ export class Registry {
 
     addOption(optionConfig: i.DecoratedConfig<i.OptionConfig> = {}) {
         optionConfig   = _.merge({
-            config: this._defaults.option
+            config: this._defaults.getOption()
         }, optionConfig);
         let nodeConfig = _.find([ this.root ].concat(this.groups, this.commands), { cls: optionConfig.cls })
         if ( nodeConfig ) {
@@ -130,7 +130,8 @@ export class Registry {
     }
 
     protected addOptionToNodeConfig(config: i.NodeConfig, opt: i.DecoratedConfig<i.OptionConfig>) {
-        let key = S(opt.key).dasherize().toString();
+        let key = opt.key.toString();
+        key = key.length === 1 ? key : _.kebabCase(key);
         // join name and aliases, sort by str length and pick the top to get shortest
         if ( opt.config.alias === undefined ) opt.config.alias = [];
         let alias: any[] = [ key ].concat(kindOf(opt.config.alias) !== 'array' ? [ <string> opt.config.alias ] : opt.config.alias).sort((a: string, b: string) => a.length - b.length)
@@ -159,7 +160,7 @@ export class Registry {
 
     addArgument(argumentConfig: i.DecoratedConfig<i.ArgumentConfig> = {}) {
         argumentConfig = _.merge({
-            config: this._defaults.argument
+            config: this._defaults.getArgument()
         }, argumentConfig);
         this._arguments.push(argumentConfig);
         let nodeConfig = _.find([ this.root ].concat(this.groups, this.commands), { cls: argumentConfig.cls })
