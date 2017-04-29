@@ -36,7 +36,7 @@ export class Events extends EventEmitter2 {
         if ( args.length === 2 ) event = args[ 0 ];
         if ( event === undefined ) event = ctx.event;
 
-        this.emit(event, ctx);
+        super.emit(event, ctx);
         return ctx;
     }
 

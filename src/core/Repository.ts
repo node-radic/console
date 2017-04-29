@@ -3,14 +3,16 @@ import { Container, inject, singleton } from "./Container";
 import { meta } from "../utils";
 import { IConfigProperty, kindOf } from "@radic/util";
 import * as _ from "lodash";
-import { defaults } from "lodash";
+import { cloneDeep, defaults, merge } from "lodash";
 import { Defaults } from "./nodes";
 import { Events } from "./Events";
+import { CliParseEvent } from "./Cli";
+
 
 @singleton('console.repository')
 export class Repository {
     nodes: i.NodeConfig[]                        = []
-    root: i.CommandNodeConfig | i.GroupNodeConfig ;
+    root: i.CommandNodeConfig | i.GroupNodeConfig;
     helpers: { [name: string]: i.HelperOptions } = {}
 
 
@@ -31,7 +33,7 @@ export class Repository {
             let proto = cls[ 'prototype' ];
             let keys  = Reflect.getMetadataKeys(proto);
             if ( keys.includes('options') ) {
-                this.addOptions(proto, config);
+                this.addDecoratedOptionsToNode(proto, config);
             }
             if ( keys.includes('arguments') ) {
                 this.addArguments(proto, config);
@@ -42,28 +44,49 @@ export class Repository {
         return config;
     }
 
-    addOption() {
 
+    addOption(keys: string[], optionConfig: i.OptionConfig, config: i.NodeConfig) {
+        let names = cloneDeep(keys);
+        let name  = names.sort((a, b) => a.length - b.length).shift()
+        meta(config.cls).set('options', [
+            merge({
+                key   : name,
+                config: { name, alias: names }
+            }, {
+                config: optionConfig
+            })
+        ].concat(meta(config.cls).get<any>('options', [])))
+        this.addDecoratedOptionsToNode(config.cls, config);
     }
 
-    protected addOptions(proto: Object, config: i.NodeConfig) {
+    protected addDecoratedOptionsToNode(proto: Object, config: i.NodeConfig) {
         config.options                                           = config.options || {};
         let options: [ { key: string, config: i.OptionConfig } ] = Reflect.getMetadata('options', proto);
         options.forEach((opt) => {
             _.defaults(opt, { config: this._defaults.getOption() });
-            let type = Reflect.getMetadata('design:type', proto, opt.key).name.toString().toLowerCase()
-            let key  = opt.key.toString();
-            key      = key.length === 1 ? key : _.kebabCase(key);
+            let key = opt.key.toString();
+            key     = key.length === 1 ? key : _.kebabCase(key);
             // join name and aliases, sort by str length and pick the top to get shortest
             if ( opt.config.alias === undefined ) opt.config.alias = [];
             let alias: any[] = [ key ].concat(kindOf(opt.config.alias) !== 'array' ? [ <string> opt.config.alias ] : opt.config.alias).sort((a: string, b: string) => a.length - b.length)
             let name         = alias.shift();
+
+            let type = Reflect.getMetadata('design:type', proto, opt.key)
+            type     = type !== undefined ? type.name.toString().toLowerCase() : opt.config.type;
             if ( opt.config.type !== undefined && type === 'array' ) {
                 opt.config.array = true;
                 type             = opt.config.type
             }
-            config.options[ name ] = _.merge(opt.config, { alias, type });
+            let options = _.merge(opt.config, { alias, type });
+            if ( opt.config.global ) {
+                this._events.on('cli:parse:resolved', function (event: CliParseEvent) {
+                    event.nodeConfig.options[ name ] = options;
+                    return event;
+                })
+            }
+            config.options[ name ] = options;
         })
+        Reflect.deleteMetadata('options', proto);
     }
 
     protected addArguments(proto: Object, config: i.CommandNodeConfig) {

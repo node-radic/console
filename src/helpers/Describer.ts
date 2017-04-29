@@ -6,8 +6,8 @@ import { helper } from "../decorators";
 import { Output } from "./Output";
 import { kindOf } from "@radic/util";
 import { ParsedNode } from "../parser/ParsedNode";
-import { CliParseEvent } from "../core/Cli";
-import { addOption } from "../core/nodes";
+import { CliParsedResolvedEvent, CliParseEvent } from "../core/Cli";
+import { Repository } from "../core/Repository";
 
 export type DescribedOptionsArray = Array<{ keys: string[], desc: string, type: string }>
 
@@ -37,10 +37,10 @@ export interface DescribedOptions {
         }
     },
     listeners: {
-        'cli:parse'         : 'onParse',
-        'cli:parsed'        : 'onParsed',
+        'cli:parse:root'         : 'onParseRoot',
+        'cli:parsed:root'        : 'onParsedRoot',
         'cli:resolve:root'  : 'onResolveRoot',
-        'cli:resolve:parsed': 'onResolveParsed'
+        'cli:parsed:resolved': 'onResolveParsed'
     },
     bindings : {}
 })
@@ -124,7 +124,7 @@ ${this.options(global)}`;
 
     }
 
-    onParse(event: CliParseEvent) {
+    onParseRoot(event: CliParseEvent) {
         let c = this.out.parser.colors;
         let s = merge(this.out.config.styles, this.config.styles)
         c.styles(s)
@@ -138,14 +138,17 @@ ${this.options(global)}`;
         this.handleHelpOption(rootNodeConfig);
     }
 
-    onResolveParsed(nodeConfig: ParsedNode<i.GroupNodeConfig | i.CommandNodeConfig>) {
-        this.handleHelpOption(nodeConfig);
+    onResolveParsed(event: CliParsedResolvedEvent) {
+        this.handleHelpOption(event.parsedNode);
     }
 
     protected addHelpOption(nodeConfig: i.NodeConfig) {
-        addOption(this.config.helpOption.keys, { global: true, desc: 'Show this text' }, nodeConfig)
+        this.repository.addOption(this.config.helpOption.keys, { global: true, desc: 'Show this text' }, nodeConfig)
     }
 
+    protected get repository(): Repository {
+        return Container.getInstance().make<Repository>('console.repository');
+    }
 
     protected handleHelpOption(node: ParsedNode<i.NodeConfig>) {
         let output = '';
@@ -158,42 +161,4 @@ ${this.options(global)}`;
         }
         this.out.line(output);
     }
-
-
-    goptions(options: { [name: string]: i.OptionConfig }): DescribedOptions {
-        let local: any  = [];
-        let global: any = []
-        let prefixKey   = (key: string) => `${key.length === 1 ? '-' : '--'}${key}` //{optionKey}${key}{/optionKey}`
-        Object.keys(options).forEach((key) => {
-            let opt            = options[ key ];
-            let keys: string[] = [ prefixKey(key) ]
-            opt.alias          = opt.alias || [];
-            let aliases: any   = kindOf(opt.alias) === 'array' ? opt.alias : [ opt.alias ]; //definition.getOptions().alias[ key ] || []
-            keys               = keys.concat(aliases.map(prefixKey));
-            keys.sort((a: string, b: string) => a.length - b.length);
-            let type = opt.type === undefined ? '' : `[{optionType}${opt.type}{/optionType}]`;
-            if ( opt.array ) {
-                type = `[{optionArrayType}Array<{/optionArrayType}{optionType}${opt.type}{/optionType}{optionArrayType}>{/optionArrayType}]`
-            }
-            let result = {
-                keys: `{optionKeys}${keys.join('{/optionKeys}{optionKeysSeperator}|{/optionKeysSeperator}{optionKeys}')}{/optionKeys}`,
-                desc: `{optionDesc}${opt.desc}{/optionDesc}`,
-                type
-            }
-            opt.global ? global.push(result) : local.push(result)
-        })
-
-        return {
-            local, global,
-            getLocal : () => this.columns(local),
-            getGlobal: () => this.columns(global),
-            toString : () => `{bold}Options:{/bold}
-${this.columns(local)}
-
-{bold.red}Global options:{/bold.red}
-${this.columns(global)}`
-        }
-    }
-
-
 }

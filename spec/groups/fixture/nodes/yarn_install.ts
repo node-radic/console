@@ -32,6 +32,7 @@ export class YarnInstallCommand {
     @option('Array of string', String, 's')
     arstr: string[];
 
+
     @option('Array of number', Number, 'n')
     arnr: number[];
 

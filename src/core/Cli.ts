@@ -11,15 +11,24 @@ export type CliMode = 'groups' | 'command';
 
 export class CliParseEvent extends HaltEvent {
     constructor(public argv: string[], public nodeConfig: i.NodeConfig) {
-        super('cli:parse');
+        super('cli:parse:root');
     }
 }
 export class CliParsedEvent extends Event {
     constructor(public parsedRootNode: ParsedNode<i.NodeConfig>) {
-        super('cli:parsed');
+        super('cli:parsed:root');
     }
 }
-
+export class CliParseResolvedEvent extends HaltEvent {
+    constructor(public argv: string[], public nodeConfig: i.NodeConfig) {
+        super('cli:parse:resolved');
+    }
+}
+export class CliParsedResolvedEvent extends Event {
+    constructor(public parsedNode: ParsedNode<i.NodeConfig>) {
+        super('cli:parsed:resolved');
+    }
+}
 
 @singleton('console.cli')
 export class Cli {
@@ -99,9 +108,9 @@ export class Cli {
         }
         this.events.emit('cli:resolve:found', resolverResult);
 
+        if ( this.events.fire(new CliParseResolvedEvent(resolverResult.argv, resolverResult.node)).halt ) return;
         const parsedNode = this._parser.parse(resolverResult.argv, resolverResult.node);
-        this.events.emit('cli:resolve:parsed', parsedNode)
-        return parsedNode;
+        return this.events.fire(new CliParsedResolvedEvent(parsedNode)).parsedNode
     }
 
     handle(parsedNode: ParsedNode<i.GroupNodeConfig | i.CommandNodeConfig> | boolean): boolean {
@@ -142,7 +151,7 @@ export class Cli {
         else if ( config.type === 'string' ) type = String;
         else if ( config.type === 'number' ) type = Number;
 
-        this._repository.addOption(); // @todo
+        this._repository.addOption([ key ], config, this._repository.root); // @todo
         return this;
     }
 

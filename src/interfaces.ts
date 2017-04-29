@@ -139,7 +139,7 @@ namespace interfaces {
         cls?: any
         options?: { [name: string]: OptionConfig }
         instance?: ParsedNode<this> | null
-        aliases?: string[]
+        alias?: string[]
         desc?: string
     }
 

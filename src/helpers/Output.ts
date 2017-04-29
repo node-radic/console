@@ -9,7 +9,6 @@ import { helper } from "../decorators";
 import { Container } from "../core/Container";
 import { CliParseEvent } from "../core/Cli";
 import { Repository } from "../core/Repository";
-import { addOption } from "../core/nodes";
 const tty       = require('tty');
 const columnify = require('columnify')
 const truwrap   = require('truwrap');
@@ -67,7 +66,7 @@ const truwrap   = require('truwrap');
         }
     },
     listeners: {
-        'cli:parse': 'onParse'
+        'cli:parse:root': 'onParseRoot'
     }
 })
 export class Output {
@@ -193,7 +192,7 @@ export class Output {
     }
 
 
-    onParse(event: CliParseEvent) {
+    onParseRoot(event: CliParseEvent) {
         if ( this.config.quietOption.enabled ) {
             this.addQuietOption(event.nodeConfig);
         }
@@ -203,10 +202,10 @@ export class Output {
     }
 
     protected addQuietOption(nodeConfig: i.NodeConfig) {
-        addOption(this.config.quietOption.keys, { global: true, desc: 'Disables printing to console' }, nodeConfig)
+        this.repository.addOption(this.config.quietOption.keys, { global: true, desc: 'Disables printing to console' }, nodeConfig)
     }
 
     protected addColorsOption(nodeConfig: i.NodeConfig) {
-        addOption(this.config.colorsOption.keys, { global: true, desc: 'Disable text colors' }, nodeConfig)
+        this.repository.addOption(this.config.colorsOption.keys, { global: true, desc: 'Disable text colors' }, nodeConfig)
     }
 }

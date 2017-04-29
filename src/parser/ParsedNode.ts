@@ -1,10 +1,7 @@
 import { interfaces as i } from "../interfaces";
 import * as _ from "lodash";
 import { Container } from "../core/Container";
-import { Registry } from "../core/Registry";
-import { Parser } from "./Parser";
 import { injectable } from "inversify";
-import { kindOf } from "@radic/util";
 import { Repository } from "../core/Repository";
 
 @injectable()
@@ -28,13 +25,10 @@ export class ParsedNode<T extends i.NodeConfig> {
 
     protected make(): i.Node<T> {
         const c             = this.config;
-        const repository      = Container.getInstance().make<Repository>('console.repository')
-        const parser        = Container.getInstance().make<Parser>('console.parser')
-        let isRoot          = repository.root.cls === c.cls;
+        const repository    = Container.getInstance().make<Repository>('console.repository')
         let node: i.Node<T> = Container.getInstance().build<i.Node<T>>(c.cls);
 
-        let setters = {
-        }
+        let setters = {}
 
         const addSetter = (key: string, val: any) => { if ( setters[ key ] === undefined ) setters[ key ] = val; }
 
@@ -52,23 +46,11 @@ export class ParsedNode<T extends i.NodeConfig> {
 
         this.getOptions().getKeys().forEach(key => addSetter(key, this.opt(key)))
 
-        if ( ! isRoot ) {
-            let rootOptionsConfig: any = repository.root.instance.getOptions().getConfig();
-            Object.keys(rootOptionsConfig).forEach(key => {
-                let config: i.OptionConfig = rootOptionsConfig[ key ];
-                if ( ! config.global ) return;
-                let opt = repository.root.instance.opt(key);
-                addSetter(key, opt)
-                if ( kindOf(config.alias) === 'array' ) (<string[]> config.alias).forEach(alias => addSetter(alias, opt));
-                else if ( kindOf(config.alias) === 'string' ) addSetter(<string> config.alias, opt);
-            })
-        }
-
         Object.keys(setters).forEach(key => {
             node[ key ] = setters[ key ]
         })
 
-        node['parsed'] = this;
+        node[ 'parsed' ] = this;
 
         return node;
     }
@@ -112,6 +94,7 @@ export class ParsedNode<T extends i.NodeConfig> {
         if ( ! this.usesArguments ) return undefined;
         return this._arguments.get<A>(name, defaultValueOverride);
     }
+
     //
     // /** Checks if argument or option exists name **/
     // has(name: string): boolean {
