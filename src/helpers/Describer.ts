@@ -8,6 +8,7 @@ import { kindOf } from "@radic/util";
 import { ParsedNode } from "../parser/ParsedNode";
 import { CliParsedResolvedEvent, CliParseEvent } from "../core/Cli";
 import { Repository } from "../core/Repository";
+import { meta } from "../utils";
 
 export type DescribedOptionsArray = Array<{ keys: string[], desc: string, type: string }>
 
@@ -21,6 +22,10 @@ export interface DescribedOptions {
 
 @helper('describer', {
     config   : {
+        app       : {
+            title    : '',
+            copyright: ''
+        },
         helpOption: {
             enabled: false,
             keys   : [ 'h', 'help' ]
@@ -37,9 +42,9 @@ export interface DescribedOptions {
         }
     },
     listeners: {
-        'cli:parse:root'         : 'onParseRoot',
-        'cli:parsed:root'        : 'onParsedRoot',
-        'cli:resolve:root'  : 'onResolveRoot',
+        'cli:parse:root'     : 'onParseRoot',
+        'cli:parsed:root'    : 'onParsedRoot',
+        'cli:resolve:root'   : 'onResolveRoot',
         'cli:parsed:resolved': 'onResolveParsed'
     },
     bindings : {}
@@ -51,6 +56,14 @@ export class Describer {
     constructor(@inject('console.helpers.output') protected out: Output) {
     }
 
+    /** @decorator */
+    static example(str: string): ClassDecorator {
+        return (cls) => {
+            meta(cls).set('describer.example', str)
+        }
+    }
+
+
     protected columns(data: any, options: i.OutputColumnsOptions = {}): string {
         return this.out.columns(data, merge({
             columnSplitter: '   ',
@@ -58,12 +71,11 @@ export class Describer {
         }, options), true);
     }
 
-    options(options: { [name: string]: i.OptionConfig }): string {
+    options(options: i.OptionConfig[]): string {
         let describedOptions: any = [];
         let prefixKey             = (key: string) => `${key.length === 1 ? '-' : '--'}${key}` //{optionKey}${key}{/optionKey}`
-        Object.keys(options).forEach((key) => {
-            let opt            = options[ key ];
-            let keys: string[] = [ prefixKey(key) ]
+        options.forEach((opt) => {
+            let keys: string[] = [ prefixKey(opt.name) ]
             opt.alias          = opt.alias || [];
             let aliases: any   = kindOf(opt.alias) === 'array' ? opt.alias : [ opt.alias ]; //definition.getOptions().alias[ key ] || []
             keys               = keys.concat(aliases.map(prefixKey));
@@ -83,6 +95,12 @@ export class Describer {
         return this.columns(describedOptions)
     }
 
+    protected splitOptions(options: { [name: string]: i.OptionConfig }): { local: i.OptionConfig[], global: i.OptionConfig [] } {
+        let local: any  = _.filter(options, { global: false }); //(opt) => opt.global === false);
+        let global: any = _.filter(options, { global: true }); //(opt) => opt.global === true);
+        return { local, global }
+    }
+
 
     arguments(args: { [name: string]: i.ArgumentConfig }) {
         let descs: any[] = [];
@@ -93,36 +111,31 @@ export class Describer {
     }
 
     command(command: ParsedNode<i.CommandNodeConfig>) {
+        let output: string    = `{bold}${command.config.name}{/bold}\n${command.config.desc}`;
         let { local, global } = this.splitOptions(command.config.options)
-        let args              = this.arguments(command.config.arguments);
-        return `{bold}${command.config.name}{/bold}
-${command.config.desc}
+        if ( local.length ) output += `{bold}Options{/bold}\n${this.options(local)}`
+        if ( global.length ) output += `{bold}Global options:{/bold}\n${this.options(global)}`;
 
-{bold}Options{/bold}
-${this.options(local)}
-
-{bold}Global options:{/bold}
-${this.options(global)}`;
+        let args = this.arguments(command.config.arguments);
+        return output;
     }
 
-    protected splitOptions(options: { [name: string]: i.OptionConfig }): { local: { [name: string]: i.OptionConfig }, global: { [name: string]: i.OptionConfig } } {
-        let local: any  = _.pickBy(options, (opt) => opt.global === false);
-        let global: any = _.pickBy(options, (opt) => opt.global === true);
-        return { local, global }
-    }
 
     group(group: ParsedNode<i.GroupNodeConfig>) {
+        let output: string    = `{bold}${group.config.name}{/bold}\n${group.config.desc}`;
+
+
+        let commands = this.columns(_.filter(this.repository.nodes, { group: '' }), { columns: [ 'name', 'desc' ] })
+        if ( commands.length ) output += `\n\n{bold}Commands:{/bold}\n${commands}`;
+
         let { local, global } = this.splitOptions(group.config.options)
-        return `{bold}${group.config.name}{/bold}
-${group.config.desc}
+        if ( local.length ) output += `\n\n{bold}Options{/bold}\n${this.options(local)}`
+        if ( global.length ) output += `\n\n{bold}Global options:{/bold}\n${this.options(global)}`;
 
-{bold}Options{/bold}
-${this.options(local)}
 
-{bold}Global options:{/bold}
-${this.options(global)}`;
-
+        return output;
     }
+
 
     onParseRoot(event: CliParseEvent) {
         let c = this.out.parser.colors;

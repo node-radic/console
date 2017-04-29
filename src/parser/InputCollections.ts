@@ -5,8 +5,6 @@ import { defined } from "@radic/util";
 import { OptionType } from "../core/nodes";
 
 
-export default InputCollection
-
 
 export abstract class InputCollection<I extends any, T>{
     [key: string]: any
@@ -49,6 +47,8 @@ export abstract class InputCollection<I extends any, T>{
     }
 }
 
+
+export default InputCollection
 
 
 // class Aa extends InputCollection<interfaces.Arguments, ArgumentType> {}

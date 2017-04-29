@@ -2,11 +2,8 @@ import { command, Describer, inject, Input, interfaces as i, option, Output, Par
 import { YarnGroup } from "./yarn";
 import { IConfigProperty } from "@radic/util";
 
-@command('install', {
+@command('install', 'install one or more packages',{
     group    : YarnGroup,
-    options  : {
-        g: { alias: 'global', desc: 'Install packages globally' }  // by default, type will be 'boolean'
-    },
     arguments: {
         packages: { desc: 'One or more packages to install', required: false, type: 'array', default: [] }
     }

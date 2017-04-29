@@ -8,7 +8,6 @@ import { interfaces as i } from "../interfaces";
 import { Repository } from "./Repository";
 
 
-
 @singleton('console.resolver')
 export class Resolver {
     constructor(@inject('console.config') protected config: IConfigProperty,
@@ -97,6 +96,10 @@ export class Resolver {
             argv: parsedRoot.argv.filter((val) => spendArguments.indexOf(val) === - 1),
             node: resolved
         };
+    }
+
+    childrenOf(group: ParsedNode<i.GroupNodeConfig>): i.NodeConfig[] {
+        return _.filter(this.items, { group: group.config.group })
     }
 }
 

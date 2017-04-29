@@ -95,22 +95,6 @@ export class ParsedNode<T extends i.NodeConfig> {
         return this._arguments.get<A>(name, defaultValueOverride);
     }
 
-    //
-    // /** Checks if argument or option exists name **/
-    // has(name: string): boolean {
-    //     return this.hasArg(name) || this.hasOpt(name)
-    // }
-    //
-    // /** Get argument or option named name. When similar named argument and option, argument will be prioritized.  **/
-    // get<G extends any>(name: string, defaultValueOverride?: any): G {
-    //     if ( this.hasArg(name) ) {
-    //         return this.arg<G>(name, defaultValueOverride);
-    //     } else if ( this.hasOpt(name) ) {
-    //         return this.opt<G>(name, defaultValueOverride);
-    //     }
-    //     return this._options.get<G>(name, defaultValueOverride);
-    // }
-
     getOptions(): i.Options {
         return this._options;
     }

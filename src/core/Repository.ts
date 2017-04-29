@@ -77,7 +77,7 @@ export class Repository {
                 opt.config.array = true;
                 type             = opt.config.type
             }
-            let options = _.merge(opt.config, { alias, type });
+            let options = _.merge(opt.config, { name, alias, type });
             if ( opt.config.global ) {
                 this._events.on('cli:parse:resolved', function (event: CliParseEvent) {
                     event.nodeConfig.options[ name ] = options;

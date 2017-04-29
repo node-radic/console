@@ -72,11 +72,8 @@ __decorate([
     __metadata("design:type", Function)
 ], YarnInstallCommand.prototype, "config", void 0);
 YarnInstallCommand = __decorate([
-    src_1.command('install', {
+    src_1.command('install', 'install one or more packages', {
         group: yarn_1.YarnGroup,
-        options: {
-            g: { alias: 'global', desc: 'Install packages globally' }
-        },
         arguments: {
             packages: { desc: 'One or more packages to install', required: false, type: 'array', default: [] }
         }

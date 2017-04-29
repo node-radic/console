@@ -7,25 +7,17 @@ import { meta } from "./utils";
 import { Repository } from "./core/Repository";
 
 
-function makeConfig<T extends i.NodeConfig>(cls: any, args: any[]): T {
-    let len        = args.length;
-    let options: T = <T> {};
+function makeNodeConfig<T extends i.NodeConfig>(cls: any, args: any[]): T {
+    let len       = args.length
+    let argt      = args.map(arg => kindOf(arg));
+    let config: T = <any> { cls };
+    if ( len > 0 && argt[ 0 ] === 'string' ) config.name = args[ 0 ];
+    if ( len > 1 && argt[ 1 ] === 'string' ) config.desc = args[ 1 ];
+    if ( len > 2 && argt[ 2 ] === 'function' ) config.group = args[ 2 ];
 
-    if ( len === 1 ) {
-        if ( kindOf(args[ 0 ]) === 'string' ) {
-            options.name = args[ 0 ]
-        } else {
-            merge(options, args[ 0 ]);
-        }
-    }
-    if ( len === 2 ) {
-        options.name = args[ 0 ];
-        merge(options, args[ 1 ]);
-    }
-
-    options.cls = cls;
-
-    return options
+    // config is ALWAYS last parameter, so we can do it like this
+    if ( len > 0 && argt[ len - 1 ] === 'object' ) merge(config, args[ len - 1 ]);
+    return config;
 }
 
 let decorateAsGlobal = false;
@@ -58,20 +50,20 @@ function global(): PropertyDecorator {
 }
 
 
-function command(name: string): ClassDecorator
 function command(options: i.CommandNodeConfig): ClassDecorator
-function command(name: string, options: i.CommandNodeConfig): ClassDecorator
+function command(name: string, options?: i.CommandNodeConfig): ClassDecorator
+function command(name: string, desc: string, options?: i.CommandNodeConfig): ClassDecorator
+function command(name: string, desc: string, group: any, options?: i.CommandNodeConfig): ClassDecorator
 /**
  * @decorator
  * @export
  */
 function command(...args: any[]): ClassDecorator {
     return (cls: Function) => {
-        let config  = makeConfig<i.CommandNodeConfig>(cls, args);
-        config.type = 'command';
+        let config       = makeNodeConfig(cls, args);
+        config[ 'type' ] = 'command';
         meta(cls).set('config', config);
         repo().addNode(cls);
-
     }
 }
 
@@ -80,13 +72,14 @@ function command(...args: any[]): ClassDecorator {
  * @export
  */
 function group(): ClassDecorator
-function group(name: string): ClassDecorator
 function group(options: i.GroupNodeConfig): ClassDecorator
-function group(name: string, options: i.GroupNodeConfig): ClassDecorator
+function group(name: string, options?: i.GroupNodeConfig): ClassDecorator
+function group(name: string, desc: string, options?: i.GroupNodeConfig): ClassDecorator
+function group(name: string, desc: string, group: any, options?: i.GroupNodeConfig): ClassDecorator
 function group(...args: any[]): ClassDecorator {
     return (cls: Function) => {
-        let config  = makeConfig<i.GroupNodeConfig>(cls, args);
-        config.type = 'group';
+        let config       = makeNodeConfig(cls, args);
+        config[ 'type' ] = 'group';
         meta(cls).set('config', config);
         repo().addNode(cls);
     }
@@ -101,7 +94,7 @@ function helper(options: i.HelperOptions): ClassDecorator;
 function helper(name: string, options: i.HelperOptions): ClassDecorator;
 function helper(...args: any[]): ClassDecorator {
     return (cls) => {
-        repo().addHelper(makeConfig(cls, args));
+        repo().addHelper(makeNodeConfig(cls, args));
     }
 }
 
