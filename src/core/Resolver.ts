@@ -2,18 +2,17 @@ import { inject, singleton } from "./Container";
 import { isUndefined } from "util";
 import * as _ from "lodash";
 import { IConfigProperty } from "@radic/util";
-import { Registry } from "./Registry";
 import { Events } from "./Events";
 import { ParsedNode } from "../parser/ParsedNode";
 import { interfaces as i } from "../interfaces";
+import { Repository } from "./Repository";
 
 
 
 @singleton('console.resolver')
 export class Resolver {
-
     constructor(@inject('console.config') protected config: IConfigProperty,
-                @inject('console.registry') protected registry: Registry,
+                @inject('console.repository') protected repository: Repository,
                 @inject('console.events') protected events: Events) {
     }
 
@@ -37,7 +36,7 @@ export class Resolver {
 
 
     get items(): i.NodeConfig[] {
-        return [].concat(this.registry.commands, this.registry.groups);
+        return this.repository.nodes
     }
 
     getTree() {
@@ -65,18 +64,18 @@ export class Resolver {
     resolve(parsedRoot: ParsedNode<i.NodeConfig>): { argv: string[], node: i.NodeConfig } | null {
         this.events.emit('router:resolve', parsedRoot, this)
 
-        let leftoverArguments: string[] = [].concat(parsedRoot.arguments);
+        let leftoverArguments: string[] = [].concat(parsedRoot.argv);
 
         let items: i.NodeConfig[]    = this.items,
             stop: boolean            = false,
             spendArguments: string[] = [],
-            parentCls: Function      = this.registry.root.cls,
+            parentCls: Function      = this.repository.root.cls,
             resolved: i.NodeConfig   = null;
 
         // if no arguments, then its the root node
-        if ( parsedRoot.arguments.length === 0 ) {
+        if ( parsedRoot.argv.length === 0 ) {
             stop     = true
-            resolved = this.registry.root
+            resolved = this.repository.root
         }
 
         while ( stop === false && leftoverArguments.length > 0 ) {

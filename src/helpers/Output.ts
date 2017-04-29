@@ -6,10 +6,10 @@ import * as Table from "cli-table2";
 import * as archy from "archy";
 import { interfaces as i } from "../interfaces";
 import { helper } from "../decorators";
-import { Registry } from "../core/Registry";
 import { Container } from "../core/Container";
-import { prepareOption } from "../utils";
 import { CliParseEvent } from "../core/Cli";
+import { Repository } from "../core/Repository";
+import { addOption } from "../core/nodes";
 const tty       = require('tty');
 const columnify = require('columnify')
 const truwrap   = require('truwrap');
@@ -188,12 +188,12 @@ export class Output {
     }
 
 
-    protected get registry(): Registry {
-        return Container.getInstance().make<Registry>('console.registry');
+    protected get repository(): Repository {
+        return Container.getInstance().make<Repository>('console.repository');
     }
 
 
-    onParse(event:CliParseEvent) {
+    onParse(event: CliParseEvent) {
         if ( this.config.quietOption.enabled ) {
             this.addQuietOption(event.nodeConfig);
         }
@@ -203,20 +203,10 @@ export class Output {
     }
 
     protected addQuietOption(nodeConfig: i.NodeConfig) {
-        this.registry.addOption(prepareOption(
-            this.config.quietOption.keys,
-            nodeConfig, {
-                config: { global: true, desc: 'Disables printing to console' }
-            }
-        ))
+        addOption(this.config.quietOption.keys, { global: true, desc: 'Disables printing to console' }, nodeConfig)
     }
 
     protected addColorsOption(nodeConfig: i.NodeConfig) {
-        this.registry.addOption(prepareOption(
-            this.config.colorsOption.keys,
-            nodeConfig, {
-                config: { global: true, desc: 'Disable text colors' }
-            }
-        ))
+        addOption(this.config.colorsOption.keys, { global: true, desc: 'Disable text colors' }, nodeConfig)
     }
 }

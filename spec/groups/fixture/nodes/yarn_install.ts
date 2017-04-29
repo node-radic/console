@@ -53,11 +53,6 @@ export class YarnInstallCommand {
         let desc = this.desc.command(this.parsed)
         // this.out.dumpp(desc)
 
-        this.out.columns(desc, {
-            columnSplitter: '   ',
-            showHeaders   : false
-        })
-
         // this.out.success('ok');
 
         // this.in.ask('hello??').then((answer) => {

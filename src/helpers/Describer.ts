@@ -1,14 +1,13 @@
 import * as _ from "lodash";
 import { merge } from "lodash";
 import { Container, inject } from "../core/Container";
-import { interfaces as i} from "../interfaces";
+import { interfaces as i } from "../interfaces";
 import { helper } from "../decorators";
 import { Output } from "./Output";
-import { Registry } from "../core/Registry";
 import { kindOf } from "@radic/util";
 import { ParsedNode } from "../parser/ParsedNode";
-import { prepareOption } from "../utils";
 import { CliParseEvent } from "../core/Cli";
+import { addOption } from "../core/nodes";
 
 export type DescribedOptionsArray = Array<{ keys: string[], desc: string, type: string }>
 
@@ -50,10 +49,6 @@ export class Describer {
     config: any;
 
     constructor(@inject('console.helpers.output') protected out: Output) {
-    }
-
-    protected get registry(): Registry {
-        return Container.getInstance().make<Registry>('console.registry');
     }
 
     protected columns(data: any, options: i.OutputColumnsOptions = {}): string {
@@ -98,8 +93,8 @@ export class Describer {
     }
 
     command(command: ParsedNode<i.CommandNodeConfig>) {
-        let {local, global} = this.splitOptions(command.config.options)
-        let args          = this.arguments(command.config.arguments);
+        let { local, global } = this.splitOptions(command.config.options)
+        let args              = this.arguments(command.config.arguments);
         return `{bold}${command.config.name}{/bold}
 ${command.config.desc}
 
@@ -117,7 +112,7 @@ ${this.options(global)}`;
     }
 
     group(group: ParsedNode<i.GroupNodeConfig>) {
-        let {local, global} = this.splitOptions(group.config.options)
+        let { local, global } = this.splitOptions(group.config.options)
         return `{bold}${group.config.name}{/bold}
 ${group.config.desc}
 
@@ -148,12 +143,7 @@ ${this.options(global)}`;
     }
 
     protected addHelpOption(nodeConfig: i.NodeConfig) {
-        this.registry.addOption(prepareOption(
-            this.config.helpOption.keys,
-            nodeConfig, {
-                config: { global: true, desc: 'Show this text' }
-            }
-        ))
+        addOption(this.config.helpOption.keys, { global: true, desc: 'Show this text' }, nodeConfig)
     }
 
     protected handleHelpOption(node: ParsedNode<i.NodeConfig>) {

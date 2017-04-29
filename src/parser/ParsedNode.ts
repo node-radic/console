@@ -5,6 +5,7 @@ import { Registry } from "../core/Registry";
 import { Parser } from "./Parser";
 import { injectable } from "inversify";
 import { kindOf } from "@radic/util";
+import { Repository } from "../core/Repository";
 
 @injectable()
 export class ParsedNode<T extends i.NodeConfig> {
@@ -27,9 +28,9 @@ export class ParsedNode<T extends i.NodeConfig> {
 
     protected make(): i.Node<T> {
         const c             = this.config;
-        const registry      = Container.getInstance().make<Registry>('console.registry')
+        const repository      = Container.getInstance().make<Repository>('console.repository')
         const parser        = Container.getInstance().make<Parser>('console.parser')
-        let isRoot          = registry.root.cls === c.cls;
+        let isRoot          = repository.root.cls === c.cls;
         let node: i.Node<T> = Container.getInstance().build<i.Node<T>>(c.cls);
 
         let setters = {
@@ -52,11 +53,11 @@ export class ParsedNode<T extends i.NodeConfig> {
         this.getOptions().getKeys().forEach(key => addSetter(key, this.opt(key)))
 
         if ( ! isRoot ) {
-            let rootOptionsConfig: any = registry.root.instance.getOptions().getConfig();
+            let rootOptionsConfig: any = repository.root.instance.getOptions().getConfig();
             Object.keys(rootOptionsConfig).forEach(key => {
                 let config: i.OptionConfig = rootOptionsConfig[ key ];
                 if ( ! config.global ) return;
-                let opt = registry.root.instance.opt(key);
+                let opt = repository.root.instance.opt(key);
                 addSetter(key, opt)
                 if ( kindOf(config.alias) === 'array' ) (<string[]> config.alias).forEach(alias => addSetter(alias, opt));
                 else if ( kindOf(config.alias) === 'string' ) addSetter(<string> config.alias, opt);

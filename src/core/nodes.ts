@@ -1,6 +1,7 @@
 import { cloneDeep, merge } from "lodash";
 import { interfaces as i } from "../interfaces";
 import { bindTo } from "./Container";
+import { meta } from "../utils";
 
 // Single option declaration configuration for group configuration and command configuration
 export type OptionType = 'string' | 'boolean' | 'number'
@@ -60,3 +61,15 @@ export class Defaults implements i.NodesDefaults {
     getCommand(): i.CommandNodeConfig { return cloneDeep(command) }
 }
 
+export function addOption(keys: string[], optionConfig: i.OptionConfig, config: i.NodeConfig) {
+    let name: string    = keys.sort((a, b) => a.length - b.length).shift()
+    meta(config.cls).set('options', [
+        merge({
+            config: { name, keys },
+            key   : name
+        }, {
+            config: optionConfig
+        })
+    ].concat(meta(config.cls).get<any>('options', [])))
+
+}

@@ -3,9 +3,9 @@ import { IConfigProperty, kindOf } from "@radic/util";
 import { ParsedNode, Parser } from "../parser";
 import { interfaces as i } from "../interfaces";
 import config from "../config";
-import { Registry } from "./Registry";
 import { Resolver } from "./Resolver";
 import { Event, Events, HaltEvent } from "./Events";
+import { Repository } from "./Repository";
 export type CliMode = 'groups' | 'command';
 
 
@@ -24,24 +24,13 @@ export class CliParsedEvent extends Event {
 @singleton('console.cli')
 export class Cli {
 
-    static error(msg: string) {
-        if ( config.get('prettyError', true) ) {
-            // Cli.getInstance().out.error('An error occurred!').writeln(msg);
-            process.exit(1);
-        }
-        throw new Error(msg);
-    }
-
-    // public config: IConfigProperty
-
     protected parsedRootNode: ParsedNode<any>;
 
-    constructor(@inject('console.registry') private _registry: Registry,
+    constructor(@inject('console.repository') private _repository: Repository,
                 @inject('console.parser') private _parser: Parser,
                 @inject('console.resolver') private _resolver: Resolver,
                 @inject('console.events') private _events: Events,
                 @inject('console.config') public config: IConfigProperty) {
-        // this.config = config;
     }
 
     get mode(): CliMode {
@@ -54,6 +43,14 @@ export class Cli {
 
     static getInstance(): Cli {
         return Container.getInstance().make<Cli>('console.cli');
+    }
+
+    static error(msg: string) {
+        if ( config.get('prettyError', true) ) {
+            // Cli.getInstance().out.error('An error occurred!').writeln(msg);
+            process.exit(1);
+        }
+        throw new Error(msg);
     }
 
     /**
@@ -69,12 +66,12 @@ export class Cli {
         if ( kindOf(argv) === 'string' ) argv = (<string> argv).split(' ')
         argv = <string[]> argv || process.argv.slice(2);
 
-        if ( this.events.fire(new CliParseEvent(argv, this._registry.root)).halt ) return;
+        if ( this.events.fire(new CliParseEvent(argv, this._repository.root)).halt ) return;
 
-        let parsedRootNode = this._parser.parse(argv, this._registry.root);
+        let parsedRootNode = this._parser.parse(argv, this._repository.root);
 
         return this.parsedRootNode =
-            this._registry.root.instance =
+            this._repository.root.instance =
                 this.events.fire(new CliParsedEvent(parsedRootNode)).parsedRootNode;
     }
 
@@ -124,7 +121,8 @@ export class Cli {
             throw new Error('Cannot declare groups for the CLI when not using "groups" mode.');
         }
         config.name = name
-        return this._registry.addGroup(config);
+        config.type = 'group';
+        return this._repository.addNode(config);
     }
 
     command(name: string, config: i.CommandNodeConfig): i.CommandNodeConfig {
@@ -132,7 +130,9 @@ export class Cli {
             throw new Error('Cannot declare commands for the CLI when not using "groups" mode.');
         }
         config.name = name;
-        return this._registry.addCommand(config);
+        config.type = 'command';
+
+        return this._repository.addNode(config);
     }
 
     option(key: string, config: i.OptionConfig = {}): this {
@@ -142,11 +142,7 @@ export class Cli {
         else if ( config.type === 'string' ) type = String;
         else if ( config.type === 'number' ) type = Number;
 
-        this._registry.addOption({
-            cls: this._registry.rootCls,
-            type, key, config
-        })
-        //.root.options[ name ] = config;
+        this._repository.addOption(); // @todo
         return this;
     }
 
@@ -161,7 +157,8 @@ export class Cli {
         if ( this.config('mode') !== 'command' ) {
             throw new Error('Cannot declare arguments for the CLI when not using command mode.');
         }
-        this._registry.root.arguments[ name ] = config;
+
+        this._repository.root.arguments[ name ] = config;
         return this;
     }
 
@@ -173,7 +170,7 @@ export class Cli {
     }
 
     helper(name: string, config?: i.HelperOptionsConfig): this {
-        this._registry.enableHelper(name, config)
+        this._repository.enableHelper(name, config)
         return this;
     }
 

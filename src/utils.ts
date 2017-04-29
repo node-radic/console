@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import {interfaces as i} from './interfaces'
+import { interfaces as i } from "./interfaces";
 
 export class TypeOf<V, T> {
     constructor(private val: V) {}
@@ -25,12 +25,47 @@ export { collect }
 
 
 export function prepareOption(keys: string[], nodeConfig: i.NodeConfig, decoratedConfig: i.DecoratedConfig<i.OptionConfig>): i.DecoratedConfig<i.OptionConfig> {
-    let alias: string[] = keys;
-    let name: string    = alias.sort((a, b) => a.length - b.length).shift()
-    return _.merge({
-        type  : Boolean,
-        config: { name, alias },
-        key   : name,
-        cls   : nodeConfig.cls
-    }, decoratedConfig)
+
+}
+
+
+export function meta(obj: Object, prop?: string | symbol) {
+
+    function set(key: any, val?: any) {
+        if ( ! val ) {
+            Object.keys(key).forEach((k) => set(k, key[ k ]));
+        } else {
+            Reflect.defineMetadata(key, val, obj);
+        }
+        return meta(obj);
+    }
+
+    function has(key: any) {
+        return Reflect.hasMetadata(key, obj, prop)
+    }
+
+    function get<T>(key: any, def?: any): T {
+        return has(key) ? Reflect.getMetadata(key, obj, prop) : def;
+    }
+
+    return { set, has, get }
+
+}
+
+
+export function randomId(len: number = 15): string {
+    let text       = "";
+    const possible = "abcdefghijklmnopqrstuvwxyz";
+
+    for ( let i = 0; i < len; i ++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
+export function generateClass(){
+    let fn     = function () {}
+    let desc   = Object.getOwnPropertyDescriptor(fn, 'name');
+    desc.value = randomId()
+    Object.defineProperty(fn, 'name', desc);
 }

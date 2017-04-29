@@ -18,10 +18,6 @@ var YarnInstallCommand = (function () {
     }
     YarnInstallCommand.prototype.handle = function () {
         var desc = this.desc.command(this.parsed);
-        this.out.columns(desc, {
-            columnSplitter: '   ',
-            showHeaders: false
-        });
     };
     YarnInstallCommand.prototype.dumpStuff = function () {
         this.out.line('{green}THIS:{reset}');

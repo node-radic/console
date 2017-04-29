@@ -4,8 +4,7 @@ import { defined, IConfigProperty, kindOf } from "@radic/util";
 import { bindTo, inject } from "../core/Container";
 import { interfaces as i } from "../interfaces";
 import { ParsedNode } from "./ParsedNode";
-import { Registry } from "../core/Registry";
-import {ArgumentCollection ,OptionCollection }from "./InputCollections";
+import { ArgumentCollection, OptionCollection } from "./InputCollections";
 import { Cli } from "../core/Cli";
 
 @bindTo('console.parser')
@@ -13,8 +12,7 @@ export class Parser {
 
     argumentTypeTransformers: { [name: string]: i.ArgumentTypeTransformer };
 
-    constructor(@inject('console.config') protected config: IConfigProperty,
-                @inject('console.registry') protected registry: Registry) {
+    constructor(@inject('console.config') protected config: IConfigProperty) {
         this.argumentTypeTransformers = {
             boolean(val: any): boolean {
                 return val === 'true' || val === true || val === '1';
@@ -39,7 +37,8 @@ export class Parser {
 
 
     protected parseNode(argv: string[], config: i.NodeConfig | i.GroupNodeConfig | i.CommandNodeConfig): ParsedNode<i.GroupNodeConfig | i.CommandNodeConfig> {
-        let yargsOutput: i.ParserOutput     = parser.detailed(argv, this.transformOptions(config.options));
+        let transformedOptions              = this.transformOptions(config.options);
+        let yargsOutput: i.ParserOutput     = parser.detailed(argv, transformedOptions);
         let parsedOptions: OptionCollection = this.parseOptions(yargsOutput, config.options)
         let parsedArguments: ArgumentCollection;
 
