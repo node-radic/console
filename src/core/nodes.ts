@@ -62,7 +62,7 @@ export class Defaults implements i.NodesDefaults {
 }
 
 export function addOption(keys: string[], optionConfig: i.OptionConfig, config: i.NodeConfig) {
-    let name: string    = keys.sort((a, b) => a.length - b.length).shift()
+    let name: string    = cloneDeep(keys).sort((a, b) => a.length - b.length).shift()
     meta(config.cls).set('options', [
         merge({
             config: { name, keys },

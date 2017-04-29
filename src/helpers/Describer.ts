@@ -146,6 +146,7 @@ ${this.options(global)}`;
         addOption(this.config.helpOption.keys, { global: true, desc: 'Show this text' }, nodeConfig)
     }
 
+
     protected handleHelpOption(node: ParsedNode<i.NodeConfig>) {
         let output = '';
         if ( this.config.helpOption.enabled !== false && node.opt(this.config.helpOption.keys[ 0 ]) ) {
@@ -189,7 +190,7 @@ ${this.options(global)}`;
             toString : () => `{bold}Options:{/bold}
 ${this.columns(local)}
 
-{bold}Global options:{/bold}
+{bold.red}Global options:{/bold.red}
 ${this.columns(global)}`
         }
     }
