@@ -14,8 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var src_1 = require("../../../src");
 var Root = (function () {
-    function Root(cli, out) {
-        this.cli = cli;
+    function Root(out) {
         this.out = out;
     }
     Root.prototype.handle = function () {
@@ -33,10 +32,8 @@ __decorate([
 Root = __decorate([
     src_1.root(),
     src_1.group(),
-    __param(0, src_1.inject('console.cli')),
-    __param(1, src_1.inject('console.helpers.output')),
-    __metadata("design:paramtypes", [src_1.Cli,
-        src_1.Output])
+    __param(0, src_1.inject('console.helpers.output')),
+    __metadata("design:paramtypes", [src_1.Output])
 ], Root);
 exports.Root = Root;
 //# sourceMappingURL=root.js.map

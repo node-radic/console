@@ -1,8 +1,22 @@
-import { Cli } from "../../../src";
+import { Cli,CliHandledEvent,Resolver } from "../../../src";
 export * from './nodes'
 export * from './root'
 
+const startTime  = Date.now();
 export const cli = Cli.getInstance();
+
+cli.events.on('cli:handled', (event: CliHandledEvent) => {
+    const endTime = Date.now();
+    const resolver = cli.get<Resolver>('console.resolver');
+    let parents = resolver.parentsOf(event.parsedNode.getConfig())
+    let tree = resolver.getTree();
+    console.log(`
+start: ${startTime}
+end:   ${endTime}
+total: ${endTime - startTime}
+`)
+})
+
 cli
     .helpers('input') // .helpers('input', 'output')
     .helper('output', {
@@ -19,7 +33,6 @@ cli
             enabled: true //, keys: ['h', 'help']
         }
     })
-
 
 
 export default function start() {

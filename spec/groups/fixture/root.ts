@@ -1,4 +1,4 @@
-import { Cli, group, inject, Output, root, global, option } from "../../../src";
+import { group, inject, option, Output, root } from "../../../src";
 
 
 @root()
@@ -8,8 +8,7 @@ export class Root {
     @option('Show version', 'V')
     version: boolean
 
-    constructor(@inject('console.cli') private cli: Cli,
-                @inject('console.helpers.output') private out: Output) {
+    constructor(@inject('console.helpers.output') private out: Output) {
 
     }
 

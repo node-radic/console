@@ -57,7 +57,7 @@ export class Describer {
     }
 
     /** @decorator */
-    static example(str: string): ClassDecorator {
+    static usage(str: string): ClassDecorator {
         return (cls) => {
             meta(cls).set('describer.example', str)
         }
@@ -113,8 +113,8 @@ export class Describer {
     command(command: ParsedNode<i.CommandNodeConfig>) {
         let output: string    = `{bold}${command.config.name}{/bold}\n${command.config.desc}`;
         let { local, global } = this.splitOptions(command.config.options)
-        if ( local.length ) output += `{bold}Options{/bold}\n${this.options(local)}`
-        if ( global.length ) output += `{bold}Global options:{/bold}\n${this.options(global)}`;
+        if ( local.length ) output += `\n\n{bold}Options{/bold}\n${this.options(local)}`
+        if ( global.length ) output += `\n\n{bold}Global options:{/bold}\n${this.options(global)}`;
 
         let args = this.arguments(command.config.arguments);
         return output;
@@ -124,8 +124,7 @@ export class Describer {
     group(group: ParsedNode<i.GroupNodeConfig>) {
         let output: string    = `{bold}${group.config.name}{/bold}\n${group.config.desc}`;
 
-
-        let commands = this.columns(_.filter(this.repository.nodes, { group: '' }), { columns: [ 'name', 'desc' ] })
+        let commands = this.columns(_.filter(this.repository.nodes, { group: group.config.cls }), { columns: [ 'name', 'desc' ] })
         if ( commands.length ) output += `\n\n{bold}Commands:{/bold}\n${commands}`;
 
         let { local, global } = this.splitOptions(group.config.options)

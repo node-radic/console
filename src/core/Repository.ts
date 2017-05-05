@@ -1,7 +1,7 @@
 import { interfaces as i } from "../interfaces";
 import { Container, inject, singleton } from "./Container";
 import { meta } from "../utils";
-import { IConfigProperty, kindOf } from "@radic/util";
+import { defined, IConfigProperty, kindOf } from "@radic/util";
 import * as _ from "lodash";
 import { cloneDeep, defaults, merge } from "lodash";
 import { Defaults } from "./nodes";
@@ -40,6 +40,7 @@ export class Repository {
             }
         }
         defaults(config, config.type === 'command' ? this._defaults.getCommand() : this._defaults.getGroup())
+        if(!config.group && defined(this.root)) config.group = this.root.cls;
         this.nodes.push(config);
         return config;
     }

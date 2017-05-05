@@ -29,6 +29,16 @@ export class CliParsedResolvedEvent extends Event {
         super('cli:parsed:resolved');
     }
 }
+export class CliHandleEvent extends HaltEvent {
+    constructor(public parsedNode: ParsedNode<i.NodeConfig>) {
+        super('cli:handle')
+    }
+}
+export class CliHandledEvent extends Event {
+    constructor(public parsedNode: ParsedNode<i.NodeConfig>) {
+        super('cli:handled')
+    }
+}
 
 @singleton('console.cli')
 export class Cli {
@@ -114,15 +124,16 @@ export class Cli {
     }
 
     handle(parsedNode: ParsedNode<i.GroupNodeConfig | i.CommandNodeConfig> | boolean): boolean {
-        if ( ! parsedNode ) parsedNode = this.parsedRootNode;
-        const nodeInstance = (<ParsedNode<i.GroupNodeConfig | i.CommandNodeConfig>> parsedNode).getNodeInstance();
+        if ( ! parsedNode ) parsedNode = this.parsedRootNode
+        let nodeInstance = (<ParsedNode<i.GroupNodeConfig | i.CommandNodeConfig>> parsedNode).getNodeInstance();
+        const event = new CliHandleEvent(<ParsedNode<i.NodeConfig>> parsedNode);
         if ( kindOf(nodeInstance[ 'handle' ]) === 'function' ) {
-            this.events.emit('cli:handle', parsedNode)
-            nodeInstance[ 'handle' ].apply(nodeInstance);
-            this.events.emit('cli:handled', parsedNode);
-            return true;
+            if ( this.events.fire(event).halt ) return false;
+            nodeInstance = event.parsedNode.getNodeInstance();
+            nodeInstance[ 'handle' ].apply(event.parsedNode.getNodeInstance());
         }
-        return false;
+        this.events.fire(new CliHandledEvent(<ParsedNode<i.NodeConfig>> parsedNode))
+        return true;
     }
 
     group(name: string, config: i.GroupNodeConfig = {}): i.GroupNodeConfig {
