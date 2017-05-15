@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { kindOf, KindOf } from "@radic/util";
 import { merge } from "lodash";
 import { cli } from "./Cli";
-import { CommandConfig, OptionConfig } from "./interfaces";
+import { CommandConfig, HelperOptions, OptionConfig } from "./interfaces";
 const callsites = require('callsites');
 
 
@@ -41,7 +41,6 @@ function getCommandConfig<T extends CommandConfig>(cls: Function, args: any[] = 
 
     return config;
 }
-
 function handleCommand(args: any[], cls?: Function) {
 
     if ( kindOf(args[ 0 ]) === 'function' ) {
@@ -59,8 +58,6 @@ function handleCommand(args: any[], cls?: Function) {
         cli.parse(config);
     }
 }
-
-
 export function command(cls: Function)
 export function command(config: CommandConfig): ClassDecorator
 export function command(name: string, config?: CommandConfig): ClassDecorator
@@ -118,5 +115,25 @@ export function option(...args: any[]): PropertyDecorator {
         options.push(config);
         set('options', options, cls);
         console.log('options', config, cls);
+    }
+}
+
+
+function makeNodeConfig<T extends HelperOptions>(cls: any, args: any[]): T {
+    let len       = args.length
+    let argt      = args.map(arg => kindOf(arg));
+    let config: T = <any> { cls };
+    if ( len > 0 && argt[ 0 ] === 'string' ) config.name = args[ 0 ];
+
+    // config is ALWAYS last parameter, so we can do it like this
+    if ( len > 0 && argt[ len - 1 ] === 'object' ) merge(config, args[ len - 1 ]);
+    return config;
+}
+export function helper(name: string): ClassDecorator;
+export function helper(options: HelperOptions): ClassDecorator;
+export function helper(name: string, options: HelperOptions): ClassDecorator;
+export function helper(...args: any[]): ClassDecorator {
+    return (cls) => {
+        cli.addHelper(makeNodeConfig(cls, args));
     }
 }

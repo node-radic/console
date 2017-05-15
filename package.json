@@ -2,7 +2,7 @@
     "name": "@radic/console",
     "version": "0.0.5",
     "description": "Console ",
-    "main": "radic.console.js",
+    "main": "src/index.js",
     "typings": "lib/index.d.ts",
     "jsnext:main": "lib/index.js",
     "author": "Robin Radic",

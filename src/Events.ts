@@ -1,6 +1,7 @@
-import { EventEmitter2 } from "eventemitter2";
+import { ConstructorOptions, EventEmitter2 } from "eventemitter2";
 import { container, singleton } from "./Container";
 import { defined } from "@radic/util";
+import * as _ from "lodash";
 
 container.ensureInjectable(EventEmitter2);
 
@@ -15,13 +16,13 @@ export abstract class HaltEvent extends Event {
 
 @singleton('cli.events')
 export class Events extends EventEmitter2 {
-    constructor() {
-        super({
+    constructor(conf:ConstructorOptions = {}) {
+        super(_.merge({
             wildcard    : true,
             delimiter   : ':',
             newListener : true,
             maxListeners: 200,
-        })
+        }, conf))
     }
 
     fire<T extends Event>(ctx: T): T

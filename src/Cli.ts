@@ -1,23 +1,28 @@
 import { kindOf } from "@radic/util";
-import { container, singleton } from "./Container";
-const parser = require('yargs-parser')
-import { CommandConfig, ICli, OptionConfig } from "./interfaces";
+import { container, inject, singleton } from "./Container";
+import { CommandConfig, HelperOptions, HelperOptionsConfig, OptionConfig } from "./interfaces";
 import { basename, dirname, join } from "path";
 import { ChildProcess, spawn } from "child_process";
 import { existsSync } from "fs";
 import { YargsParserArgv, YargsParserOptions } from "../types/yargs-parser";
 import * as _ from "lodash";
 import { Events } from "./Events";
-const get = Reflect.getMetadata
+import { ConfigProperty, config } from "./config";
+const parser = require('yargs-parser')
+const get    = Reflect.getMetadata
+
 
 @singleton('cli')
-export class Cli implements ICli {
+export class Cli {
+    protected _helpers: { [name: string]: HelperOptions } = {}
     protected runningCommand: ChildProcess;
-    protected globalOptions: OptionConfig[] = [];
+    protected globalOptions: OptionConfig[]               = [];
 
     public get events(): Events {
         return container.get<Events>('cli.events')
     }
+
+    public readonly config: ConfigProperty = config ;
 
     public parse(config: CommandConfig): this {
         let args: string[] = config.argv;
@@ -55,29 +60,6 @@ export class Cli implements ICli {
             console.log('WE ARE THERERERE')
             this.executeCommand(config);
         }
-        return this;
-    }
-
-    public global(key: string, config: OptionConfig): this
-    public global(config: OptionConfig): this
-    public global(...args: any[]): this {
-        let config: OptionConfig;
-        if ( args.length === 1 ) {
-            config = args[ 0 ];
-        } else if ( args.length === 2 ) {
-            config     = args[ 1 ];
-            config.key = args[ 0 ];
-        }
-        this.globalOptions.push(config);
-        return this;
-    }
-
-    public globals(configs: OptionConfig[] | { [key: string]: OptionConfig }): this {
-        if ( kindOf(configs) === 'object' ) {
-            Object.keys(configs).forEach(key => this.global(key, configs[ key ]))
-            return this;
-        }
-        (<OptionConfig[]> configs).forEach(config => this.global(config));
         return this;
     }
 
@@ -151,5 +133,94 @@ export class Cli implements ICli {
         })
         return options;
     }
+
+
+    public global(key: string, config: OptionConfig): this
+    public global(config: OptionConfig): this
+    public global(...args: any[]): this {
+        let config: OptionConfig;
+        if ( args.length === 1 ) {
+            config = args[ 0 ];
+        } else if ( args.length === 2 ) {
+            config     = args[ 1 ];
+            config.key = args[ 0 ];
+        }
+        this.globalOptions.push(config);
+        return this;
+    }
+
+    public globals(configs: OptionConfig[] | { [key: string]: OptionConfig }): this {
+        if ( kindOf(configs) === 'object' ) {
+            Object.keys(configs).forEach(key => this.global(key, configs[ key ]))
+            return this;
+        }
+        (<OptionConfig[]> configs).forEach(config => this.global(config));
+        return this;
+    }
+
+    public helper(name: string, config?: HelperOptionsConfig): this {
+        this.enableHelper(name, config)
+        return this;
+    }
+
+    public helpers(...names: string[]): this {
+        names.forEach(name => this.helper(name));
+        return this
+    }
+
+    public addHelper<T>(options: HelperOptions): HelperOptions {
+        // merge default options
+        const defaults = {
+            name     : null,
+            cls      : null,
+            singleton: false,
+            enabled  : false,
+            listeners: {},
+            configKey: 'config',
+            config   : {},
+            bindings : {}
+        }
+        options        = _.merge({}, defaults, options);
+
+        // set the helper config in the global config, so it can be overridden
+        this.config.set('helpers.' + options.name, options.config);
+        this._helpers[ options.name ] = options;
+
+        return options;
+    }
+
+    /** some helpers can/need to be enabled before usage **/
+    public enableHelper(name: string, customConfig: HelperOptionsConfig = {}) {
+        let options = this._helpers[ name ];
+        this.config.merge('helpers.' + options.name, customConfig);
+
+        // bind the helper into the container, if needed as singleton
+        let bindingName = 'console.helpers.' + options.name;
+        container.ensureInjectable(options.cls);
+        let binding = container.bind(bindingName).to(options.cls);
+        if ( options.singleton ) {
+            binding.inSingletonScope();
+        }
+
+        // when resolving, get the (possibly overridden) config and add it to the helper
+        binding.onActivation((ctx: any, helperClass: Function): any => {
+            helperClass[ options.configKey ] = this.config('helpers.' + options.name);
+            return helperClass;
+        })
+
+        let instance;
+        // add the event listeners and bind them to the given function names
+        Object.keys(options.listeners).forEach(eventName => {
+            let fnName = options.listeners[ eventName ];
+
+            this.events.on(eventName, (...args: any[]) => {
+                instance = instance || container.make(bindingName);
+                if ( kindOf(instance[ fnName ]) === 'function' ) {
+                    instance[ fnName ].apply(instance, args);
+                }
+            })
+        })
+
+    }
 }
-export const cli:Cli = container.get<Cli>('cli')
+export const cli: Cli = container.get<Cli>('cli')
