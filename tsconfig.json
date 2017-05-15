@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "removeComments": true,
+        "noLib": false,
+        "noImplicitAny": false,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "sourceMap": true,
+        "module": "commonjs",
+        "skipLibCheck": true,
+        "moduleResolution": "node",
+        "target": "es5",
+        "lib": ["es2017", "es2017.object"],
+        "noResolve": false,
+        "typeRoots": [
+            "./node_modules/@types",
+            "./types"
+        ]
+    },
+    "include": [
+        "./src",
+        "./spec",
+        "./bin",
+        "./types"
+    ]
+}

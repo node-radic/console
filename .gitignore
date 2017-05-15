@@ -1,0 +1,13 @@
+yarn-error.log
+npm-debug.log
+/node_modules
+/*.js
+/.idea
+src/**/*.js
+src/**/*.js.map
+/lib
+.publish
+/docs
+/console.iml
+/bin
+/gulpfile.js
