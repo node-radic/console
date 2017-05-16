@@ -1,16 +1,37 @@
 import { kindOf } from "@radic/util";
 import { container, inject, singleton } from "./Container";
-import { CommandConfig, HelperOptions, HelperOptionsConfig, OptionConfig } from "./interfaces";
+import { CommandConfig, HelperOptions, HelperOptionsConfig, OptionConfig } from "../interfaces";
 import { basename, dirname, join } from "path";
 import { ChildProcess, spawn } from "child_process";
 import { existsSync } from "fs";
-import { YargsParserArgv, YargsParserOptions } from "../types/yargs-parser";
+import { YargsParserArgv, YargsParserOptions } from "../../types/yargs-parser";
 import * as _ from "lodash";
-import { Events } from "./Events";
-import { ConfigProperty, config } from "./config";
+import { Events, HaltEvent } from "./Events";
+import { config, ConfigProperty } from "./config";
+import { LoggerInstance } from "winston";
 const parser = require('yargs-parser')
 const get    = Reflect.getMetadata
 
+export class CliParseEvent extends HaltEvent {
+    constructor(public config: CommandConfig, public globals: OptionConfig[]) {
+        super('cli:parse')
+    }
+}
+export class CliParsedEvent extends HaltEvent {
+    constructor(public config: CommandConfig, public argv: YargsParserArgv, public globals: OptionConfig[]) {
+        super('cli:parsed')
+    }
+}
+export class CliSpawnEvent extends HaltEvent {
+    constructor(public args: string[], public file: string, public proc: ChildProcess) {
+        super('cli:spawn')
+    }
+}
+export class CliExecuteCommandEvent extends HaltEvent {
+    constructor(public argv: YargsParserArgv, public options: OptionConfig[]) {
+        super('cli:execute')
+    }
+}
 
 @singleton('cli')
 export class Cli {
@@ -18,16 +39,25 @@ export class Cli {
     protected runningCommand: ChildProcess;
     protected globalOptions: OptionConfig[]               = [];
 
-    public get events(): Events {
-        return container.get<Events>('cli.events')
-    }
+    @inject('cli.events')
+    public events: Events;
 
-    public readonly config: ConfigProperty = config ;
+    @inject('cli.log')
+    protected log: LoggerInstance;
+
+    // public get events(): Events {
+    //     return container.make<Events>('cli.events')
+    // }
+
+    public readonly config: ConfigProperty = config;
 
     public parse(config: CommandConfig): this {
-        let args: string[] = config.argv;
-        let result         = parser(config.args);
+        this.events.fire(new CliParseEvent(config, this.globalOptions))
 
+        let transformedOptions = this.transformOptions( this.globalOptions);
+        let result               = parser(config.args, transformedOptions) as YargsParserArgv;
+
+        this.events.fire(new CliParsedEvent(config, result, this.globalOptions))
         if ( result._.length > 0 ) {
             if ( config.subCommands.length > 0 ) {
                 if ( config.subCommands.includes(result._[ 0 ]) ) {
@@ -38,7 +68,8 @@ export class Cli {
                     if ( existsSync(file) ) {
                         config.args.shift();
                         config.args.unshift(file)
-                        let proc = spawn('node', [].concat(config.args), { stdio: 'inherit' });
+                        let proc: ChildProcess = spawn('node', [].concat(config.args), { stdio: 'inherit' });
+                        this.events.fire(new CliSpawnEvent(config.args, file, proc))
                         proc.on('close', process.exit.bind(process));
                         proc.on('error', function (err) {
                             if ( err[ 'code' ] == "ENOENT" ) {
@@ -57,18 +88,20 @@ export class Cli {
         }
 
         if ( ! this.runningCommand ) {
-            console.log('WE ARE THERERERE')
+            this.log.debug('WE ARE THERERERE')
             this.executeCommand(config);
         }
         return this;
     }
 
     protected executeCommand(config: CommandConfig) {
-        let optionConfigs: OptionConfig[] = get('options', config.cls.prototype);
+        let optionConfigs: OptionConfig[] = get('options', config.cls.prototype) || [];
         optionConfigs.push.apply(optionConfigs, this.globalOptions);
         let transformedOptions = this.transformOptions(optionConfigs);
         let argv               = parser(config.args, transformedOptions) as YargsParserArgv;
 
+
+        this.events.fire(new CliExecuteCommandEvent(argv, optionConfigs))
 
         if ( kindOf(config.action) === 'function' ) {
             config.cls.prototype[ 'handle' ] = config.action
@@ -83,7 +116,7 @@ export class Cli {
         instance[ 'handle' ].apply(instance, argv._);
 
 
-        console.log({ optionConfigs })
+        this.log.silly('options', { optionConfigs })
     }
 
     /** transforms my option structure to the yargs-parser option structure */
@@ -195,7 +228,7 @@ export class Cli {
         this.config.merge('helpers.' + options.name, customConfig);
 
         // bind the helper into the container, if needed as singleton
-        let bindingName = 'console.helpers.' + options.name;
+        let bindingName = 'cli.helpers.' + options.name;
         container.ensureInjectable(options.cls);
         let binding = container.bind(bindingName).to(options.cls);
         if ( options.singleton ) {

@@ -1,14 +1,16 @@
 import "reflect-metadata";
 import { kindOf, KindOf } from "@radic/util";
 import { merge } from "lodash";
-import { cli } from "./Cli";
+import { cli } from "./core/Cli";
 import { CommandConfig, HelperOptions, OptionConfig } from "./interfaces";
+import { container } from "./core/Container";
+import { LoggerInstance } from "./core/log";
 const callsites = require('callsites');
 
 
-const get = Reflect.getMetadata;
-const set = Reflect.defineMetadata;
-
+const get                 = Reflect.getMetadata;
+const set                 = Reflect.defineMetadata;
+const log: LoggerInstance = container.make<LoggerInstance>('cli.log')
 
 function getCommandConfig<T extends CommandConfig>(cls: Function, args: any[] = []): T {
     const argt = args.map(kindOf),
@@ -47,14 +49,14 @@ function handleCommand(args: any[], cls?: Function) {
         let cls    = args[ 0 ];
         let config = getCommandConfig<CommandConfig>(cls)
         set('command', config, cls);
-        console.log('command', cls);
+        log.silly('command', cls);
         cli.parse(config);
         return;
     }
     return (cls) => {
         let config = getCommandConfig<CommandConfig>(cls, args)
         set('command', config, cls);
-        console.log('command', config, cls);
+        log.silly('command', config, cls);
         cli.parse(config);
     }
 }
@@ -114,7 +116,7 @@ export function option(...args: any[]): PropertyDecorator {
         const options = get('options', cls) || [];
         options.push(config);
         set('options', options, cls);
-        console.log('options', config, cls);
+        log.silly('options', config, cls);
     }
 }
 

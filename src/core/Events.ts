@@ -1,9 +1,17 @@
 import { ConstructorOptions, EventEmitter2 } from "eventemitter2";
-import { container, singleton } from "./Container";
+import { container, inject, singleton } from "./Container";
 import { defined } from "@radic/util";
-import * as _ from "lodash";
+import { LoggerInstance } from "winston";
 
 container.ensureInjectable(EventEmitter2);
+
+container.bind('cli.events.config').toConstantValue({
+    wildcard    : true,
+    delimiter   : ':',
+    newListener : true,
+    maxListeners: 200,
+
+})
 
 export abstract class Event {
     constructor(public event: string | string[] = undefined) {}
@@ -16,13 +24,11 @@ export abstract class HaltEvent extends Event {
 
 @singleton('cli.events')
 export class Events extends EventEmitter2 {
-    constructor(conf:ConstructorOptions = {}) {
-        super(_.merge({
-            wildcard    : true,
-            delimiter   : ':',
-            newListener : true,
-            maxListeners: 200,
-        }, conf))
+    @inject('cli.log')
+    protected log: LoggerInstance;
+
+    constructor(@inject('cli.events.config') conf: ConstructorOptions) {
+        super(conf)
     }
 
     fire<T extends Event>(ctx: T): T
@@ -34,8 +40,18 @@ export class Events extends EventEmitter2 {
         if ( args.length === 2 ) event = args[ 0 ];
         if ( event === undefined ) event = ctx.event;
 
+        this.log.silly('firing event: ' + event, { ctx })
         super.emit(event, ctx);
+        if ( ctx instanceof HaltEvent ) {
+            if ( ctx.halt ) {
+                this.halt<typeof ctx>(event, ctx);
+            }
+        }
         return ctx;
+    }
+
+    halt<T extends HaltEvent>(event: string | string[], ctx: T) {
+        process.exit()
     }
 
     dispatch(name, ...args: any[]): Promise<boolean> {

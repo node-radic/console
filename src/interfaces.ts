@@ -12,6 +12,7 @@ export interface CommandConfig {
 }
 
 export interface OptionConfig {
+
     transformer?: Function;
     arguments?: number;
     count?: boolean;

@@ -9,31 +9,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var src_1 = require("../../../src");
-src_1.cli.globals({
-    v: {
-        count: true,
-        name: 'verbose',
-        description: 'Extra verbose output'
+var axios_1 = require("axios");
+var _ = require("lodash");
+var src_1 = require("../../src");
+var Rest = (function () {
+    function Rest(options) {
+        this.options = _.merge({
+            baseUrl: '',
+            timeout: 1000,
+            headers: {}
+        }, options);
+        this.axios = axios_1.default.create({});
+        this.axios.get('');
     }
-});
-var RCliCmd = (function () {
-    function RCliCmd() {
-        this.force = false;
-    }
-    RCliCmd.prototype.handle = function () {
-        console.log("THIS IS" + (this.force ? '' : ' NOT') + " FORCED");
-    };
-    return RCliCmd;
+    return Rest;
 }());
-__decorate([
-    src_1.option('f', 'forces execution, even when its shouldnt'),
-    __metadata("design:type", Boolean)
-], RCliCmd.prototype, "force", void 0);
-RCliCmd = __decorate([
-    src_1.command({
-        subCommands: ['con']
-    })
-], RCliCmd);
-exports.RCliCmd = RCliCmd;
-//# sourceMappingURL=rcli.js.map
+Rest = __decorate([
+    src_1.helper('rest', {
+        config: {}
+    }),
+    __metadata("design:paramtypes", [Object])
+], Rest);
+exports.Rest = Rest;
+//# sourceMappingURL=helpers.rest.js.map

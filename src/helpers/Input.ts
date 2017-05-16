@@ -1,4 +1,4 @@
-import { inject } from "../Container";
+import { inject } from "../core/Container";
 import { helper } from "../decorators";
 import * as inquirer from "inquirer";
 

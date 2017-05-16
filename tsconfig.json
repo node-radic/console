@@ -21,6 +21,7 @@
         "./src",
         "./spec",
         "./bin",
-        "./types"
+        "./types",
+        "./rcli"
     ]
 }

@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -7,16 +6,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var src_1 = require("../../../src");
-var RCliConCmd = (function () {
-    function RCliConCmd() {
+var console_1 = require("@radic/console");
+var Git = (function () {
+    function Git() {
     }
-    RCliConCmd.prototype.handle = function () {
-    };
-    return RCliConCmd;
+    return Git;
 }());
-RCliConCmd = __decorate([
-    src_1.command('con', 'Manage connections', ['list', 'set', 'get'])
-], RCliConCmd);
-exports.RCliConCmd = RCliConCmd;
-//# sourceMappingURL=rcli-con.js.map
+Git = __decorate([
+    console_1.helper('git', {})
+], Git);
+exports.Git = Git;
+//# sourceMappingURL=helper.git.js.map

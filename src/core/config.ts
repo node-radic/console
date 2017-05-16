@@ -1,6 +1,6 @@
 import { Config, IConfigProperty } from "@radic/util";
 import { container } from "./Container";
-import { CliConfig } from "./interfaces";
+import { CliConfig } from "../interfaces";
 const defaultConfig: CliConfig | any = {
     mode        : "groups",
     autoExecute : true,
