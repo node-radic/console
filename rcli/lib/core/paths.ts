@@ -22,4 +22,4 @@ export const paths: any = {
     backups          : j(home, '.r', 'backups'),
     dbBackups        : j(home, '.r', 'backups', 'db')
 };
-container.bind('r.paths').toConstantValue(paths);
+container.bind('paths').toConstantValue(paths);

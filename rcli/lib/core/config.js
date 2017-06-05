@@ -18,6 +18,7 @@ var dotenv = require("dotenv");
 var keys_1 = require("./keys");
 var paths_1 = require("./paths");
 var fs_1 = require("fs");
+var Container_1 = require("../../../src/core/Container");
 var defaultConfig = {
     debug: true,
     env: {},
@@ -124,4 +125,5 @@ exports.CommandoPersistentConfig = CommandoPersistentConfig;
 var _config = new CommandoPersistentConfig(defaultConfig);
 var config = util_1.Config.makeProperty(_config);
 exports.config = config;
+Container_1.container.constant('config', config);
 //# sourceMappingURL=config.js.map

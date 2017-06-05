@@ -1,15 +1,14 @@
 import { kindOf } from "@radic/util";
 import { container, lazyInject } from "./Container";
 import { CommandConfig, HelperOptions, HelperOptionsConfig, OptionConfig } from "../interfaces";
-import { basename, dirname, join, sep } from "path";
 import { ChildProcess, fork, spawn } from "child_process";
-import { existsSync, statSync } from "fs";
-import { YargsParserArgv, YargsParserOptions } from "../../types/yargs-parser";
+import { YargsParserArgv } from "../../types/yargs-parser";
 import * as _ from "lodash";
 import { Events, HaltEvent } from "./Events";
 import { Log, log } from "./log";
 import { Config } from "./config";
-import { transformOptions } from "../utils";
+import { findSubCommandFilePath, transformOptions } from "../utils";
+import { resolve } from "path";
 const parser = require('yargs-parser')
 const get    = Reflect.getMetadata
 declare var v8debug;
@@ -61,13 +60,18 @@ export class CliExecuteCommandHandledEvent<T = any> extends HaltEvent {
 
 export class Cli {
     protected _helpers: { [name: string]: HelperOptions } = {}
-    protected runningCommand: ChildProcess;
+    protected _runningCommand: ChildProcess | CommandConfig;
+    protected _requiredCommands: any[]                    = []
     protected globalOptions: OptionConfig[]               = [];
 
     protected _mode = 'require';
 
     public mode(mode: string) {
         this._mode = mode;
+    }
+
+    public get runningCommand(): CommandConfig {
+        return <CommandConfig> this._runningCommand;
     }
 
 
@@ -84,6 +88,11 @@ export class Cli {
     //     return container.make<Events>('cli.events')
     // }
 
+    public start(requirePath: string) {
+        requirePath = resolve(requirePath);
+        this._requiredCommands.push(requirePath.endsWith('.js') ? requirePath : requirePath + '.js');
+        require(requirePath)
+    }
 
     public parse(config: CommandConfig): this {
 
@@ -99,7 +108,9 @@ export class Cli {
             config.subCommands.length > 0 &&
             config.subCommands.includes(result._[ 0 ]) ) {
 
-            let filePath = this.findSubCommandFilePath(result._[ 0 ], config.filePath)
+            let filePath = findSubCommandFilePath(result._[ 0 ], config.filePath)
+            this._requiredCommands.push(filePath);
+
 
             if ( this._mode === 'spawn' ) {
                 return this.handleSpawn(filePath, config);
@@ -112,45 +123,13 @@ export class Cli {
 
         // for spawn mode, we'd check if there's no running command which means this is the actual command to execute
         // for require mode, the if statement will always pass
-        if ( ! this.runningCommand ) {
+        if ( ! this._runningCommand ) {
             this.log.debug('WE ARE THERERERE')
+            this._runningCommand = config;
             this.executeCommand(config);
         }
 
         return this;
-    }
-
-    protected findSubCommandFilePath(subCommand, filePath): string {
-        let dirName  = dirname(filePath);
-        let baseName = basename(filePath, '.js');
-        // various locations to search for the sub-command file
-        // this can, and "maby" should have a couple of more variations
-        let locations     = [
-            join(dirName, baseName + '-' + subCommand + '.js'),
-            join(dirName, baseName + '.' + subCommand + '.js'),
-            join(dirName, baseName + '_' + subCommand + '.js'),
-            join(dirName, baseName + sep + subCommand + '.js')
-        ]
-        let foundFilePath = null;
-        locations.forEach(location => {
-            if ( foundFilePath ) return;
-            if ( existsSync(location) ) {
-                let stat = statSync(location);
-                if ( stat.isSymbolicLink() ) {
-                    this.log.notice('Trying to access symlinked command. Not sure if it\'l work')
-                    foundFilePath = location
-                }
-                if ( stat.isFile() ) {
-                    foundFilePath = location
-                }
-            }
-        })
-
-        if ( null === foundFilePath ) {
-            throw new Error(`Could not find sub-command [${subCommand}] for parent file [${filePath}]`);
-        }
-
-        return foundFilePath;
     }
 
     protected handleRequire(filePath: string, config: CommandConfig): this {
@@ -158,6 +137,8 @@ export class Cli {
         process.argv.splice(0, 1);
 
         const module = require(filePath);
+
+        // this._requiredCommands.push(module);
 
         return this;
     }
@@ -187,7 +168,7 @@ export class Cli {
         });
 
         // Store the reference to the child process
-        this.runningCommand = proc;
+        this._runningCommand = proc;
 
         return this;
     }
@@ -198,15 +179,15 @@ export class Cli {
 
         let optionConfigs: OptionConfig[] = get('options', config.cls.prototype) || [];
 
+        // Parse
         this.events.fire(new CliExecuteCommandParseEvent(config, optionConfigs))
 
-        optionConfigs.push.apply(optionConfigs, this.globalOptions);
-        let transformedOptions = transformOptions(optionConfigs);
+        let transformedOptions = transformOptions(optionConfigs.concat(this.globalOptions));
         let argv               = parser(config.args, transformedOptions) as YargsParserArgv;
-
 
         this.events.fire(new CliExecuteCommandParsedEvent(argv, config, optionConfigs))
 
+        // Create
         if ( kindOf(config.action) === 'function' ) {
             config.cls.prototype[ 'handle' ] = config.action
         }
@@ -217,15 +198,46 @@ export class Cli {
             instance[ argName ] = argv[ argName ];
         })
 
+        let requireArgument;
+        let args = {};
+        config.arguments.forEach(arg => {
+            let val = argv._[ arg.position ];
+            if ( ! val && arg.required && ! requireArgument ) {
+                requireArgument = `Required argument <${arg.name}> not set`;
+            }
+            if ( arg.variadic ) {
+                if ( ! args[ arg.name ] ) {
+                    args[ arg.name ] = [ val ];
+                } else {
+                    args[ arg.name ].push(val)
+                }
+            } else {
+                args[ arg.name ] = val;
+            }
+            if ( arg.alias ) {
+                args[ arg.alias ] = args[ arg.name ];
+            }
+        })
 
+
+        // Handle
         this.events.fire(new CliExecuteCommandHandleEvent(instance, argv, config, optionConfigs))
 
-        const result: any = instance[ 'handle' ].apply(instance, argv._);
+        if ( requireArgument ) {
+            this.fail(requireArgument);
+        }
+
+        const result: any = instance[ 'handle' ].apply(instance, [ args, argv._ ]);
 
         this.events.fire(new CliExecuteCommandHandledEvent(result, instance, argv, config, optionConfigs))
 
+    }
 
-        this.log.silly('options', { optionConfigs })
+    public fail(msg?: string) {
+        if ( msg ) {
+            this.log.error(msg);
+        }
+        process.exit(1);
     }
 
     public global(key: string, config: OptionConfig): this
@@ -238,6 +250,7 @@ export class Cli {
             config     = args[ 1 ];
             config.key = args[ 0 ];
         }
+        this.globalOptions.push(config);
         let globalOptions: OptionConfig[] = this.config.get<OptionConfig[]>('globalOptions');
         globalOptions.push(config);
         this.config.set('globalOptions', globalOptions);

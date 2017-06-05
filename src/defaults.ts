@@ -42,6 +42,7 @@ export const defaults = {
             description: '',
             example    : null,
             action     : 'handle',
+            arguments  : [],
             subCommands: [],
             // argv       : process.argv,
             args       : process.argv.slice(2),

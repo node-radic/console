@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { kindOf, KindOf } from "@radic/util";
-import { merge } from "lodash";
-import { CommandConfig, HelperOptions, OptionConfig } from "./interfaces";
+import { kebabCase, merge } from "lodash";
+import { CommandArgumentConfig, CommandConfig, HelperOptions, OptionConfig } from "./interfaces";
 import { Cli, container } from "./core";
 import { defaults } from "./defaults";
 const callsites = require('callsites');
@@ -29,6 +29,41 @@ function getCommandConfig<T extends CommandConfig>(cls: Function, args: any[] = 
     if ( len > 2 && argt[ 2 ] === 'array' ) config.subCommands = args[ 2 ]
 
     if ( argt[ len - 1 ] === 'object' ) merge(config, args[ len - 1 ])
+
+    let exp = /[{\[](.*?)[}\]]/g;
+    if ( exp.test(config.name) ) {
+        config.arguments = config.name.match(exp).map((match, index) => {
+            let arg = <CommandArgumentConfig> {
+                position: index,
+                name    : null,
+                desc    : '',
+                alias   : null,
+                required: false,
+                variadic: false,
+            };
+            if ( match.startsWith('{') ) {
+                arg.required = true;
+            }
+            if ( match.endsWith('..]') ) {
+                arg.variadic = true;
+            }
+            arg.name = match.replace(/[\[\]\{\}\.]/g, '');
+
+            if ( arg.name.includes(':') ) {
+                let desc = arg.name.split(':')
+                arg.name = desc.shift();
+                arg.desc = desc.shift();
+            }
+
+            if ( arg.name.includes('|') ) {
+                let alias = arg.name.split('|')
+                arg.name  = alias.shift();
+                arg.alias = alias.shift();
+            }
+            return arg;
+        })
+        config.name = config.name.split(' ').shift();
+    }
 
     return config;
 }
@@ -90,6 +125,7 @@ function getOptionConfig(cls: Object, key: string, args: any[]): OptionConfig {
         type         = config.type
     }
 
+    config.name = kebabCase(config.name);
     config.type = type;
     return config;
 }

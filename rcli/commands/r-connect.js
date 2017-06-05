@@ -12,19 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var src_1 = require("../../src");
 var RcliConnectCmd = (function () {
     function RcliConnectCmd() {
-        this.list = false;
     }
-    RcliConnectCmd.prototype.handle = function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        this.out.line('this is RcliConnectCmd');
-        this.out.dump({
-            list: this.list,
-            add: this.add
-        });
-    };
     return RcliConnectCmd;
 }());
 __decorate([
@@ -36,20 +24,14 @@ __decorate([
     __metadata("design:type", Object)
 ], RcliConnectCmd.prototype, "log", void 0);
 __decorate([
-    src_1.inject('cli.config'),
+    src_1.inject('config'),
     __metadata("design:type", Function)
 ], RcliConnectCmd.prototype, "config", void 0);
-__decorate([
-    src_1.option('l', 'list all connections'),
-    __metadata("design:type", Boolean)
-], RcliConnectCmd.prototype, "list", void 0);
-__decorate([
-    src_1.option('a', 'adds connection'),
-    __metadata("design:type", Array)
-], RcliConnectCmd.prototype, "add", void 0);
 RcliConnectCmd = __decorate([
-    src_1.command('connect', {
-        subCommands: ['set']
+    src_1.command('connect', 'SSH connection helper', {
+        subCommands: ['add', 'edit', 'list', 'show'],
+        usage: 'connect <command>',
+        example: "$ connect list\n$ connect show <name> [options]\n$ connect add <name> [options]\n$ connect edit <name> [options]\n$ connect remove <name>"
     })
 ], RcliConnectCmd);
 exports.default = RcliConnectCmd;

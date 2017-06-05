@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import { merge } from "lodash";
 import { kindOf } from "@radic/util";
 import { Parser } from "@radic/console-colors";
@@ -5,7 +6,8 @@ import { inspect } from "util";
 import * as Table from "cli-table2";
 import { helper } from "../decorators";
 import { HelperOptionsConfig, OutputColumnsOptions } from "../interfaces";
-import {Data} from "archy";
+import { Data } from "archy";
+import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent } from "../core/Cli";
 const tty       = require('tty');
 const columnify = require('columnify')
 const truwrap   = require('truwrap');
@@ -18,14 +20,18 @@ const archy     = require('archy')
     singleton: true,
     config   : {
         quiet         : false,
-        quietOption   : {
-            enabled: false,
-            keys   : [ 'q', 'quiet' ]
-        },
         colors        : true,
-        colorsOption  : {
-            enabled: false,
-            keys   : [ 'C', 'no-colors' ]
+        options       : {
+            quiet : {
+                enabled: true,
+                key    : 'q',
+                name   : 'quiet'
+            },
+            colors: {
+                enabled: true,
+                key    : 'C',
+                name   : 'no-colors'
+            }
         },
         resetOnNewline: true,
         styles        : {
@@ -36,16 +42,6 @@ const archy     = require('archy')
             warning: 'orange lighten 20 bold',
             error  : 'red lighten 20 bold',
 
-            header     : 'darkorange bold',
-            group      : 'steelblue bold',
-            command    : 'darkcyan',
-            description: 'darkslategray',
-            desc       : '<%= helpers.output.styles.description %>', // alias
-
-            argument: 'yellow darken 25',
-
-            optional: 'yellow',
-            type    : 'yellow'
         },
         tableStyle    : {
             FAT : {
@@ -64,7 +60,8 @@ const archy     = require('archy')
         }
     },
     listeners: {
-        'cli:parse:root': 'onParseRoot'
+        'cli:execute:parse' : 'onExecuteCommandParse',
+        'cli:execute:parsed': 'onExecuteCommandParsed'
     }
 })
 export class Output {
@@ -80,14 +77,18 @@ export class Output {
         return this._parser
     }
 
+    styles(styles: any) {
+        this._parser       = new Parser;
+        this.config.styles = _.merge(this.config.styles, styles);
+        this._parser.colors.styles(this.config.styles);
+    }
+
     parse(text: string, force: boolean = false) {
 
-        if ( this.config.colors || force ) {
-            text = this.parser.parse(text)
-        } else if ( ! this.config.colors ) {
-            text = this.parser.clean(text);
+        if ( this.config.colors === false && force === false ) {
+            return this.parser.clean(text)
         }
-        return text;
+        return this.parser.parse(text);
     }
 
     protected styleString(style, text) {
@@ -102,10 +103,10 @@ export class Output {
     write(text: string): this {
         if ( this.config.quiet ) return this
 
-        if ( this.config.colors )
-            text = this.parser.parse(text)
+        if ( ! this.config.colors )
+            text = this.parser.clean(text)
         else
-            text = this.parser.clean(text);
+            text = this.parser.parse(text);
 
         // if ( ! this.colorsEnabled )
         // text = this.parser.clean
@@ -183,4 +184,30 @@ export class Output {
         this.styleString('error', text)
         return this
     }
+
+
+    public onExecuteCommandParse(event: CliExecuteCommandParseEvent) {
+        if ( this.config.options.quiet.enabled ) {
+            event.cli.global(this.config.options.quiet.key, {
+                name       : this.config.options.quiet.name,
+                description: 'Disables all output '
+            })
+        }
+        if ( this.config.options.colors.enabled ) {
+            event.cli.global(this.config.options.colors.key, {
+                name       : this.config.options.colors.name,
+                description: 'Disables color output'
+            })
+        }
+    }
+
+    public onExecuteCommandParsed(event: CliExecuteCommandParsedEvent) {
+        if ( this.config.options.quiet.enabled && event.argv[ this.config.options.quiet.key ] ) {
+            this.config.quiet = true
+        }
+        if ( this.config.options.colors.enabled && event.argv[ this.config.options.colors.key ] ) {
+            this.config.colors = false;
+        }
+    }
+
 }

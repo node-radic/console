@@ -9,23 +9,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var src_1 = require("../../src");
+var src_1 = require("../../../src");
 var RcliConnectSetCmd = (function () {
     function RcliConnectSetCmd() {
-        this.list = false;
-        this.global = false;
-        this.foo = 5;
     }
     RcliConnectSetCmd.prototype.handle = function () {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        this.out.line('this is RcliConnectSetCmd');
-        this.out.dump({
-            list: this.list,
-            add: this.add
-        });
     };
     return RcliConnectSetCmd;
 }());
@@ -38,43 +30,11 @@ __decorate([
     __metadata("design:type", Object)
 ], RcliConnectSetCmd.prototype, "log", void 0);
 __decorate([
-    src_1.inject('cli.config'),
+    src_1.inject('config'),
     __metadata("design:type", Function)
 ], RcliConnectSetCmd.prototype, "config", void 0);
-__decorate([
-    src_1.option('l', 'list all connections'),
-    __metadata("design:type", Boolean)
-], RcliConnectSetCmd.prototype, "list", void 0);
-__decorate([
-    src_1.option('a', 'adds connection'),
-    __metadata("design:type", Array)
-], RcliConnectSetCmd.prototype, "add", void 0);
-__decorate([
-    src_1.option('g', 'A glob boolean = false'),
-    __metadata("design:type", Boolean)
-], RcliConnectSetCmd.prototype, "global", void 0);
-__decorate([
-    src_1.option('m', 'A man string'),
-    __metadata("design:type", String)
-], RcliConnectSetCmd.prototype, "man", void 0);
-__decorate([
-    src_1.option('f', 'A foo number = 5'),
-    __metadata("design:type", Number)
-], RcliConnectSetCmd.prototype, "foo", void 0);
-__decorate([
-    src_1.option('b', 'Array of booleans', 'boolean'),
-    __metadata("design:type", Array)
-], RcliConnectSetCmd.prototype, "arbool", void 0);
-__decorate([
-    src_1.option('s', 'Array of string', 'string'),
-    __metadata("design:type", Array)
-], RcliConnectSetCmd.prototype, "arstr", void 0);
-__decorate([
-    src_1.option('n', 'Array of number', 'number'),
-    __metadata("design:type", Array)
-], RcliConnectSetCmd.prototype, "arnr", void 0);
 RcliConnectSetCmd = __decorate([
-    src_1.command('set', {})
+    src_1.command('show', 'set a connections')
 ], RcliConnectSetCmd);
 exports.default = RcliConnectSetCmd;
-//# sourceMappingURL=r-connect-set.js.map
+//# sourceMappingURL=show.js.map

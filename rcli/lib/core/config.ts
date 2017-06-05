@@ -6,7 +6,9 @@ import * as dotenv from "dotenv";
 import { Keys } from './keys'
 import { paths } from "./paths";
 import { unlinkSync } from "fs";
+import { container } from "../../../src/core/Container";
 
+export interface RConfig extends IConfigProperty {}
 
 let defaultConfig: any = {
     debug  : true,
@@ -128,4 +130,7 @@ let _config = new CommandoPersistentConfig(defaultConfig);
 
 // export the wrapped config
 let config: IConfigProperty = Config.makeProperty(_config);
+
+container.constant('config', config);
+
 export { config, IConfigProperty };

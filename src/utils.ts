@@ -1,5 +1,7 @@
 import { YargsParserOptions } from "../types/yargs-parser";
 import { OptionConfig } from "./interfaces";
+import { existsSync, statSync } from "fs";
+import { basename, dirname, join, sep } from "path";
 const callsites = require('callsites');
 
 export function dumpCallsites(){
@@ -69,5 +71,39 @@ export function transformOptions(configs: OptionConfig[]): YargsParserOptions {
         }
     })
     return options;
+}
+
+
+export function findSubCommandFilePath(subCommand, filePath): string {
+    let dirName  = dirname(filePath);
+    let baseName = basename(filePath, '.js');
+    // various locations to search for the sub-command file
+    // this can, and "maby" should have a couple of more variations
+    let locations     = [
+        join(dirName, baseName + '-' + subCommand + '.js'),
+        join(dirName, baseName + '.' + subCommand + '.js'),
+        join(dirName, baseName + '_' + subCommand + '.js'),
+        join(dirName, baseName + sep + subCommand + '.js')
+    ]
+    let foundFilePath = null;
+    locations.forEach(location => {
+        if ( foundFilePath ) return;
+        if ( existsSync(location) ) {
+            let stat = statSync(location);
+            if ( stat.isSymbolicLink() ) {
+                this.log.notice('Trying to access symlinked command. Not sure if it\'l work')
+                foundFilePath = location
+            }
+            if ( stat.isFile() ) {
+                foundFilePath = location
+            }
+        }
+    })
+
+    if ( null === foundFilePath ) {
+        throw new Error(`Could not find sub-command [${subCommand}] for parent file [${filePath}]`);
+    }
+
+    return foundFilePath;
 }
 

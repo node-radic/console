@@ -20,5 +20,5 @@ exports.paths = {
     backups: path_1.join(home, '.r', 'backups'),
     dbBackups: path_1.join(home, '.r', 'backups', 'db')
 };
-Container_1.container.bind('r.paths').toConstantValue(exports.paths);
+Container_1.container.bind('paths').toConstantValue(exports.paths);
 //# sourceMappingURL=paths.js.map

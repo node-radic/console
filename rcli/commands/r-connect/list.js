@@ -9,34 +9,37 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var src_1 = require("../../src");
-var RcliCmd = (function () {
-    function RcliCmd() {
+var src_1 = require("../../../src");
+var RcliConnectListCmd = (function () {
+    function RcliConnectListCmd() {
     }
-    RcliCmd.prototype.handle = function () {
+    RcliConnectListCmd.prototype.handle = function () {
+        var _this = this;
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        this.out.line('this is RcliCmd');
-        this.log.info('This is a info log');
-        this.log.debug('This is a debug log');
-        this.log.silly('This is a silly log');
+        var cons = this.config.get('connect', {});
+        Object.keys(cons).forEach(function (con) {
+            _this.out.line(' - ' + con);
+        });
     };
-    return RcliCmd;
+    return RcliConnectListCmd;
 }());
 __decorate([
     src_1.inject('cli.helpers.output'),
     __metadata("design:type", src_1.Output)
-], RcliCmd.prototype, "out", void 0);
+], RcliConnectListCmd.prototype, "out", void 0);
 __decorate([
     src_1.inject('cli.log'),
     __metadata("design:type", Object)
-], RcliCmd.prototype, "log", void 0);
-RcliCmd = __decorate([
-    src_1.command({
-        subCommands: ['connect']
-    })
-], RcliCmd);
-exports.default = RcliCmd;
-//# sourceMappingURL=r.js.map
+], RcliConnectListCmd.prototype, "log", void 0);
+__decorate([
+    src_1.inject('config'),
+    __metadata("design:type", Function)
+], RcliConnectListCmd.prototype, "config", void 0);
+RcliConnectListCmd = __decorate([
+    src_1.command('list', 'list all connections')
+], RcliConnectListCmd);
+exports.default = RcliConnectListCmd;
+//# sourceMappingURL=list.js.map

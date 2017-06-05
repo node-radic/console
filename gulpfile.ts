@@ -110,7 +110,7 @@ gulp.task("build:test", () => {
 gulp.task("build", (cb) => {
     runSequence(
         "clean",
-        [ "build:src", "build:lib", "build:umd" ],   // tests + build es and lib
+        [ "build:src", "build:lib" ],   // tests + build es and lib
         "build:test", cb);
     // , "build:umd", "build:umd:minify"
 });

@@ -2,7 +2,7 @@ import { command, inject, Log, Output } from "../../src";
 @command({
     subCommands: [ 'connect' ]
 })
-export class RcliCmd {
+export default class RcliCmd {
 
     @inject('cli.helpers.output')
     out: Output;

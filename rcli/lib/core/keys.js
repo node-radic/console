@@ -41,7 +41,7 @@ var Keys = (function () {
     return Keys;
 }());
 Keys = __decorate([
-    src_1.singleton('r.keys'),
+    src_1.singleton('keys'),
     __metadata("design:paramtypes", [])
 ], Keys);
 exports.Keys = Keys;

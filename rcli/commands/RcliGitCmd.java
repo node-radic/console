@@ -1,7 +1,9 @@
 import { command, Config, inject, Log, option, Output } from "../../src";
 
-@command('set', {})
-export default class RcliConnectSetCmd {
+@command('git', 'Adds or edits an existing SSH connection configuration', {
+
+})
+export default class RcliGitCmd {
 
     @inject('cli.helpers.output')
     out: Output;
@@ -41,7 +43,7 @@ export default class RcliConnectSetCmd {
 
 
     handle(...args: any[]) {
-        this.out.line('this is RcliConnectSetCmd')
+        this.out.line('this is RcliGitCmd')
 
         this.out.dump({
             list: this.list,

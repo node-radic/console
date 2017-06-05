@@ -4,7 +4,7 @@ import { paths } from "./paths";
 import { dirname } from "path";
 import { singleton } from "../../../src";
 
-@singleton('r.keys')
+@singleton('keys')
 export class Keys
 {
     _secret: string

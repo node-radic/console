@@ -1,18 +1,27 @@
-import { KindOf , IConfigProperty} from "@radic/util";
-import { LoggerInstance } from "winston";
+import { KindOf } from "@radic/util";
 
+
+export interface CommandArgumentConfig {
+    position?: number
+    name?: string
+    alias?: string | null
+    required?: boolean
+    variadic?: boolean
+    desc?: string
+}
 
 export interface CommandConfig {
     name?: string
     usage?: string | null
     description?: string
-    example?:string
+    example?: string
     subCommands?: string[]
     cls?: Function
     filePath?: string
     action?: Function | string
     argv?: string[]
     args?: string[]
+    arguments?: CommandArgumentConfig[]
 }
 
 export interface OptionConfig {
