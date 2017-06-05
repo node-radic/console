@@ -1,19 +1,19 @@
 import { ConstructorOptions, EventEmitter2 } from "eventemitter2";
 import { container, inject, singleton } from "./Container";
 import { defined } from "@radic/util";
-import { LoggerInstance } from "winston";
+import { Log } from "./log";
+import { Cli } from "./Cli";
+import { defaults } from "../defaults";
 
 container.ensureInjectable(EventEmitter2);
 
-container.bind('cli.events.config').toConstantValue({
-    wildcard    : true,
-    delimiter   : ':',
-    newListener : true,
-    maxListeners: 200,
-
-})
+container.bind('cli.config.events').toConstantValue(defaults.events())
 
 export abstract class Event {
+    public get cli(): Cli {
+        return container.get<Cli>('cli');
+    }
+
     constructor(public event: string | string[] = undefined) {}
 }
 export abstract class HaltEvent extends Event {
@@ -24,10 +24,11 @@ export abstract class HaltEvent extends Event {
 
 @singleton('cli.events')
 export class Events extends EventEmitter2 {
-    @inject('cli.log')
-    protected log: LoggerInstance;
+    // @lazyInject('cli.log')
+    // protected log: Log;
 
-    constructor(@inject('cli.events.config') conf: ConstructorOptions) {
+    constructor(@inject('cli.config.events') conf: ConstructorOptions,
+                @inject('cli.log') protected log: Log) {
         super(conf)
     }
 

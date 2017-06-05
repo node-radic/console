@@ -1,3 +1,5 @@
+import { YargsParserOptions } from "../types/yargs-parser";
+import { OptionConfig } from "./interfaces";
 const callsites = require('callsites');
 
 export function dumpCallsites(){
@@ -18,3 +20,54 @@ export function dumpCallsites(){
         console.log(i, 'isConstructor', sites[i].isConstructor())
     }
 }
+
+
+
+/** transforms my option structure to the yargs-parser option structure */
+export function transformOptions(configs: OptionConfig[]): YargsParserOptions {
+    let options: YargsParserOptions = {
+        array        : [],
+        boolean      : [],
+        string       : [],
+        number       : [],
+        count        : [],
+        // config?: boolean
+        coerce       : {},
+        alias        : {},
+        default      : {},
+        narg         : {},
+        normalize    : true,
+        configuration: {
+            'short-option-groups'      : true,
+            'camel-case-expansion'     : true,
+            'dot-notation'             : true,
+            'parse-numbers'            : true,
+            'boolean-negation'         : true,
+            'duplicate-arguments-array': true,
+            'flatten-duplicate-arrays' : true,
+        }
+    };
+    configs.forEach((config: OptionConfig, iconfig: number) => {
+        let key  = config.key;
+        let type = config.type || 'boolean';
+
+        options.alias[ key ] = [ config.name ];
+
+        if ( config.count ) {
+            options.count.push(key)
+            type = undefined
+        }
+
+        if ( config.array === true ) options.array.push(key);
+        if ( config.transformer ) options.coerce[ key ] = config.transformer;
+        if ( config.arguments ) options.narg[ key ] = config.arguments;
+        if ( config.default ) options.default[ key ] = config.default
+
+        if ( type !== undefined ) {
+            options[ type ].push(key);
+            configs[ iconfig ][ 'type' ] = type;
+        }
+    })
+    return options;
+}
+

@@ -80,8 +80,8 @@ export class Container extends BaseContainer  {
         return lazyInject(id);
     }
 
-    singleton(id: ServiceIdentifier) {
-        return singleton(id);
+    singleton(id: ServiceIdentifier, cls:Function) {
+        return singleton(id)(cls);
     }
 
     inject(id: ServiceIdentifier): (target: any, targetKey: string, index?: number | undefined) => void {

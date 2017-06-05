@@ -1,4 +1,4 @@
 export * from './Input'
 export * from './Output'
 export * from './Verbose'
-// export * from './Describer'
+export * from './Help'

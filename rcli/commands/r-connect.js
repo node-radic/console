@@ -10,33 +10,47 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var src_1 = require("../../src");
-var RcliCmd = (function () {
-    function RcliCmd() {
+var RcliConnectCmd = (function () {
+    function RcliConnectCmd() {
+        this.list = false;
     }
-    RcliCmd.prototype.handle = function () {
+    RcliConnectCmd.prototype.handle = function () {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        this.out.line('this is RcliCmd');
-        this.log.info('This is a info log');
-        this.log.debug('This is a debug log');
-        this.log.silly('This is a silly log');
+        this.out.line('this is RcliConnectCmd');
+        this.out.dump({
+            list: this.list,
+            add: this.add
+        });
     };
-    return RcliCmd;
+    return RcliConnectCmd;
 }());
 __decorate([
     src_1.inject('cli.helpers.output'),
     __metadata("design:type", src_1.Output)
-], RcliCmd.prototype, "out", void 0);
+], RcliConnectCmd.prototype, "out", void 0);
 __decorate([
     src_1.inject('cli.log'),
     __metadata("design:type", Object)
-], RcliCmd.prototype, "log", void 0);
-RcliCmd = __decorate([
-    src_1.command({
-        subCommands: ['connect']
+], RcliConnectCmd.prototype, "log", void 0);
+__decorate([
+    src_1.inject('cli.config'),
+    __metadata("design:type", Function)
+], RcliConnectCmd.prototype, "config", void 0);
+__decorate([
+    src_1.option('l', 'list all connections'),
+    __metadata("design:type", Boolean)
+], RcliConnectCmd.prototype, "list", void 0);
+__decorate([
+    src_1.option('a', 'adds connection'),
+    __metadata("design:type", Array)
+], RcliConnectCmd.prototype, "add", void 0);
+RcliConnectCmd = __decorate([
+    src_1.command('connect', {
+        subCommands: ['set']
     })
-], RcliCmd);
-exports.RcliCmd = RcliCmd;
-//# sourceMappingURL=r.js.map
+], RcliConnectCmd);
+exports.default = RcliConnectCmd;
+//# sourceMappingURL=r-connect.js.map

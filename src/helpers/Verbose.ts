@@ -1,8 +1,10 @@
 import { helper } from "../decorators";
-import { CliParsedEvent, CliParseEvent } from "../core/Cli";
+import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent } from "../core/Cli";
 import { HelperOptionsConfig } from "../interfaces";
 import { inject } from "../core/Container";
 import { LoggerInstance } from "winston";
+import { setVerbosity } from "../core/log";
+
 @helper('verbose', {
     config   : {
         option: {
@@ -12,34 +14,32 @@ import { LoggerInstance } from "winston";
         }
     },
     listeners: {
-        'cli:parse' : 'onParse',
-        'cli:parsed': 'onParsed'
-    },
-    bindings : {}
+        'cli:execute:parse' : 'onExecuteCommandParse',
+        'cli:execute:parsed': 'onExecuteCommandParsed'
+    }
 })
 export class Verbose {
     config: HelperOptionsConfig;
 
     @inject('cli.log')
-    log:LoggerInstance;
+    log: LoggerInstance;
 
-    onParse(event: CliParseEvent) {
-        event.globals.push({
-            key: this.config.option.key,
-            name: this.config.option.name,
-            count: true,
-            description: 'increase verbosity'
+    onExecuteCommandParse(event: CliExecuteCommandParseEvent) {
+        event.options.push({
+            key        : this.config.option.key,
+            name       : this.config.option.name,
+            count      : true,
+            description: 'increase verbosity (1:verbose|2:data|3:debug|4:silly)'
         })
     }
 
-    onParsed(event: CliParsedEvent) {
-        console.log('CliParseEvent', event.argv)
+    onExecuteCommandParsed(event: CliExecuteCommandParsedEvent) {
+        console.log('onExecuteCommandParsed', event.argv)
 
         if ( event.argv[ this.config.option.key ] ) {
-            let level:number = parseInt(event.argv[ this.config.option.key ]);
-            let levels = ['info', 'debug', 'silly'];
-            this.log.level = levels[level - 1];
-            this.log.debug(event.argv[ this.config.option.key ])
+            let level: number = parseInt(event.argv[ this.config.option.key ]);
+            setVerbosity(level);
+            this.log.verbose(`Verbosity set (${level} : ${this.log.level})`)
         }
     }
 }

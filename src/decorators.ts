@@ -1,31 +1,20 @@
 import "reflect-metadata";
 import { kindOf, KindOf } from "@radic/util";
 import { merge } from "lodash";
-import { cli } from "./core/Cli";
 import { CommandConfig, HelperOptions, OptionConfig } from "./interfaces";
-import { container } from "./core/Container";
-import { LoggerInstance } from "./core/log";
+import { Cli, container } from "./core";
+import { defaults } from "./defaults";
 const callsites = require('callsites');
 
 
-const get                 = Reflect.getMetadata;
-const set                 = Reflect.defineMetadata;
-const log: LoggerInstance = container.make<LoggerInstance>('cli.log')
+const get = Reflect.getMetadata;
+const set = Reflect.defineMetadata;
 
 function getCommandConfig<T extends CommandConfig>(cls: Function, args: any[] = []): T {
     const argt = args.map(kindOf),
           len  = args.length;
 
-    let config: T = <T> {
-        name       : cls.name.replace('Command', '').toLowerCase(),
-        usage      : null,
-        description: '',
-        action     : 'handle',
-        subCommands: [],
-        argv       : process.argv,
-        args       : process.argv.slice(2),
-        cls
-    };
+    let config: T = defaults.command<T>(cls);
 
     let sites = callsites();
     for ( let i = 0; i < sites.length; i ++ ) {
@@ -45,19 +34,27 @@ function getCommandConfig<T extends CommandConfig>(cls: Function, args: any[] = 
 }
 function handleCommand(args: any[], cls?: Function) {
 
-    if ( kindOf(args[ 0 ]) === 'function' ) {
-        let cls    = args[ 0 ];
-        let config = getCommandConfig<CommandConfig>(cls)
-        set('command', config, cls);
-        log.silly('command', cls);
-        cli.parse(config);
-        return;
-    }
-    return (cls) => {
+    const isForked     = ! ! process.send
+    const handle       = (cls) => {
         let config = getCommandConfig<CommandConfig>(cls, args)
         set('command', config, cls);
-        log.silly('command', config, cls);
-        cli.parse(config);
+        container.get<Cli>('cli').parse(config);
+    }
+    const forkedHandle = (cls) => {
+        process.on('message', (m: any) => {
+            console.log('GOT MSG', m, typeof m)
+            container.get<Cli>('cli').config.set(m.config)
+            let enabledHelpers = <string[]> container.get<Cli>('cli').config.get('enabledHelpers', []);
+            // enabledHelpers.forEach(name => container.get<Cli>('cli').startHelper(name))
+            handle(cls);
+        });
+    }
+
+    if ( kindOf(args[ 0 ]) === 'function' ) {
+        return isForked ? forkedHandle(args[ 0 ]) : handle(args[ 0 ]);
+    }
+    return (cls) => {
+        return isForked ? forkedHandle(cls) : handle(cls);
     }
 }
 export function command(cls: Function)
@@ -74,12 +71,8 @@ function getOptionConfig(cls: Object, key: string, args: any[]): OptionConfig {
     const argt = args.map(kindOf),
           len  = args.length;
 
-    let config: OptionConfig = <OptionConfig> {
-        key : '',
-        name: '',
-        type: null,
-        cls
-    };
+    let config: OptionConfig = defaults.option(cls, key);
+
 
     config[ key.length > 1 ? 'name' : 'key' ] = key;
     let type                                  = Reflect.getMetadata('design:type', cls, key)
@@ -96,6 +89,7 @@ function getOptionConfig(cls: Object, key: string, args: any[]): OptionConfig {
         config.array = true;
         type         = config.type
     }
+
     config.type = type;
     return config;
 }
@@ -116,7 +110,7 @@ export function option(...args: any[]): PropertyDecorator {
         const options = get('options', cls) || [];
         options.push(config);
         set('options', options, cls);
-        log.silly('options', config, cls);
+
     }
 }
 
@@ -136,6 +130,6 @@ export function helper(options: HelperOptions): ClassDecorator;
 export function helper(name: string, options: HelperOptions): ClassDecorator;
 export function helper(...args: any[]): ClassDecorator {
     return (cls) => {
-        cli.addHelper(makeNodeConfig(cls, args));
+        container.get<Cli>('cli').addHelper(makeNodeConfig(cls, args));
     }
 }

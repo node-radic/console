@@ -1,5 +1,5 @@
 export * from './Container'
-export * from './Events'
-export * from './log'
 export * from './config'
+export * from './log'
+export * from './Events'
 export * from './Cli'

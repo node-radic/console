@@ -1,0 +1,58 @@
+@startuml
+title Console Design
+scale 1.5
+
+skinparam {
+    defaultFontName                 Hasklig
+    classBorderColor                black
+    objectBackgroundColor           white
+    classBackgroundColor            white
+    circledCharacterFontColorn      black
+    circledCharacterFontSize        16
+    circledCharacterFontStyle       bold
+    circledCharacterFontName        courier
+    circledCharacterRadius          11
+    classAttributeFontColor         black
+    classAttributeFontSize          10
+    classAttributeIconSize          10
+    classAttributeFontStyle         plain
+    classAttributeFontName          Source Code Pro
+    headerFontColor                 red
+    headerFontSize                  20
+    headerFontStyle                 plain
+}
+
+
+class Cli <<singleton>>   {
+    +parse(config: CommandConfig) : this
+}
+class Container <<singleton>> {
+
+}
+
+'
+'
+'abstract class AbstractList
+'abstract AbstractCollection
+'interface List
+'interface Collection
+'
+'List <|-- AbstractList
+'Collection <|-- AbstractCollection
+'
+'Collection <|- List
+'AbstractCollection <|- AbstractList
+'AbstractList <|-- ArrayList
+'
+'class ArrayList {
+'Object[] elementData
+'size()
+'}
+'
+'enum TimeUnit {
+'DAYS
+'HOURS
+'MINUTES
+'}
+
+@enduml

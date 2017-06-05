@@ -1,5 +1,4 @@
-import { inject } from "../core/Container";
-import { helper } from "../decorators";
+import { helper, inject } from "../";
 import * as inquirer from "inquirer";
 
 @helper('input', {
@@ -9,7 +8,7 @@ import * as inquirer from "inquirer";
 })
 export class Input {
 
-    constructor(@inject('console.config') protected config) {}
+    constructor(@inject('cli.config') protected config) {}
 
     ask(question: string, def?: string): Promise<string> {
         return new Promise((resolve, reject) => {
@@ -23,7 +22,7 @@ export class Input {
         return inquirer.prompt(questions);
     }
 
-    prompt(questions: inquirer.Question): Promise<string|any> {
+    prompt(questions: inquirer.Question): Promise<string | any> {
         return inquirer.prompt(questions);
     }
 
