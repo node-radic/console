@@ -27,6 +27,7 @@ export class Events extends EventEmitter2 {
     // @lazyInject('cli.log')
     // protected log: Log;
 
+    protected disabled:boolean = false
     constructor(@inject('cli.config.events') conf: ConstructorOptions,
                 @inject('cli.log') protected log: Log) {
         super(conf)
@@ -35,6 +36,7 @@ export class Events extends EventEmitter2 {
     fire<T extends Event>(ctx: T): T
     fire<T extends Event>(event: string | string[], ctx: T): T
     fire<T extends Event>(...args: any[]): T {
+        if(this.disabled === true) return;
         let event: string | string[];
         let ctx: T = args[ args.length - 1 ];
 
@@ -66,10 +68,22 @@ export class Events extends EventEmitter2 {
         })
     }
 
-    enableDebug() {
+    enableDebug() : this{
         this.onAny((...args: any[]) => {
             console.log('event:', args[ 0 ])
         })
+        return this;
     }
 
+    disable() :this {
+        this.disabled = true;
+        return this;
+    }
+    enable() :this {
+        this.disabled = false;
+        return this;
+    }
+    isEnabled() : boolean {
+        return ! this.disabled
+    }
 }

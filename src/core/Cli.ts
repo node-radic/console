@@ -7,7 +7,7 @@ import * as _ from "lodash";
 import { Events, HaltEvent } from "./Events";
 import { Log, log } from "./log";
 import { Config } from "./config";
-import { findSubCommandFilePath, transformOptions } from "../utils";
+import { findSubCommandFilePath, parseArguments, transformOptions } from "../utils";
 import { resolve } from "path";
 const parser = require('yargs-parser')
 const get    = Reflect.getMetadata
@@ -57,41 +57,45 @@ export class CliExecuteCommandHandledEvent<T = any> extends HaltEvent {
         super('cli:execute:handled')
     }
 }
-
+export type CliMode = 'require' | 'spawn'
 export class Cli {
-    protected _helpers: { [name: string]: HelperOptions } = {}
     protected _runningCommand: ChildProcess | CommandConfig;
+    protected _helpers: { [name: string]: HelperOptions } = {}
     protected _requiredCommands: any[]                    = []
     protected globalOptions: OptionConfig[]               = [];
+    protected _startedHelpers: Array<string>              = []
+    protected _mode: CliMode                              = 'require';
 
-    protected _mode = 'require';
+    @lazyInject('cli.events')
+    protected _events: Events;
 
-    public mode(mode: string) {
-        this._mode = mode;
-    }
+    @lazyInject('cli.log')
+    protected _log: Log;
+
+    @lazyInject('cli.config')
+    protected _config: Config;
+
+
+    public get events(): Events { return this._events; }
+
+    public get log(): Log { return this._log; }
+
+    public get config(): Config { return this._config; }
 
     public get runningCommand(): CommandConfig {
         return <CommandConfig> this._runningCommand;
     }
 
+    public mode(mode: CliMode) : this {
+        this._mode = mode;
+        return this;
+    }
 
-    @lazyInject('cli.events')
-    public events: Events;
-
-    @lazyInject('cli.log')
-    public log: Log;
-
-    @lazyInject('cli.config')
-    public config: Config;
-
-    // public get events(): Events {
-    //     return container.make<Events>('cli.events')
-    // }
-
-    public start(requirePath: string) {
+    public start(requirePath: string) : this {
         requirePath = resolve(requirePath);
         this._requiredCommands.push(requirePath.endsWith('.js') ? requirePath : requirePath + '.js');
         require(requirePath)
+        return this
     }
 
     public parse(config: CommandConfig): this {
@@ -104,13 +108,16 @@ export class Cli {
         this.events.fire(new CliParsedEvent(config, result, this.globalOptions))
 
         // Check if sub-command should be invoked
+
         if ( result._.length > 0 &&
             config.subCommands.length > 0 &&
             config.subCommands.includes(result._[ 0 ]) ) {
 
             let filePath = findSubCommandFilePath(result._[ 0 ], config.filePath)
             this._requiredCommands.push(filePath);
-
+            if ( config.alwaysRun ) {
+                this.executeCommand(config, true);
+            }
 
             if ( this._mode === 'spawn' ) {
                 return this.handleSpawn(filePath, config);
@@ -124,7 +131,6 @@ export class Cli {
         // for spawn mode, we'd check if there's no running command which means this is the actual command to execute
         // for require mode, the if statement will always pass
         if ( ! this._runningCommand ) {
-            this.log.debug('WE ARE THERERERE')
             this._runningCommand = config;
             this.executeCommand(config);
         }
@@ -173,19 +179,20 @@ export class Cli {
         return this;
     }
 
-    protected executeCommand(config: CommandConfig) {
+    protected executeCommand(config: CommandConfig, isAlwaysRun: boolean = false) {
 
         this.startHelpers();
-
         let optionConfigs: OptionConfig[] = get('options', config.cls.prototype) || [];
 
         // Parse
-        this.events.fire(new CliExecuteCommandParseEvent(config, optionConfigs))
+        if ( ! isAlwaysRun )
+            this.events.fire(new CliExecuteCommandParseEvent(config, optionConfigs))
 
         let transformedOptions = transformOptions(optionConfigs.concat(this.globalOptions));
         let argv               = parser(config.args, transformedOptions) as YargsParserArgv;
 
-        this.events.fire(new CliExecuteCommandParsedEvent(argv, config, optionConfigs))
+        if ( ! isAlwaysRun )
+            this.events.fire(new CliExecuteCommandParsedEvent(argv, config, optionConfigs))
 
         // Create
         if ( kindOf(config.action) === 'function' ) {
@@ -198,38 +205,18 @@ export class Cli {
             instance[ argName ] = argv[ argName ];
         })
 
-        let requireArgument;
-        let args = {};
-        config.arguments.forEach(arg => {
-            let val = argv._[ arg.position ];
-            if ( ! val && arg.required && ! requireArgument ) {
-                requireArgument = `Required argument <${arg.name}> not set`;
-            }
-            if ( arg.variadic ) {
-                if ( ! args[ arg.name ] ) {
-                    args[ arg.name ] = [ val ];
-                } else {
-                    args[ arg.name ].push(val)
-                }
-            } else {
-                args[ arg.name ] = val;
-            }
-            if ( arg.alias ) {
-                args[ arg.alias ] = args[ arg.name ];
-            }
-        })
-
+        let args = parseArguments(argv._, config.arguments)
 
         // Handle
-        this.events.fire(new CliExecuteCommandHandleEvent(instance, argv, config, optionConfigs))
+        if ( ! isAlwaysRun )
+            this.events.fire(new CliExecuteCommandHandleEvent(instance, argv, config, optionConfigs))
 
-        if ( requireArgument ) {
-            this.fail(requireArgument);
+        let result: any
+        if ( kindOf(instance[ isAlwaysRun ? 'always' : 'handle' ]) === 'function' ) {
+            result = instance[ isAlwaysRun ? 'always' : 'handle' ].apply(instance, [ args, argv ]);
         }
-
-        const result: any = instance[ 'handle' ].apply(instance, [ args, argv._ ]);
-
-        this.events.fire(new CliExecuteCommandHandledEvent(result, instance, argv, config, optionConfigs))
+        if ( ! isAlwaysRun )
+            this.events.fire(new CliExecuteCommandHandledEvent(result, instance, argv, config, optionConfigs))
 
     }
 
@@ -318,6 +305,16 @@ export class Cli {
     /** some helpers can/need to be enabled before usage **/
     protected startHelper(name: string, customConfig: HelperOptionsConfig = {}) {
         let options = this._helpers[ name ];
+        if ( this._startedHelpers.includes(name) ) return;
+        this._startedHelpers.push(name);
+
+        // make sure not to singletons twice
+        let bindingName = 'cli.helpers.' + options.name;
+        // if ( options.singleton && container.isBound(bindingName) ) {
+        //     return;
+        // }
+
+        // start dependency helpers
         if ( options.depends.length > 0 ) {
             options.depends.forEach(depend => {
                 if ( ! Object.keys(this._helpers).includes(depend) ) {
@@ -330,25 +327,31 @@ export class Cli {
         }
 
         // bind the helper into the container, if needed as singleton
-        let bindingName = 'cli.helpers.' + options.name;
+        // if ( container.isBound(bindingName) ) {
         container.ensureInjectable(options.cls);
         let binding = container.bind(bindingName).to(options.cls);
         if ( options.singleton ) {
             binding.inSingletonScope();
         }
 
+
         // when resolving, get the (possibly overridden) config and add it to the helper
         binding.onActivation((ctx: any, helperClass: Function): any => {
             helperClass[ options.configKey ] = _.merge(this.config('helpers.' + options.name), customConfig);
             return helperClass;
         })
+        // }
+
 
         let instance;
         // add the event listeners and bind them to the given function names
+        // if ( container.isBound(bindingName) ) {
+        //     return;
+        // }
         Object.keys(options.listeners).forEach(eventName => {
             let fnName = options.listeners[ eventName ];
 
-            this.events.on(eventName, (...args: any[]) => {
+            this.events.once(eventName, (...args: any[]) => {
                 instance = instance || container.make(bindingName);
                 if ( kindOf(instance[ fnName ]) === 'function' ) {
                     instance[ fnName ].apply(instance, args);

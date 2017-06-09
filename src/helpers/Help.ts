@@ -87,6 +87,13 @@ export class Help {
         }
     }
 
+    protected printArguments(args:CommandArgumentConfig[] = []){
+        let rows = []
+        args.forEach(arg => {
+            // arg.
+        })
+    }
+
     protected printSubCommands(subCommands: string[]) {
         let rows = []
         subCommands.forEach(command => {

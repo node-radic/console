@@ -18,12 +18,22 @@ export class Input {
         })
     }
 
+    confirm(message: string, def?: string): Promise<boolean> {
+        return this.prompt({ type: 'confirm', default: def, message })
+            .then((answer) => Promise.resolve(<boolean> answer))
+    }
+
+    password(message:string, def?:string): Promise<string> {
+        return this.prompt({type: 'password', default: def, message}).then(a => Promise.resolve(a))
+    }
+
     prompts(questions: inquirer.Questions): Promise<inquirer.Answers> {
         return inquirer.prompt(questions);
     }
 
-    prompt(questions: inquirer.Question): Promise<string | any> {
-        return inquirer.prompt(questions);
+    prompt<T extends any>(question: inquirer.Question): Promise<T> {
+        question.name = 'prompt'
+        return inquirer.prompt([ question ],).then((answers) => Promise.resolve(<T>answers.prompt));
     }
 
 

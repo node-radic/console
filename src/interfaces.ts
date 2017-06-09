@@ -11,6 +11,7 @@ export interface CommandArgumentConfig {
 }
 
 export interface CommandConfig {
+    alwaysRun?: boolean;
     name?: string
     usage?: string | null
     description?: string
@@ -19,7 +20,7 @@ export interface CommandConfig {
     cls?: Function
     filePath?: string
     action?: Function | string
-    argv?: string[]
+    // argv?: string[]
     args?: string[]
     arguments?: CommandArgumentConfig[]
 }

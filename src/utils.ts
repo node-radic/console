@@ -1,28 +1,28 @@
 import { YargsParserOptions } from "../types/yargs-parser";
-import { OptionConfig } from "./interfaces";
+import { CommandArgumentConfig, CommandConfig, OptionConfig } from "./interfaces";
 import { existsSync, statSync } from "fs";
 import { basename, dirname, join, sep } from "path";
+import { defaults } from "./defaults";
 const callsites = require('callsites');
 
-export function dumpCallsites(){
+export function dumpCallsites() {
 
     let sites = callsites();
-    for(let i=0; i<sites.length; i++){
-        console.log(i, 'getTypeName', sites[i].getTypeName())
-        console.log(i, 'getFileName', sites[i].getFileName())
-        console.log(i, 'getFunctionName', sites[i].getFunctionName())
-        console.log(i, 'getMethodName', sites[i].getMethodName())
-        console.log(i, 'getFileName', sites[i].getFileName())
-        console.log(i, 'getLineNumber', sites[i].getLineNumber())
-        console.log(i, 'getColumnNumber', sites[i].getColumnNumber())
-        console.log(i, 'getEvalOrigin', sites[i].getEvalOrigin())
-        console.log(i, 'isToplevel', sites[i].isToplevel())
-        console.log(i, 'isEval', sites[i].isEval())
-        console.log(i, 'isNative', sites[i].isNative())
-        console.log(i, 'isConstructor', sites[i].isConstructor())
+    for ( let i = 0; i < sites.length; i ++ ) {
+        console.log(i, 'getTypeName', sites[ i ].getTypeName())
+        console.log(i, 'getFileName', sites[ i ].getFileName())
+        console.log(i, 'getFunctionName', sites[ i ].getFunctionName())
+        console.log(i, 'getMethodName', sites[ i ].getMethodName())
+        console.log(i, 'getFileName', sites[ i ].getFileName())
+        console.log(i, 'getLineNumber', sites[ i ].getLineNumber())
+        console.log(i, 'getColumnNumber', sites[ i ].getColumnNumber())
+        console.log(i, 'getEvalOrigin', sites[ i ].getEvalOrigin())
+        console.log(i, 'isToplevel', sites[ i ].isToplevel())
+        console.log(i, 'isEval', sites[ i ].isEval())
+        console.log(i, 'isNative', sites[ i ].isNative())
+        console.log(i, 'isConstructor', sites[ i ].isConstructor())
     }
 }
-
 
 
 /** transforms my option structure to the yargs-parser option structure */
@@ -107,3 +107,105 @@ export function findSubCommandFilePath(subCommand, filePath): string {
     return foundFilePath;
 }
 
+/** called in decorator, transforms config.name with all arguments to a proper structure */
+export function prepareArguments(config: CommandConfig): CommandConfig {
+//https://regex101.com/r/vSqbuK/1
+    let exp = /[{\[]([\w|]*?):([\w\[\]]*?)@(.*?)[}\]]/g;
+
+
+    let exp1 = /[{\[](.*?)[}\]]/g
+
+    if ( exp1.test(config.name) ) {
+        let args = config.name.match(exp1)
+        if ( args === null ) {
+            return []
+        }
+        if ( false ===
+            /.*?(:).*/g.test(config.name) &&
+            /.*?(|).*/g.test(config.name) &&
+            /.*?(@).*/g.test(config.name)
+        ) {
+            return []
+        }
+
+
+        config.arguments = args.map((match, index) => {
+            let arg = defaults.argument(index);
+
+            if ( match.startsWith('{') ) {
+                arg.required = true;
+            }
+            if ( match.endsWith('..]') ) {
+                arg.variadic = true;
+            }
+            arg.name = match.replace(/[\[\]\{\}\.]/g, '');
+
+            if ( arg.name.includes('|') ) {
+                let alias = arg.name.split('|')
+                arg.name  = alias.shift();
+                arg.alias = alias.shift();
+            }
+
+            if ( arg.name.includes(':') ) {
+                let type = arg.name.split(':')
+                arg.name = type.shift();
+                arg.type = type.shift();
+            }
+            if ( arg.name.includes('@') ) {
+                let desc = arg.name.split('@')
+                let any  = desc.shift();
+                arg.desc = desc.shift();
+            }
+
+            return arg;
+        })
+        config.name      = config.name.split(' ').shift();
+    }
+    return config;
+}
+
+
+/** Used in the CLI, after parsing the argv, this arguments go to the handle for the command */
+export function parseArguments(argv_: string[], args: CommandArgumentConfig[] = []) {
+
+    let requireArgument;
+    let res = {};
+    args.forEach(arg => {
+        let val = argv_[ arg.position ];
+        if ( ! val && arg.required && ! requireArgument ) {
+            requireArgument = `Required argument <${arg.name}> not set`;
+        }
+        // val = transformArgumentType()
+        if ( arg.variadic ) {
+            if ( ! res[ arg.name ] ) {
+                res[ arg.name ] = [ val ];
+            } else {
+                res[ arg.name ].push(val)
+            }
+        } else {
+            res[ arg.name ] = val;
+        }
+        if ( arg.alias ) {
+            res[ arg.alias ] = res[ arg.name ];
+        }
+    })
+    return res;
+}
+
+export function transformArgumentType<T extends any>(val: any, to: T): T {
+    if ( transformArgumentType[ 'transformers' ][ to ] ) {
+        return transformArgumentType[ 'transformers' ][ to ](val);
+    }
+    return to;
+}
+transformArgumentType[ 'transformers' ] = {
+    boolean(val: any): boolean {
+        return val === 'true' || val === true || val === '1';
+    },
+    number(val: any): number {
+        return parseInt(val);
+    },
+    string(val: any): string {
+        return typeof val.toString === 'function' ? val.toString() : val;
+    }
+}
