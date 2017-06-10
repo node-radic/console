@@ -5,6 +5,7 @@ import { CommandArgumentConfig, CommandConfig, HelperOptions, OptionConfig } fro
 import { Cli, container } from "./core";
 import { defaults } from "./defaults";
 import { prepareArguments } from "./utils";
+import { decorate, injectable } from "inversify";
 const callsites = require('callsites');
 
 
@@ -57,6 +58,7 @@ function handleCommand(args: any[], cls?: Function) {
         return isForked ? forkedHandle(args[ 0 ]) : handle(args[ 0 ]);
     }
     return (cls) => {
+        decorate(injectable(), cls);
         return isForked ? forkedHandle(cls) : handle(cls);
     }
 }

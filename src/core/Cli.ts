@@ -4,11 +4,12 @@ import { CommandConfig, HelperOptions, HelperOptionsConfig, OptionConfig } from 
 import { ChildProcess, fork, spawn } from "child_process";
 import { YargsParserArgv } from "../../types/yargs-parser";
 import * as _ from "lodash";
-import {  HaltEvent } from "./Events";
+import { Events } from "./Events";
 import { Log, log } from "./log";
 import { Config } from "./config";
 import { findSubCommandFilePath, parseArguments, transformOptions } from "../utils";
 import { resolve } from "path";
+import { HaltEvent } from "./Event";
 const parser = require('yargs-parser')
 const get    = Reflect.getMetadata
 declare var v8debug;
@@ -69,7 +70,7 @@ export class Cli {
     protected _startedHelpers: Array<string>              = []
     protected _mode: CliMode                              = 'require';
 
-    @lazyInject('cli.events')
+    @inject('cli.events')
     public events: Events;
 
     @lazyInject('cli.log')

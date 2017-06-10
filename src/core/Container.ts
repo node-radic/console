@@ -60,11 +60,11 @@ export class Container extends BaseContainer {
     }
 
     ensureInjectable(cls: Function) {
-        let parents = this.getParentClasses(cls);
+        // let parents = this.getParentClasses(cls);
+        //
+        // parents.shift();
 
-        parents.shift();
-
-        try { decorate(injectable(), parents.shift()); } catch ( err ) {
+        try { decorate(injectable(), cls); } catch ( err ) {
             // console.log('ensureInjectable', err)
         }
     }
@@ -107,7 +107,6 @@ export const provide    = makeProvideDecorator(container);
 const fprovide          = makeFluentProvideDecorator(container);
 
 export const singleton = (identifier: ServiceIdentifier) => {
-
     return fprovide(identifier).inSingletonScope().done()
 };
 
