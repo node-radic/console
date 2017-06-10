@@ -19,4 +19,3 @@ RCliListCmd = __decorate([
     src_1.command('list', 'List connections')
 ], RCliListCmd);
 exports.RCliListCmd = RCliListCmd;
-//# sourceMappingURL=rcli-con-list.js.map

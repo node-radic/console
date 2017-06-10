@@ -108,7 +108,7 @@ export function findSubCommandFilePath(subCommand, filePath): string {
 }
 
 /** called in decorator, transforms config.name with all arguments to a proper structure */
-export function prepareArguments(config: CommandConfig): CommandConfig {
+export function prepareArguments<T extends CommandConfig = CommandConfig>(config: T): T{
 //https://regex101.com/r/vSqbuK/1
     let exp = /[{\[]([\w|]*?):([\w\[\]]*?)@(.*?)[}\]]/g;
 
@@ -118,14 +118,14 @@ export function prepareArguments(config: CommandConfig): CommandConfig {
     if ( exp1.test(config.name) ) {
         let args = config.name.match(exp1)
         if ( args === null ) {
-            return []
+            return config
         }
         if ( false ===
             /.*?(:).*/g.test(config.name) &&
             /.*?(|).*/g.test(config.name) &&
             /.*?(@).*/g.test(config.name)
         ) {
-            return []
+            return config
         }
 
 

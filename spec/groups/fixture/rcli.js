@@ -36,4 +36,3 @@ RCliCmd = __decorate([
     })
 ], RCliCmd);
 exports.RCliCmd = RCliCmd;
-//# sourceMappingURL=rcli.js.map

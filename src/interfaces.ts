@@ -8,6 +8,7 @@ export interface CommandArgumentConfig {
     required?: boolean
     variadic?: boolean
     desc?: string
+    type?:string
 }
 
 export interface CommandConfig {
