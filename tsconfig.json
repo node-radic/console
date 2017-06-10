@@ -12,6 +12,7 @@
         "target": "es5",
         "lib": ["es2017", "es2017.object"],
         "noResolve": false,
+
         "typeRoots": [
             "./node_modules/@types",
             "./types"
@@ -20,8 +21,6 @@
     "include": [
         "./src",
         "./spec",
-        "./bin",
-        "./types",
-        "./rcli"
+        "./types"
     ]
 }

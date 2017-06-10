@@ -26,3 +26,4 @@ RCliInstallCmd = __decorate([
     src_1.command('install')
 ], RCliInstallCmd);
 exports.RCliInstallCmd = RCliInstallCmd;
+//# sourceMappingURL=rcli-install.js.map

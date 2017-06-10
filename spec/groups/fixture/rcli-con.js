@@ -19,3 +19,4 @@ RCliConCmd = __decorate([
     src_1.command('con', 'Manage connections', ['list', 'set', 'get'])
 ], RCliConCmd);
 exports.RCliConCmd = RCliConCmd;
+//# sourceMappingURL=rcli-con.js.map

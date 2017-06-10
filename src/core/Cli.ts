@@ -1,10 +1,10 @@
 import { kindOf } from "@radic/util";
-import { container, lazyInject } from "./Container";
+import { container, lazyInject, injectable, inject, singleton } from "./Container";
 import { CommandConfig, HelperOptions, HelperOptionsConfig, OptionConfig } from "../interfaces";
 import { ChildProcess, fork, spawn } from "child_process";
 import { YargsParserArgv } from "../../types/yargs-parser";
 import * as _ from "lodash";
-import { Events, HaltEvent } from "./Events";
+import {  HaltEvent } from "./Events";
 import { Log, log } from "./log";
 import { Config } from "./config";
 import { findSubCommandFilePath, parseArguments, transformOptions } from "../utils";
@@ -58,6 +58,9 @@ export class CliExecuteCommandHandledEvent<T = any> extends HaltEvent {
     }
 }
 export type CliMode = 'require' | 'spawn'
+
+// @singleton('cli')
+@injectable()
 export class Cli {
     protected _runningCommand: ChildProcess | CommandConfig;
     protected _helpers: { [name: string]: HelperOptions } = {}
@@ -67,7 +70,7 @@ export class Cli {
     protected _mode: CliMode                              = 'require';
 
     @lazyInject('cli.events')
-    protected _events: Events;
+    public events: Events;
 
     @lazyInject('cli.log')
     protected _log: Log;
@@ -75,8 +78,6 @@ export class Cli {
     @lazyInject('cli.config')
     protected _config: Config;
 
-
-    public get events(): Events { return this._events; }
 
     public get log(): Log { return this._log; }
 
@@ -199,7 +200,7 @@ export class Cli {
             config.cls.prototype[ 'handle' ] = config.action
         }
 
-        let instance = container.build(config.cls);
+        let instance = container.make(config.cls);
 
         _.without(Object.keys(argv), '_').forEach((argName: string, argIndex: number) => {
             instance[ argName ] = argv[ argName ];
@@ -352,7 +353,7 @@ export class Cli {
             let fnName = options.listeners[ eventName ];
 
             this.events.once(eventName, (...args: any[]) => {
-                instance = instance || container.make(bindingName);
+                instance = instance || container.get(bindingName);
                 if ( kindOf(instance[ fnName ]) === 'function' ) {
                     instance[ fnName ].apply(instance, args);
                 }
@@ -361,5 +362,6 @@ export class Cli {
 
     }
 }
-export const cli: Cli = new Cli;
-container.constant('cli', cli)
+export const cli: Cli = container.resolve<Cli>(Cli);
+container.constant('cli', cli);
+// container.constant('cli', cli)

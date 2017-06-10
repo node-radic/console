@@ -4,6 +4,7 @@ import { defined } from "@radic/util";
 import { Log } from "./log";
 import { Cli } from "./Cli";
 import { defaults } from "../defaults";
+import * as _ from "lodash";
 
 container.ensureInjectable(EventEmitter2);
 
@@ -21,41 +22,26 @@ export abstract class HaltEvent extends Event {
 
     public stop() { this.halt = true }
 }
+EventEmitter2.prototype = <any> _.merge(EventEmitter2.prototype, {
 
-@singleton('cli.events')
-export class Events extends EventEmitter2 {
-    // @lazyInject('cli.log')
-    // protected log: Log;
 
-    protected disabled:boolean = false
-    constructor(@inject('cli.config.events') conf: ConstructorOptions,
-                @inject('cli.log') protected log: Log) {
-        super(conf)
-    }
-
-    fire<T extends Event>(ctx: T): T
-    fire<T extends Event>(event: string | string[], ctx: T): T
-    fire<T extends Event>(...args: any[]): T {
+    fire<T extends Event = Event>(ctx: T): T {
         if(this.disabled === true) return;
-        let event: string | string[];
-        let ctx: T = args[ args.length - 1 ];
+        let event: string | string[] = ctx.event;
 
-        if ( args.length === 2 ) event = args[ 0 ];
-        if ( event === undefined ) event = ctx.event;
-
-        this.log.silly('firing event: ' + event, { ctx })
-        super.emit(event, ctx);
+        // this.log.silly('firing event: ' + event, { ctx })
+        this.emit(event, ctx);
         if ( ctx instanceof HaltEvent ) {
             if ( ctx.halt ) {
-                this.halt<typeof ctx>(event, ctx);
+                this.halt(event, ctx);
             }
         }
         return ctx;
-    }
+    },
 
-    halt<T extends HaltEvent>(event: string | string[], ctx: T) {
+    halt<T extends HaltEvent = HaltEvent>(event: string | string[], ctx: T) {
         process.exit()
-    }
+    },
 
     dispatch(name, ...args: any[]): Promise<boolean> {
         return new Promise((resolve, reject) => {
@@ -66,24 +52,27 @@ export class Events extends EventEmitter2 {
                 resolve(false);
             })
         })
-    }
+    },
 
-    enableDebug() : this{
+    enableDebug() {
         this.onAny((...args: any[]) => {
             console.log('event:', args[ 0 ])
         })
         return this;
-    }
+    },
 
-    disable() :this {
+    disable() {
         this.disabled = true;
         return this;
-    }
-    enable() :this {
+    },
+    enable() {
         this.disabled = false;
         return this;
-    }
+    },
     isEnabled() : boolean {
         return ! this.disabled
     }
-}
+});
+
+export const events = new EventEmitter2(defaults.events());
+container.bind('cli.events').toConstantValue(events);

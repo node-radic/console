@@ -11,7 +11,7 @@ export class Input {
     constructor(@inject('cli.config') protected config) {}
 
     ask(question: string, def?: string): Promise<string> {
-        return new Promise((resolve, reject) => {
+        return <Promise<string>> new Promise((resolve, reject) => {
             this.prompt(<any> [ { name: 'ask', default: def, type: 'input', message: question } ])
                 .catch((reason: any) => reject(reason))
                 .then((answers: any) => resolve(answers.ask))
@@ -24,7 +24,7 @@ export class Input {
     }
 
     password(message:string, def?:string): Promise<string> {
-        return this.prompt({type: 'password', default: def, message}).then(a => Promise.resolve(a))
+        return this.prompt<string>({type: 'password', default: def, message}).then(a => Promise.resolve(a))
     }
 
     prompts(questions: inquirer.Questions): Promise<inquirer.Answers> {

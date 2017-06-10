@@ -1,12 +1,11 @@
-
-import { inject as _inject, Container as BaseContainer, decorate, injectable, interfaces } from "inversify";
-import { makeProvideDecorator, makeFluentProvideDecorator } from "inversify-binding-decorators";
+import { Container as BaseContainer, decorate, inject as _inject, injectable as _injectable, interfaces } from "inversify";
+import { makeFluentProvideDecorator, makeProvideDecorator } from "inversify-binding-decorators";
 import getDecorators from "inversify-inject-decorators";
 
 
 export type ServiceIdentifier = interfaces.ServiceIdentifier<any>;
 
-export class Container extends BaseContainer  {
+export class Container extends BaseContainer {
     protected static instance: Container;
 
     protected constructor(containerOptions?: interfaces.ContainerOptions) {
@@ -27,16 +26,18 @@ export class Container extends BaseContainer  {
      * @returns {T}
      */
     build<T>(cls: any, factoryMethod?: (context: interfaces.Context) => any): T {
-        this.ensureInjectable(cls);
-        let k = 'temporary.kernel.binding';
+
         if ( factoryMethod ) {
+            this.ensureInjectable(cls);
+            let k = 'temporary.kernel.binding';
             this.bind(k).toFactory<any>(factoryMethod);
-        } else {
-            this.bind(k).to(cls);
+            let instance = this.get<T>(k);
+            this.unbind(k);
+            return instance;
+
         }
-        let instance = this.get<T>(k);
-        this.unbind(k);
-        return instance;
+        return this.resolve<T>(cls);
+
     }
 
     /**
@@ -46,13 +47,7 @@ export class Container extends BaseContainer  {
      * @returns {T}
      */
     make<T>(cls: any): T {
-        this.ensureInjectable(cls);
-        let binding = cls.toString();
-        if ( this.isBound(binding) ) {
-            return this.get<T>(binding)
-        }
-        this.bind(binding).to(cls);
-        return this.get<T>(binding)
+        return this.resolve<T>(cls);
     }
 
 
@@ -69,7 +64,9 @@ export class Container extends BaseContainer  {
 
         parents.shift();
 
-        try { decorate(injectable(), parents.shift()); } catch ( err ) {}
+        try { decorate(injectable(), parents.shift()); } catch ( err ) {
+            // console.log('ensureInjectable', err)
+        }
     }
 
     bindTo(id: ServiceIdentifier) {
@@ -80,8 +77,9 @@ export class Container extends BaseContainer  {
         return lazyInject(id);
     }
 
-    singleton(id: ServiceIdentifier, cls:Function) {
-        return singleton(id)(cls);
+    singleton(id: ServiceIdentifier, cls: any) {
+        this.ensureInjectable(cls);
+        this.bind(id).to(cls).inSingletonScope();
     }
 
     inject(id: ServiceIdentifier): (target: any, targetKey: string, index?: number | undefined) => void {
@@ -89,7 +87,7 @@ export class Container extends BaseContainer  {
     }
 
     injectable() {
-        return injectable();
+        return _injectable();
     }
 
     decorate(decorator: (ClassDecorator | ParameterDecorator), target: any, parameterIndex?: number) {
@@ -103,18 +101,19 @@ export class Container extends BaseContainer  {
 
 export const container: Container = Container.getInstance();
 
-
-export const lazyInject       = getDecorators(container).lazyInject;
-export const provide          = makeProvideDecorator(container);
-const fprovide                = makeFluentProvideDecorator(container);
+export const injectable = () => _injectable()
+export const lazyInject = getDecorators(container).lazyInject;
+export const provide    = makeProvideDecorator(container);
+const fprovide          = makeFluentProvideDecorator(container);
 
 export const singleton = (identifier: ServiceIdentifier) => {
+
     return fprovide(identifier).inSingletonScope().done()
 };
 
-export const inject = (id:ServiceIdentifier) => {
+export const inject = (id: ServiceIdentifier) => {
     return _inject(id);
 }
-export const bindTo = (id:ServiceIdentifier) => {
+export const bindTo = (id: ServiceIdentifier) => {
     return container.bindTo(id);
 }
