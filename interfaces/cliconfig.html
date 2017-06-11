@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>YargsParserOptionsConfiguration | @radic/console</title>
+	<title>CliConfig | @radic/console</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,10 +54,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="yargsparseroptionsconfiguration.html">YargsParserOptionsConfiguration</a>
+					<a href="cliconfig.html">CliConfig</a>
 				</li>
 			</ul>
-			<h1>Interface YargsParserOptionsConfiguration</h1>
+			<h1>Interface CliConfig</h1>
 		</div>
 	</div>
 </header>
@@ -68,7 +68,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">YargsParserOptionsConfiguration</span>
+						<span class="target">CliConfig</span>
 					</li>
 				</ul>
 			</section>
@@ -79,13 +79,7 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="yargsparseroptionsconfiguration.html#boolean_negation" class="tsd-kind-icon">boolean-<wbr>negation</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="yargsparseroptionsconfiguration.html#camel_case_expansion" class="tsd-kind-icon">camel-<wbr>case-<wbr>expansion</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="yargsparseroptionsconfiguration.html#dot_notation" class="tsd-kind-icon">dot-<wbr>notation</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="yargsparseroptionsconfiguration.html#duplicate_arguments_array" class="tsd-kind-icon">duplicate-<wbr>arguments-<wbr>array</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="yargsparseroptionsconfiguration.html#flatten_duplicate_arrays" class="tsd-kind-icon">flatten-<wbr>duplicate-<wbr>arrays</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="yargsparseroptionsconfiguration.html#parse_numbers" class="tsd-kind-icon">parse-<wbr>numbers</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="yargsparseroptionsconfiguration.html#short_option_groups" class="tsd-kind-icon">short-<wbr>option-<wbr>groups</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="cliconfig.html#parser" class="tsd-kind-icon">parser</a></li>
 							</ul>
 						</section>
 					</div>
@@ -94,74 +88,38 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="boolean_negation" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> boolean-<wbr>negation</h3>
-					<div class="tsd-signature tsd-kind-icon">boolean-<wbr>negation<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="parser" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> parser</h3>
+					<div class="tsd-signature tsd-kind-icon">parser<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/types/yargs-parser.d.ts#L7">types/yargs-parser.d.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/src/interfaces.ts#L76">src/interfaces.ts:76</a></li>
 						</ul>
 					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="camel_case_expansion" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> camel-<wbr>case-<wbr>expansion</h3>
-					<div class="tsd-signature tsd-kind-icon">camel-<wbr>case-<wbr>expansion<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/types/yargs-parser.d.ts#L4">types/yargs-parser.d.ts:4</a></li>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>arguments config</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> arguments<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter">
+										<h5><span class="tsd-flag ts-flagOptional">Optional</span> null<wbr>Undefined<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5><span class="tsd-flag ts-flagOptional">Optional</span> undefined<wbr>Boolean<wbr>IsFalse<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+									</li>
+								</ul>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> yargs<span class="tsd-signature-symbol">?: </span><a href="parserconfiguration.html" class="tsd-signature-type">ParserConfiguration</a></h5>
+							</li>
 						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="dot_notation" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> dot-<wbr>notation</h3>
-					<div class="tsd-signature tsd-kind-icon">dot-<wbr>notation<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/types/yargs-parser.d.ts#L5">types/yargs-parser.d.ts:5</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="duplicate_arguments_array" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> duplicate-<wbr>arguments-<wbr>array</h3>
-					<div class="tsd-signature tsd-kind-icon">duplicate-<wbr>arguments-<wbr>array<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/types/yargs-parser.d.ts#L8">types/yargs-parser.d.ts:8</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="flatten_duplicate_arrays" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> flatten-<wbr>duplicate-<wbr>arrays</h3>
-					<div class="tsd-signature tsd-kind-icon">flatten-<wbr>duplicate-<wbr>arrays<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/types/yargs-parser.d.ts#L9">types/yargs-parser.d.ts:9</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="parse_numbers" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> parse-<wbr>numbers</h3>
-					<div class="tsd-signature tsd-kind-icon">parse-<wbr>numbers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/types/yargs-parser.d.ts#L6">types/yargs-parser.d.ts:6</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="short_option_groups" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> short-<wbr>option-<wbr>groups</h3>
-					<div class="tsd-signature tsd-kind-icon">short-<wbr>option-<wbr>groups<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/types/yargs-parser.d.ts#L3">types/yargs-parser.d.ts:3</a></li>
-						</ul>
-					</aside>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -178,28 +136,10 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="yargsparseroptionsconfiguration.html" class="tsd-kind-icon">Yargs<wbr>Parser<wbr>Options<wbr>Configuration</a>
+						<a href="cliconfig.html" class="tsd-kind-icon">Cli<wbr>Config</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="yargsparseroptionsconfiguration.html#boolean_negation" class="tsd-kind-icon">boolean-<wbr>negation</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="yargsparseroptionsconfiguration.html#camel_case_expansion" class="tsd-kind-icon">camel-<wbr>case-<wbr>expansion</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="yargsparseroptionsconfiguration.html#dot_notation" class="tsd-kind-icon">dot-<wbr>notation</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="yargsparseroptionsconfiguration.html#duplicate_arguments_array" class="tsd-kind-icon">duplicate-<wbr>arguments-<wbr>array</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="yargsparseroptionsconfiguration.html#flatten_duplicate_arrays" class="tsd-kind-icon">flatten-<wbr>duplicate-<wbr>arrays</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="yargsparseroptionsconfiguration.html#parse_numbers" class="tsd-kind-icon">parse-<wbr>numbers</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="yargsparseroptionsconfiguration.html#short_option_groups" class="tsd-kind-icon">short-<wbr>option-<wbr>groups</a>
+								<a href="cliconfig.html#parser" class="tsd-kind-icon">parser</a>
 							</li>
 						</ul>
 					</li>

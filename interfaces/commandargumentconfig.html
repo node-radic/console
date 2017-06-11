@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>YargsParserOptionsConfiguration | @radic/console</title>
+	<title>CommandArgumentConfig | @radic/console</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,10 +54,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="yargsparseroptionsconfiguration.html">YargsParserOptionsConfiguration</a>
+					<a href="commandargumentconfig.html">CommandArgumentConfig</a>
 				</li>
 			</ul>
-			<h1>Interface YargsParserOptionsConfiguration</h1>
+			<h1>Interface CommandArgumentConfig</h1>
 		</div>
 	</div>
 </header>
@@ -68,7 +68,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">YargsParserOptionsConfiguration</span>
+						<span class="target">CommandArgumentConfig</span>
 					</li>
 				</ul>
 			</section>
@@ -79,13 +79,13 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="yargsparseroptionsconfiguration.html#boolean_negation" class="tsd-kind-icon">boolean-<wbr>negation</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="yargsparseroptionsconfiguration.html#camel_case_expansion" class="tsd-kind-icon">camel-<wbr>case-<wbr>expansion</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="yargsparseroptionsconfiguration.html#dot_notation" class="tsd-kind-icon">dot-<wbr>notation</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="yargsparseroptionsconfiguration.html#duplicate_arguments_array" class="tsd-kind-icon">duplicate-<wbr>arguments-<wbr>array</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="yargsparseroptionsconfiguration.html#flatten_duplicate_arrays" class="tsd-kind-icon">flatten-<wbr>duplicate-<wbr>arrays</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="yargsparseroptionsconfiguration.html#parse_numbers" class="tsd-kind-icon">parse-<wbr>numbers</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="yargsparseroptionsconfiguration.html#short_option_groups" class="tsd-kind-icon">short-<wbr>option-<wbr>groups</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="commandargumentconfig.html#alias" class="tsd-kind-icon">alias</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="commandargumentconfig.html#desc" class="tsd-kind-icon">desc</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="commandargumentconfig.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="commandargumentconfig.html#position" class="tsd-kind-icon">position</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="commandargumentconfig.html#required" class="tsd-kind-icon">required</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="commandargumentconfig.html#type" class="tsd-kind-icon">type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="commandargumentconfig.html#variadic" class="tsd-kind-icon">variadic</a></li>
 							</ul>
 						</section>
 					</div>
@@ -94,72 +94,72 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="boolean_negation" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> boolean-<wbr>negation</h3>
-					<div class="tsd-signature tsd-kind-icon">boolean-<wbr>negation<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="alias" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> alias</h3>
+					<div class="tsd-signature tsd-kind-icon">alias<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/types/yargs-parser.d.ts#L7">types/yargs-parser.d.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/src/interfaces.ts#L19">src/interfaces.ts:19</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="camel_case_expansion" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> camel-<wbr>case-<wbr>expansion</h3>
-					<div class="tsd-signature tsd-kind-icon">camel-<wbr>case-<wbr>expansion<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="desc" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> desc</h3>
+					<div class="tsd-signature tsd-kind-icon">desc<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/types/yargs-parser.d.ts#L4">types/yargs-parser.d.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/src/interfaces.ts#L22">src/interfaces.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="dot_notation" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> dot-<wbr>notation</h3>
-					<div class="tsd-signature tsd-kind-icon">dot-<wbr>notation<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="name" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> name</h3>
+					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/types/yargs-parser.d.ts#L5">types/yargs-parser.d.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/src/interfaces.ts#L18">src/interfaces.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="duplicate_arguments_array" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> duplicate-<wbr>arguments-<wbr>array</h3>
-					<div class="tsd-signature tsd-kind-icon">duplicate-<wbr>arguments-<wbr>array<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="position" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> position</h3>
+					<div class="tsd-signature tsd-kind-icon">position<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/types/yargs-parser.d.ts#L8">types/yargs-parser.d.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/src/interfaces.ts#L17">src/interfaces.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="flatten_duplicate_arrays" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> flatten-<wbr>duplicate-<wbr>arrays</h3>
-					<div class="tsd-signature tsd-kind-icon">flatten-<wbr>duplicate-<wbr>arrays<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="required" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> required</h3>
+					<div class="tsd-signature tsd-kind-icon">required<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/types/yargs-parser.d.ts#L9">types/yargs-parser.d.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/src/interfaces.ts#L20">src/interfaces.ts:20</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="parse_numbers" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> parse-<wbr>numbers</h3>
-					<div class="tsd-signature tsd-kind-icon">parse-<wbr>numbers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="type" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> type</h3>
+					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/types/yargs-parser.d.ts#L6">types/yargs-parser.d.ts:6</a></li>
+							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/src/interfaces.ts#L23">src/interfaces.ts:23</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="short_option_groups" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> short-<wbr>option-<wbr>groups</h3>
-					<div class="tsd-signature tsd-kind-icon">short-<wbr>option-<wbr>groups<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="variadic" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> variadic</h3>
+					<div class="tsd-signature tsd-kind-icon">variadic<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/types/yargs-parser.d.ts#L3">types/yargs-parser.d.ts:3</a></li>
+							<li>Defined in <a href="https://github.com/node-radic/console/blob/8f131f5/src/interfaces.ts#L21">src/interfaces.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -178,28 +178,28 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="yargsparseroptionsconfiguration.html" class="tsd-kind-icon">Yargs<wbr>Parser<wbr>Options<wbr>Configuration</a>
+						<a href="commandargumentconfig.html" class="tsd-kind-icon">Command<wbr>Argument<wbr>Config</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="yargsparseroptionsconfiguration.html#boolean_negation" class="tsd-kind-icon">boolean-<wbr>negation</a>
+								<a href="commandargumentconfig.html#alias" class="tsd-kind-icon">alias</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="yargsparseroptionsconfiguration.html#camel_case_expansion" class="tsd-kind-icon">camel-<wbr>case-<wbr>expansion</a>
+								<a href="commandargumentconfig.html#desc" class="tsd-kind-icon">desc</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="yargsparseroptionsconfiguration.html#dot_notation" class="tsd-kind-icon">dot-<wbr>notation</a>
+								<a href="commandargumentconfig.html#name" class="tsd-kind-icon">name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="yargsparseroptionsconfiguration.html#duplicate_arguments_array" class="tsd-kind-icon">duplicate-<wbr>arguments-<wbr>array</a>
+								<a href="commandargumentconfig.html#position" class="tsd-kind-icon">position</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="yargsparseroptionsconfiguration.html#flatten_duplicate_arrays" class="tsd-kind-icon">flatten-<wbr>duplicate-<wbr>arrays</a>
+								<a href="commandargumentconfig.html#required" class="tsd-kind-icon">required</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="yargsparseroptionsconfiguration.html#parse_numbers" class="tsd-kind-icon">parse-<wbr>numbers</a>
+								<a href="commandargumentconfig.html#type" class="tsd-kind-icon">type</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="yargsparseroptionsconfiguration.html#short_option_groups" class="tsd-kind-icon">short-<wbr>option-<wbr>groups</a>
+								<a href="commandargumentconfig.html#variadic" class="tsd-kind-icon">variadic</a>
 							</li>
 						</ul>
 					</li>
