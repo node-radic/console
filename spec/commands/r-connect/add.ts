@@ -6,7 +6,7 @@ import { CommandArguments } from "../../../src/interfaces";
 [host:string@the host to connect]
 [user/users:string[]@the user to login] 
 [method:string[]@the connect method]`
-    , 'add a connection')
+    , 'Add a connection')
 export class RcliConnectAddCmd {
 
     @lazyInject('cli.helpers.output')

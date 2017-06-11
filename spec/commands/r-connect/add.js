@@ -74,7 +74,7 @@ __decorate([
     __metadata("design:type", Object)
 ], RcliConnectAddCmd.prototype, "lazyInject", void 0);
 RcliConnectAddCmd = __decorate([
-    src_1.command("add \n{name:string@the connection name} \n[host:string@the host to connect]\n[user/users:string[]@the user to login] \n[method:string[]@the connect method]", 'add a connection')
+    src_1.command("add \n{name:string@the connection name} \n[host:string@the host to connect]\n[user/users:string[]@the user to login] \n[method:string[]@the connect method]", 'Add a connection')
 ], RcliConnectAddCmd);
 exports.RcliConnectAddCmd = RcliConnectAddCmd;
 exports.default = RcliConnectAddCmd;

@@ -22,22 +22,25 @@ import { Log } from "../core/log";
             header     : 'darkorange bold',
             group      : 'steelblue bold',
             command    : 'darkcyan',
+            required   : 'green',
             description: 'darkslategray',
             desc       : '<%= helpers.help.style.description %>', // alias
             argument   : 'yellow darken 25',
             optional   : 'yellow',
+            array      : 'cyan',
             type       : 'yellow'
         },
         display: {
-            title        : true,
-            titleLines   : true,
-            description  : true,
-            usage        : true,
-            example      : true,
-            arguments    : true,
-            subCommands  : true,
-            options      : true,
-            globalOptions: true
+            title             : true,
+            titleLines        : true,
+            description       : true,
+            descriptionAsTitle: true,
+            usage             : true,
+            example           : true,
+            arguments         : true,
+            subCommands       : true,
+            options           : true,
+            globalOptions     : true
         }
     },
 
@@ -69,12 +72,18 @@ export class Help {
 
         this.printTitle(config);
 
-        if ( this.config.display.description && desc.length > 0 ) {
-            this.out.line(desc); //line('{group}Description:{/group}')
+        if ( this.config.display.description && ! this.config.display.descriptionAsTitle && config.description.length > 0 ) {
+            this.out.line(config.description); //line('{group}Description:{/group}')
         }
+
         if ( this.config.display.usage ) {
             if ( usage.length === 0 && config.arguments.length > 0 ) {
-                usage = config.name + ' ' + config.arguments.map(arg => arg.required ? '<' + arg.name + '>' : '[' + arg.name + ']').join(' ')
+                usage = this.getParsedCommandNames().join(' ');
+                usage += ' '
+                usage += config.arguments.map(arg => {
+                    name = arg.name + (arg.alias ? '|' + arg.alias : '')
+                    return arg.required ? '<' + name + '>' : '[' + name + ']'
+                }).join(' ')
             }
             if ( usage.length > 0 ) {
                 this.out.nl.line('{header}Usage:{/header}').line(usage);
@@ -104,16 +113,37 @@ export class Help {
     protected printArguments(args: CommandArgumentConfig[] = []) {
         let rows = []
         args.forEach(arg => {
-            // arg.name
-            // arg.desc
-            // arg.required
-            // arg.variadic
 
-            rows.push(arg) ; //[ arg.name, arg.desc, arg.type, arg.variadic, arg.required ])
+            let name = [
+                arg.required ? '<' : '[',
+                arg.name,
+                arg.alias ? '|' + arg.alias : '',
+                arg.required ? '>' : ']',
+            ].join('');
+
+            let type = [
+                '[',
+                arg.required ? '{array}Array<{/array}' : '',
+                `{type}${arg.type}{/type}`,
+                arg.required ? '{array}>{/array}' : '',
+                ']'
+            ].join('')
+
+            if ( arg.required ) {
+                type += ' [{required}required{/required}]'
+            }
+
+            let row = [
+                name,
+                arg.desc,
+                type
+            ]
+
+            rows.push(row); //[ arg.name, arg.desc, arg.type, arg.variadic, arg.required ])
         })
         this.out.columns(rows, {
-            columnSplitter  : '   ',
-            showHeaders     : true,
+            columnSplitter  : '  ',
+            showHeaders     : false,
             preserveNewLines: true
         })
     }
@@ -121,8 +151,10 @@ export class Help {
     protected printTitle(config: CommandConfig) {
         let title = config.name;
         // check if root command
-        if ( this.cli.runningCommand.cls === config.cls ) {
+        if ( this.cli.rootCommand.cls === config.cls ) {
             title = this.config.app.title || config.name;
+        } else if ( this.config.display.descriptionAsTitle && config.description.length > 0 ) {
+            title = config.description; //line('{group}Description:{/group}')
         }
         if ( this.config.display.title ) {
             this.out.nl.line(`{title}${title}{/title}`)
@@ -215,6 +247,12 @@ export class Help {
             preserveNewLines: true
         })
 
+    }
+
+    protected getParsedCommandNames(): string[] {
+        return this.cli.parsedCommands.map(cmd => {
+            return cmd.name
+        })
     }
 
     public onCommandParse(event: CliExecuteCommandParseEvent) {

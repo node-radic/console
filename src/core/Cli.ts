@@ -78,6 +78,8 @@ export class Cli {
     protected _runningCommand: ChildProcess | CommandConfig;
     protected _helpers: { [name: string]: HelperOptions } = {}
     protected _requiredCommands: any[]                    = []
+    protected _parsedCommands: CommandConfig[]            = []
+    protected _rootCommand: CommandConfig;
     protected globalOptions: OptionConfig[]               = [];
     protected _startedHelpers: Array<string>              = []
     protected _mode: CliMode                              = 'require';
@@ -100,6 +102,13 @@ export class Cli {
         return <CommandConfig> this._runningCommand;
     }
 
+    public get rootCommand(): CommandConfig {
+        return <CommandConfig> this._rootCommand;
+    }
+    public get parsedCommands(): CommandConfig[] {
+        return <CommandConfig[]> this._parsedCommands;
+    }
+
     public mode(mode: CliMode): this {
         this._mode = mode;
         return this;
@@ -114,12 +123,18 @@ export class Cli {
 
     public parse(config: CommandConfig): this {
 
+        if ( ! this._rootCommand ) {
+            this._rootCommand = config;
+        }
+
         this.events.fire(new CliParseEvent(config, this.globalOptions))
 
         let transformedOptions = transformOptions(this.globalOptions);
         let result             = parser(config.args, transformedOptions) as YargsParserArgv;
 
         this.events.fire(new CliParsedEvent(config, result, this.globalOptions))
+
+        this._parsedCommands.push(config);
 
         // Check if sub-command should be invoked
 
