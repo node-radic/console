@@ -1,20 +1,24 @@
 import { kindOf } from "@radic/util";
 import { CommandArgumentConfig, CommandConfig, HelperOptionsConfig, OptionConfig } from "../interfaces";
 import { helper } from "../decorators";
-import { Cli, CliExecuteCommandHandleEvent, CliExecuteCommandParseEvent } from "../core/Cli";
+import { Cli, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArguments, CliExecuteCommandParseEvent } from "../core/Cli";
 import { lazyInject } from "../core/Container";
 import { Output } from "./Output";
 import { findSubCommandFilePath } from "../utils";
+import { Log } from "../core/log";
 
 @helper('help', {
     config: {
+        app    : {
+            title: ''
+        },
         option : {
             enabled: true,
             key    : 'h',
             name   : 'help'
         },
         style  : {
-
+            titleLines : 'darkorange',
             header     : 'darkorange bold',
             group      : 'steelblue bold',
             command    : 'darkcyan',
@@ -25,9 +29,12 @@ import { findSubCommandFilePath } from "../utils";
             type       : 'yellow'
         },
         display: {
+            title        : true,
+            titleLines   : true,
             description  : true,
             usage        : true,
             example      : true,
+            arguments    : true,
             subCommands  : true,
             options      : true,
             globalOptions: true
@@ -35,8 +42,9 @@ import { findSubCommandFilePath } from "../utils";
     },
 
     listeners: {
-        'cli:execute:parse' : 'onCommandParse',
-        'cli:execute:handle': 'onCommandHandle'
+        'cli:execute:parse'  : 'onCommandParse',
+        'cli:execute:handle' : 'onCommandHandle',
+        'cli:execute:invalid': 'onInvalidArguments'
     },
 
     depends: [ 'output' ]
@@ -46,6 +54,8 @@ export class Help {
 
     @lazyInject('cli')
     cli: Cli
+    @lazyInject('cli.log')
+    log: Log
 
     @lazyInject('cli.helpers.output')
     out: Output;
@@ -57,7 +67,7 @@ export class Help {
             usage   = config.usage || '';
 
 
-        this.out.nl.line(`{title}${name}\n${'-'.repeat(name.length)}{/title}`)
+        this.printTitle(config);
 
         if ( this.config.display.description && desc.length > 0 ) {
             this.out.line(desc); //line('{group}Description:{/group}')
@@ -70,8 +80,9 @@ export class Help {
                 this.out.nl.line('{header}Usage:{/header}').line(usage);
             }
         }
-        if ( this.config.display.example && example.length > 0 ) {
-            this.out.nl.line('{header}Example:{/header}').line(example);
+        if ( this.config.display.arguments && config.arguments.length > 0 ) {
+            this.out.nl.line('{header}Arguments:{/header}');
+            this.printArguments(config.arguments);
         }
         if ( this.config.display.subCommands && config.subCommands.length > 0 ) {
             this.out.nl.line('{header}Commands:{/header}');
@@ -85,13 +96,41 @@ export class Help {
             this.out.nl.line('{header}Global options:{/header}')
             this.printGlobalOptions();
         }
+        if ( this.config.display.example && example.length > 0 ) {
+            this.out.nl.line('{header}Examples:{/header}').line(example);
+        }
     }
 
-    protected printArguments(args:CommandArgumentConfig[] = []){
+    protected printArguments(args: CommandArgumentConfig[] = []) {
         let rows = []
         args.forEach(arg => {
-            // arg.
+            // arg.name
+            // arg.desc
+            // arg.required
+            // arg.variadic
+
+            rows.push(arg) ; //[ arg.name, arg.desc, arg.type, arg.variadic, arg.required ])
         })
+        this.out.columns(rows, {
+            columnSplitter  : '   ',
+            showHeaders     : true,
+            preserveNewLines: true
+        })
+    }
+
+    protected printTitle(config: CommandConfig) {
+        let title = config.name;
+        // check if root command
+        if ( this.cli.runningCommand.cls === config.cls ) {
+            title = this.config.app.title || config.name;
+        }
+        if ( this.config.display.title ) {
+            this.out.nl.line(`{title}${title}{/title}`)
+            if ( this.config.display.titleLines ) {
+                this.out.line(`{titleLines}${'-'.repeat(title.length)}{/titleLines}`)
+            }
+        }
+
     }
 
     protected printSubCommands(subCommands: string[]) {
@@ -188,12 +227,24 @@ export class Help {
 
     public onCommandHandle(event: CliExecuteCommandHandleEvent): void {
         this.out.styles(this.config.style);
+        event.instance[ 'showHelp' ] = () => {
+            this.showHelp(event.config, event.options)
+        };
         if ( event.argv[ this.config.option.key ] ) {
             if ( kindOf(event.instance[ 'help' ]) === 'function' ) {
                 event.instance[ 'help' ].apply(event.instance, [ event.config, event.options ]);
                 return event.stop();
             }
             this.showHelp(event.config, event.options);
+            return event.stop();
+        }
+    }
+
+    public onInvalidArguments(event: CliExecuteCommandInvalidArguments) {
+        if ( event.config.onMissingArgument === 'help' ) {
+            this.showHelp(event.config, event.options);
+            this.out.nl;
+            this.log.error(`Missing required argument [${event.parsed.missing[ 0 ]}]`)
             return event.stop();
         }
     }

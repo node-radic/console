@@ -1,12 +1,16 @@
 import { CliConfig, CommandArgumentConfig, CommandConfig, OptionConfig } from "./interfaces";
 import { ConstructorOptions as EventsConstructorOptions } from "eventemitter2";
 import { cloneDeep } from "lodash";
+import { config } from "./";
 export const defaults = {
     config(): CliConfig {
         return <CliConfig> cloneDeep({
             mode          : "require",
             autoExecute   : true,
             prettyErrors  : true,
+            commands: {
+                onMissingArgument: 'fail'
+            },
             log           : {
                 level      : 'debug',
                 colorize   : true,
@@ -32,21 +36,22 @@ export const defaults = {
                 },
                 options  : {}
             },
-            router        : {},
             helpers       : {}
         })
     },
     command<T extends CommandConfig = CommandConfig>(cls: Function): T {
         return <T> cloneDeep({
-            name       : cls.name.replace('Command', '').toLowerCase(),
-            usage      : null,
-            description: '',
-            example    : null,
-            action     : 'handle',
-            arguments  : [],
-            subCommands: [],
+            name             : cls.name.replace('Command', '').toLowerCase(),
+            usage            : null,
+            description      : '',
+            example          : null,
+            action           : 'handle',
+            onMissingArgument: config.get('commands.onMissingArgument', 'fail'),
+            arguments        : [],
+            subCommands      : [],
+            helpers          : {},
             // argv       : process.argv,
-            args       : process.argv.slice(2),
+            args             : process.argv.slice(2),
             cls
         });
     },

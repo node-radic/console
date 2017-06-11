@@ -1,5 +1,5 @@
 import { YargsParserOptions } from "../types/yargs-parser";
-import { CommandArgumentConfig, CommandConfig, OptionConfig } from "./interfaces";
+import { CommandArgumentConfig, CommandConfig, OptionConfig, ParsedCommandArguments } from "./interfaces";
 import { existsSync, statSync } from "fs";
 import { basename, dirname, join, sep } from "path";
 import { defaults } from "./defaults";
@@ -108,72 +108,66 @@ export function findSubCommandFilePath(subCommand, filePath): string {
 }
 
 /** called in decorator, transforms config.name with all arguments to a proper structure */
-export function prepareArguments<T extends CommandConfig = CommandConfig>(config: T): T{
+export function prepareArguments<T extends CommandConfig = CommandConfig>(config: T): T {
 //https://regex101.com/r/vSqbuK/1
-    let exp = /[{\[]([\w|]*?):([\w\[\]]*?)@(.*?)[}\]]/g;
 
-
-    let exp1 = /[{\[](.*?)[}\]]/g
-
-    if ( exp1.test(config.name) ) {
-        let args = config.name.match(exp1)
-        if ( args === null ) {
+    let name            = config.name.replace(/\[\]/g, '()')
+    let argumentPattern = /[{|\[](.*?)[}|\]]/gm
+    if ( argumentPattern.test(name) ) {
+        if ( name.match(argumentPattern) === null )
             return config
-        }
-        if ( false ===
-            /.*?(:).*/g.test(config.name) &&
-            /.*?(|).*/g.test(config.name) &&
-            /.*?(@).*/g.test(config.name)
-        ) {
-            return config
+
+        let matches = [], myArr
+        while ( myArr = argumentPattern.exec(name) ) {
+            matches.push(myArr);
         }
 
-
-        config.arguments = args.map((match, index) => {
-            let arg = defaults.argument(index);
-
-            if ( match.startsWith('{') ) {
+        let args: CommandArgumentConfig[] = [];
+        matches.forEach((match, index) => {
+            let arg              = defaults.argument(index);
+            let original: string = match[ 1 ]
+            if ( match[ 0 ].startsWith('{') ) {
                 arg.required = true;
             }
-            if ( match.endsWith('..]') ) {
-                arg.variadic = true;
-            }
-            arg.name = match.replace(/[\[\]\{\}\.]/g, '');
+            let exp      = '^(.*?)',
+                hasAlias = original.includes('/'),
+                hasType  = original.includes(':'),
+                isArray  = original.includes('()'),
+                hasDesc  = original.includes('@')
 
-            if ( arg.name.includes('|') ) {
-                let alias = arg.name.split('|')
-                arg.name  = alias.shift();
-                arg.alias = alias.shift();
-            }
+            if ( hasAlias ) exp += '\\/(.*?)'
+            if ( hasType ) exp += ':(.*?)';
+            if ( isArray ) exp += '\\(\\)'
+            if ( hasDesc ) exp += '@(.*?)'
+            exp += '$'
 
-            if ( arg.name.includes(':') ) {
-                let type = arg.name.split(':')
-                arg.name = type.shift();
-                arg.type = type.shift();
-            }
-            if ( arg.name.includes('@') ) {
-                let desc = arg.name.split('@')
-                let any  = desc.shift();
-                arg.desc = desc.shift();
-            }
+            let regexp = new RegExp(exp, 'gm');
+            let res    = regexp.exec(original);
 
-            return arg;
+            let $    = 1;
+            arg.name = res[ $ ++ ];
+            if ( hasAlias ) arg.alias = res[ $ ++ ];
+            if ( hasType ) arg.type = res[ $ ++ ]
+            if ( hasDesc ) arg.desc = res[ $ ++ ]
+            if ( isArray ) arg.variadic = true;
+
+            args.push(arg);
         })
+        config.arguments = args;
         config.name      = config.name.split(' ').shift();
     }
     return config;
 }
 
-
 /** Used in the CLI, after parsing the argv, this arguments go to the handle for the command */
-export function parseArguments(argv_: string[], args: CommandArgumentConfig[] = []) {
+export function parseArguments(argv_: string[], args: CommandArgumentConfig[] = []): ParsedCommandArguments {
 
-    let requireArgument;
-    let res = {};
+    let invalid = [];
+    let res     = {};
     args.forEach(arg => {
         let val = argv_[ arg.position ];
-        if ( ! val && arg.required && ! requireArgument ) {
-            requireArgument = `Required argument <${arg.name}> not set`;
+        if ( ! val && arg.required ) {
+            invalid.push(arg.name);
         }
         // val = transformArgumentType()
         if ( arg.variadic ) {
@@ -189,7 +183,7 @@ export function parseArguments(argv_: string[], args: CommandArgumentConfig[] = 
             res[ arg.alias ] = res[ arg.name ];
         }
     })
-    return res;
+    return { arguments: res, missing: invalid, valid: invalid.length === 0 };
 }
 
 export function transformArgumentType<T extends any>(val: any, to: T): T {

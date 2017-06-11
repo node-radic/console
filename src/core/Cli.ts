@@ -1,6 +1,6 @@
 import { kindOf } from "@radic/util";
-import { container, lazyInject, injectable, inject, singleton } from "./Container";
-import { CommandConfig, HelperOptions, HelperOptionsConfig, OptionConfig } from "../interfaces";
+import { container, inject, injectable, lazyInject } from "./Container";
+import { CommandConfig, HelperOptions, HelperOptionsConfig, OptionConfig, ParsedCommandArguments } from "../interfaces";
 import { ChildProcess, fork, spawn } from "child_process";
 import { YargsParserArgv } from "../../types/yargs-parser";
 import * as _ from "lodash";
@@ -10,6 +10,9 @@ import { Config } from "./config";
 import { findSubCommandFilePath, parseArguments, transformOptions } from "../utils";
 import { resolve } from "path";
 import { HaltEvent } from "./Event";
+import { interfaces } from "inversify";
+import Context = interfaces.Context;
+import BindingWhenOnSyntax = interfaces.BindingWhenOnSyntax;
 const parser = require('yargs-parser')
 const get    = Reflect.getMetadata
 declare var v8debug;
@@ -41,8 +44,17 @@ export class CliExecuteCommandParsedEvent extends HaltEvent {
         super('cli:execute:parsed')
     }
 }
+export class CliExecuteCommandInvalidArguments<T = any> extends HaltEvent {
+    constructor(public instance: T,
+                public parsed: ParsedCommandArguments,
+                public config: CommandConfig,
+                public options: OptionConfig[]) {
+        super('cli:execute:invalid')
+    }
+}
 export class CliExecuteCommandHandleEvent<T = any> extends HaltEvent {
     constructor(public instance: T,
+                public parsed: ParsedCommandArguments,
                 public argv: YargsParserArgv,
                 public config: CommandConfig,
                 public options: OptionConfig[]) {
@@ -88,12 +100,12 @@ export class Cli {
         return <CommandConfig> this._runningCommand;
     }
 
-    public mode(mode: CliMode) : this {
+    public mode(mode: CliMode): this {
         this._mode = mode;
         return this;
     }
 
-    public start(requirePath: string) : this {
+    public start(requirePath: string): this {
         requirePath = resolve(requirePath);
         this._requiredCommands.push(requirePath.endsWith('.js') ? requirePath : requirePath + '.js');
         require(requirePath)
@@ -111,7 +123,8 @@ export class Cli {
 
         // Check if sub-command should be invoked
 
-        if ( result._.length > 0 &&
+        if ( ! this._runningCommand &&
+            result._.length > 0 &&
             config.subCommands.length > 0 &&
             config.subCommands.includes(result._[ 0 ]) ) {
 
@@ -151,6 +164,188 @@ export class Cli {
         return this;
     }
 
+    protected executeCommand(config: CommandConfig, isAlwaysRun: boolean = false) {
+
+
+        this.startHelpers(config.helpers);
+
+        let optionConfigs: OptionConfig[] = get('options', config.cls.prototype) || [];
+
+        // Parse
+        if ( ! isAlwaysRun )
+            this.events.fire(new CliExecuteCommandParseEvent(config, optionConfigs))
+
+        let transformedOptions = transformOptions(optionConfigs.concat(this.globalOptions));
+        let argv               = parser(config.args, transformedOptions) as YargsParserArgv;
+
+        if ( ! isAlwaysRun )
+            this.events.fire(new CliExecuteCommandParsedEvent(argv, config, optionConfigs))
+
+        // Create
+        if ( kindOf(config.action) === 'function' ) {
+            config.cls.prototype[ 'handle' ] = config.action
+        }
+
+        let instance = container.resolve(<any> config.cls);
+
+        // Assign the config itself to the instance, so it's possible to check back on it
+        instance[ '_config' ]  = config;
+        instance[ '_options' ] = optionConfigs;
+
+        // Argument assignment to the instance
+        _.without(Object.keys(argv), '_').forEach((argName: string, argIndex: number) => {
+            instance[ argName ] = argv[ argName ];
+        })
+
+
+        // Handle
+        if ( ! isAlwaysRun ) {
+            // parse the arguments
+            let parsed = parseArguments(argv._, config.arguments)
+            this.events.fire(new CliExecuteCommandHandleEvent(instance, parsed, argv, config, optionConfigs))
+
+            // if any missing, execute the way we should handle the arguments.
+            if ( ! parsed.valid ) {
+                this.events.fire(new CliExecuteCommandInvalidArguments(instance, parsed, config, optionConfigs));
+                if ( config.onMissingArgument === "fail" ) {
+                    this.fail(`Missing required argument [${parsed.missing.shift()}]`);
+                }
+                if ( config.onMissingArgument === "handle" ) {
+                    if ( kindOf(instance[ 'handleInvalid' ]) ) {
+                        let result = instance[ 'handleInvalid' ].apply(instance, [ parsed, argv ])
+                        if ( result === false ) {
+                            process.exit(1);
+                        }
+                    }
+                }
+            }
+            let result = instance[ 'handle' ].apply(instance, [ parsed.arguments, argv ]);
+
+            this.events.fire(new CliExecuteCommandHandledEvent(result, instance, argv, config, optionConfigs))
+
+            if ( result === false ) {
+                process.exit(1);
+            }
+        }
+
+        return instance[ 'always' ].apply(instance, [ argv ]);
+
+    }
+
+    public helper(name: string, config?: HelperOptionsConfig): this {
+        this.enableHelper(name, config)
+        return this;
+    }
+
+    public helpers(...names: string[]): this {
+        names.forEach(name => this.helper(name));
+        return this
+    }
+
+    public addHelper<T>(options: HelperOptions): HelperOptions {
+        // merge default options
+        const defaults = {
+            name         : null,
+            cls          : null,
+            singleton    : false,
+            enabled      : false,
+            listeners    : {},
+            configKey    : 'config',
+            config       : {},
+            depends      : [],
+            enableDepends: true,
+            binding      : null,
+            bindings     : {}
+        }
+        options        = _.merge({}, defaults, options);
+
+        // set the helper config in the global config, so it can be overridden
+        this.config.set('helpers.' + options.name, options.config);
+
+
+        return this._helpers[ options.name ] = options;
+    }
+
+    protected enableHelper(name: string, customConfig: HelperOptionsConfig = {}) {
+        let options = this._helpers[ name ];
+        this.config.merge(`helpers.${name}`, customConfig);
+        options.enabled    = true;
+        let enabledHelpers = <string[]> this.config.get('enabledHelpers', []);
+        enabledHelpers.push(name)
+        this.config.set('enabledHelpers', enabledHelpers);
+
+    }
+
+    protected startHelpers(customConfigs: { [name: string]: HelperOptionsConfig } = {}) {
+        this.config.get<string[]>('enabledHelpers', []).forEach(name => {
+            this.startHelper(name, customConfigs[ name ] || {});
+        })
+    }
+
+    /** some helpers can/need to be enabled before usage **/
+    protected startHelper(name: string, customConfig: HelperOptionsConfig = {}) {
+        let options = this._helpers[ name ];
+        if ( this._runningCommand && this._startedHelpers.includes(name) ) {
+            // when resolving, get the (possibly overridden) config and add it to the helper
+            options.binding.onActivation((ctx: Context, helperClass: Function): any => {
+                // console.dir(ctx.plan, {depth: 50, colors: true }); //.plan.rootRequest.serviceIdentifier
+                // process.exit();
+                helperClass[ options.configKey ] = _.merge(this.config('helpers.' + options.name), customConfig);
+                return helperClass
+            });
+        }
+        if ( this._startedHelpers.includes(name) ) {
+            return;
+        }
+
+        this._startedHelpers.push(name);
+
+
+        // start dependency helpers
+        if ( options.depends.length > 0 ) {
+            options.depends.forEach(depend => {
+                if ( ! Object.keys(this._helpers).includes(depend) ) {
+                    if ( ! options.enableDepends ) {
+                        throw new Error(`Cannot start helper [${name}]. It depends on [${depend}]. Either enable it or set config [helpers.${name}.enableDepends] to [true]`);
+                    }
+                    this.startHelper(depend);
+                }
+            })
+        }
+
+        let bindingName = 'cli.helpers.' + options.name;
+        // bind the helper into the container, if needed as singleton
+        // if ( container.isBound(bindingName) ) {
+        container.ensureInjectable(options.cls);
+        options.binding = container.bind(bindingName).to(options.cls);
+        if ( options.singleton ) {
+            options.binding.inSingletonScope()
+        }
+        options.binding.onActivation((ctx: Context, helperClass: Function): any => {
+            // console.dir(ctx.plan, {depth: 50, colors: true }); //.plan.rootRequest.serviceIdentifier
+            // process.exit();
+            helperClass[ options.configKey ] = this.config('helpers.' + options.name);
+            return helperClass
+        });
+
+        let instance;
+        // add the event listeners and bind them to the given function names
+        // if ( container.isBound(bindingName) ) {
+        //     return;
+        // }
+        Object.keys(options.listeners).forEach(eventName => {
+            let fnName = options.listeners[ eventName ];
+
+            this.events.once(eventName, (...args: any[]) => {
+                instance = instance || container.get(bindingName);
+                if ( kindOf(instance[ fnName ]) === 'function' ) {
+                    instance[ fnName ].apply(instance, args);
+                }
+            })
+        })
+        this._helpers[ name ] = options;
+    }
+
     protected handleSpawn(filePath: string, config: CommandConfig): this {
 
         config.args.shift();
@@ -179,47 +374,6 @@ export class Cli {
         this._runningCommand = proc;
 
         return this;
-    }
-
-    protected executeCommand(config: CommandConfig, isAlwaysRun: boolean = false) {
-
-        this.startHelpers();
-        let optionConfigs: OptionConfig[] = get('options', config.cls.prototype) || [];
-
-        // Parse
-        if ( ! isAlwaysRun )
-            this.events.fire(new CliExecuteCommandParseEvent(config, optionConfigs))
-
-        let transformedOptions = transformOptions(optionConfigs.concat(this.globalOptions));
-        let argv               = parser(config.args, transformedOptions) as YargsParserArgv;
-
-        if ( ! isAlwaysRun )
-            this.events.fire(new CliExecuteCommandParsedEvent(argv, config, optionConfigs))
-
-        // Create
-        if ( kindOf(config.action) === 'function' ) {
-            config.cls.prototype[ 'handle' ] = config.action
-        }
-
-        let instance = container.make(config.cls);
-
-        _.without(Object.keys(argv), '_').forEach((argName: string, argIndex: number) => {
-            instance[ argName ] = argv[ argName ];
-        })
-
-        let args = parseArguments(argv._, config.arguments)
-
-        // Handle
-        if ( ! isAlwaysRun )
-            this.events.fire(new CliExecuteCommandHandleEvent(instance, argv, config, optionConfigs))
-
-        let result: any
-        if ( kindOf(instance[ isAlwaysRun ? 'always' : 'handle' ]) === 'function' ) {
-            result = instance[ isAlwaysRun ? 'always' : 'handle' ].apply(instance, [ args, argv ]);
-        }
-        if ( ! isAlwaysRun )
-            this.events.fire(new CliExecuteCommandHandledEvent(result, instance, argv, config, optionConfigs))
-
     }
 
     public fail(msg?: string) {
@@ -253,114 +407,6 @@ export class Cli {
         }
         (<OptionConfig[]> configs).forEach(config => this.global(config));
         return this;
-    }
-
-    public helper(name: string, config?: HelperOptionsConfig): this {
-        this.enableHelper(name, config)
-        return this;
-    }
-
-    public helpers(...names: string[]): this {
-        names.forEach(name => this.helper(name));
-        return this
-    }
-
-    public addHelper<T>(options: HelperOptions): HelperOptions {
-        // merge default options
-        const defaults = {
-            name         : null,
-            cls          : null,
-            singleton    : false,
-            enabled      : false,
-            listeners    : {},
-            configKey    : 'config',
-            config       : {},
-            depends      : [],
-            enableDepends: true,
-            bindings     : {}
-        }
-        options        = _.merge({}, defaults, options);
-
-        // set the helper config in the global config, so it can be overridden
-        this.config.set('helpers.' + options.name, options.config);
-        this._helpers[ options.name ] = options;
-
-        return options;
-    }
-
-    protected enableHelper(name: string, customConfig: HelperOptionsConfig = {}) {
-        let options = this._helpers[ name ];
-        this.config.merge(`helpers.${options.name}.config`, customConfig);
-        this.config.set(`helpers.${options.name}.enabled`, true);
-        let enabledHelpers = <string[]> this.config.get('enabledHelpers', []);
-        enabledHelpers.push(name)
-        this.config.set('enabledHelpers', enabledHelpers);
-
-    }
-
-    protected startHelpers() {
-        this.config.get<string[]>('enabledHelpers', []).forEach(name => {
-            this.startHelper(name);
-        })
-    }
-
-    /** some helpers can/need to be enabled before usage **/
-    protected startHelper(name: string, customConfig: HelperOptionsConfig = {}) {
-        let options = this._helpers[ name ];
-        if ( this._startedHelpers.includes(name) ) return;
-        this._startedHelpers.push(name);
-
-        // make sure not to singletons twice
-        let bindingName = 'cli.helpers.' + options.name;
-        // if ( options.singleton && container.isBound(bindingName) ) {
-        //     return;
-        // }
-
-        // start dependency helpers
-        if ( options.depends.length > 0 ) {
-            options.depends.forEach(depend => {
-                if ( ! Object.keys(this._helpers).includes(depend) ) {
-                    if ( ! options.enableDepends ) {
-                        throw new Error(`Cannot start helper [${name}]. It depends on [${depend}]. Either enable it or set config [helpers.${name}.enableDepends] to [true]`);
-                    }
-                    this.startHelper(depend);
-                }
-            })
-        }
-
-        // bind the helper into the container, if needed as singleton
-        // if ( container.isBound(bindingName) ) {
-        container.ensureInjectable(options.cls);
-        let binding = container.bind(bindingName).to(options.cls);
-        if ( options.singleton ) {
-            binding.inSingletonScope();
-        }
-
-
-        // when resolving, get the (possibly overridden) config and add it to the helper
-        binding.onActivation((ctx: any, helperClass: Function): any => {
-            helperClass[ options.configKey ] = _.merge(this.config('helpers.' + options.name), customConfig);
-            return helperClass;
-        })
-        // }
-
-
-        let instance;
-        // add the event listeners and bind them to the given function names
-        // if ( container.isBound(bindingName) ) {
-        //     return;
-        // }
-        Object.keys(options.listeners).forEach(eventName => {
-            let fnName = options.listeners[ eventName ];
-
-            this.events.once(eventName, (...args: any[]) => {
-                instance = instance || container.get(bindingName);
-                if ( kindOf(instance[ fnName ]) === 'function' ) {
-                    instance[ fnName ].apply(instance, args);
-                }
-            })
-        })
-
     }
 }
 export const cli: Cli = container.resolve<Cli>(Cli);

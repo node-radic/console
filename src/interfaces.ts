@@ -1,5 +1,17 @@
 import { KindOf } from "@radic/util";
+import { interfaces } from "inversify";
+import BindingInWhenOnSyntax = interfaces.BindingInWhenOnSyntax;
 
+
+export interface CommandArguments {
+    [name:string]: any
+}
+
+export interface ParsedCommandArguments {
+    missing: string[]
+    valid: boolean
+    arguments: CommandArguments
+}
 
 export interface CommandArgumentConfig {
     position?: number
@@ -8,11 +20,13 @@ export interface CommandArgumentConfig {
     required?: boolean
     variadic?: boolean
     desc?: string
-    type?:string
+    type?: string
 }
 
+export type MissingCommandArgumentHandler = 'fail' | 'handle' | string
+
 export interface CommandConfig {
-    alwaysRun?: boolean;
+    alwaysRun?: boolean
     name?: string
     usage?: string | null
     description?: string
@@ -21,9 +35,10 @@ export interface CommandConfig {
     cls?: Function
     filePath?: string
     action?: Function | string
-    // argv?: string[]
     args?: string[]
+    helpers: { [name: string]: HelperOptionsConfig }
     arguments?: CommandArgumentConfig[]
+    onMissingArgument?: MissingCommandArgumentHandler
 }
 
 export interface OptionConfig {
@@ -91,12 +106,12 @@ export interface HelperOptionsConfig {
  * @see helper The helper decorator function
  */
 export interface HelperOptions {
+    singleton?:boolean
     /** set by the decorator */
     name?: string
     /** set by the decorator */
     cls?: any
-    /** flag binding in container as singleton */
-    singleton?: boolean
+
     /** Enables listeners, ... */
     enabled?: boolean
     /** Bind events to methods */
@@ -111,6 +126,7 @@ export interface HelperOptions {
     depends?: string[]
     /** should the helper enable it's dependencies if their not already enabled */
     enableDepends?: boolean
+    binding?: BindingInWhenOnSyntax<any>;
 
     bindings?: { [key: string]: string }
 }

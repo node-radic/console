@@ -42,6 +42,7 @@ function handleCommand(args: any[], cls?: Function) {
     const handle       = (cls) => {
         let config = getCommandConfig<CommandConfig>(cls, args)
         set('command', config, cls);
+        container.bind(cls.name).to(cls);
         container.get<Cli>('cli').parse(config);
     }
     const forkedHandle = (cls) => {
