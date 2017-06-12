@@ -111,7 +111,7 @@ export function findSubCommandFilePath(subCommand, filePath): string {
 export function prepareArguments<T extends CommandConfig = CommandConfig>(config: T): T {
 //https://regex101.com/r/vSqbuK/1
 
-    let name            = config.name.replace(/\[\]/g, '()')
+    let name            = config.name.replace(/\[\]/g, '__')
     let argumentPattern = /[{|\[](.*?)[}|\]]/gm
     if ( argumentPattern.test(name) ) {
         if ( name.match(argumentPattern) === null )
@@ -126,18 +126,16 @@ export function prepareArguments<T extends CommandConfig = CommandConfig>(config
         matches.forEach((match, index) => {
             let arg              = defaults.argument(index);
             let original: string = match[ 1 ]
-            if ( match[ 0 ].startsWith('{') ) {
-                arg.required = true;
-            }
-            let exp      = '^(.*?)',
-                hasAlias = original.includes('/'),
-                hasType  = original.includes(':'),
-                isArray  = original.includes('()'),
-                hasDesc  = original.includes('@')
+            arg.required         = match[ 0 ].startsWith('{');
+            let exp              = '^(.*?)',
+                hasAlias         = original.includes('/'),
+                hasType          = original.includes(':'),
+                isArray          = original.includes('__'),
+                hasDesc          = original.includes('@')
 
             if ( hasAlias ) exp += '\\/(.*?)'
             if ( hasType ) exp += ':(.*?)';
-            if ( isArray ) exp += '\\(\\)'
+            if ( isArray ) exp += '__'
             if ( hasDesc ) exp += '@(.*?)'
             exp += '$'
 

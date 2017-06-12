@@ -11,10 +11,12 @@ src_1.cli.config({
 src_1.cli
     .helpers('input', 'output')
     .helper('help', {
+    addShowHelpFunction: true,
+    showOnError: true,
     app: {
         title: 'Radic CLI'
     },
-    option: { key: 'h', name: 'help' }
+    option: { enabled: true }
 })
     .helper('verbose', {
     option: { key: 'v', name: 'verbose' }

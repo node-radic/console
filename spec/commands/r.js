@@ -33,7 +33,7 @@ __decorate([
     __metadata("design:type", Function)
 ], RcliCmd.prototype, "config", void 0);
 RcliCmd = __decorate([
-    src_1.command('r {command}', {
+    src_1.command('r {command:string@any of the listed commands}', {
         subCommands: ['connect'],
         alwaysRun: true,
         onMissingArgument: 'help'

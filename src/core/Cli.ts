@@ -1,16 +1,17 @@
 import { kindOf } from "@radic/util";
 import { container, inject, injectable, lazyInject } from "./Container";
 import { CommandConfig, HelperOptions, HelperOptionsConfig, OptionConfig, ParsedCommandArguments } from "../interfaces";
-import { ChildProcess, fork, spawn } from "child_process";
+import { ChildProcess } from "child_process";
 import { YargsParserArgv } from "../../types/yargs-parser";
 import * as _ from "lodash";
 import { Events } from "./Events";
 import { Log, log } from "./log";
 import { Config } from "./config";
-import { findSubCommandFilePath, parseArguments, transformOptions } from "../utils";
+import { findSubCommandFilePath, parseArguments, prepareArguments, transformOptions } from "../utils";
 import { resolve } from "path";
 import { HaltEvent } from "./Event";
 import { interfaces } from "inversify";
+import { defaults } from "../defaults";
 import Context = interfaces.Context;
 import BindingWhenOnSyntax = interfaces.BindingWhenOnSyntax;
 const parser = require('yargs-parser')
@@ -105,13 +106,9 @@ export class Cli {
     public get rootCommand(): CommandConfig {
         return <CommandConfig> this._rootCommand;
     }
+
     public get parsedCommands(): CommandConfig[] {
         return <CommandConfig[]> this._parsedCommands;
-    }
-
-    public mode(mode: CliMode): this {
-        this._mode = mode;
-        return this;
     }
 
     public start(requirePath: string): this {
@@ -147,10 +144,6 @@ export class Cli {
             this._requiredCommands.push(filePath);
             if ( config.alwaysRun ) {
                 this.executeCommand(config, true);
-            }
-
-            if ( this._mode === 'spawn' ) {
-                return this.handleSpawn(filePath, config);
             }
             if ( this._mode === 'require' ) {
                 return this.handleRequire(filePath, config);
@@ -214,36 +207,36 @@ export class Cli {
 
 
         // Handle
-        if ( ! isAlwaysRun ) {
-            // parse the arguments
-            let parsed = parseArguments(argv._, config.arguments)
-            this.events.fire(new CliExecuteCommandHandleEvent(instance, parsed, argv, config, optionConfigs))
+        if ( isAlwaysRun && instance[ 'always' ] ) {
+            return instance[ 'always' ].apply(instance, [ argv ]);
+        }
 
-            // if any missing, execute the way we should handle the arguments.
-            if ( ! parsed.valid ) {
-                this.events.fire(new CliExecuteCommandInvalidArguments(instance, parsed, config, optionConfigs));
-                if ( config.onMissingArgument === "fail" ) {
-                    this.fail(`Missing required argument [${parsed.missing.shift()}]`);
-                }
-                if ( config.onMissingArgument === "handle" ) {
-                    if ( kindOf(instance[ 'handleInvalid' ]) ) {
-                        let result = instance[ 'handleInvalid' ].apply(instance, [ parsed, argv ])
-                        if ( result === false ) {
-                            process.exit(1);
-                        }
+        let parsed = parseArguments(argv._, config.arguments)
+        this.events.fire(new CliExecuteCommandHandleEvent(instance, parsed, argv, config, optionConfigs))
+
+        // if any missing, execute the way we should handle the arguments.
+        if ( ! parsed.valid ) {
+            this.events.fire(new CliExecuteCommandInvalidArguments(instance, parsed, config, optionConfigs));
+            if ( config.onMissingArgument === "fail" ) {
+                this.fail(`Missing required argument [${parsed.missing.shift()}]`);
+            }
+            if ( config.onMissingArgument === "handle" ) {
+                if ( kindOf(instance[ 'handleInvalid' ]) ) {
+                    let result = instance[ 'handleInvalid' ].apply(instance, [ parsed, argv ])
+                    if ( result === false ) {
+                        process.exit(1);
                     }
                 }
             }
-            let result = instance[ 'handle' ].apply(instance, [ parsed.arguments, argv ]);
+        }
+        let result = instance[ 'handle' ].apply(instance, [ parsed.arguments, argv ]);
 
-            this.events.fire(new CliExecuteCommandHandledEvent(result, instance, argv, config, optionConfigs))
+        this.events.fire(new CliExecuteCommandHandledEvent(result, instance, argv, config, optionConfigs))
 
-            if ( result === false ) {
-                process.exit(1);
-            }
+        if ( result === false ) {
+            process.exit(1);
         }
 
-        return instance[ 'always' ].apply(instance, [ argv ]);
 
     }
 
@@ -259,20 +252,8 @@ export class Cli {
 
     public addHelper<T>(options: HelperOptions): HelperOptions {
         // merge default options
-        const defaults = {
-            name         : null,
-            cls          : null,
-            singleton    : false,
-            enabled      : false,
-            listeners    : {},
-            configKey    : 'config',
-            config       : {},
-            depends      : [],
-            enableDepends: true,
-            binding      : null,
-            bindings     : {}
-        }
-        options        = _.merge({}, defaults, options);
+        const def = defaults.helper()
+        options   = _.merge({}, def, options);
 
         // set the helper config in the global config, so it can be overridden
         this.config.set('helpers.' + options.name, options.config);
@@ -361,35 +342,6 @@ export class Cli {
         this._helpers[ name ] = options;
     }
 
-    protected handleSpawn(filePath: string, config: CommandConfig): this {
-
-        config.args.shift();
-
-        config.args.unshift(filePath)
-        let startOpts     = {};
-        let isInDebugMode = typeof v8debug === 'object';
-        if ( isInDebugMode ) {
-            startOpts = { execArgv: [ '--debug-brk=' + Math.round(Math.random() * 10000) ] };
-        }
-        let proc: ChildProcess = fork(filePath, [].concat(config.args), startOpts)//, <any>{ execArgv: ['--debug-brk']}); //stdio: [0, 'ignore', 'ignore', 'ipc']
-        this.events.fire(new CliSpawnEvent(config.args, filePath, proc))
-
-        proc.send({ config: this.config.get() })
-        proc.on('close', process.exit.bind(process));
-        proc.on('error', function (err) {
-            if ( err[ 'code' ] == "ENOENT" ) {
-                console.error('\n  %s(1) does not exist, try --help\n', filePath);
-            } else if ( err[ 'code' ] == "EACCES" ) {
-                console.error('\n  %s(1) not executable. try chmod or run with root\n', filePath);
-            }
-            process.exit(1);
-        });
-
-        // Store the reference to the child process
-        this._runningCommand = proc;
-
-        return this;
-    }
 
     public fail(msg?: string) {
         if ( msg ) {

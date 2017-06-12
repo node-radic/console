@@ -9,15 +9,17 @@ import { Log } from "../core/log";
 
 @helper('help', {
     config: {
-        app    : {
+        app        : {
             title: ''
         },
-        option : {
-            enabled: true,
+        addShowHelpFunction: true,
+        showOnError: false,
+        option     : {
+            enabled: false,
             key    : 'h',
             name   : 'help'
         },
-        style  : {
+        style      : {
             titleLines : 'darkorange',
             header     : 'darkorange bold',
             group      : 'steelblue bold',
@@ -30,7 +32,7 @@ import { Log } from "../core/log";
             array      : 'cyan',
             type       : 'yellow'
         },
-        display: {
+        display    : {
             title             : true,
             titleLines        : true,
             description       : true,
@@ -123,9 +125,9 @@ export class Help {
 
             let type = [
                 '[',
-                arg.required ? '{array}Array<{/array}' : '',
+                arg.variadic ? '{array}Array<{/array}' : '',
                 `{type}${arg.type}{/type}`,
-                arg.required ? '{array}>{/array}' : '',
+                arg.variadic ? '{array}>{/array}' : '',
                 ']'
             ].join('')
 
@@ -256,30 +258,35 @@ export class Help {
     }
 
     public onCommandParse(event: CliExecuteCommandParseEvent) {
-        event.cli.global(this.config.option.key, {
-            name       : this.config.option.name,
-            type       : 'boolean',
-            description: 'show help'
-        })
+        if ( this.config.option.enabled === true ) {
+            event.cli.global(this.config.option.key, {
+                name       : this.config.option.name,
+                type       : 'boolean',
+                description: 'show help'
+            })
+        }
+
     }
 
     public onCommandHandle(event: CliExecuteCommandHandleEvent): void {
-        this.out.styles(this.config.style);
-        event.instance[ 'showHelp' ] = () => {
-            this.showHelp(event.config, event.options)
-        };
-        if ( event.argv[ this.config.option.key ] ) {
-            if ( kindOf(event.instance[ 'help' ]) === 'function' ) {
-                event.instance[ 'help' ].apply(event.instance, [ event.config, event.options ]);
+        if ( this.config.addShowHelpFunction ) {
+            this.out.styles(this.config.style);
+            event.instance[ 'showHelp' ] = () => {
+                this.showHelp(event.config, event.options)
+            };
+            if ( event.argv[ this.config.option.key ] ) {
+                if ( kindOf(event.instance[ 'help' ]) === 'function' ) {
+                    event.instance[ 'help' ].apply(event.instance, [ event.config, event.options ]);
+                    return event.stop();
+                }
+                this.showHelp(event.config, event.options);
                 return event.stop();
             }
-            this.showHelp(event.config, event.options);
-            return event.stop();
         }
     }
 
     public onInvalidArguments(event: CliExecuteCommandInvalidArguments) {
-        if ( event.config.onMissingArgument === 'help' ) {
+        if ( this.config.showOnError === true && event.config.onMissingArgument === 'help' ) {
             this.showHelp(event.config, event.options);
             this.out.nl;
             this.log.error(`Missing required argument [${event.parsed.missing[ 0 ]}]`)

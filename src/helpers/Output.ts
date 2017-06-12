@@ -23,12 +23,12 @@ const archy     = require('archy')
         colors        : true,
         options       : {
             quiet : {
-                enabled: true,
+                enabled: false,
                 key    : 'q',
                 name   : 'quiet'
             },
             colors: {
-                enabled: true,
+                enabled: false,
                 key    : 'C',
                 name   : 'no-colors'
             }
