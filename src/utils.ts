@@ -164,6 +164,7 @@ export function parseArguments(argv_: string[], args: CommandArgumentConfig[] = 
     let res     = {};
     args.forEach(arg => {
         let val = argv_[ arg.position ];
+        val     = transformArgumentType(val, arg);
         if ( ! val && arg.required ) {
             invalid.push(arg.name);
         }
@@ -184,11 +185,20 @@ export function parseArguments(argv_: string[], args: CommandArgumentConfig[] = 
     return { arguments: res, missing: invalid, valid: invalid.length === 0 };
 }
 
-export function transformArgumentType<T extends any>(val: any, to: T): T {
-    if ( transformArgumentType[ 'transformers' ][ to ] ) {
-        return transformArgumentType[ 'transformers' ][ to ](val);
+export function transformArgumentType<T extends any = any>(val: any, arg: CommandArgumentConfig): T|T[] {
+    if ( val === undefined ) {
+        return undefined
     }
-    return to;
+    if ( arg.variadic ) {
+        if ( val === undefined ) {
+            return []
+        }
+        return val.map((item => transformArgumentType[ 'transformers' ][arg.type](item)));
+    }
+    if ( transformArgumentType[ 'transformers' ][ arg.type ] ) {
+        return transformArgumentType[ 'transformers' ][ arg.type ](val);
+    }
+    return val;
 }
 transformArgumentType[ 'transformers' ] = {
     boolean(val: any): boolean {

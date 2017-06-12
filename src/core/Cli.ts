@@ -3,7 +3,6 @@ import { container, inject, injectable, lazyInject } from "./Container";
 import { CommandConfig, HelperOptions, HelperOptionsConfig, OptionConfig, ParsedCommandArguments } from "../interfaces";
 import { ChildProcess } from "child_process";
 import { YargsParserArgv } from "../../types/yargs-parser";
-import * as _ from "lodash";
 import { Events } from "./Events";
 import { Log, log } from "./log";
 import { Config } from "./config";
@@ -14,6 +13,7 @@ import { interfaces } from "inversify";
 import { defaults } from "../defaults";
 import Context = interfaces.Context;
 import BindingWhenOnSyntax = interfaces.BindingWhenOnSyntax;
+import * as _ from "lodash";
 const parser = require('yargs-parser')
 const get    = Reflect.getMetadata
 declare var v8debug;
@@ -183,7 +183,7 @@ export class Cli {
         if ( ! isAlwaysRun )
             this.events.fire(new CliExecuteCommandParseEvent(config, optionConfigs))
 
-        let transformedOptions = transformOptions(optionConfigs.concat(this.globalOptions));
+        let transformedOptions = transformOptions(optionConfigs);
         let argv               = parser(config.args, transformedOptions) as YargsParserArgv;
 
         if ( ! isAlwaysRun )
@@ -251,24 +251,20 @@ export class Cli {
     }
 
     public addHelper<T>(options: HelperOptions): HelperOptions {
-        // merge default options
-        const def = defaults.helper()
-        options   = _.merge({}, def, options);
-
-        // set the helper config in the global config, so it can be overridden
+        options   = _.merge(defaults.helper(), options);
         this.config.set('helpers.' + options.name, options.config);
-
-
         return this._helpers[ options.name ] = options;
     }
 
     protected enableHelper(name: string, customConfig: HelperOptionsConfig = {}) {
-        let options = this._helpers[ name ];
-        this.config.merge(`helpers.${name}`, customConfig);
-        options.enabled    = true;
-        let enabledHelpers = <string[]> this.config.get('enabledHelpers', []);
-        enabledHelpers.push(name)
-        this.config.set('enabledHelpers', enabledHelpers);
+        this._helpers[ name ].enabled = true;
+
+        let config = this.config.get('helpers.' + name);
+        config = _.merge({}, config, customConfig);
+        this.config.set('helpers.' + name, config);
+
+        let a =  this.config.get<string[]>('enabledHelpers', [])
+        this.config.set('enabledHelpers', a.concat([name]));
 
     }
 
@@ -281,15 +277,6 @@ export class Cli {
     /** some helpers can/need to be enabled before usage **/
     protected startHelper(name: string, customConfig: HelperOptionsConfig = {}) {
         let options = this._helpers[ name ];
-        if ( this._runningCommand && this._startedHelpers.includes(name) ) {
-            // when resolving, get the (possibly overridden) config and add it to the helper
-            options.binding.onActivation((ctx: Context, helperClass: Function): any => {
-                // console.dir(ctx.plan, {depth: 50, colors: true }); //.plan.rootRequest.serviceIdentifier
-                // process.exit();
-                helperClass[ options.configKey ] = _.merge(this.config('helpers.' + options.name), customConfig);
-                return helperClass
-            });
-        }
         if ( this._startedHelpers.includes(name) ) {
             return;
         }

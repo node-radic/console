@@ -15,7 +15,7 @@ export class RcliConnectAddCmd {
     ask: Input;
 
     @lazyInject('cli.log')
-    lazyInject: Log;
+    log: Log;
 
 
     @option('P', 'login using a password')

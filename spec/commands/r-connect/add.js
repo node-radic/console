@@ -42,7 +42,7 @@ __decorate([
 __decorate([
     src_1.lazyInject('cli.log'),
     __metadata("design:type", Object)
-], RcliConnectAddCmd.prototype, "lazyInject", void 0);
+], RcliConnectAddCmd.prototype, "log", void 0);
 __decorate([
     src_1.option('P', 'login using a password'),
     __metadata("design:type", String)

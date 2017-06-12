@@ -20,7 +20,6 @@ var RcliCmd = (function () {
         }
     };
     RcliCmd.prototype.handle = function () {
-        this.showHelp();
     };
     return RcliCmd;
 }());

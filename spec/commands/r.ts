@@ -26,7 +26,6 @@ export class RcliCmd {
     }
 
     handle(){
-        this.showHelp();
     }
 }
 export default RcliCmd
