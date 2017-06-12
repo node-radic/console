@@ -20,9 +20,9 @@
     "dev:install": "rm -rf node_modules; rm yarn.lock; yarn install",
     "dev:docs": "rm -r docs &> /dev/null ; typedoc --includeDeclarations --target ES6 --exclude spec example example2 node_modules types/lodash --ignoreCompilerErrors --mode file --excludeExternals --excludePrivate --readme docs.md --out docs ./lib/index.d.ts",
     "deploy:docs": "npm run dev:docs; gulp ghpages",
-    "publish:patch": "mversion patch -m",
-    "publish:minor": "mversion minor -m",
-    "publish:major": "mversion major -m"
+    "patch": "mversion patch -m",
+    "minor": "mversion minor -m",
+    "major": "mversion major -m"
   },
   "dependencies": {
     "@radic/console-colors": "^0.9.5",
