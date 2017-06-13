@@ -1,6 +1,6 @@
 {
   "name": "@radic/console",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Console ",
   "main": "src/index.js",
   "typings": "lib/index.d.ts",
@@ -103,7 +103,7 @@
     "through2": "^2.0.3",
     "ts-node": "^3.0.2",
     "ts-loader": "^2.1.0",
-    "typescript-register":"^1.1.0",
+    "typescript-register": "^1.1.0",
     "typedoc": "^0.5.10",
     "typescript": "^2.3",
     "validatorjs": "^3.12.0",
