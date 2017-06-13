@@ -1,92 +1,40 @@
 import { kindOf } from "@radic/util";
-import { container, inject, injectable, lazyInject } from "./Container";
-import { CommandConfig, HelperOptions, HelperOptionsConfig, OptionConfig, ParsedCommandArguments } from "../interfaces";
-import { ChildProcess } from "child_process";
+import { container, injectable, lazyInject } from "./Container";
+import { CommandConfig, HelperOptionsConfig, OptionConfig } from "../interfaces";
 import { YargsParserArgv } from "../../types/yargs-parser";
-import { Events } from "./Events";
+import { CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArguments, CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent } from "./events";
 import { Log, log } from "./log";
 import { Config } from "./config";
-import { findSubCommandFilePath, parseArguments, prepareArguments, transformOptions } from "../utils";
+import { findSubCommandFilePath, parseArguments, transformOptions } from "../utils";
 import { resolve } from "path";
-import { HaltEvent } from "./Event";
 import { interfaces } from "inversify";
-import { defaults } from "../defaults";
+import * as _ from "lodash";
+import { Helpers } from "./Helpers";
+import { Dispatcher } from "./Dispatcher";
 import Context = interfaces.Context;
 import BindingWhenOnSyntax = interfaces.BindingWhenOnSyntax;
-import * as _ from "lodash";
 const parser = require('yargs-parser')
 const get    = Reflect.getMetadata
 declare var v8debug;
 log.silly('go cli')
 
 
-export class CliParseEvent extends HaltEvent {
-    constructor(public config: CommandConfig, public globals: OptionConfig[]) {
-        super('cli:parse')
-    }
-}
-export class CliParsedEvent extends HaltEvent {
-    constructor(public config: CommandConfig, public argv: YargsParserArgv, public globals: OptionConfig[]) {
-        super('cli:parsed')
-    }
-}
-export class CliSpawnEvent extends HaltEvent {
-    constructor(public args: string[], public file: string, public proc: ChildProcess) {
-        super('cli:spawn')
-    }
-}
-export class CliExecuteCommandParseEvent extends HaltEvent {
-    constructor(public config: CommandConfig, public options: OptionConfig[]) {
-        super('cli:execute:parse')
-    }
-}
-export class CliExecuteCommandParsedEvent extends HaltEvent {
-    constructor(public argv: YargsParserArgv, public config: CommandConfig, public options: OptionConfig[]) {
-        super('cli:execute:parsed')
-    }
-}
-export class CliExecuteCommandInvalidArguments<T = any> extends HaltEvent {
-    constructor(public instance: T,
-                public parsed: ParsedCommandArguments,
-                public config: CommandConfig,
-                public options: OptionConfig[]) {
-        super('cli:execute:invalid')
-    }
-}
-export class CliExecuteCommandHandleEvent<T = any> extends HaltEvent {
-    constructor(public instance: T,
-                public parsed: ParsedCommandArguments,
-                public argv: YargsParserArgv,
-                public config: CommandConfig,
-                public options: OptionConfig[]) {
-        super('cli:execute:handle')
-    }
-}
-export class CliExecuteCommandHandledEvent<T = any> extends HaltEvent {
-    constructor(public result: any,
-                public instance: T,
-                public argv: YargsParserArgv,
-                public config: CommandConfig,
-                public options: OptionConfig[]) {
-        super('cli:execute:handled')
-    }
-}
-export type CliMode = 'require' | 'spawn'
-
 // @singleton('cli')
 @injectable()
 export class Cli {
-    protected _runningCommand: ChildProcess | CommandConfig;
-    protected _helpers: { [name: string]: HelperOptions } = {}
-    protected _requiredCommands: any[]                    = []
-    protected _parsedCommands: CommandConfig[]            = []
+    protected _runningCommand: CommandConfig;
+    protected _requiredCommands: any[]         = []
+    protected _parsedCommands: CommandConfig[] = []
     protected _rootCommand: CommandConfig;
-    protected globalOptions: OptionConfig[]               = [];
-    protected _startedHelpers: Array<string>              = []
-    protected _mode: CliMode                              = 'require';
+    protected globalOptions: OptionConfig[]    = [];
 
-    @inject('cli.events')
-    public events: Events;
+    @lazyInject('cli.helpers')
+    protected _helpers: Helpers;
+    public get helpers(): Helpers { return this._helpers; }
+
+
+    @lazyInject('cli.events')
+    public events: Dispatcher;
 
     @lazyInject('cli.log')
     protected _log: Log;
@@ -145,12 +93,9 @@ export class Cli {
             if ( config.alwaysRun ) {
                 this.executeCommand(config, true);
             }
-            if ( this._mode === 'require' ) {
-                return this.handleRequire(filePath, config);
-            }
-            throw new Error(`Invalid mode [${this._mode}]. Use 'spawn' or 'require' instead.`)
-        }
 
+            return this.handleRequire(filePath, config);
+        }
         // for spawn mode, we'd check if there's no running command which means this is the actual command to execute
         // for require mode, the if statement will always pass
         if ( ! this._runningCommand ) {
@@ -161,13 +106,14 @@ export class Cli {
         return this;
     }
 
+
     protected handleRequire(filePath: string, config: CommandConfig): this {
         // remove the sub-command argument from the argv array, so the next time parse() is called, we dont get in weird results
         process.argv.splice(0, 1);
 
         const module = require(filePath);
 
-        // this._requiredCommands.push(module);
+        this._requiredCommands.push(module);
 
         return this;
     }
@@ -175,7 +121,7 @@ export class Cli {
     protected executeCommand(config: CommandConfig, isAlwaysRun: boolean = false) {
 
 
-        this.startHelpers(config.helpers);
+        this.helpers.startHelpers(config.helpers);
 
         let optionConfigs: OptionConfig[] = get('options', config.cls.prototype) || [];
 
@@ -224,11 +170,13 @@ export class Cli {
                 if ( kindOf(instance[ 'handleInvalid' ]) ) {
                     let result = instance[ 'handleInvalid' ].apply(instance, [ parsed, argv ])
                     if ( result === false ) {
+                        this.log.error('Not enough arguments given, use the -h / --help option for more information')
                         process.exit(1);
                     }
                 }
             }
         }
+
         let result = instance[ 'handle' ].apply(instance, [ parsed.arguments, argv ]);
 
         this.events.fire(new CliExecuteCommandHandledEvent(result, instance, argv, config, optionConfigs))
@@ -240,97 +188,18 @@ export class Cli {
 
     }
 
-    public helper(name: string, config?: HelperOptionsConfig): this {
-        this.enableHelper(name, config)
+    public helper(name: string, config ?: HelperOptionsConfig): this {
+        this.helpers.enableHelper(name, config)
         return this;
     }
 
-    public helpers(...names: string[]): this {
-        names.forEach(name => this.helper(name));
-        return this
-    }
+    //
+    // public helpers(...names: string[]): this {
+    //     names.forEach(name => this.helper(name));
+    //     return this
+    // }
 
-    public addHelper<T>(options: HelperOptions): HelperOptions {
-        options   = _.merge(defaults.helper(), options);
-        this.config.set('helpers.' + options.name, options.config);
-        return this._helpers[ options.name ] = options;
-    }
-
-    protected enableHelper(name: string, customConfig: HelperOptionsConfig = {}) {
-        this._helpers[ name ].enabled = true;
-
-        let config = this.config.get('helpers.' + name);
-        config = _.merge({}, config, customConfig);
-        this.config.set('helpers.' + name, config);
-
-        let a =  this.config.get<string[]>('enabledHelpers', [])
-        this.config.set('enabledHelpers', a.concat([name]));
-
-    }
-
-    protected startHelpers(customConfigs: { [name: string]: HelperOptionsConfig } = {}) {
-        this.config.get<string[]>('enabledHelpers', []).forEach(name => {
-            this.startHelper(name, customConfigs[ name ] || {});
-        })
-    }
-
-    /** some helpers can/need to be enabled before usage **/
-    protected startHelper(name: string, customConfig: HelperOptionsConfig = {}) {
-        let options = this._helpers[ name ];
-        if ( this._startedHelpers.includes(name) ) {
-            return;
-        }
-
-        this._startedHelpers.push(name);
-
-
-        // start dependency helpers
-        if ( options.depends.length > 0 ) {
-            options.depends.forEach(depend => {
-                if ( ! Object.keys(this._helpers).includes(depend) ) {
-                    if ( ! options.enableDepends ) {
-                        throw new Error(`Cannot start helper [${name}]. It depends on [${depend}]. Either enable it or set config [helpers.${name}.enableDepends] to [true]`);
-                    }
-                    this.startHelper(depend);
-                }
-            })
-        }
-
-        let bindingName = 'cli.helpers.' + options.name;
-        // bind the helper into the container, if needed as singleton
-        // if ( container.isBound(bindingName) ) {
-        container.ensureInjectable(options.cls);
-        options.binding = container.bind(bindingName).to(options.cls);
-        if ( options.singleton ) {
-            options.binding.inSingletonScope()
-        }
-        options.binding.onActivation((ctx: Context, helperClass: Function): any => {
-            // console.dir(ctx.plan, {depth: 50, colors: true }); //.plan.rootRequest.serviceIdentifier
-            // process.exit();
-            helperClass[ options.configKey ] = this.config('helpers.' + options.name);
-            return helperClass
-        });
-
-        let instance;
-        // add the event listeners and bind them to the given function names
-        // if ( container.isBound(bindingName) ) {
-        //     return;
-        // }
-        Object.keys(options.listeners).forEach(eventName => {
-            let fnName = options.listeners[ eventName ];
-
-            this.events.once(eventName, (...args: any[]) => {
-                instance = instance || container.get(bindingName);
-                if ( kindOf(instance[ fnName ]) === 'function' ) {
-                    instance[ fnName ].apply(instance, args);
-                }
-            })
-        })
-        this._helpers[ name ] = options;
-    }
-
-
-    public fail(msg?: string) {
+    public    fail(msg ?: string) {
         if ( msg ) {
             this.log.error(msg);
         }
@@ -354,7 +223,7 @@ export class Cli {
         return this;
     }
 
-    public globals(configs: OptionConfig[] | { [key: string]: OptionConfig }): this {
+    public globals(configs: OptionConfig[ ] | { [key: string]: OptionConfig }): this {
         if ( kindOf(configs) === 'object' ) {
             Object.keys(configs).forEach(key => this.global(key, configs[ key ]))
             return this;
@@ -363,6 +232,8 @@ export class Cli {
         return this;
     }
 }
-export const cli: Cli = container.resolve<Cli>(Cli);
-container.constant('cli', cli);
+
+container.constant('cli', new Cli);
+export const cli: Cli = container.get<Cli>('cli');
+
 // container.constant('cli', cli)

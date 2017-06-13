@@ -4,12 +4,12 @@ import { defined } from "@radic/util";
 import { Log } from "./log";
 import { Cli } from "./Cli";
 import { defaults } from "../defaults";
-import { HaltEvent, Event } from "./Event";
+import { HaltEvent, Event } from "./events";
 import { injectable } from "inversify";
 
 
-@injectable()
-export class Events {
+@singleton('cli.events')
+export class Dispatcher {
     private ee: EventEmitter2;
     @lazyInject('cli.log')
     protected log: Log;
@@ -94,4 +94,3 @@ export class Events {
     eventNames(): string[] { return this.ee.eventNames.apply(this.ee, []); }
 
 }
-container.bind('cli.events').to(Events).inSingletonScope();

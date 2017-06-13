@@ -47,6 +47,7 @@ export const defaults = {
             name             : cls.name.replace('Command', '').toLowerCase(),
             usage            : null,
             description      : '',
+            explenation      : '',
             example          : null,
             action           : 'handle',
             onMissingArgument: config.get('commands.onMissingArgument', 'fail'),

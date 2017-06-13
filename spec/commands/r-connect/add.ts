@@ -40,6 +40,10 @@ export class RcliConnectAddCmd {
             localPath: '/mnt/' + args.name,
             hostPath: '/'
         }
+
+        this.out.dump(this);
+        this.log.info('Im in RcliConnectCmmand. Njou')
+
     }
 
 }

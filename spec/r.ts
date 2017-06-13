@@ -10,7 +10,8 @@ cli.config(<CliConfig> {
 
 
 cli
-    .helpers('input', 'output')
+    .helper('input')
+    .helper('output')
     .helper('help', {
         addShowHelpFunction: true,
         showOnError: true,

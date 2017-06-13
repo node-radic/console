@@ -28,6 +28,8 @@ var RcliConnectAddCmd = (function () {
             localPath: '/mnt/' + args.name,
             hostPath: '/'
         };
+        this.out.dump(this);
+        this.log.info('Im in RcliConnectCmmand. Njou');
     };
     return RcliConnectAddCmd;
 }());

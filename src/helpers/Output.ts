@@ -7,7 +7,7 @@ import * as Table from "cli-table2";
 import { helper } from "../decorators";
 import { HelperOptionsConfig, OutputColumnsOptions } from "../interfaces";
 import { Data } from "archy";
-import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent } from "../core/Cli";
+import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent } from "../core/events";
 const tty       = require('tty');
 const columnify = require('columnify')
 const truwrap   = require('truwrap');
@@ -146,6 +146,14 @@ export class Output {
     }
 
     table(options: any = {}): any [] {
+
+//         var Table = require('cli-table2');
+//
+// // instantiate
+//         var table = new Table({
+//             head: ['TH 1 label', 'TH 2 label']
+//             , colWidths: [100, 200]
+//         });
         return new Table(kindOf(options) === 'array' ? { head: options } : options)
     }
 

@@ -9,7 +9,8 @@ src_1.cli.config({
     }
 });
 src_1.cli
-    .helpers('input', 'output')
+    .helper('input')
+    .helper('output')
     .helper('help', {
     addShowHelpFunction: true,
     showOnError: true,

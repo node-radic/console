@@ -1,25 +1,27 @@
 import { kindOf } from "@radic/util";
 import { CommandArgumentConfig, CommandConfig, HelperOptionsConfig, OptionConfig } from "../interfaces";
 import { helper } from "../decorators";
-import { Cli, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArguments, CliExecuteCommandParseEvent } from "../core/Cli";
+import { CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArguments, CliExecuteCommandParseEvent } from "../core/events";
 import { lazyInject } from "../core/Container";
 import { Output } from "./Output";
 import { findSubCommandFilePath } from "../utils";
 import { Log } from "../core/log";
+import { Cli } from "../core/Cli";
+import { Dispatcher } from "../core/Dispatcher";
 
 @helper('help', {
     config: {
-        app        : {
+        app               : {
             title: ''
         },
-        addShowHelpFunction: true,
-        showOnError: false,
-        option     : {
+        addShowHelpCommand: true,
+        showOnError       : true,
+        option            : {
             enabled: false,
             key    : 'h',
             name   : 'help'
         },
-        style      : {
+        style             : {
             titleLines : 'darkorange',
             header     : 'darkorange bold',
             group      : 'steelblue bold',
@@ -32,7 +34,7 @@ import { Log } from "../core/log";
             array      : 'cyan',
             type       : 'yellow'
         },
-        display    : {
+        display           : {
             title             : true,
             titleLines        : true,
             description       : true,
@@ -57,8 +59,12 @@ import { Log } from "../core/log";
 export class Help {
     config: HelperOptionsConfig;
 
+    @lazyInject('cli.events')
+    events: Dispatcher
+
     @lazyInject('cli')
     cli: Cli
+
     @lazyInject('cli.log')
     log: Log
 
@@ -76,6 +82,10 @@ export class Help {
 
         if ( this.config.display.description && ! this.config.display.descriptionAsTitle && config.description.length > 0 ) {
             this.out.line(config.description); //line('{group}Description:{/group}')
+        }
+
+        if ( this.config.display.explenation && config.explenation.length > 0 ) {
+            this.out.line(config.explenation)
         }
 
         if ( this.config.display.usage ) {
@@ -275,6 +285,7 @@ export class Help {
                 this.showHelp(event.config, event.options)
             };
             if ( event.argv[ this.config.option.key ] ) {
+                this.events.emit('help:' + event.config.name)
                 if ( kindOf(event.instance[ 'help' ]) === 'function' ) {
                     event.instance[ 'help' ].apply(event.instance, [ event.config, event.options ]);
                     return event.stop();

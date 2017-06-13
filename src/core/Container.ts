@@ -107,7 +107,9 @@ export const provide    = makeProvideDecorator(container);
 const fprovide          = makeFluentProvideDecorator(container);
 
 export const singleton = (identifier: ServiceIdentifier) => {
-    return fprovide(identifier).inSingletonScope().done()
+    if(container.isBound(identifier) == false) {
+        return fprovide(identifier).inSingletonScope().done()
+    }
 };
 
 export const inject = (id: ServiceIdentifier) => {

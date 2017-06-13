@@ -1,9 +1,9 @@
 import { helper } from "../decorators";
-import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent } from "../core/Cli";
 import { HelperOptionsConfig } from "../interfaces";
 import { inject } from "../core/Container";
 import { LoggerInstance } from "winston";
 import { setVerbosity } from "../core/log";
+import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent } from "../core/events";
 
 @helper('verbose', {
     config   : {
