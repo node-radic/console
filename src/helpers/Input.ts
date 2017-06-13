@@ -103,8 +103,8 @@ export class Input {
                 prompt[ 'validate' ] = validate;
             }
             inquirer.prompt([ prompt ]).then(function (answers) {
-                resolve(answers)
-            }).catch(e => reject(e));
+                resolve(answers);
+            })
         });
     }
 }

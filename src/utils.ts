@@ -152,7 +152,7 @@ export function prepareArguments<T extends CommandConfig = CommandConfig>(config
             args.push(arg);
         })
         config.arguments = args;
-        config.name      = config.name.split(' ').shift();
+        config.name      = config.name.split(/\s|\n/)[0];
     }
     return config;
 }
