@@ -23,4 +23,3 @@ src_1.cli
     option: { key: 'v', name: 'verbose' }
 })
     .start(__dirname + '/commands/r');
-//# sourceMappingURL=r.js.map

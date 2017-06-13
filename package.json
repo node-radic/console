@@ -18,11 +18,13 @@
     "clean": "gulp clean",
     "dev:init": "npm run dev:install; gulp build; npm run dev:docs",
     "dev:install": "rm -rf node_modules; rm yarn.lock; yarn install",
-    "dev:docs": "rm -r docs &> /dev/null ; typedoc --includeDeclarations --target ES6 --exclude spec example example2 node_modules types/lodash --ignoreCompilerErrors --mode file --excludeExternals --excludePrivate --readme docs.md --out docs ./lib/index.d.ts",
-    "deploy:docs": "npm run dev:docs; gulp ghpages",
+    "dev:docs": "rm -r docs &> /dev/null && typedoc --includeDeclarations --target ES6 --exclude spec example example2 node_modules types/lodash --ignoreCompilerErrors --mode file --excludeExternals --excludePrivate --readme docs.md --out docs ./lib/index.d.ts",
+    "deploy:docs": "npm run dev:docs && gulp ghpages",
     "patch": "mversion patch -m",
     "minor": "mversion minor -m",
-    "major": "mversion major -m"
+    "major": "mversion major -m",
+    "git": "git add -A && git commit -m \"pre-patch\" && git push --all",
+    "deploy:patch": "npm run build && npm run deploy:docs && npm run git && npm run patch"
   },
   "dependencies": {
     "@radic/console-colors": "^0.9.5",
@@ -100,6 +102,8 @@
     "run-sequence": "^1.2.2",
     "through2": "^2.0.3",
     "ts-node": "^3.0.2",
+    "ts-loader": "^2.1.0",
+    "typescript-register":"^1.1.0",
     "typedoc": "^0.5.10",
     "typescript": "^2.3",
     "validatorjs": "^3.12.0",

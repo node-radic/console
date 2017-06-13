@@ -163,8 +163,8 @@ export function parseArguments(argv_: string[], args: CommandArgumentConfig[] = 
     let invalid = [];
     let res     = {};
     args.forEach(arg => {
-        let val = argv_[ arg.position ];
-        val     = transformArgumentType(val, arg);
+        let val:string = argv_[ arg.position ];
+        val     = <string> transformArgumentType<string>(val, arg);
         if ( ! val && arg.required ) {
             invalid.push(arg.name);
         }

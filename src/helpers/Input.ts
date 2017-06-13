@@ -91,20 +91,21 @@ export class Input {
         return builder;
     }
 
-    async checkbox(msg, choices: Array<ChoiceOption>, validate?: (answer) => boolean) {
-        return <Promise<string>> new Promise((resolve, reject) => {
-            let prompt = {
-                type   : 'checkbox',
-                message: msg,
-                name   : 'toppings',
-                choices: choices,
-            }
-            if ( validate ) {
-                prompt[ 'validate' ] = validate;
-            }
-            inquirer.prompt([ prompt ]).then(function (answers) {
-                resolve(answers);
-            })
-        });
-    }
+    // async checkbox(msg, choices: Array<ChoiceOption>, validate?: (answer) => boolean) {
+    //     return <Promise<string>> new Promise((resolve, reject) => {
+    //         let prompt = {
+    //             type   : 'checkbox',
+    //             message: msg,
+    //             name   : 'toppings',
+    //             choices: choices,
+    //         }
+    //         if ( validate ) {
+    //             prompt[ 'validate' ] = validate;
+    //         }
+    //         inquirer.prompt([ prompt ]).then(function (answers) {
+    //             resolve(answers);
+    //
+    // })
+    //     });
+    // }
 }
