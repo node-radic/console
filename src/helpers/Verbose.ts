@@ -18,7 +18,7 @@ import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent } from "../co
         'cli:execute:parsed': 'onExecuteCommandParsed'
     }
 })
-export class Verbose {
+export class VerbosityHelper {
     config: HelperOptionsConfig;
 
     @inject('cli.log')

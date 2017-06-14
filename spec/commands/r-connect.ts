@@ -1,4 +1,4 @@
-import { command, CommandArguments, CommandConfig, Config, lazyInject, Log, OptionConfig, Output } from "../../src";
+import { command, CommandArguments, CommandConfig, Config, lazyInject, Log, OptionConfig, OutputHelper } from "../../src";
 
 @command('connect {command}', 'SSH connection helper', ['add'], <CommandConfig> {
     onMissingArgument: 'help',
@@ -14,7 +14,7 @@ export class RcliConnectCmd {
     _options: OptionConfig[]
 
     @lazyInject('cli.helpers.output')
-    out: Output;
+    out: OutputHelper;
 
     @lazyInject('cli.log')
     log: Log;
@@ -26,7 +26,6 @@ export class RcliConnectCmd {
     handle(args:CommandArguments, argv: any[]) {
         this.log.info('args', args);
         this.log.info('argv', argv);
-        this.log.info('config', this._config)
     }
 }
 export default RcliConnectCmd

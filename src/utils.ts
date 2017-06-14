@@ -65,7 +65,7 @@ export function transformOptions(configs: OptionConfig[]): YargsParserOptions {
         if ( config.arguments ) options.narg[ key ] = config.arguments;
         if ( config.default ) options.default[ key ] = config.default
 
-        if ( type !== undefined ) {
+        if ( type !== undefined && options[type] !== undefined ) {
             options[ type ].push(key);
             configs[ iconfig ][ 'type' ] = type;
         }
@@ -152,7 +152,7 @@ export function prepareArguments<T extends CommandConfig = CommandConfig>(config
             args.push(arg);
         })
         config.arguments = args;
-        config.name      = config.name.split(/\s|\n/)[0];
+        config.name      = config.name.split(/\s|\n/)[ 0 ];
     }
     return config;
 }
@@ -163,8 +163,9 @@ export function parseArguments(argv_: string[], args: CommandArgumentConfig[] = 
     let invalid = [];
     let res     = {};
     args.forEach(arg => {
-        let val:string = argv_[ arg.position ];
-        val     = <string> transformArgumentType<string>(val, arg);
+        let val: any = argv_[ arg.position ];
+        // val          = transformArgumentType<any>(val, arg);
+
         if ( ! val && arg.required ) {
             invalid.push(arg.name);
         }
@@ -185,7 +186,7 @@ export function parseArguments(argv_: string[], args: CommandArgumentConfig[] = 
     return { arguments: res, missing: invalid, valid: invalid.length === 0 };
 }
 
-export function transformArgumentType<T extends any = any>(val: any, arg: CommandArgumentConfig): T|T[] {
+export function transformArgumentType<T extends any = any>(val: any, arg: CommandArgumentConfig): T | T[] {
     if ( val === undefined ) {
         return undefined
     }
@@ -193,7 +194,7 @@ export function transformArgumentType<T extends any = any>(val: any, arg: Comman
         if ( val === undefined ) {
             return []
         }
-        return val.map((item => transformArgumentType[ 'transformers' ][arg.type](item)));
+        return val.map((item => transformArgumentType[ 'transformers' ][ arg.type ](item)));
     }
     if ( transformArgumentType[ 'transformers' ][ arg.type ] ) {
         return transformArgumentType[ 'transformers' ][ arg.type ](val);

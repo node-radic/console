@@ -1,22 +1,26 @@
-import { command, CommandArguments, option, Input, lazyInject, Log, Output } from "../../../src";
+import { Config, command, CommandArguments, option, InputHelper, lazyInject, Log, OutputHelper } from "../../../src";
 
 @command(`add 
 {name:string@the connection name} 
 {host:string@the host to connect}
 [user/users:string[]@the user to login] 
-[method:string[]@the connect method]`
-    , 'Add a connection')
+[method:string[]@the connect method]`, {
+    onMissingArgument: 'handle',
+    description: 'Add a connection'
+    })
 export class RcliConnectAddCmd {
 
     @lazyInject('cli.helpers.output')
-    out: Output;
+    out: OutputHelper;
 
     @lazyInject('cli.helpers.input')
-    ask: Input;
+    ask: InputHelper;
 
     @lazyInject('cli.log')
     log: Log;
 
+    @lazyInject('cli.config')
+    config:Config
 
     @option('P', 'login using a password')
     pass:string
@@ -41,8 +45,11 @@ export class RcliConnectAddCmd {
             hostPath: '/'
         }
 
-        this.out.dump(this);
-        this.log.info('Im in RcliConnectCmmand. Njou')
+        // this.out.dump(this);
+        // this.log.info('config', this.config)
+        this.out.dump(this.config.get(''));
+        // this.out.dump(this.config);
+        // this.log.info('Im in RcliConnectCmmand. Njou')
 
     }
 

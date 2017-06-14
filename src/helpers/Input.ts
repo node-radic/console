@@ -1,6 +1,6 @@
 import { helper } from "../";
 import * as inquirer from "inquirer";
-import { Question } from "inquirer";
+import { Answers, Question } from "inquirer";
 import { lazyInject } from "../core/Container";
 import { Config } from "../core/config";
 import * as _ from "lodash";
@@ -18,7 +18,7 @@ export interface CheckListItem extends ChoiceOption {
         testMe: true
     }
 })
-export class Input {
+export class InputHelper {
     @lazyInject('cli.config')
     protected config: Config
 
@@ -91,21 +91,21 @@ export class Input {
         return builder;
     }
 
-    // async checkbox(msg, choices: Array<ChoiceOption>, validate?: (answer) => boolean) {
-    //     return <Promise<string>> new Promise((resolve, reject) => {
-    //         let prompt = {
-    //             type   : 'checkbox',
-    //             message: msg,
-    //             name   : 'toppings',
-    //             choices: choices,
-    //         }
-    //         if ( validate ) {
-    //             prompt[ 'validate' ] = validate;
-    //         }
-    //         inquirer.prompt([ prompt ]).then(function (answers) {
-    //             resolve(answers);
-    //
-    // })
-    //     });
-    // }
+    async checkbox(msg, choices: Array<ChoiceOption>, validate?: (answer) => boolean) {
+        return <Promise<Answers>> new Promise((resolve, reject) => {
+            let prompt = {
+                type   : 'checkbox',
+                message: msg,
+                name   : 'toppings',
+                choices: choices,
+            }
+            if ( validate ) {
+                prompt[ 'validate' ] = validate;
+            }
+            inquirer.prompt([ prompt ]).then(function (answers) {
+                resolve(<Answers> answers);
+
+            })
+        });
+    }
 }

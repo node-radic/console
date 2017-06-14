@@ -64,7 +64,7 @@ const archy     = require('archy')
         'cli:execute:parsed': 'onExecuteCommandParsed'
     }
 })
-export class Output {
+export class OutputHelper {
     config: HelperOptionsConfig;
     macros: { [name: string]: Function }
     _parser: Parser;

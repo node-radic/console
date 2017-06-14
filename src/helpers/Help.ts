@@ -3,7 +3,7 @@ import { CommandArgumentConfig, CommandConfig, HelperOptionsConfig, OptionConfig
 import { helper } from "../decorators";
 import { CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArguments, CliExecuteCommandParseEvent } from "../core/events";
 import { lazyInject } from "../core/Container";
-import { Output } from "./Output";
+import { OutputHelper } from "./Output";
 import { findSubCommandFilePath } from "../utils";
 import { Log } from "../core/log";
 import { Cli } from "../core/Cli";
@@ -47,16 +47,14 @@ import { Dispatcher } from "../core/Dispatcher";
             globalOptions     : true
         }
     },
-
     listeners: {
         'cli:execute:parse'  : 'onCommandParse',
         'cli:execute:handle' : 'onCommandHandle',
         'cli:execute:invalid': 'onInvalidArguments'
     },
-
     depends: [ 'output' ]
 })
-export class Help {
+export class CommandDescriptionHelper {
     config: HelperOptionsConfig;
 
     @lazyInject('cli.events')
@@ -69,7 +67,7 @@ export class Help {
     log: Log
 
     @lazyInject('cli.helpers.output')
-    out: Output;
+    out: OutputHelper;
 
     public showHelp(config: CommandConfig, options: OptionConfig[]) {
         let name    = config.name,
@@ -300,7 +298,9 @@ export class Help {
         if ( this.config.showOnError === true && event.config.onMissingArgument === 'help' ) {
             this.showHelp(event.config, event.options);
             this.out.nl;
-            this.log.error(`Missing required argument [${event.parsed.missing[ 0 ]}]`)
+            for (let m in event.parsed.missing) {
+                this.log.error(`Missing required argument <${event.parsed.missing[ m ]}>`)
+            }
             return event.stop();
         }
     }

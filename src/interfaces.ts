@@ -23,8 +23,6 @@ export interface CommandArgumentConfig {
     type?: string
 }
 
-export type MissingCommandArgumentHandler = 'fail' | 'handle' | string
-
 export interface CommandConfig {
     alwaysRun?: boolean
     name?: string
@@ -37,9 +35,9 @@ export interface CommandConfig {
     filePath?: string
     action?: Function | string
     args?: string[]
-    helpers: { [name: string]: HelperOptionsConfig }
+    helpers?: { [name: string]: HelperOptionsConfig }
     arguments?: CommandArgumentConfig[]
-    onMissingArgument?: MissingCommandArgumentHandler
+    onMissingArgument?: string | 'fail' | 'handle'
 }
 
 export interface OptionConfig {

@@ -16,31 +16,31 @@ var RcliConnectCmd = (function () {
     RcliConnectCmd.prototype.handle = function (args, argv) {
         this.log.info('args', args);
         this.log.info('argv', argv);
-        this.log.info('config', this._config);
     };
-    __decorate([
-        src_1.lazyInject('cli.helpers.output'),
-        __metadata("design:type", src_1.Output)
-    ], RcliConnectCmd.prototype, "out", void 0);
-    __decorate([
-        src_1.lazyInject('cli.log'),
-        __metadata("design:type", Object)
-    ], RcliConnectCmd.prototype, "log", void 0);
-    __decorate([
-        src_1.lazyInject('cli.config'),
-        __metadata("design:type", Function)
-    ], RcliConnectCmd.prototype, "config", void 0);
-    RcliConnectCmd = __decorate([
-        src_1.command('connect {command}', 'SSH connection helper', ['add'], {
-            onMissingArgument: 'help',
-            helpers: {
-                help: {
-                    app: { title: 'SSH Connection Helper' }
-                }
-            }
-        })
-    ], RcliConnectCmd);
     return RcliConnectCmd;
 }());
+__decorate([
+    src_1.lazyInject('cli.helpers.output'),
+    __metadata("design:type", src_1.OutputHelper)
+], RcliConnectCmd.prototype, "out", void 0);
+__decorate([
+    src_1.lazyInject('cli.log'),
+    __metadata("design:type", Object)
+], RcliConnectCmd.prototype, "log", void 0);
+__decorate([
+    src_1.lazyInject('cli.config'),
+    __metadata("design:type", Function)
+], RcliConnectCmd.prototype, "config", void 0);
+RcliConnectCmd = __decorate([
+    src_1.command('connect {command}', 'SSH connection helper', ['add'], {
+        onMissingArgument: 'help',
+        helpers: {
+            help: {
+                app: { title: 'SSH Connection Helper' }
+            }
+        }
+    })
+], RcliConnectCmd);
 exports.RcliConnectCmd = RcliConnectCmd;
 exports.default = RcliConnectCmd;
+//# sourceMappingURL=r-connect.js.map

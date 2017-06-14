@@ -28,41 +28,48 @@ var RcliConnectAddCmd = (function () {
             localPath: '/mnt/' + args.name,
             hostPath: '/'
         };
-        this.out.dump(this);
-        this.log.info('Im in RcliConnectCmmand. Njou');
+        this.out.dump(this.config.get(''));
     };
-    __decorate([
-        src_1.lazyInject('cli.helpers.output'),
-        __metadata("design:type", src_1.Output)
-    ], RcliConnectAddCmd.prototype, "out", void 0);
-    __decorate([
-        src_1.lazyInject('cli.helpers.input'),
-        __metadata("design:type", src_1.Input)
-    ], RcliConnectAddCmd.prototype, "ask", void 0);
-    __decorate([
-        src_1.lazyInject('cli.log'),
-        __metadata("design:type", Object)
-    ], RcliConnectAddCmd.prototype, "log", void 0);
-    __decorate([
-        src_1.option('P', 'login using a password'),
-        __metadata("design:type", String)
-    ], RcliConnectAddCmd.prototype, "pass", void 0);
-    __decorate([
-        src_1.option('p', 'use the given port (default: 22)'),
-        __metadata("design:type", Number)
-    ], RcliConnectAddCmd.prototype, "port", void 0);
-    __decorate([
-        src_1.option('l', 'local mount path for sshfs (default: /mnt/<name>)'),
-        __metadata("design:type", String)
-    ], RcliConnectAddCmd.prototype, "localPath", void 0);
-    __decorate([
-        src_1.option('h', 'host path to mount for sshfs (default: / )'),
-        __metadata("design:type", String)
-    ], RcliConnectAddCmd.prototype, "hostPath", void 0);
-    RcliConnectAddCmd = __decorate([
-        src_1.command("add \n{name:string@the connection name} \n{host:string@the host to connect}\n[user/users:string[]@the user to login] \n[method:string[]@the connect method]", 'Add a connection')
-    ], RcliConnectAddCmd);
     return RcliConnectAddCmd;
 }());
+__decorate([
+    src_1.lazyInject('cli.helpers.output'),
+    __metadata("design:type", src_1.OutputHelper)
+], RcliConnectAddCmd.prototype, "out", void 0);
+__decorate([
+    src_1.lazyInject('cli.helpers.input'),
+    __metadata("design:type", src_1.InputHelper)
+], RcliConnectAddCmd.prototype, "ask", void 0);
+__decorate([
+    src_1.lazyInject('cli.log'),
+    __metadata("design:type", Object)
+], RcliConnectAddCmd.prototype, "log", void 0);
+__decorate([
+    src_1.lazyInject('cli.config'),
+    __metadata("design:type", Function)
+], RcliConnectAddCmd.prototype, "config", void 0);
+__decorate([
+    src_1.option('P', 'login using a password'),
+    __metadata("design:type", String)
+], RcliConnectAddCmd.prototype, "pass", void 0);
+__decorate([
+    src_1.option('p', 'use the given port (default: 22)'),
+    __metadata("design:type", Number)
+], RcliConnectAddCmd.prototype, "port", void 0);
+__decorate([
+    src_1.option('l', 'local mount path for sshfs (default: /mnt/<name>)'),
+    __metadata("design:type", String)
+], RcliConnectAddCmd.prototype, "localPath", void 0);
+__decorate([
+    src_1.option('h', 'host path to mount for sshfs (default: / )'),
+    __metadata("design:type", String)
+], RcliConnectAddCmd.prototype, "hostPath", void 0);
+RcliConnectAddCmd = __decorate([
+    src_1.command("add \n{name:string@the connection name} \n{host:string@the host to connect}\n[user/users:string[]@the user to login] \n[method:string[]@the connect method]", {
+        onMissingArgument: 'handle',
+        description: 'Add a connection'
+    })
+], RcliConnectAddCmd);
 exports.RcliConnectAddCmd = RcliConnectAddCmd;
 exports.default = RcliConnectAddCmd;
+//# sourceMappingURL=add.js.map
