@@ -4,6 +4,7 @@ import { Answers, Question } from "inquirer";
 import { lazyInject } from "../core/Container";
 import { Config } from "../core/config";
 import * as _ from "lodash";
+import { kindOf } from "@radic/util";
 import ChoiceOption = inquirer.objects.ChoiceOption;
 
 export interface CheckListItem extends ChoiceOption {
@@ -12,6 +13,7 @@ export interface CheckListItem extends ChoiceOption {
     checked: boolean
     value?: string
 }
+const seperator = (msg = '') => new inquirer.Separator(` -=${msg}=- `)
 
 @helper('input', {
     config: {
@@ -28,10 +30,50 @@ export class InputHelper {
             inquirer.prompt({ name: 'ask', default: def, type: 'input', message: question })
                 .then(answers => resolve(answers.ask))
             //     .catch(err => reject(err));
-            // (<any> [ { name: 'ask', default: def, type: 'input', message: question } ])
-            //     .catch((reason: any) => reject(reason))
-            //     .then((answers: any) => resolve(answers.ask))
-        })
+        });
+    }
+    async checkbox(msg, choices: Array<ChoiceOption>, validate?: (answer) => boolean) {
+        if ( kindOf(choices) === 'array' ) {
+            choices.map(name => {
+                return {
+                    name : name,
+                    value: name,
+                    type : 'string'
+                }
+            })
+        }
+        let prompt = {
+            type   : 'checkbox',
+            message: msg,
+            name   : 'toppings',
+            choices: choices,
+        }
+        if ( validate ) {
+            prompt[ 'validate' ] = validate;
+        }
+        return <Promise<Answers>> new Promise((resolve, reject) => {
+            return inquirer.prompt([ prompt ]).then(function (answers) {
+                return resolve(<Answers> answers['toppings']);
+            }).catch(e => reject(e))
+        });
+    }
+
+    async list(msg, choices: Array<ChoiceOption>, validate?: (answer) => boolean) {
+        return <Promise<string>> new Promise((resolve, reject) => {
+            let prompt = {
+                type   : 'list',
+                message: msg,
+                name   : 'ask',
+                choices: choices,
+            }
+            if ( validate ) {
+                prompt[ 'validate' ] = validate;
+            }
+            inquirer.prompt([ prompt ]).then(function (answers) {
+                resolve(<string> answers.ask);
+
+            })
+        });
     }
 
     async confirm(message: string, def?: string): Promise<boolean> {
@@ -57,55 +99,5 @@ export class InputHelper {
             let question = _.merge({ name: 'ask', message, type, default: def }, opts)
             inquirer.prompt(question).then(answers => resolve(answers.ask)).catch(e => reject(e))
         })
-    }
-
-    async list(message: string, choices: string[] = [], def?: string) {
-        return <Promise<string>> new Promise((resolve, reject) => {
-            return inquirer.prompt([
-                { type: 'list', name: 'ask', message, choices }
-            ]).then(function (answers) {
-                resolve(answers.ask)
-            }).catch(e => reject(e))
-        })
-    }
-
-
-    protected checklistSeperator(msg = '') {return new inquirer.Separator(` = ${msg} = `)}
-
-    checkListBuilder(validator?: (answer: string) => boolean) {
-
-        let builder = {
-            choices: [],
-            add(val: string, name: string, checked: boolean = false, disabled: boolean = false) {
-                let opts = { name, value: val };
-                if ( checked ) opts[ 'checked' ] = true;
-                if ( disabled ) opts[ 'disabled' ] = true;
-                builder.choices.push()
-                return builder;
-            },
-            sep(msg: string = ''){
-                builder.choices.push(this.checklistSeperator(msg));
-                return builder;
-            }
-        }
-        return builder;
-    }
-
-    async checkbox(msg, choices: Array<ChoiceOption>, validate?: (answer) => boolean) {
-        return <Promise<Answers>> new Promise((resolve, reject) => {
-            let prompt = {
-                type   : 'checkbox',
-                message: msg,
-                name   : 'toppings',
-                choices: choices,
-            }
-            if ( validate ) {
-                prompt[ 'validate' ] = validate;
-            }
-            inquirer.prompt([ prompt ]).then(function (answers) {
-                resolve(<Answers> answers);
-
-            })
-        });
     }
 }

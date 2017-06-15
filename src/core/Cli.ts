@@ -152,9 +152,12 @@ export class Cli {
         })
 
 
-        // Handle
-        if ( isAlwaysRun && instance[ 'always' ] ) {
-            return instance[ 'always' ].apply(instance, [ argv ]);
+        // the 'always run' doesn't pass this point
+        if ( isAlwaysRun  ) {
+            if(kindOf(instance[ 'always' ])) {
+                return instance[ 'always' ].apply(instance, [ argv ]);
+            }
+            return
         }
 
         let parsed = parseArguments(argv._, config.arguments)
@@ -174,6 +177,19 @@ export class Cli {
                         process.exit(1);
                     }
                 }
+            }
+        }
+
+        // give a way to validate / format arguments. We'll pass em to the method (if exist)
+        if(kindOf(instance['validate']) === 'function'){
+            // if it returns a string, its a failed validation string.
+            let validate = instance['validate'].apply(instance, [parsed.arguments, argv])
+            if(kindOf(validate) === 'string'){
+                this.fail(validate)
+            }
+            // If it returns an object, assume its formatted arguments, so we assign em to the eventually passed arguments
+            if(kindOf(validate) === 'object'){
+                parsed.arguments = validate;
             }
         }
 

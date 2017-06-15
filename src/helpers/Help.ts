@@ -123,21 +123,25 @@ export class CommandDescriptionHelper {
     protected printArguments(args: CommandArgumentConfig[] = []) {
         let rows = []
         args.forEach(arg => {
-
+            let row = []
             let name = [
                 arg.required ? '<' : '[',
                 arg.name,
                 arg.alias ? '|' + arg.alias : '',
                 arg.required ? '>' : ']',
             ].join('');
+            row.push(name)
+
+            row.push(arg.desc || '')
 
             let type = [
                 '[',
                 arg.variadic ? '{array}Array<{/array}' : '',
-                `{type}${arg.type}{/type}`,
+                `{type}${arg.type !== undefined ? arg.type : 'string'}{/type}`,
                 arg.variadic ? '{array}>{/array}' : '',
                 ']'
             ].join('')
+            row.push(type)
 
             if ( arg.required ) {
                 type += ' [{required}required{/required}]'

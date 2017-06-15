@@ -14,8 +14,8 @@ var RcliConnectCmd = (function () {
     function RcliConnectCmd() {
     }
     RcliConnectCmd.prototype.handle = function (args, argv) {
-        this.log.info('args', args);
-        this.log.info('argv', argv);
+        this.showHelp();
+        this.out.line('alright');
     };
     return RcliConnectCmd;
 }());
@@ -32,8 +32,7 @@ __decorate([
     __metadata("design:type", Function)
 ], RcliConnectCmd.prototype, "config", void 0);
 RcliConnectCmd = __decorate([
-    src_1.command('connect {command}', 'SSH connection helper', ['add'], {
-        onMissingArgument: 'help',
+    src_1.command('connect [command]', 'SSH connection helper', ['add'], {
         helpers: {
             help: {
                 app: { title: 'SSH Connection Helper' }
