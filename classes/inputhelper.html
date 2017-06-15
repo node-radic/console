@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Input | @radic/console</title>
+	<title>InputHelper | @radic/console</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,10 +54,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="input.html">Input</a>
+					<a href="inputhelper.html">InputHelper</a>
 				</li>
 			</ul>
-			<h1>Class Input</h1>
+			<h1>Class InputHelper</h1>
 		</div>
 	</div>
 </header>
@@ -68,7 +68,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">Input</span>
+						<span class="target">InputHelper</span>
 					</li>
 				</ul>
 			</section>
@@ -79,21 +79,20 @@
 						<section class="tsd-index-section tsd-is-private-protected">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="input.html#config" class="tsd-kind-icon">config</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="inputhelper.html#config" class="tsd-kind-icon">config</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="input.html#ask" class="tsd-kind-icon">ask</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="input.html#checklistbuilder" class="tsd-kind-icon">check<wbr>List<wbr>Builder</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="input.html#checklistseperator" class="tsd-kind-icon">checklist<wbr>Seperator</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="input.html#confirm" class="tsd-kind-icon">confirm</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="input.html#interact" class="tsd-kind-icon">interact</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="input.html#list" class="tsd-kind-icon">list</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="input.html#password" class="tsd-kind-icon">password</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="input.html#prompt" class="tsd-kind-icon">prompt</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="input.html#prompts" class="tsd-kind-icon">prompts</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="inputhelper.html#ask" class="tsd-kind-icon">ask</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="inputhelper.html#checkbox" class="tsd-kind-icon">checkbox</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="inputhelper.html#confirm" class="tsd-kind-icon">confirm</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="inputhelper.html#interact" class="tsd-kind-icon">interact</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="inputhelper.html#list" class="tsd-kind-icon">list</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="inputhelper.html#password" class="tsd-kind-icon">password</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="inputhelper.html#prompt" class="tsd-kind-icon">prompt</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="inputhelper.html#prompts" class="tsd-kind-icon">prompts</a></li>
 							</ul>
 						</section>
 					</div>
@@ -107,7 +106,7 @@
 					<div class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">:</span> <a href="../interfaces/config.html" class="tsd-signature-type">Config</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/973a651/src/helpers/Input.ts#L23">src/helpers/Input.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L25">src/helpers/Input.ts:25</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -124,7 +123,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/973a651/src/helpers/Input.ts#L26">src/helpers/Input.ts:26</a></li>
+									<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L28">src/helpers/Input.ts:28</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -141,33 +140,39 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="checklistbuilder" class="tsd-anchor"></a>
-					<h3>check<wbr>List<wbr>Builder</h3>
+					<a name="checkbox" class="tsd-anchor"></a>
+					<h3>checkbox</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">check<wbr>List<wbr>Builder<span class="tsd-signature-symbol">(</span>validator<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
+						<li class="tsd-signature tsd-kind-icon">checkbox<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, choices<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ChoiceOption</span><span class="tsd-signature-symbol">&gt;</span>, validate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Answers</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/973a651/src/helpers/Input.ts#L75">src/helpers/Input.ts:75</a></li>
+									<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L35">src/helpers/Input.ts:35</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> validator: <span class="tsd-signature-type">function</span></h5>
+									<h5>msg: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>choices: <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ChoiceOption</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> validate: <span class="tsd-signature-type">function</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-siganture">
 											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>answer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>answer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
 													<h4 class="tsd-parameters-title">Parameters</h4>
 													<ul class="tsd-parameters">
 														<li>
-															<h5>answer: <span class="tsd-signature-type">string</span></h5>
+															<h5>answer: <span class="tsd-signature-type">any</span></h5>
 														</li>
 													</ul>
 													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -177,86 +182,7 @@
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
-							<ul class="tsd-parameters">
-								<li class="tsd-parameter">
-									<h5>choices<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></h5>
-								</li>
-								<li class="tsd-parameter">
-									<h5>add<span class="tsd-signature-symbol">: </span>function</h5>
-									<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-type-literal tsd-is-not-exported">
-										<li class="tsd-signature tsd-kind-icon">add<span class="tsd-signature-symbol">(</span>val<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, checked<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, disabled<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">builder</span></li>
-									</ul>
-									<ul class="tsd-descriptions">
-										<li class="tsd-description">
-											<aside class="tsd-sources">
-												<ul>
-													<li>Defined in <a href="https://github.com/node-radic/console/blob/973a651/src/helpers/Input.ts#L79">src/helpers/Input.ts:79</a></li>
-												</ul>
-											</aside>
-											<h4 class="tsd-parameters-title">Parameters</h4>
-											<ul class="tsd-parameters">
-												<li>
-													<h5>val: <span class="tsd-signature-type">string</span></h5>
-												</li>
-												<li>
-													<h5>name: <span class="tsd-signature-type">string</span></h5>
-												</li>
-												<li>
-													<h5><span class="tsd-flag ts-flagDefault value">Default value</span> checked: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></h5>
-												</li>
-												<li>
-													<h5><span class="tsd-flag ts-flagDefault value">Default value</span> disabled: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></h5>
-												</li>
-											</ul>
-											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">builder</span></h4>
-										</li>
-								</ul>        </li>
-								<li class="tsd-parameter">
-									<h5>sep<span class="tsd-signature-symbol">: </span>function</h5>
-									<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-type-literal tsd-is-not-exported">
-										<li class="tsd-signature tsd-kind-icon">sep<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">builder</span></li>
-									</ul>
-									<ul class="tsd-descriptions">
-										<li class="tsd-description">
-											<aside class="tsd-sources">
-												<ul>
-													<li>Defined in <a href="https://github.com/node-radic/console/blob/973a651/src/helpers/Input.ts#L86">src/helpers/Input.ts:86</a></li>
-												</ul>
-											</aside>
-											<h4 class="tsd-parameters-title">Parameters</h4>
-											<ul class="tsd-parameters">
-												<li>
-													<h5><span class="tsd-flag ts-flagDefault value">Default value</span> msg: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;&quot;</span></h5>
-												</li>
-											</ul>
-											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">builder</span></h4>
-										</li>
-								</ul>        </li>
-							</ul>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-					<a name="checklistseperator" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> checklist<wbr>Seperator</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">checklist<wbr>Seperator<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Separator</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/973a651/src/helpers/Input.ts#L73">src/helpers/Input.ts:73</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> msg: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;&quot;</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Separator</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Answers</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -270,7 +196,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/973a651/src/helpers/Input.ts#L37">src/helpers/Input.ts:37</a></li>
+									<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L79">src/helpers/Input.ts:79</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -296,7 +222,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/973a651/src/helpers/Input.ts#L55">src/helpers/Input.ts:55</a></li>
+									<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L97">src/helpers/Input.ts:97</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -322,25 +248,43 @@
 					<a name="list" class="tsd-anchor"></a>
 					<h3>list</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">list<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, choices<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, def<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">list<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, choices<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ChoiceOption</span><span class="tsd-signature-symbol">&gt;</span>, validate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/973a651/src/helpers/Input.ts#L62">src/helpers/Input.ts:62</a></li>
+									<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L61">src/helpers/Input.ts:61</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>message: <span class="tsd-signature-type">string</span></h5>
+									<h5>msg: <span class="tsd-signature-type">any</span></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> choices: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></h5>
+									<h5>choices: <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ChoiceOption</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> def: <span class="tsd-signature-type">string</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> validate: <span class="tsd-signature-type">function</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>answer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>answer: <span class="tsd-signature-type">any</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -357,7 +301,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/973a651/src/helpers/Input.ts#L42">src/helpers/Input.ts:42</a></li>
+									<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L84">src/helpers/Input.ts:84</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -383,7 +327,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/973a651/src/helpers/Input.ts#L50">src/helpers/Input.ts:50</a></li>
+									<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L92">src/helpers/Input.ts:92</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -412,7 +356,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/973a651/src/helpers/Input.ts#L46">src/helpers/Input.ts:46</a></li>
+									<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L88">src/helpers/Input.ts:88</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -440,37 +384,34 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="input.html" class="tsd-kind-icon">Input</a>
+						<a href="inputhelper.html" class="tsd-kind-icon">Input<wbr>Helper</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-								<a href="input.html#config" class="tsd-kind-icon">config</a>
+								<a href="inputhelper.html#config" class="tsd-kind-icon">config</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="input.html#ask" class="tsd-kind-icon">ask</a>
+								<a href="inputhelper.html#ask" class="tsd-kind-icon">ask</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="input.html#checklistbuilder" class="tsd-kind-icon">check<wbr>List<wbr>Builder</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-								<a href="input.html#checklistseperator" class="tsd-kind-icon">checklist<wbr>Seperator</a>
+								<a href="inputhelper.html#checkbox" class="tsd-kind-icon">checkbox</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="input.html#confirm" class="tsd-kind-icon">confirm</a>
+								<a href="inputhelper.html#confirm" class="tsd-kind-icon">confirm</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="input.html#interact" class="tsd-kind-icon">interact</a>
+								<a href="inputhelper.html#interact" class="tsd-kind-icon">interact</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="input.html#list" class="tsd-kind-icon">list</a>
+								<a href="inputhelper.html#list" class="tsd-kind-icon">list</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="input.html#password" class="tsd-kind-icon">password</a>
+								<a href="inputhelper.html#password" class="tsd-kind-icon">password</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-								<a href="input.html#prompt" class="tsd-kind-icon">prompt</a>
+								<a href="inputhelper.html#prompt" class="tsd-kind-icon">prompt</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="input.html#prompts" class="tsd-kind-icon">prompts</a>
+								<a href="inputhelper.html#prompts" class="tsd-kind-icon">prompts</a>
 							</li>
 						</ul>
 					</li>
