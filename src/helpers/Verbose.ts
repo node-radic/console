@@ -2,7 +2,7 @@ import { helper } from "../decorators";
 import { HelperOptionsConfig } from "../interfaces";
 import { inject } from "../core/Container";
 import { LoggerInstance } from "winston";
-import { setVerbosity } from "../core/log";
+import { LogFactory} from "../core/Log";
 import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent } from "../core/events";
 
 @helper('verbose', {
@@ -35,7 +35,7 @@ export class VerbosityHelper {
     public onExecuteCommandParsed(event: CliExecuteCommandParsedEvent) {
         if ( event.argv[ this.config.option.key ] ) {
             let level: number = parseInt(event.argv[ this.config.option.key ]);
-            setVerbosity(level);
+            LogFactory.setVerbosity(level);
             this.log.verbose(`Verbosity set (${level} : ${this.log.level})`)
         }
     }

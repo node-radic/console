@@ -3,7 +3,7 @@ import { container, injectable, lazyInject } from "./Container";
 import { CommandConfig, HelperOptionsConfig, OptionConfig } from "../interfaces";
 import { YargsParserArgv } from "../../types/yargs-parser";
 import { CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArguments, CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent } from "./events";
-import { Log, log } from "./log";
+import { Log, log } from "./Log";
 import { Config } from "./config";
 import { findSubCommandFilePath, parseArguments, transformOptions } from "../utils";
 import { resolve } from "path";
@@ -124,6 +124,7 @@ export class Cli {
         this.helpers.startHelpers(config.helpers);
 
         let optionConfigs: OptionConfig[] = get('options', config.cls.prototype) || [];
+
 
         // Parse
         if ( ! isAlwaysRun )

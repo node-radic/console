@@ -5,7 +5,7 @@ import { CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArguments, CliExe
 import { lazyInject } from "../core/Container";
 import { OutputHelper } from "./Output";
 import { findSubCommandFilePath } from "../utils";
-import { Log } from "../core/log";
+import { Log } from "../core/Log";
 import { Cli } from "../core/Cli";
 import { Dispatcher } from "../core/Dispatcher";
 
@@ -123,7 +123,7 @@ export class CommandDescriptionHelper {
     protected printArguments(args: CommandArgumentConfig[] = []) {
         let rows = []
         args.forEach(arg => {
-            let row = []
+            let row = [];
             let name = [
                 arg.required ? '<' : '[',
                 arg.name,
@@ -146,12 +146,12 @@ export class CommandDescriptionHelper {
             if ( arg.required ) {
                 type += ' [{required}required{/required}]'
             }
-
-            let row = [
-                name,
-                arg.desc,
-                type
-            ]
+            //
+            // let row = [
+            //     name,
+            //     arg.desc,
+            //     type
+            // ]
 
             rows.push(row); //[ arg.name, arg.desc, arg.type, arg.variadic, arg.required ])
         })
