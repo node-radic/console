@@ -11,12 +11,19 @@ export abstract class Event {
 
     constructor(public event: string | string[] = undefined) {}
 }
+
 export abstract class HaltEvent extends Event {
     public halt: boolean = false;
 
     public stop() { this.halt = true }
 }
 
+
+export class CliStartEvent extends HaltEvent {
+    constructor(public requiredPath:string) {
+        super('cli:start')
+    }
+}
 
 export class CliParseEvent extends HaltEvent {
     constructor(public config: CommandConfig, public globals: OptionConfig[]) {
@@ -43,7 +50,7 @@ export class CliExecuteCommandParsedEvent extends HaltEvent {
         super('cli:execute:parsed')
     }
 }
-export class CliExecuteCommandInvalidArguments<T = any> extends HaltEvent {
+export class CliExecuteCommandInvalidArgumentsEvent<T = any> extends HaltEvent {
     constructor(public instance: T,
                 public parsed: ParsedCommandArguments,
                 public config: CommandConfig,

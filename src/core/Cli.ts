@@ -2,7 +2,7 @@ import { kindOf } from "@radic/util";
 import { container, injectable, lazyInject } from "./Container";
 import { CommandConfig, HelperOptionsConfig, OptionConfig } from "../interfaces";
 import { YargsParserArgv } from "../../types/yargs-parser";
-import { CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArguments, CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent } from "./events";
+import { CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent, CliStartEvent } from "./events";
 import { Log, log } from "./Log";
 import { Config } from "./config";
 import { findSubCommandFilePath, parseArguments, transformOptions } from "../utils";
@@ -61,6 +61,7 @@ export class Cli {
 
     public start(requirePath: string): this {
         requirePath = resolve(requirePath);
+        this.events.fire(new CliStartEvent(requirePath))
         this._requiredCommands.push(requirePath.endsWith('.js') ? requirePath : requirePath + '.js');
         require(requirePath)
         return this
@@ -118,7 +119,7 @@ export class Cli {
         return this;
     }
 
-    protected executeCommand(config: CommandConfig, isAlwaysRun: boolean = false) {
+    protected async executeCommand(config: CommandConfig, isAlwaysRun: boolean = false) {
 
 
         this.helpers.startHelpers(config.helpers);
@@ -154,8 +155,8 @@ export class Cli {
 
 
         // the 'always run' doesn't pass this point
-        if ( isAlwaysRun  ) {
-            if(kindOf(instance[ 'always' ])) {
+        if ( isAlwaysRun ) {
+            if ( kindOf(instance[ 'always' ]) ) {
                 return instance[ 'always' ].apply(instance, [ argv ]);
             }
             return
@@ -166,7 +167,7 @@ export class Cli {
 
         // if any missing, execute the way we should handle the arguments.
         if ( ! parsed.valid ) {
-            this.events.fire(new CliExecuteCommandInvalidArguments(instance, parsed, config, optionConfigs));
+            this.events.fire(new CliExecuteCommandInvalidArgumentsEvent(instance, parsed, config, optionConfigs));
             if ( config.onMissingArgument === "fail" ) {
                 this.fail(`Missing required argument [${parsed.missing.shift()}]`);
             }
@@ -182,26 +183,24 @@ export class Cli {
         }
 
         // give a way to validate / format arguments. We'll pass em to the method (if exist)
-        if(kindOf(instance['validate']) === 'function'){
+        if ( kindOf(instance[ 'validate' ]) === 'function' ) {
             // if it returns a string, its a failed validation string.
-            let validate = instance['validate'].apply(instance, [parsed.arguments, argv])
-            if(kindOf(validate) === 'string'){
+            let validate = instance[ 'validate' ].apply(instance, [ parsed.arguments, argv ])
+            if ( kindOf(validate) === 'string' ) {
                 this.fail(validate)
             }
             // If it returns an object, assume its formatted arguments, so we assign em to the eventually passed arguments
-            if(kindOf(validate) === 'object'){
+            if ( kindOf(validate) === 'object' ) {
                 parsed.arguments = validate;
             }
         }
 
-        let result = instance[ 'handle' ].apply(instance, [ parsed.arguments, argv ]);
+        let result = await instance[ 'handle' ].apply(instance, [ parsed.arguments, argv ]);
 
         this.events.fire(new CliExecuteCommandHandledEvent(result, instance, argv, config, optionConfigs))
 
-        if ( result === false ) {
-            process.exit(1);
-        }
-
+        if ( result === true  ) process.exit();
+        process.exit(1);
 
     }
 

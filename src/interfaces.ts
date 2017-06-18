@@ -31,6 +31,7 @@ export interface CommandConfig {
     example?: string
     explenation?:string
     subCommands?: string[]
+    group?:string|null
     cls?: Function
     filePath?: string
     action?: Function | string

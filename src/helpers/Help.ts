@@ -1,13 +1,15 @@
 import { kindOf } from "@radic/util";
 import { CommandArgumentConfig, CommandConfig, HelperOptionsConfig, OptionConfig } from "../interfaces";
 import { helper } from "../decorators";
-import { CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArguments, CliExecuteCommandParseEvent } from "../core/events";
+import { CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParseEvent } from "../core/events";
 import { lazyInject } from "../core/Container";
 import { OutputHelper } from "./Output";
 import { findSubCommandFilePath } from "../utils";
 import { Log } from "../core/Log";
 import { Cli } from "../core/Cli";
 import { Dispatcher } from "../core/Dispatcher";
+import { HelpHelperOnInvalidArgumentsShowHelpEvent, HelpHelperShowHelpEvent } from "./events";
+import * as _ from "lodash";
 
 @helper('help', {
     config: {
@@ -70,6 +72,14 @@ export class CommandDescriptionHelper {
     out: OutputHelper;
 
     public showHelp(config: CommandConfig, options: OptionConfig[]) {
+        if(config.helpers['help']){
+            _.merge(this.config, config.helpers['help']);
+        }
+        this.events.fire(new HelpHelperShowHelpEvent(config, options))
+        this.printHelp(config, options);
+    }
+
+    protected printHelp(config: CommandConfig, options: OptionConfig[]){
         let name    = config.name,
             desc    = config.description || '',
             example = config.example || '',
@@ -181,6 +191,7 @@ export class CommandDescriptionHelper {
 
     protected printSubCommands(subCommands: string[]) {
         let rows = []
+        let groups:{[name:string]: string[][]} = {}
         subCommands.forEach(command => {
             let desc                          = '',
                 name                          = null,
@@ -190,11 +201,19 @@ export class CommandDescriptionHelper {
             let module   = require(filePath);
             if ( kindOf(module.default) === 'function' ) {
                 let config: CommandConfig = Reflect.getMetadata('command', module.default);
+
                 desc                      = config.description;
                 name                      = config.name
                 args                      = config.arguments
-                // args.filter(arg => arg.required).map(arg => arg.name);
-                rows.push([ `{command}${config.name}{/command}`, `{desc}${desc}{/desc}` ]);
+
+                let line  = [ `{command}${config.name}{/command}`, `{desc}${desc}{/desc}` ];
+
+                if(config.group){
+                    if(!groups[config.group]) groups[config.group] = []
+                    groups[config.group].push(line)
+                } else {
+                    rows.push(line)
+                }
             }
 
         })
@@ -202,6 +221,14 @@ export class CommandDescriptionHelper {
             columnSplitter  : '   ',
             showHeaders     : false,
             preserveNewLines: true
+        })
+        Object.keys(groups).forEach(group => {
+            this.out.nl.line(`{orange}${group} commands:{/orange}`)
+            this.out.columns(groups[group], {
+                columnSplitter  : '   ',
+                showHeaders     : false,
+                preserveNewLines: true
+            })
         })
     }
 
@@ -298,8 +325,9 @@ export class CommandDescriptionHelper {
         }
     }
 
-    public onInvalidArguments(event: CliExecuteCommandInvalidArguments) {
+    public onInvalidArguments(event: CliExecuteCommandInvalidArgumentsEvent) {
         if ( this.config.showOnError === true && event.config.onMissingArgument === 'help' ) {
+            if(this.events.fire(new HelpHelperOnInvalidArgumentsShowHelpEvent(event)).halt) return
             this.showHelp(event.config, event.options);
             this.out.nl;
             for (let m in event.parsed.missing) {

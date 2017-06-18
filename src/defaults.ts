@@ -48,6 +48,7 @@ export const defaults = {
             usage            : null,
             description      : '',
             explenation      : '',
+            group            : null,
             example          : null,
             action           : 'handle',
             onMissingArgument: config.get('commands.onMissingArgument', 'fail'),

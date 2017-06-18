@@ -19,9 +19,9 @@ export class Dispatcher {
 
     }
 
-    fire<T extends Event>(ctx: T): T
-    fire<T extends Event>(event: string | string[], ctx: T): T
-    fire<T extends Event>(...args: any[]): T {
+    fire<T extends Event|HaltEvent>(ctx: T): T
+    fire<T extends Event|HaltEvent>(event: string | string[], ctx: T): T
+    fire<T extends Event|HaltEvent>(...args: any[]): T {
         let event: string | string[];
         let ctx: T = args[ args.length - 1 ];
 
