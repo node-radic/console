@@ -26,6 +26,8 @@ function getCommandConfig<T extends CommandConfig>(cls: Function, args: any[] = 
         }
     }
 
+    // config.filePath = module.filename
+
     if ( argt[ 0 ] === "string" ) config.name = args[ 0 ]
     if ( len > 1 && argt[ 1 ] === 'string' ) config.description = args[ 1 ]
     if ( len > 2 && argt[ 2 ] === 'array' ) config.subCommands = args[ 2 ]
@@ -34,33 +36,23 @@ function getCommandConfig<T extends CommandConfig>(cls: Function, args: any[] = 
 
     config = prepareArguments(config);
 
+    config.description = config.description.toLowerCase();
     return config;
 }
 function handleCommand(args: any[], cls?: Function) {
 
-    const isForked     = ! ! process.send
     const handle       = (cls) => {
         let config = getCommandConfig<CommandConfig>(cls, args)
         set('command', config, cls);
-        container.bind(cls.name).to(cls);
         container.get<Cli>('cli').parse(config);
-    }
-    const forkedHandle = (cls) => {
-        process.on('message', (m: any) => {
-            console.log('GOT MSG', m, typeof m)
-            container.get<Cli>('cli').config.set(m.config)
-            let enabledHelpers = <string[]> container.get<Cli>('cli').config.get('enabledHelpers', []);
-            // enabledHelpers.forEach(name => container.get<Cli>('cli').startHelper(name))
-            handle(cls);
-        });
     }
 
     if ( kindOf(args[ 0 ]) === 'function' ) {
-        return isForked ? forkedHandle(args[ 0 ]) : handle(args[ 0 ]);
+        return  handle(args[ 0 ]);
     }
     return (cls) => {
         decorate(injectable(), cls);
-        return isForked ? forkedHandle(cls) : handle(cls);
+        return handle(cls);
     }
 }
 export function command(cls: Function)

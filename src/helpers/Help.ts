@@ -2,7 +2,7 @@ import { kindOf } from "@radic/util";
 import { CommandArgumentConfig, CommandConfig, HelperOptionsConfig, OptionConfig } from "../interfaces";
 import { helper } from "../decorators";
 import { CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParseEvent } from "../core/events";
-import { lazyInject } from "../core/Container";
+import { inject } from "../core/Container";
 import { OutputHelper } from "./Output";
 import { findSubCommandFilePath } from "../utils";
 import { Log } from "../core/Log";
@@ -12,7 +12,7 @@ import { HelpHelperOnInvalidArgumentsShowHelpEvent, HelpHelperShowHelpEvent } fr
 import * as _ from "lodash";
 
 @helper('help', {
-    config: {
+    config   : {
         app               : {
             title: ''
         },
@@ -26,15 +26,25 @@ import * as _ from "lodash";
         style             : {
             titleLines : 'darkorange',
             header     : 'darkorange bold',
-            group      : 'steelblue bold',
-            command    : 'darkcyan',
+            group      : 'darkcyan bold',
+            grouped    : '<%= helpers.help.style.group %>',
+            command    : 'steelblue',
             required   : 'green',
             description: 'darkslategray',
             desc       : '<%= helpers.help.style.description %>', // alias
             argument   : 'yellow darken 25',
-            optional   : 'yellow',
+            optional   : 'yellow darken 30',
             array      : 'cyan',
             type       : 'yellow'
+        },
+        templates         : {
+            usage   : '{header}Usage:{/header}',
+            treeItem: (config: CommandConfig, optionConfigs: OptionConfig[]) => `${config.name} ${config.arguments.map(arg => {
+                let name = arg.name;
+
+                return arg.required ? `<{argument}${name}{/argument}>` : `[{optional}${name}{/optional}]`
+
+            }).join(' ')}`
         },
         display           : {
             title             : true,
@@ -54,32 +64,32 @@ import * as _ from "lodash";
         'cli:execute:handle' : 'onCommandHandle',
         'cli:execute:invalid': 'onInvalidArguments'
     },
-    depends: [ 'output' ]
+    depends  : [ 'output' ]
 })
 export class CommandDescriptionHelper {
     config: HelperOptionsConfig;
 
-    @lazyInject('cli.events')
+    @inject('cli.events')
     events: Dispatcher
 
-    @lazyInject('cli')
+    @inject('cli')
     cli: Cli
 
-    @lazyInject('cli.log')
+    @inject('cli.log')
     log: Log
 
-    @lazyInject('cli.helpers.output')
+    @inject('cli.helpers.output')
     out: OutputHelper;
 
     public showHelp(config: CommandConfig, options: OptionConfig[]) {
-        if(config.helpers['help']){
-            _.merge(this.config, config.helpers['help']);
+        if ( config.helpers[ 'help' ] ) {
+            _.merge(this.config, config.helpers[ 'help' ]);
         }
         this.events.fire(new HelpHelperShowHelpEvent(config, options))
         this.printHelp(config, options);
     }
 
-    protected printHelp(config: CommandConfig, options: OptionConfig[]){
+    protected printHelp(config: CommandConfig, options: OptionConfig[]) {
         let name    = config.name,
             desc    = config.description || '',
             example = config.example || '',
@@ -106,7 +116,7 @@ export class CommandDescriptionHelper {
                 }).join(' ')
             }
             if ( usage.length > 0 ) {
-                this.out.nl.line('{header}Usage:{/header}').line(usage);
+                this.out.nl.line(this.config.templates.usage).line(usage);
             }
         }
         if ( this.config.display.arguments && config.arguments.length > 0 ) {
@@ -133,7 +143,7 @@ export class CommandDescriptionHelper {
     protected printArguments(args: CommandArgumentConfig[] = []) {
         let rows = []
         args.forEach(arg => {
-            let row = [];
+            let row  = [];
             let name = [
                 arg.required ? '<' : '[',
                 arg.name,
@@ -190,8 +200,8 @@ export class CommandDescriptionHelper {
     }
 
     protected printSubCommands(subCommands: string[]) {
-        let rows = []
-        let groups:{[name:string]: string[][]} = {}
+        let rows                                   = []
+        let groups: { [name: string]: string[][] } = {}
         subCommands.forEach(command => {
             let desc                          = '',
                 name                          = null,
@@ -202,15 +212,20 @@ export class CommandDescriptionHelper {
             if ( kindOf(module.default) === 'function' ) {
                 let config: CommandConfig = Reflect.getMetadata('command', module.default);
 
-                desc                      = config.description;
-                name                      = config.name
-                args                      = config.arguments
+                desc = config.description;
+                name = config.name
+                args = config.arguments
+                // let sub = ' '
+                // if(config.subCommands && config.subCommands.length > 0){
+                //     sub = config.subCommands.map(subCommand => `{command}${subCommand}{/command}\n`).join('')
+                // }
 
-                let line  = [ `{command}${config.name}{/command}`, `{desc}${desc}{/desc}` ];
+                let type = config.subCommands && config.subCommands.length > 0 ? 'grouped' : 'command';
+                let line = [ `{${type}}${config.name}{/${type}}`, `{desc}${desc}{/desc}` ];
 
-                if(config.group){
-                    if(!groups[config.group]) groups[config.group] = []
-                    groups[config.group].push(line)
+                if ( config.group ) {
+                    if ( ! groups[ config.group ] ) groups[ config.group ] = []
+                    groups[ config.group ].push(line)
                 } else {
                     rows.push(line)
                 }
@@ -224,7 +239,7 @@ export class CommandDescriptionHelper {
         })
         Object.keys(groups).forEach(group => {
             this.out.nl.line(`{orange}${group} commands:{/orange}`)
-            this.out.columns(groups[group], {
+            this.out.columns(groups[ group ], {
                 columnSplitter  : '   ',
                 showHeaders     : false,
                 preserveNewLines: true
@@ -272,7 +287,9 @@ export class CommandDescriptionHelper {
             let hasName = ! ! name;
             let key     = '-' + option.key + (name ? '|--' + name : '');
             if ( option.arguments > 0 ) {
-
+            }
+            if ( option.default ) {
+                // type = `[default=${JSON.stringify(option.default)}] ${type}`
             }
 
             let columns = [
@@ -288,6 +305,49 @@ export class CommandDescriptionHelper {
             preserveNewLines: true
         })
 
+    }
+
+    public printCommandTree(label: string = 'Command tree:', config?: CommandConfig) {
+        this.out.tree(label, this.getTreeSubcommands(this.cli.rootCommand || config || {}))
+    }
+
+    protected getTreeSubcommands(config: CommandConfig): any[] {
+        return config.subCommands.map(subCommand => {
+            let filePath = findSubCommandFilePath(subCommand, config.filePath)
+            let module   = require(filePath);
+            if ( kindOf(module.default) === 'function' ) {
+                let subConfig: CommandConfig      = Reflect.getMetadata('command', module.default);
+                let optionConfigs: OptionConfig[] = Reflect.getMetadata('options', subConfig.cls.prototype) || [];
+                if ( subConfig.subCommands && subConfig.subCommands.length > 0 ) {
+                    return { label: this.config.templates.treeItem(subConfig, optionConfigs), nodes: this.getTreeSubcommands(subConfig) }
+                }
+                return this.config.templates.treeItem(subConfig, optionConfigs);
+            }
+
+            return `{command}${subCommand}{/command}`;
+        })
+    }
+
+    getSubcommandsNameTree(config: CommandConfig): any {
+        let obj = {};
+
+        config.subCommands.map(subCommand => {
+            let filePath = findSubCommandFilePath(subCommand, config.filePath)
+            let module   = require(filePath);
+            if ( kindOf(module.default) === 'function' ) {
+                let subConfig: CommandConfig      = Reflect.getMetadata('command', module.default);
+                let optionConfigs: OptionConfig[] = Reflect.getMetadata('options', subConfig.cls.prototype) || [];
+                if ( subConfig.subCommands && subConfig.subCommands.length > 0 ) {
+                    return { [subConfig.name]: this.getSubcommandsNameTree(subConfig) }
+                }
+
+                return { [subConfig.name]: optionConfigs.map(opt => '--' + opt.name) };
+            }
+            return false;
+        }).filter(subConfig => subConfig !== false).forEach(subj => {
+            _.merge(obj, subj);
+        });
+        return obj
     }
 
     protected getParsedCommandNames(): string[] {
@@ -327,13 +387,14 @@ export class CommandDescriptionHelper {
 
     public onInvalidArguments(event: CliExecuteCommandInvalidArgumentsEvent) {
         if ( this.config.showOnError === true && event.config.onMissingArgument === 'help' ) {
-            if(this.events.fire(new HelpHelperOnInvalidArgumentsShowHelpEvent(event)).halt) return
+            if ( this.events.fire(new HelpHelperOnInvalidArgumentsShowHelpEvent(event)).halt ) return
             this.showHelp(event.config, event.options);
             this.out.nl;
-            for (let m in event.parsed.missing) {
+            for ( let m in event.parsed.missing ) {
                 this.log.error(`Missing required argument <${event.parsed.missing[ m ]}>`)
             }
             return event.stop();
         }
     }
+
 }

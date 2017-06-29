@@ -92,24 +92,25 @@ logLevels.forEach((level, index) => {
     colors[ level ] = winston.config.cli.colors[ level ] ? winston.config.cli.colors[ level ] : winston.config.syslog.colors[ level ]
 })
 
-export const log: Log = new winston.Logger(<any>{
-    level      : 'info',
-    rewriters  : [ (level, msg, meta) => {
-        return meta;
-    } ],
-    levels,
-    exitOnError: false,
-    transports,
-    // exitOnError: false
-});
 winston.addColors(colors);
-container.constant('cli.log', log);
+container.bind<Log>('cli.log').toDynamicValue((ctx) => {
+    return new winston.Logger(<any>{
+        level      : 'info',
+        rewriters  : [ (level, msg, meta) => {
+            return meta;
+        } ],
+        levels,
+        exitOnError: false,
+        transports,
+        // exitOnError: false
+    });
+});
 
 export function setLogLevel(level: LogLevel) {
     if ( kindOf(level) === 'number' ) {
         level = logLevels[ level ]
     }
-    log.level = level.toString();
+    container.get<Log>('cli.log').level = level.toString();
 }
 
 export function setVerbosity(verbosity: number) {

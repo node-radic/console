@@ -3,15 +3,11 @@ import { merge } from "lodash";
 import { kindOf } from "@radic/util";
 import { Parser } from "@radic/console-colors";
 import { inspect } from "util";
-import * as Table from "cli-table2";
 import { helper } from "../decorators";
 import { HelperOptionsConfig, OutputColumnsOptions } from "../interfaces";
-import { Data } from "archy";
 import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent } from "../core/events";
 const tty       = require('tty');
-const columnify = require('columnify')
-const truwrap   = require('truwrap');
-const archy     = require('archy')
+
 
 // truwrap({})
 
@@ -141,7 +137,7 @@ export class OutputHelper {
     }
 
     tree(label: string, nodes: any[]): this {
-        let tree = archy(<Data> { label, nodes });
+        let tree = require('archy')(<any> { label, nodes });
         return this.line(tree)
     }
 
@@ -154,7 +150,7 @@ export class OutputHelper {
 //             head: ['TH 1 label', 'TH 2 label']
 //             , colWidths: [100, 200]
 //         });
-        return new Table(kindOf(options) === 'array' ? { head: options } : options)
+        return new (require('cli-table2'))(kindOf(options) === 'array' ? { head: options } : options)
     }
 
     columns(data: any, options: OutputColumnsOptions = {}, ret: boolean = false) {
@@ -172,7 +168,7 @@ export class OutputHelper {
             // defaults.minWidth = (process.stdout[ 'getWindowSize' ]()[ 0 ] / 1.1) / iCol;
             // defaults.minWidth = defaults.minWidth > defaults.maxWidth ? defaults.maxWidth : defaults.minWidth;
         }
-        let res = columnify(data, merge({}, defaults, options));
+        let res = require('columnify')(data, merge({}, defaults, options));
         if ( ret ) return res;
         this.writeln(res);
     }

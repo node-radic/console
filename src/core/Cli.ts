@@ -3,7 +3,7 @@ import { container, injectable, lazyInject } from "./Container";
 import { CommandConfig, HelperOptionsConfig, OptionConfig } from "../interfaces";
 import { YargsParserArgv } from "../../types/yargs-parser";
 import { CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent, CliStartEvent } from "./events";
-import { Log, log } from "./Log";
+import { Log } from "./Log";
 import { Config } from "./config";
 import { findSubCommandFilePath, parseArguments, transformOptions } from "../utils";
 import { resolve } from "path";
@@ -16,7 +16,6 @@ import BindingWhenOnSyntax = interfaces.BindingWhenOnSyntax;
 const parser = require('yargs-parser')
 const get    = Reflect.getMetadata
 declare var v8debug;
-log.silly('go cli')
 
 
 // @singleton('cli')
@@ -95,7 +94,14 @@ export class Cli {
                 this.executeCommand(config, true);
             }
 
-            return this.handleRequire(filePath, config);
+            // remove the sub-command argument from the argv array, so the next time parse() is called, we dont get in weird results
+            process.argv.splice(0, 1);
+
+            const module = require(filePath);
+
+            this._requiredCommands.push(module);
+
+            return this;
         }
         // for spawn mode, we'd check if there's no running command which means this is the actual command to execute
         // for require mode, the if statement will always pass
@@ -107,17 +113,6 @@ export class Cli {
         return this;
     }
 
-
-    protected handleRequire(filePath: string, config: CommandConfig): this {
-        // remove the sub-command argument from the argv array, so the next time parse() is called, we dont get in weird results
-        process.argv.splice(0, 1);
-
-        const module = require(filePath);
-
-        this._requiredCommands.push(module);
-
-        return this;
-    }
 
     protected async executeCommand(config: CommandConfig, isAlwaysRun: boolean = false) {
 
@@ -148,19 +143,17 @@ export class Cli {
         instance[ '_config' ]  = config;
         instance[ '_options' ] = optionConfigs;
 
+
+        // the 'always run' doesn't pass this point
+        if ( isAlwaysRun && kindOf(instance[ 'always' ]) === 'function' ) {
+            return instance[ 'always' ].apply(instance, [ argv ]);
+        }
+
         // Argument assignment to the instance
         _.without(Object.keys(argv), '_').forEach((argName: string, argIndex: number) => {
             instance[ argName ] = argv[ argName ];
         })
 
-
-        // the 'always run' doesn't pass this point
-        if ( isAlwaysRun ) {
-            if ( kindOf(instance[ 'always' ]) ) {
-                return instance[ 'always' ].apply(instance, [ argv ]);
-            }
-            return
-        }
 
         let parsed = parseArguments(argv._, config.arguments)
         this.events.fire(new CliExecuteCommandHandleEvent(instance, parsed, argv, config, optionConfigs))
@@ -199,7 +192,7 @@ export class Cli {
 
         this.events.fire(new CliExecuteCommandHandledEvent(result, instance, argv, config, optionConfigs))
 
-        if ( result === true  ) process.exit();
+        if ( result === true ) process.exit();
         process.exit(1);
 
     }

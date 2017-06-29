@@ -6,6 +6,7 @@ import { setVerbosity} from "../core/Log";
 import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent } from "../core/events";
 
 @helper('verbose', {
+    singleton: true,
     config   : {
         option: {
             enabled: true,

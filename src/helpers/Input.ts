@@ -1,13 +1,12 @@
 import { helper } from "../";
 import * as inquirer from "inquirer";
 import { Answers, Question } from "inquirer";
-import { lazyInject } from "../core/Container";
+import { inject } from "../core/Container";
 import { Config } from "../core/config";
 import * as _ from "lodash";
 import { kindOf } from "@radic/util";
-import ChoiceOption = inquirer.objects.ChoiceOption;
 
-export interface CheckListItem extends ChoiceOption {
+export interface CheckListItem extends inquirer.objects.ChoiceOption {
     name?: string
     disabled?: string
     checked: boolean
@@ -16,12 +15,13 @@ export interface CheckListItem extends ChoiceOption {
 const seperator = (msg = '') => new inquirer.Separator(` -=${msg}=- `)
 
 @helper('input', {
+    singleton: true,
     config: {
         testMe: true
     }
 })
 export class InputHelper {
-    @lazyInject('cli.config')
+    @inject('cli.config')
     protected config: Config
 
 
@@ -32,7 +32,7 @@ export class InputHelper {
             //     .catch(err => reject(err));
         });
     }
-    async checkbox(msg, choices: Array<ChoiceOption>, validate?: (answer) => boolean) {
+    async checkbox(msg, choices: Array<inquirer.objects.ChoiceOption>, validate?: (answer) => boolean) {
         if ( kindOf(choices) === 'array' ) {
             choices.map(name => {
                 return {
@@ -58,7 +58,7 @@ export class InputHelper {
         });
     }
 
-    async list(msg, choices: Array<ChoiceOption>, validate?: (answer) => boolean) {
+    async list(msg, choices: Array<inquirer.objects.ChoiceOption>, validate?: (answer) => boolean) {
         return <Promise<string>> new Promise((resolve, reject) => {
             let prompt = {
                 type   : 'list',
