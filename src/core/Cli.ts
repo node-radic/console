@@ -192,6 +192,7 @@ export class Cli {
 
         this.events.fire(new CliExecuteCommandHandledEvent(result, instance, argv, config, optionConfigs))
 
+        if ( result === null )return;
         if ( result === true ) process.exit();
         process.exit(1);
 

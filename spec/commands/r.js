@@ -21,23 +21,22 @@ var RcliCmd = (function () {
     };
     RcliCmd.prototype.handle = function () {
     };
+    __decorate([
+        src_1.lazyInject('cli.log'),
+        __metadata("design:type", Object)
+    ], RcliCmd.prototype, "log", void 0);
+    __decorate([
+        src_1.lazyInject('cli.config'),
+        __metadata("design:type", Function)
+    ], RcliCmd.prototype, "config", void 0);
+    RcliCmd = __decorate([
+        src_1.command('r {command:string@any of the listed commands}', {
+            subCommands: ['connect'],
+            alwaysRun: true,
+            onMissingArgument: 'help'
+        })
+    ], RcliCmd);
     return RcliCmd;
 }());
-__decorate([
-    src_1.lazyInject('cli.log'),
-    __metadata("design:type", Object)
-], RcliCmd.prototype, "log", void 0);
-__decorate([
-    src_1.lazyInject('cli.config'),
-    __metadata("design:type", Function)
-], RcliCmd.prototype, "config", void 0);
-RcliCmd = __decorate([
-    src_1.command('r {command:string@any of the listed commands}', {
-        subCommands: ['connect'],
-        alwaysRun: true,
-        onMissingArgument: 'help'
-    })
-], RcliCmd);
 exports.RcliCmd = RcliCmd;
 exports.default = RcliCmd;
-//# sourceMappingURL=r.js.map

@@ -94,8 +94,10 @@ export class Container extends BaseContainer {
         return decorate(decorator, target, parameterIndex);
     }
 
-    constant(id: string, val: any) {
-        this.bind(id).toConstantValue(val);
+    constant<T>(id: string, val: T)
+
+    {
+        return this.bind(id).toConstantValue(val);
     }
 }
 
