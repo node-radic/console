@@ -45,9 +45,12 @@ export const defaults = {
         return <T> cloneDeep({
             alwaysRun        : false,
             name             : cls.name.replace('Command', '').toLowerCase(),
+            alias            : null,
             usage            : null,
             description      : '',
             explenation      : '',
+            isGroup          : false,
+            enabled          : true,
             group            : null,
             example          : null,
             action           : 'handle',

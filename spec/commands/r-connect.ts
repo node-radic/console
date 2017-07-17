@@ -1,6 +1,7 @@
 import { command, CommandArguments, CommandConfig, Config, lazyInject, Log, OptionConfig, OutputHelper } from "../../src";
 
-@command('connect [command]', 'SSH connection helper', ['add'], <CommandConfig> {
+@command('connect|con [command]', 'SSH connection helper', <CommandConfig> {
+isGroup: true,
     helpers: {
         help: {
             app: { title: 'SSH Connection Helper'}

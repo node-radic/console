@@ -5,6 +5,8 @@ import { inject } from "../core/Container";
 import { Config } from "../core/config";
 import * as _ from "lodash";
 import { kindOf } from "@radic/util";
+import { CliExecuteCommandParseEvent, CliStartEvent } from "../core/events";
+import { HelperOptionsConfig } from "../interfaces";
 
 export interface CheckListItem extends inquirer.objects.ChoiceOption {
     name?: string
@@ -17,13 +19,23 @@ const seperator = (msg = '') => new inquirer.Separator(` -=${msg}=- `)
 @helper('input', {
     singleton: true,
     config: {
-        testMe: true
+        registerPrompts: (inquirer:inquirer.Inquirer) => {}
+    },
+    listeners: {
+        'cli:execute:parse': 'onExecuteCommandParse'
     }
 })
 export class InputHelper {
     @inject('cli.config')
-    protected config: Config
+    protected _config: Config
 
+    config:HelperOptionsConfig
+
+    public onExecuteCommandParse(event: CliExecuteCommandParseEvent) {
+        if(kindOf(this.config.registerPrompts) === 'function') {
+            this.config.registerPrompts(inquirer)
+        }
+    }
 
     async ask(question: string, def?: string): Promise<string> {
         return <Promise<string>> new Promise((resolve, reject) => {

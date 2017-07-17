@@ -1,11 +1,11 @@
 import { kindOf } from "@radic/util";
 import { container, injectable, lazyInject } from "./Container";
-import { CommandConfig, HelperOptionsConfig, OptionConfig } from "../interfaces";
+import { CommandConfig, Dictionary, HelperOptionsConfig, OptionConfig } from "../interfaces";
 import { YargsParserArgv } from "../../types/yargs-parser";
 import { CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent, CliStartEvent } from "./events";
 import { Log } from "./Log";
 import { Config } from "./config";
-import { findSubCommandFilePath, parseArguments, transformOptions } from "../utils";
+import { findSubCommandFilePath, findSubCommandsPaths, parseArguments, transformOptions } from "../utils";
 import { resolve } from "path";
 import { interfaces } from "inversify";
 import * as _ from "lodash";
@@ -22,10 +22,11 @@ declare var v8debug;
 @injectable()
 export class Cli {
     protected _runningCommand: CommandConfig;
-    protected _requiredCommands: any[]         = []
-    protected _parsedCommands: CommandConfig[] = []
+    protected _requiredCommands: Dictionary<CommandConfig> = {}
+    protected _parsedCommands: CommandConfig[]             = []
     protected _rootCommand: CommandConfig;
-    protected globalOptions: OptionConfig[]    = [];
+    protected parseCommands: boolean                       = true;
+    protected globalOptions: OptionConfig[]                = [];
 
     @lazyInject('cli.helpers')
     protected _helpers: Helpers;
@@ -61,13 +62,16 @@ export class Cli {
     public start(requirePath: string): this {
         requirePath = resolve(requirePath);
         this.events.fire(new CliStartEvent(requirePath))
-        this._requiredCommands.push(requirePath.endsWith('.js') ? requirePath : requirePath + '.js');
+        // this._requiredCommands.push(requirePath.endsWith('.js') ? requirePath : requirePath + '.js');
         require(requirePath)
         return this
     }
 
     public parse(config: CommandConfig): this {
 
+        if ( ! this.parseCommands ) {
+            return;
+        }
         if ( ! this._rootCommand ) {
             this._rootCommand = config;
         }
@@ -82,27 +86,51 @@ export class Cli {
         this._parsedCommands.push(config);
 
         // Check if sub-command should be invoked
-
-        if ( ! this._runningCommand &&
-            result._.length > 0 &&
-            config.subCommands.length > 0 &&
-            config.subCommands.includes(result._[ 0 ]) ) {
-
-            let filePath = findSubCommandFilePath(result._[ 0 ], config.filePath)
-            this._requiredCommands.push(filePath);
+        if ( ! this._runningCommand && result._.length > 0 && config.isGroup ) {
             if ( config.alwaysRun ) {
                 this.executeCommand(config, true);
             }
+            this.parseCommands                           = false
+            const subCommands: Dictionary<CommandConfig> = {}
 
-            // remove the sub-command argument from the argv array, so the next time parse() is called, we dont get in weird results
-            process.argv.splice(0, 1);
+            findSubCommandsPaths(config.filePath).forEach(filePath => {
+                // remove the sub-command argument from the argv array, so the next time parse() is called, we dont get in weird results
 
-            const module = require(filePath);
-
-            this._requiredCommands.push(module);
-
-            return this;
+                const module                 = require(filePath);
+                const command: CommandConfig = Reflect.getMetadata('command', module.default);
+                subCommands[ command.name ]  = command;
+                if ( command.alias ) {
+                    subCommands[ command.alias ] = command;
+                }
+            })
+            this.parseCommands = true
+            if ( subCommands[ result._[ 0 ] ] ) {
+                const command : CommandConfig = subCommands[ result._[ 0 ] ];
+                command.args.splice(0, 1);
+                this.parse(command);
+                return this
+            }
         }
+        // if ( ! this._runningCommand &&
+        //     result._.length > 0 &&
+        //     config.subCommands.length > 0 &&
+        //     config.subCommands.includes(result._[ 0 ]) ) {
+        //
+        //     let filePath = findSubCommandFilePath(result._[ 0 ], config.filePath)
+        //     this._requiredCommands.push(filePath);
+        //     if ( config.alwaysRun ) {
+        //         this.executeCommand(config, true);
+        //     }
+        //
+        //     // remove the sub-command argument from the argv array, so the next time parse() is called, we dont get in weird results
+        //     process.argv.splice(0, 1);
+        //
+        //     const module = require(filePath);
+        //
+        //     this._requiredCommands.push(module);
+        //
+        //     return this;
+        // }
         // for spawn mode, we'd check if there's no running command which means this is the actual command to execute
         // for require mode, the if statement will always pass
         if ( ! this._runningCommand ) {
@@ -121,12 +149,11 @@ export class Cli {
 
         let optionConfigs: OptionConfig[] = get('options', config.cls.prototype) || [];
 
-
         // Parse
         if ( ! isAlwaysRun )
             this.events.fire(new CliExecuteCommandParseEvent(config, optionConfigs))
 
-        let transformedOptions = transformOptions(optionConfigs);
+        let transformedOptions = transformOptions(this.globalOptions.concat(optionConfigs));
         let argv               = parser(config.args, transformedOptions) as YargsParserArgv;
 
         if ( ! isAlwaysRun )
@@ -150,9 +177,10 @@ export class Cli {
         }
 
         // Argument assignment to the instance
-        _.without(Object.keys(argv), '_').forEach((argName: string, argIndex: number) => {
-            instance[ argName ] = argv[ argName ];
-        })
+        Object.assign(instance, _.without(Object.keys(argv), '_'))
+        // _.without(Object.keys(argv), '_').forEach((argName: string, argIndex: number) => {
+        //     instance[ argName ] = argv[ argName ];
+        // })
 
 
         let parsed = parseArguments(argv._, config.arguments)
@@ -165,7 +193,7 @@ export class Cli {
                 this.fail(`Missing required argument [${parsed.missing.shift()}]`);
             }
             if ( config.onMissingArgument === "handle" ) {
-                if ( kindOf(instance[ 'handleInvalid' ]) ) {
+                if ( kindOf(instance[ 'handleInvalid' ]) === 'function') {
                     let result = instance[ 'handleInvalid' ].apply(instance, [ parsed, argv ])
                     if ( result === false ) {
                         this.log.error('Not enough arguments given, use the -h / --help option for more information')
@@ -194,8 +222,8 @@ export class Cli {
 
         if ( result === null )return;
         if ( result === true ) process.exit();
-        process.exit(1);
 
+        process.exit(1);
     }
 
     public helper(name: string, config ?: HelperOptionsConfig): this {
@@ -209,7 +237,7 @@ export class Cli {
     //     return this
     // }
 
-    public    fail(msg ?: string) {
+    public fail(msg ?: string) {
         if ( msg ) {
             this.log.error(msg);
         }

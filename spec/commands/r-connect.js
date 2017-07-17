@@ -30,7 +30,8 @@ var RcliConnectCmd = (function () {
         __metadata("design:type", Function)
     ], RcliConnectCmd.prototype, "config", void 0);
     RcliConnectCmd = __decorate([
-        src_1.command('connect [command]', 'SSH connection helper', ['add'], {
+        src_1.command('connect|con [command]', 'SSH connection helper', {
+            isGroup: true,
             helpers: {
                 help: {
                     app: { title: 'SSH Connection Helper' }
@@ -42,3 +43,4 @@ var RcliConnectCmd = (function () {
 }());
 exports.RcliConnectCmd = RcliConnectCmd;
 exports.default = RcliConnectCmd;
+//# sourceMappingURL=r-connect.js.map

@@ -1,10 +1,11 @@
 import { KindOf } from "@radic/util";
 import { interfaces } from "inversify";
+import { Container } from "./core/Container";
 import BindingInWhenOnSyntax = interfaces.BindingInWhenOnSyntax;
 
 
 export interface CommandArguments {
-    [name:string]: any
+    [name: string]: any
 }
 
 export interface ParsedCommandArguments {
@@ -22,16 +23,19 @@ export interface CommandArgumentConfig {
     desc?: string
     type?: string
 }
-
+export type CommandConfigEnabledType = (container: Container) => boolean
 export interface CommandConfig {
     alwaysRun?: boolean
     name?: string
+    alias?: string
     usage?: string | null
     description?: string
     example?: string
-    explenation?:string
+    explenation?: string
     subCommands?: string[]
-    group?:string|null
+    isGroup?: boolean
+    enabled?: boolean | CommandConfigEnabledType
+    group?: string | null
     cls?: Function
     filePath?: string
     action?: Function | string
@@ -106,7 +110,7 @@ export interface HelperOptionsConfig {
  * @see helper The helper decorator function
  */
 export interface HelperOptions {
-    singleton?:boolean
+    singleton?: boolean
     /** set by the decorator */
     name?: string
     /** set by the decorator */
@@ -146,4 +150,17 @@ export interface OutputColumnsOptions {
     truncateMarker?: string
     widths?: { [name: string]: OutputColumnsOptions }
     config?: { [name: string]: OutputColumnsOptions }
+}
+
+
+export interface Dictionary<T> {
+    [index: string]: T;
+}
+
+export interface NumericDictionary<T> {
+    [index: number]: T;
+}
+
+export interface StringRepresentable {
+    toString(): string;
 }

@@ -1,7 +1,8 @@
 import { Config ,CommandConfig,OptionConfig,Cli, command, lazyInject, Log, OutputHelper, CommandDescriptionHelper } from "../../src";
 
 @command('r {command:string@any of the listed commands}', <CommandConfig> {
-    subCommands: [ 'connect' ],
+    isGroup: true,
+    // subCommands: [ 'connect' ],
     alwaysRun  : true,
     onMissingArgument: 'help'
 })

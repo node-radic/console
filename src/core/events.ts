@@ -1,8 +1,9 @@
 import { Cli } from "./Cli";
 import { container } from "./Container";
-import { CommandConfig, OptionConfig, ParsedCommandArguments } from "../interfaces";
+import { Dictionary, CommandConfig, HelperOptionsConfig, OptionConfig, ParsedCommandArguments } from "../interfaces";
 import { YargsParserArgv } from "../../types/yargs-parser";
 import { ChildProcess } from "child_process";
+import { Helpers } from "./Helpers";
 
 export abstract class Event {
     public get cli(): Cli {
@@ -74,5 +75,28 @@ export class CliExecuteCommandHandledEvent<T = any> extends HaltEvent {
                 public config: CommandConfig,
                 public options: OptionConfig[]) {
         super('cli:execute:handled')
+    }
+}
+
+
+
+export class HelpersStartingEvent extends HaltEvent {
+    constructor(public helpers: Helpers, public enabledHelpers: string[], public customConfigs: Dictionary<HelperOptionsConfig>) {
+        super('helpers:starting')
+    }
+}
+export class HelperStartingEvent extends HaltEvent {
+    constructor(public helpers: Helpers, public name: string, public customConfig: HelperOptionsConfig) {
+        super('helper:starting')
+    }
+}
+export class HelperStartedEvent extends Event {
+    constructor(public helpers: Helpers, public name: string) {
+        super('helper:started')
+    }
+}
+export class HelpersStartedEvent extends Event {
+    constructor(public helpers: Helpers, public startedHelpers: string[]) {
+        super('helpers:started')
     }
 }

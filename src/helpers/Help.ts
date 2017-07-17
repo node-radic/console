@@ -4,7 +4,7 @@ import { helper } from "../decorators";
 import { CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParseEvent } from "../core/events";
 import { inject } from "../core/Container";
 import { OutputHelper } from "./Output";
-import { findSubCommandFilePath } from "../utils";
+import { findSubCommandFilePath, findSubCommandsPaths } from "../utils";
 import { Log } from "../core/Log";
 import { Cli } from "../core/Cli";
 import { Dispatcher } from "../core/Dispatcher";
@@ -123,9 +123,9 @@ export class CommandDescriptionHelper {
             this.out.nl.line('{header}Arguments:{/header}');
             this.printArguments(config.arguments);
         }
-        if ( this.config.display.subCommands && config.subCommands.length > 0 ) {
+        if ( this.config.display.subCommands && config.isGroup ) {
             this.out.nl.line('{header}Commands:{/header}');
-            this.printSubCommands(config.subCommands);
+            this.printSubCommands(config);
         }
         if ( this.config.display.options && options.length > 0 ) {
             this.out.nl.line('{header}Options:{/header}')
@@ -199,38 +199,36 @@ export class CommandDescriptionHelper {
 
     }
 
-    protected printSubCommands(subCommands: string[]) {
+    protected printSubCommands(config: CommandConfig) {
         let rows                                   = []
         let groups: { [name: string]: string[][] } = {}
-        subCommands.forEach(command => {
+        findSubCommandsPaths(config.filePath).forEach(modulePath => {
             let desc                          = '',
                 name                          = null,
                 args: CommandArgumentConfig[] = [];
 
-            let filePath = findSubCommandFilePath(command, this.cli.runningCommand.filePath)
-            let module   = require(filePath);
+            let module   = require(modulePath);
             if ( kindOf(module.default) === 'function' ) {
-                let config: CommandConfig = Reflect.getMetadata('command', module.default);
+                let command: CommandConfig = Reflect.getMetadata('command', module.default);
 
-                desc = config.description;
-                name = config.name
-                args = config.arguments
+                desc = command.description;
+                name = command.name
+                args = command.arguments
                 // let sub = ' '
                 // if(config.subCommands && config.subCommands.length > 0){
                 //     sub = config.subCommands.map(subCommand => `{command}${subCommand}{/command}\n`).join('')
                 // }
 
-                let type = config.subCommands && config.subCommands.length > 0 ? 'grouped' : 'command';
-                let line = [ `{${type}}${config.name}{/${type}}`, `{desc}${desc}{/desc}` ];
+                let type = command.isGroup ? 'grouped' : 'command';
+                let line = [ `{${type}}${command.name}{/${type}}`, `{desc}${desc}{/desc}` ];
 
-                if ( config.group ) {
-                    if ( ! groups[ config.group ] ) groups[ config.group ] = []
-                    groups[ config.group ].push(line)
+                if ( command.group ) {
+                    if ( ! groups[ command.group ] ) groups[ command.group ] = []
+                    groups[ command.group ].push(line)
                 } else {
                     rows.push(line)
                 }
             }
-
         })
         this.out.columns(rows, {
             columnSplitter  : '   ',

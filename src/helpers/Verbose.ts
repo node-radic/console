@@ -4,6 +4,7 @@ import { inject } from "../core/Container";
 import { LoggerInstance } from "winston";
 import { setVerbosity} from "../core/Log";
 import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent } from "../core/events";
+import { kindOf } from "@radic/util";
 
 @helper('verbose', {
     singleton: true,
@@ -29,6 +30,7 @@ export class VerbosityHelper {
         event.cli.global(this.config.option.key,{
             name       : this.config.option.name,
             count      : true,
+            // tyhpe
             description: 'increase verbosity (1:verbose|2:data|3:debug|4:silly)'
         })
     }

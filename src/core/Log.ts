@@ -1,5 +1,5 @@
 import * as winston from "winston";
-import { ConsoleTransportOptions, LoggerInstance } from "winston";
+import { ConsoleTransportOptions, LoggerInstance, TransportInstance } from "winston";
 import { container } from "./Container";
 import { Parser } from "@radic/console-colors";
 import { kindOf } from "@radic/util";
@@ -54,8 +54,8 @@ export function getConsoleMeta(options: ConsoleTransportOptions) {
 
 }
 
-export const parser     = new Parser()
-export const transports = [
+export const parser                          = new Parser()
+export const transports: TransportInstance[] = [
     new (winston.transports.Console)({
         // json       : true,
         colorize   : true,
@@ -115,7 +115,7 @@ export function setLogLevel(level: LogLevel) {
 
 export function setVerbosity(verbosity: number) {
     let level = logLevels.indexOf('info') + verbosity;
-    if ( level > logLevels.length ) {
+    if ( level > logLevels.length - 1 ) {
         level = logLevels.length - 1;
     }
     setLogLevel(<LogLevel> level);

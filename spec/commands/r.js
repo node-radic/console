@@ -31,7 +31,7 @@ var RcliCmd = (function () {
     ], RcliCmd.prototype, "config", void 0);
     RcliCmd = __decorate([
         src_1.command('r {command:string@any of the listed commands}', {
-            subCommands: ['connect'],
+            isGroup: true,
             alwaysRun: true,
             onMissingArgument: 'help'
         })
@@ -40,3 +40,4 @@ var RcliCmd = (function () {
 }());
 exports.RcliCmd = RcliCmd;
 exports.default = RcliCmd;
+//# sourceMappingURL=r.js.map

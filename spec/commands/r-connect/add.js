@@ -64,7 +64,6 @@ var RcliConnectAddCmd = (function () {
     ], RcliConnectAddCmd.prototype, "hostPath", void 0);
     RcliConnectAddCmd = __decorate([
         src_1.command("add \n{name:string@the connection name} \n{host:string@the host to connect}\n[user/users:string[]@the user to login] \n[method:string[]@the connect method]", {
-            onMissingArgument: 'handle',
             description: 'Add a connection'
         })
     ], RcliConnectAddCmd);
@@ -72,3 +71,4 @@ var RcliConnectAddCmd = (function () {
 }());
 exports.RcliConnectAddCmd = RcliConnectAddCmd;
 exports.default = RcliConnectAddCmd;
+//# sourceMappingURL=add.js.map

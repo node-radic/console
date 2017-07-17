@@ -1,19 +1,19 @@
 import { HelperOptions, HelperOptionsConfig } from "../interfaces";
 import { defaults } from "../defaults";
-import { container, inject, injectable, lazyInject, singleton } from "./Container";
+import { container, inject, lazyInject, singleton } from "./Container";
 import { interfaces } from "inversify";
-import Context = interfaces.Context;
 import { kindOf } from "@radic/util";
 import { Config } from "./config";
 import * as _ from "lodash";
 import { Dispatcher } from "./Dispatcher";
+import { Event, HaltEvent, HelpersStartedEvent, HelpersStartingEvent, HelperStartedEvent, HelperStartingEvent } from "./events";
+import Context = interfaces.Context;
 
 @singleton('cli.helpers')
 export class Helpers {
 
     protected _startedHelpers: Array<string>              = []
     protected _helpers: { [name: string]: HelperOptions } = {}
-
 
 
     @inject('cli.events')
@@ -23,9 +23,11 @@ export class Helpers {
     @lazyInject('cli.config')
     protected config: Config;
 
+    protected started: boolean = false;
+
 
     public addHelper<T>(options: HelperOptions): HelperOptions {
-        options   = _.merge(defaults.helper(), options);
+        options = _.merge(defaults.helper(), options);
         this.config.set('helpers.' + options.name, options.config);
         return this._helpers[ options.name ] = options;
     }
@@ -34,18 +36,32 @@ export class Helpers {
         this._helpers[ name ].enabled = true;
 
         let config = this.config.get('helpers.' + name);
-        config = _.merge({}, config, customConfig);
+        config     = _.merge({}, config, customConfig);
         this.config.set('helpers.' + name, config);
 
-        let a =  this.config.get<string[]>('enabledHelpers', [])
-        this.config.set('enabledHelpers', a.concat([name]));
+        let a = this.config.get<string[]>('enabledHelpers', [])
+        this.config.set('enabledHelpers', a.concat([ name ]));
 
     }
 
     public startHelpers(customConfigs: { [name: string]: HelperOptionsConfig } = {}) {
-        this.config.get<string[]>('enabledHelpers', []).forEach(name => {
+        let enabledHelpers: string[] = this.config.get<string[]>('enabledHelpers', [])
+        if ( this.started === false ) {
+            if(this.events.fire(new HelpersStartingEvent(this, enabledHelpers, customConfigs)).halt){
+                return;
+            }
+        }
+        enabledHelpers.forEach(name => {
+            if ( this.events.fire(new HelperStartingEvent(this, name, customConfigs[ name ] || {})).halt ) {
+                return;
+            }
             this.startHelper(name, customConfigs[ name ] || {});
+            this.events.fire(new HelperStartedEvent(this, name))
         })
+        if ( this.started === false ) {
+            this.events.fire(new HelpersStartedEvent(this, enabledHelpers))
+        }
+        this.started = true
     }
 
     /** some helpers can/need to be enabled before usage **/

@@ -5,7 +5,6 @@ import { Config, command, CommandArguments, option, InputHelper, lazyInject, Log
 {host:string@the host to connect}
 [user/users:string[]@the user to login] 
 [method:string[]@the connect method]`, {
-    onMissingArgument: 'handle',
     description: 'Add a connection'
     })
 export class RcliConnectAddCmd {
