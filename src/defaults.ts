@@ -1,6 +1,6 @@
 import { CliConfig, CommandArgumentConfig, CommandConfig, HelperOptions, OptionConfig } from "./interfaces";
 import { ConstructorOptions as EventsConstructorOptions } from "eventemitter2";
-import { cloneDeep } from "lodash";
+import { cloneDeep, merge } from "lodash";
 import { container } from "./core/Container";
 import { Config } from "./core/config";
 export const defaults = {
@@ -88,6 +88,7 @@ export const defaults = {
             alias   : null,
             required: false,
             variadic: false,
+            default: null
         });
     },
     helper(): HelperOptions {

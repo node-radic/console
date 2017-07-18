@@ -1,6 +1,6 @@
 import { YargsParserOptions } from "../types/yargs-parser";
-import { CommandArgumentConfig, CommandConfig, OptionConfig, ParsedCommandArguments } from "./interfaces";
-import { existsSync, statSync } from "fs";
+import { CommandArgumentConfig, CommandConfig, Dictionary, OptionConfig, ParsedCommandArguments } from "./interfaces";
+import { statSync } from "fs";
 import { basename, dirname, join, sep } from "path";
 import { defaults } from "./defaults";
 import * as globule from "globule";
@@ -8,6 +8,7 @@ import { container } from "./core/Container";
 import { Log } from "./core/Log";
 import { kindOf } from "@radic/util";
 import { kebabCase, merge } from "lodash";
+import { Cli } from "./core/Cli";
 const callsites = require('callsites');
 
 // region: decorator utils
@@ -70,11 +71,13 @@ export function prepareArguments<T extends CommandConfig = CommandConfig>(config
                 hasAlias         = original.includes('/'),
                 hasType          = original.includes(':'),
                 isArray          = original.includes('__'),
+                hasDefault       = original.includes('='),
                 hasDesc          = original.includes('@')
 
             if ( hasAlias ) exp += '\\/(.*?)'
-            if ( hasType ) exp += ':(.*?)';
+            if ( hasType ) exp += ':(.*?)'
             if ( isArray ) exp += '__'
+            if ( hasDefault ) exp += '='
             if ( hasDesc ) exp += '@(.*?)'
             exp += '$'
 
@@ -85,6 +88,7 @@ export function prepareArguments<T extends CommandConfig = CommandConfig>(config
             arg.name = res[ $ ++ ];
             if ( hasAlias ) arg.alias = res[ $ ++ ];
             if ( hasType ) arg.type = res[ $ ++ ]
+            if ( hasDefault ) arg.default = res[ $ ++ ]
             if ( hasDesc ) arg.desc = res[ $ ++ ]
             if ( isArray ) arg.variadic = true;
 
@@ -290,43 +294,25 @@ export function findSubCommandsPaths(filePath): string[] {
     return paths;
 }
 
-/**
- *
- * @param subCommand
- * @param filePath
- * @returns {null}
- */
-export function findSubCommandFilePath(subCommand, filePath): string {
-    let dirName  = dirname(filePath);
-    let baseName = basename(filePath, '.js');
-    // various locations to search for the sub-command file
-    // this can, and "maby" should have a couple of more variations
-    let locations     = [
-        join(dirName, baseName + '-' + subCommand + '.js'),
-        join(dirName, baseName + '.' + subCommand + '.js'),
-        join(dirName, baseName + '_' + subCommand + '.js'),
-        join(dirName, baseName + sep + subCommand + '.js')
-    ]
-    let foundFilePath = null;
-    locations.forEach(location => {
-        if ( foundFilePath ) return;
-        if ( existsSync(location) ) {
-            let stat = statSync(location);
-            if ( stat.isSymbolicLink() ) {
-                container.get<Log>('cli.log').notice('Trying to access symlinked command. Not sure if it\'l work')
-                foundFilePath = location
-            }
-            if ( stat.isFile() ) {
-                foundFilePath = location
-            }
+export function getSubCommands(filePath: string, recursive: boolean = false): Dictionary<CommandConfig> {
+    const subCommands: Dictionary<CommandConfig> = {}
+
+    const cli         = container.get<Cli>('cli');
+    cli.parseCommands = false
+    findSubCommandsPaths(filePath).forEach(modulePath => {
+        const module                 = require(modulePath);
+        const command: CommandConfig = Reflect.getMetadata('command', module.default);
+
+        if ( recursive && command.isGroup ) {
+            command.subCommands = Object.keys(getSubCommands(command.filePath))
+        }
+        subCommands[ command.name ] = command;
+        if ( command.alias ) {
+            subCommands[ command.alias ] = command;
         }
     })
-
-    if ( null === foundFilePath ) {
-        throw new Error(`Could not find sub-command [${subCommand}] for parent file [${filePath}]`);
-    }
-
-    return foundFilePath;
+    cli.parseCommands = true
+    return subCommands
 }
 
 // endregion

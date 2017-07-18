@@ -4,7 +4,7 @@ import { helper } from "../decorators";
 import { CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParseEvent } from "../core/events";
 import { inject } from "../core/Container";
 import { OutputHelper } from "./Output";
-import { findSubCommandFilePath, findSubCommandsPaths } from "../utils";
+import { findSubCommandsPaths, getSubCommands } from "../utils";
 import { Log } from "../core/Log";
 import { Cli } from "../core/Cli";
 import { Dispatcher } from "../core/Dispatcher";
@@ -207,7 +207,7 @@ export class CommandDescriptionHelper {
                 name                          = null,
                 args: CommandArgumentConfig[] = [];
 
-            let module   = require(modulePath);
+            let module = require(modulePath);
             if ( kindOf(module.default) === 'function' ) {
                 let command: CommandConfig = Reflect.getMetadata('command', module.default);
 
@@ -310,41 +310,43 @@ export class CommandDescriptionHelper {
     }
 
     protected getTreeSubcommands(config: CommandConfig): any[] {
+        let obj            = getSubCommands(config.filePath);
+        config.subCommands = Object.keys(obj)
         return config.subCommands.map(subCommand => {
-            let filePath = findSubCommandFilePath(subCommand, config.filePath)
-            let module   = require(filePath);
-            if ( kindOf(module.default) === 'function' ) {
-                let subConfig: CommandConfig      = Reflect.getMetadata('command', module.default);
-                let optionConfigs: OptionConfig[] = Reflect.getMetadata('options', subConfig.cls.prototype) || [];
-                if ( subConfig.subCommands && subConfig.subCommands.length > 0 ) {
-                    return { label: this.config.templates.treeItem(subConfig, optionConfigs), nodes: this.getTreeSubcommands(subConfig) }
-                }
-                return this.config.templates.treeItem(subConfig, optionConfigs);
-            }
+            let filePath                 = obj[ subCommand ].filePath
+            let subConfig: CommandConfig = obj[ subCommand ];
 
-            return `{command}${subCommand}{/command}`;
+            let optionConfigs: OptionConfig[] = Reflect.getMetadata('options', subConfig.cls.prototype) || [];
+            if ( subConfig.isGroup ) {
+                subConfig.subCommands = Object.keys(getSubCommands(config.filePath))
+            }
+            if ( subConfig.subCommands && subConfig.subCommands.length > 0 ) {
+                return { label: this.config.templates.treeItem(subConfig, optionConfigs), nodes: this.getTreeSubcommands(subConfig) }
+            }
+            return this.config.templates.treeItem(subConfig, optionConfigs);
+
         })
     }
 
     getSubcommandsNameTree(config: CommandConfig): any {
         let obj = {};
-
-        config.subCommands.map(subCommand => {
-            let filePath = findSubCommandFilePath(subCommand, config.filePath)
-            let module   = require(filePath);
-            if ( kindOf(module.default) === 'function' ) {
-                let subConfig: CommandConfig      = Reflect.getMetadata('command', module.default);
-                let optionConfigs: OptionConfig[] = Reflect.getMetadata('options', subConfig.cls.prototype) || [];
-                if ( subConfig.subCommands && subConfig.subCommands.length > 0 ) {
-                    return { [subConfig.name]: this.getSubcommandsNameTree(subConfig) }
-                }
-
-                return { [subConfig.name]: optionConfigs.map(opt => '--' + opt.name) };
-            }
-            return false;
-        }).filter(subConfig => subConfig !== false).forEach(subj => {
-            _.merge(obj, subj);
-        });
+        //
+        // config.subCommands.map(subCommand => {
+        //     let filePath = findSubCommandFilePath(subCommand, config.filePath)
+        //     let module   = require(filePath);
+        //     if ( kindOf(module.default) === 'function' ) {
+        //         let subConfig: CommandConfig      = Reflect.getMetadata('command', module.default);
+        //         let optionConfigs: OptionConfig[] = Reflect.getMetadata('options', subConfig.cls.prototype) || [];
+        //         if ( subConfig.subCommands && subConfig.subCommands.length > 0 ) {
+        //             return { [subConfig.name]: this.getSubcommandsNameTree(subConfig) }
+        //         }
+        //
+        //         return { [subConfig.name]: optionConfigs.map(opt => '--' + opt.name) };
+        //     }
+        //     return false;
+        // }).filter(subConfig => subConfig !== false).forEach(subj => {
+        //     _.merge(obj, subj);
+        // });
         return obj
     }
 

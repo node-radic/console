@@ -9,6 +9,6 @@ const defaultConfig: CliConfig | any = defaults.config();
 const _config                        = new BaseConfig(defaultConfig)
 export const config: Config          = BaseConfig.makeProperty(_config);
 
-
+container.bind<BaseConfig>('cli.config.core').toConstantValue(_config);
 container.bind<Config>('cli.config').toConstantValue(config);
 
