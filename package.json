@@ -7,7 +7,7 @@
   "jsnext:main": "lib/index.js",
   "author": "Robin Radic",
   "license": "MIT",
-  "repository": "https://github.com/node-radic/console",
+  "repository": "https://bitbucket.org/robin-radic/console",
   "private": false,
   "publishConfig": {
     "access": "public"
