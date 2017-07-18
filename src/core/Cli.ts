@@ -41,10 +41,10 @@ export class Cli {
     public events: Dispatcher;
 
     @lazyInject('cli.log')
-    protected log: Log;
+    public log: Log;
 
     @lazyInject('cli.config')
-    protected config: Config;
+    public config: Config;
 
 
     public start(requirePath: string): this {

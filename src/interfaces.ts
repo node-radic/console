@@ -21,7 +21,7 @@ export interface CommandArgumentConfig {
     required?: boolean
     variadic?: boolean
     desc?: string
-    type?: KindOf
+    type?: string
     default?:any | null
 }
 export type CommandConfigEnabledType = (container: Container) => boolean
