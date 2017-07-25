@@ -19,6 +19,7 @@ export function command(...args: any[]) {
     const handle = (cls) => {
         let config = getCommandConfig<CommandConfig>(cls, args)
         set('command', config, cls);
+        if(!config.enabled) return;
         container.get<Cli>('cli').parse(config);
     }
 

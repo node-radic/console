@@ -24,7 +24,7 @@ export interface CommandArgumentConfig {
     type?: string
     default?:any | null
 }
-export type CommandConfigEnabledType = (container: Container) => boolean
+export type CommandConfigEnabledType = boolean | ((container: Container) => boolean)
 export interface CommandConfig {
     alwaysRun?: boolean
     name?: string
@@ -33,9 +33,9 @@ export interface CommandConfig {
     description?: string
     example?: string
     explenation?: string
-    subCommands?: string[]
+    subCommands?: CommandConfig[] | Dictionary<CommandConfig>
     isGroup?: boolean
-    enabled?: boolean | CommandConfigEnabledType
+    enabled?: CommandConfigEnabledType
     group?: string | null
     cls?: Function
     filePath?: string

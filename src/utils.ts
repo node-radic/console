@@ -294,18 +294,31 @@ export function findSubCommandsPaths(filePath): string[] {
     return paths;
 }
 
-export function getSubCommands(filePath: string, recursive: boolean = false): Dictionary<CommandConfig> {
-    const subCommands: Dictionary<CommandConfig> = {}
+export function getSubCommands<T extends Dictionary<CommandConfig> | CommandConfig[]>(filePath: string, recursive: boolean = false, asArray: boolean = false): T {
+    let subCommands: any = {}
+    if ( asArray ) {
+        subCommands = [];
+    }
 
     const cli         = container.get<Cli>('cli');
     cli.parseCommands = false
     findSubCommandsPaths(filePath).forEach(modulePath => {
-        const module                 = require(modulePath);
+        const module = require(modulePath);
+        if ( kindOf(module.default) !== 'function' ) return;
         const command: CommandConfig = Reflect.getMetadata('command', module.default);
+        if ( ! command || ! command.enabled ) {
+            return
+        }
 
         if ( recursive && command.isGroup ) {
-            command.subCommands = Object.keys(getSubCommands(command.filePath))
+            command.subCommands = getSubCommands<T>(command.filePath, recursive, asArray)
         }
+
+
+        if ( asArray ) {
+            subCommands.push(command)
+            return;
+        } // else
         subCommands[ command.name ] = command;
         if ( command.alias ) {
             subCommands[ command.alias ] = command;

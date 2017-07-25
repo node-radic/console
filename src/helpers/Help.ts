@@ -4,7 +4,7 @@ import { helper } from "../decorators";
 import { CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParseEvent } from "../core/events";
 import { inject } from "../core/Container";
 import { OutputHelper } from "./Output";
-import { findSubCommandsPaths, getSubCommands } from "../utils";
+import { getSubCommands } from "../utils";
 import { Log } from "../core/Log";
 import { Cli } from "../core/Cli";
 import { Dispatcher } from "../core/Dispatcher";
@@ -202,34 +202,53 @@ export class CommandDescriptionHelper {
     protected printSubCommands(config: CommandConfig) {
         let rows                                   = []
         let groups: { [name: string]: string[][] } = {}
-        findSubCommandsPaths(config.filePath).forEach(modulePath => {
+        getSubCommands<CommandConfig[]>(config.filePath, false, true).forEach(command => {
             let desc                          = '',
                 name                          = null,
                 args: CommandArgumentConfig[] = [];
 
-            let module = require(modulePath);
-            if ( kindOf(module.default) === 'function' ) {
-                let command: CommandConfig = Reflect.getMetadata('command', module.default);
+            desc = command.description;
+            name = command.name
+            args = command.arguments
 
-                desc = command.description;
-                name = command.name
-                args = command.arguments
-                // let sub = ' '
-                // if(config.subCommands && config.subCommands.length > 0){
-                //     sub = config.subCommands.map(subCommand => `{command}${subCommand}{/command}\n`).join('')
-                // }
+            let type = command.isGroup ? 'grouped' : 'command';
+            let line = [ `{${type}}${command.name}{/${type}}`, `{desc}${desc}{/desc}` ];
 
-                let type = command.isGroup ? 'grouped' : 'command';
-                let line = [ `{${type}}${command.name}{/${type}}`, `{desc}${desc}{/desc}` ];
-
-                if ( command.group ) {
-                    if ( ! groups[ command.group ] ) groups[ command.group ] = []
-                    groups[ command.group ].push(line)
-                } else {
-                    rows.push(line)
-                }
+            if ( command.group ) {
+                if ( ! groups[ command.group ] ) groups[ command.group ] = []
+                groups[ command.group ].push(line)
+            } else {
+                rows.push(line)
             }
         })
+        // findSubCommandsPaths(config.filePath).forEach(modulePath => {
+        //     let desc                          = '',
+        //         name                          = null,
+        //         args: CommandArgumentConfig[] = [];
+        //
+        //     let module = require(modulePath);
+        //     if ( kindOf(module.default) === 'function' ) {
+        //         let command: CommandConfig = Reflect.getMetadata('command', module.default);
+        //
+        //         desc = command.description;
+        //         name = command.name
+        //         args = command.arguments
+        //         // let sub = ' '
+        //         // if(config.subCommands && config.subCommands.length > 0){
+        //         //     sub = config.subCommands.map(subCommand => `{command}${subCommand}{/command}\n`).join('')
+        //         // }
+        //
+        //         let type = command.isGroup ? 'grouped' : 'command';
+        //         let line = [ `{${type}}${command.name}{/${type}}`, `{desc}${desc}{/desc}` ];
+        //
+        //         if ( command.group ) {
+        //             if ( ! groups[ command.group ] ) groups[ command.group ] = []
+        //             groups[ command.group ].push(line)
+        //         } else {
+        //             rows.push(line)
+        //         }
+        //     }
+        // })
         this.out.columns(rows, {
             columnSplitter  : '   ',
             showHeaders     : false,
@@ -306,24 +325,24 @@ export class CommandDescriptionHelper {
     }
 
     public printCommandTree(label: string = 'Command tree:', config?: CommandConfig) {
+
         this.out.tree(label, this.getTreeSubcommands(this.cli.rootCommand || config || {}))
     }
 
     protected getTreeSubcommands(config: CommandConfig): any[] {
-        let obj            = getSubCommands(config.filePath);
-        config.subCommands = Object.keys(obj)
-        return config.subCommands.map(subCommand => {
-            let filePath                 = obj[ subCommand ].filePath
-            let subConfig: CommandConfig = obj[ subCommand ];
-
-            let optionConfigs: OptionConfig[] = Reflect.getMetadata('options', subConfig.cls.prototype) || [];
-            if ( subConfig.isGroup ) {
-                subConfig.subCommands = Object.keys(getSubCommands(config.filePath))
-            }
-            if ( subConfig.subCommands && subConfig.subCommands.length > 0 ) {
-                return { label: this.config.templates.treeItem(subConfig, optionConfigs), nodes: this.getTreeSubcommands(subConfig) }
-            }
-            return this.config.templates.treeItem(subConfig, optionConfigs);
+        let obj = getSubCommands(config.filePath);
+        return Object.keys(obj).map(subCommand => {
+            // let filePath                 = obj[ subCommand ].filePath
+            // let subConfig: CommandConfig = obj[ subCommand ];
+            //
+            // let optionConfigs: OptionConfig[] = Reflect.getMetadata('options', subConfig.cls.prototype) || [];
+            // if ( subConfig.isGroup ) {
+            //     subConfig.subCommands = Object.keys(getSubCommands(config.filePath))
+            // }
+            // if ( subConfig.subCommands && subConfig.subCommands.length > 0 ) {
+            //     return { label: this.config.templates.treeItem(subConfig, optionConfigs), nodes: this.getTreeSubcommands(subConfig) }
+            // }
+            return this.config.templates.treeItem(subCommand, Reflect.getMetadata('options', subCommand[ 'cls' ].prototype))
 
         })
     }

@@ -48,6 +48,7 @@ export class Cli {
 
 
     public start(requirePath: string): this {
+
         requirePath = resolve(requirePath);
         this.events.fire(new CliStartEvent(requirePath))
         // this._requiredCommands.push(requirePath.endsWith('.js') ? requirePath : requirePath + '.js');
@@ -118,7 +119,7 @@ export class Cli {
         let instance = container.resolve(<any> config.cls);
 
         // Assign the config itself to the instance, so it's possible to check back on it
-        instance[ '_config' ]   = config;
+        instance[ '_config' ]  = config;
         instance[ '_options' ] = optionConfigs;
 
 
@@ -166,12 +167,22 @@ export class Cli {
             }
         }
 
-        let result = await instance[ 'handle' ].apply(instance, [ parsed.arguments, argv ]);
+        let result = instance[ 'handle' ].apply(instance, [ parsed.arguments, argv ]);
 
         this.events.fire(new CliExecuteCommandHandledEvent(result, instance, argv, config, optionConfigs))
 
-        if ( result === null )return;
+        if ( result === null || result === undefined) process.exit();
+
         if ( result === true ) process.exit();
+
+        if ( result[ 'then' ] !== undefined ) {
+            result = await result.then((res) => {
+                return Promise.resolve(true)
+            }).catch(err => {
+                this.log.error(err)
+                throw new Error(err);
+            });
+        }
 
         process.exit(1);
     }
