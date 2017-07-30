@@ -1,5 +1,6 @@
 import { ConsoleTransportOptions, LoggerInstance, TransportInstance } from "winston";
 import { Parser } from "@radic/console-colors";
+export { LoggerInstance };
 export interface Log extends LoggerInstance {
 }
 export declare function getConsoleMeta(options: ConsoleTransportOptions): string;
