@@ -1,6 +1,6 @@
 {
   "name": "@radic/console",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Console ",
   "main": "lib/index.js",
   "typings": "dts/index.d.ts",
