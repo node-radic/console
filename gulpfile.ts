@@ -1,9 +1,7 @@
 import * as gulp from "gulp";
-import * as fs from "fs-extra";
 import * as tsc from "gulp-typescript";
-import { resolve } from "path";
 import * as ts from "typescript";
-const rollupTypescript = require('rollup-plugin-typescript');
+
 const c                = {
     src          : [
         'src/**/*.ts',
@@ -13,14 +11,6 @@ const c                = {
     moduleName   : '@radic/console',
     umdModuleName: 'radic.console'
 };
-
-const binFile = `#!/usr/bin/env node
-import cli from '../spec/groups/fixture/index'
-let parsedRootNode = cli.parse()
-let parsedNode = cli.resolve()
-
-cli.handle(parsedNode);`
-
 
 const
     pump         = require('pump'),
@@ -49,10 +39,6 @@ const tsProject = {
 
 gulp.task('clean', [ 'clean:src:js', 'clean:build' ]);
 gulp.task('clean:build', (cb) => pump([ gulp.src([ 'lib', 'lib-es6', 'dts', 'coverage', '.publish', 'docs' ]), clean() ]));
-
-gulp.task('clean:lib', (cb) => pump([ gulp.src([ 'lib' ]), clean() ]));
-gulp.task('clean:lib:es6', (cb) => pump([ gulp.src([ 'lib-es6' ]), clean() ]));
-gulp.task('clean:dts', (cb) => pump([ gulp.src([ 'dts' ]), clean() ]));
 
 gulp.task('clean:src:js', (cb) => pump([ gulp.src([ '{src,spec}/*.{js,js.map}', '*.{js,js.map}' ]), clean() ]));
 gulp.task('clean:test:js', (cb) => pump([ gulp.src([ '{tests}/*.{js,js.map}', '*.{js,js.map}' ]), clean() ]));

@@ -5,7 +5,7 @@ import { Parser } from "@radic/console-colors";
 import { kindOf } from "@radic/util";
 import * as util from "util";
 
-
+export {LoggerInstance}
 export interface Log extends LoggerInstance {}
 
 
