@@ -20,7 +20,7 @@ export interface CommandArgumentConfig {
     alias?: string | null
     required?: boolean
     variadic?: boolean
-    desc?: string
+    description?: string
     type?: string
     default?:any | null
 }

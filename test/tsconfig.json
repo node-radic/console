@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "sourceMap": true,
+        "experimentalDecorators": true,
+        "lib": [ "es6" ],
+        "typeRoots": [
+            "../node_modules/@types",
+            "../types"
+        ]
+    },
+    "include": [
+        "./*.ts",
+        "./**/*.ts",
+        "../types/**/*.ts"
+    ]
+}
+

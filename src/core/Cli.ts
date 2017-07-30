@@ -68,6 +68,7 @@ export class Cli {
 
         this.events.fire(new CliParseEvent(config, this.globalOptions))
         let transformedOptions = transformOptions(this.globalOptions);
+        transformedOptions.configuration = this.config('parser.yargs')
         let result             = parser(config.args, transformedOptions) as YargsParserArgv;
         this.events.fire(new CliParsedEvent(config, result, this.globalOptions))
         this._parsedCommands.push(config);
@@ -106,6 +107,7 @@ export class Cli {
             this.events.fire(new CliExecuteCommandParseEvent(config, optionConfigs))
 
         let transformedOptions = transformOptions(this.globalOptions.concat(optionConfigs));
+        transformedOptions.configuration = this.config('parser.yargs')
         let argv               = parser(config.args, transformedOptions) as YargsParserArgv;
 
         if ( ! isAlwaysRun )

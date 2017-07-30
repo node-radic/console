@@ -27,7 +27,7 @@ export const defaults = {
                     'camel-case-expansion'     : true,
                     'dot-notation'             : true,
                     'parse-numbers'            : true,
-                    'boolean-negation'         : true,
+                    'boolean-negation'         : false,
                     'duplicate-arguments-array': true,
                     'flatten-duplicate-arrays' : true
                 },
@@ -84,8 +84,9 @@ export const defaults = {
         return <CommandArgumentConfig> cloneDeep({
             position: index,
             name    : null,
-            desc    : '',
+            description    : '',
             alias   : null,
+            type: 'string',
             required: false,
             variadic: false,
             default: null

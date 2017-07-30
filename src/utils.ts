@@ -52,7 +52,7 @@ export function prepareArguments<T extends CommandConfig = CommandConfig>(config
 //https://regex101.com/r/vSqbuK/1
 
     let name            = config.name.replace(/\[\]/g, '__')
-    let argumentPattern = /[{|\[](.*?)[}|\]]/gm
+    let argumentPattern = /[{\[](.*)[}\]]/gm
     if ( argumentPattern.test(name) ) {
         if ( name.match(argumentPattern) === null )
             return config
@@ -77,7 +77,7 @@ export function prepareArguments<T extends CommandConfig = CommandConfig>(config
             if ( hasAlias ) exp += '\\/(.*?)'
             if ( hasType ) exp += ':(.*?)'
             if ( isArray ) exp += '__'
-            if ( hasDefault ) exp += '='
+            if ( hasDefault ) exp += '=(.*?)'
             if ( hasDesc ) exp += '@(.*?)'
             exp += '$'
 
@@ -89,8 +89,13 @@ export function prepareArguments<T extends CommandConfig = CommandConfig>(config
             if ( hasAlias ) arg.alias = res[ $ ++ ];
             if ( hasType ) arg.type = res[ $ ++ ]
             if ( hasDefault ) arg.default = res[ $ ++ ]
-            if ( hasDesc ) arg.desc = res[ $ ++ ]
+            if ( hasDesc ) arg.description = res[ $ ++ ]
             if ( isArray ) arg.variadic = true;
+
+            if(hasDefault){
+                // console.dir({name, matches,original,exp,arg})
+                arg.default = JSON.parse(arg.default);
+            }
 
             args.push(arg);
         })
@@ -205,21 +210,24 @@ export function parseArguments(argv_: string[], args: CommandArgumentConfig[] = 
     let res     = {};
     args.forEach(arg => {
         let val: any = argv_[ arg.position ];
-        // val          = transformArgumentType<any>(val, arg);
 
         if ( ! val && arg.required ) {
             invalid.push(arg.name);
         }
-        // val = transformArgumentType()
+
         if ( arg.variadic ) {
-            if ( ! res[ arg.name ] ) {
-                res[ arg.name ] = [ val ];
-            } else {
-                res[ arg.name ].push(val)
+            val = argv_.slice(arg.position, argv_.length);
+            if(arg.default && val.length === 0){
+                val = JSON.parse(arg.default);
             }
-        } else {
-            res[ arg.name ] = val;
         }
+
+        if(!val && arg.default){
+            val = JSON.parse(arg.default)
+        }
+
+        res[ arg.name ] = transformArgumentType(val, arg);
+
         if ( arg.alias ) {
             res[ arg.alias ] = res[ arg.name ];
         }

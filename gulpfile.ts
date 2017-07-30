@@ -3,7 +3,7 @@ import * as fs from "fs-extra";
 import * as tsc from "gulp-typescript";
 import { resolve } from "path";
 import * as _ from 'lodash'
-
+import * as ts from 'typescript'
 const c = {
     src          : [ 'src/**/*.ts' ],
     fileName     : 'console',
@@ -18,11 +18,6 @@ let parsedNode = cli.resolve()
 
 cli.handle(parsedNode);`
 
-const tsProject = {
-    lib : tsc.createProject("tsconfig.json", { module: "es2015", declaration: true, typescript: require("typescript") }),
-    src : tsc.createProject("tsconfig.json", { typescript: require("typescript") }),
-    test: tsc.createProject("tsconfig.json", { typescript: require("typescript") })
-};
 
 
 const
@@ -40,6 +35,12 @@ const
     SpecReporter = require('jasmine-spec-reporter'),
     ghPages      = require("gulp-gh-pages")
 ;
+
+const tsProject = {
+    lib : tsc.createProject("tsconfig.json", { module: "es2015", declaration: true, typescript: ts }),
+    src : tsc.createProject("tsconfig.json", { typescript: ts}),
+    test: tsc.createProject("tsconfig.json", { target: "es6", sourceMap: true, typescript: ts })
+};
 
 gulp.task('clean', [ 'clean:src', 'clean:build' ]);
 
@@ -98,13 +99,13 @@ gulp.task("build:src", () => {
 
 gulp.task("build:test", () => {
     return gulp.src([
-        "spec/**/*.ts"
+        "tests/**/*.ts"
     ])
         .pipe(tsProject.test())
         .on("error", function (err) {
             process.exit(1);
         })
-        .js.pipe(gulp.dest("spec/"));
+        .js.pipe(gulp.dest("tests/"));
 });
 
 gulp.task("build", (cb) => {

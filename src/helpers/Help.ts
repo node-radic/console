@@ -152,7 +152,7 @@ export class CommandDescriptionHelper {
             ].join('');
             row.push(name)
 
-            row.push(arg.desc || '')
+            row.push(arg.description || '')
 
             let type = [
                 '[',
