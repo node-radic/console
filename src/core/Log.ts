@@ -1,11 +1,9 @@
-import * as winston from "winston";
-import { ConsoleTransportOptions, LoggerInstance, TransportInstance } from "winston";
+import { Logger, addColors, config, transports as wtransports,  ConsoleTransportOptions, LoggerInstance, TransportInstance } from "winston";
 import { container } from "./Container";
 import { Parser } from "@radic/console-colors";
 import { kindOf } from "@radic/util";
 import * as util from "util";
 
-export {LoggerInstance}
 export interface Log extends LoggerInstance {}
 
 
@@ -56,7 +54,7 @@ export function getConsoleMeta(options: ConsoleTransportOptions) {
 
 export const parser                          = new Parser()
 export const transports: TransportInstance[] = [
-    new (winston.transports.Console)({
+    new (wtransports.Console)({
         // json       : true,
         colorize   : true,
         prettyPrint: true,
@@ -66,7 +64,7 @@ export const transports: TransportInstance[] = [
         formatter: function (options: ConsoleTransportOptions) {
             // Return string will be passed to logger.
             let message    = options[ 'message' ] ? options[ 'message' ] : ''
-            let color      = winston.config.syslog.colors[ options.level ] || winston.config.cli.colors[ options.level ]
+            let color      = config.syslog.colors[ options.level ] || config.cli.colors[ options.level ]
             let level      = parser.parse(`{${color}}${options.level}{/${color}}`)
             let meta: any  = getConsoleMeta(options);
             let metaPrefix = meta.length > 200 ? '\n' : '\t'
@@ -89,12 +87,12 @@ export let levels = {};
 export let colors = {};
 logLevels.forEach((level, index) => {
     levels[ level ] = index;
-    colors[ level ] = winston.config.cli.colors[ level ] ? winston.config.cli.colors[ level ] : winston.config.syslog.colors[ level ]
+    colors[ level ] = config.cli.colors[ level ] ? config.cli.colors[ level ] : config.syslog.colors[ level ]
 })
 
-winston.addColors(colors);
+addColors(colors);
 container.bind<Log>('cli.log').toDynamicValue((ctx) => {
-    return new winston.Logger(<any>{
+    return new Logger(<any>{
         level      : 'info',
         rewriters  : [ (level, msg, meta) => {
             return meta;
@@ -120,5 +118,3 @@ export function setVerbosity(verbosity: number) {
     }
     setLogLevel(<LogLevel> level);
 }
-
-

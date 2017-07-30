@@ -1,4 +1,5 @@
 import "reflect-metadata";
+export {LoggerInstance} from 'winston/index'
 export * from './interfaces'
 export * from './core/index'
 export * from './decorators'

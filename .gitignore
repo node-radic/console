@@ -14,3 +14,5 @@ src/**/*.js.map
 /vpproject
 /.nyc*
 /spec.puml
+/dts
+/lib-es6
