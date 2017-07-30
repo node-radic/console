@@ -12,3 +12,5 @@ src/**/*.js.map
 /bin
 /gulpfile.js
 /vpproject
+/.nyc*
+/spec.puml

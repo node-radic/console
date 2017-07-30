@@ -1,6 +1,5 @@
 *.ts
 !*.d.ts
-/spec
 
 /types
 /.gitignore
@@ -32,8 +31,11 @@ type_definitions
 jasmine.*
 .editorconfig
 index.html
-/dts
 /bower_components
 /npm-debug.log
 
+
+
+
 /src
+/test

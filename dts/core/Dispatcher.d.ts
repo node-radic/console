@@ -1,0 +1,30 @@
+import { EventAndListener, eventNS, Listener } from "eventemitter2";
+import { Log } from "./Log";
+import { HaltEvent, Event } from "./events";
+export declare class Dispatcher {
+    private ee;
+    protected log: Log;
+    constructor();
+    fire<T extends Event | HaltEvent>(ctx: T): T;
+    fire<T extends Event | HaltEvent>(event: string | string[], ctx: T): T;
+    halt<T extends HaltEvent>(event: string | string[], ctx: T): void;
+    dispatch(name: any, ...args: any[]): Promise<boolean>;
+    enableDebug(): void;
+    emit(event: string | string[], ...values: any[]): boolean;
+    emitAsync(event: string | string[], ...values: any[]): Promise<any[]>;
+    addListener(event: string, listener: Listener): this;
+    on(event: string | string[], listener: Listener): this;
+    prependListener(event: string | string[], listener: Listener): this;
+    once(event: string | string[], listener: Listener): this;
+    prependOnceListener(event: string | string[], listener: Listener): this;
+    many(event: string | string[], timesToListen: number, listener: Listener): this;
+    prependMany(event: string | string[], timesToListen: number, listener: Listener): this;
+    onAny(listener: EventAndListener): this;
+    prependAny(listener: EventAndListener): this;
+    offAny(listener: Listener): this;
+    removeListener(event: string | string[], listener: Listener): this;
+    off(event: string, listener: Listener): this;
+    removeAllListeners(event?: string | eventNS): this;
+    setMaxListeners(n: number): void;
+    eventNames(): string[];
+}

@@ -7,9 +7,9 @@
     normalize-path "^2.0.1"
     through2 "^2.0.3"
 
-"@radic/console-colors@^0.9.0":
-  version "0.9.5"
-  resolved "https://registry.yarnpkg.com/@radic/console-colors/-/console-colors-0.9.5.tgz#3b83d4c3da84356b85366b803618ef69f16793c1"
+"@radic/console-colors@^0.9.5":
+  version "0.9.6"
+  resolved "https://registry.yarnpkg.com/@radic/console-colors/-/console-colors-0.9.6.tgz#d131c89a8b3dce443793ac552bfbd92f7ad7964a"
   dependencies:
     "@radic/util" "^1.4.1"
     color-convert "^1.5.0"
@@ -17,9 +17,15 @@
     supports-color "^3.1.2"
     trucolor "^0.6.6"
 
-"@radic/util@^1.4.1", "@radic/util@^1.5.0":
+"@radic/util@^1.4.1":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@radic/util/-/util-1.5.0.tgz#03becc5795fb7581dc58d79aff22c339b052e4bb"
+  dependencies:
+    lodash "^4.15.0"
+
+"@radic/util@^1.7.3":
+  version "1.7.5"
+  resolved "https://registry.yarnpkg.com/@radic/util/-/util-1.7.5.tgz#8e04d3bcf733e74936ab43e8d93e0bfa15d26dfa"
   dependencies:
     lodash "^4.15.0"
 
@@ -62,12 +68,6 @@
 "@types/async":
   version "2.0.40"
   resolved "https://registry.yarnpkg.com/@types/async/-/async-2.0.40.tgz#ac02de68e66c004a61b7cb16df8b1db3a254cca9"
-
-"@types/axios":
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/@types/axios/-/axios-0.14.0.tgz#ec2300fbe7d7dddd7eb9d3abf87999964cafce46"
-  dependencies:
-    axios "*"
 
 "@types/chalk@*":
   version "0.4.31"
@@ -165,12 +165,6 @@
 "@types/minimatch@*", "@types/minimatch@^2.0.29":
   version "2.0.29"
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-2.0.29.tgz#5002e14f75e2d71e564281df0431c8c1b4a2a36a"
-
-"@types/moment@^2.13.0":
-  version "2.13.0"
-  resolved "https://registry.yarnpkg.com/@types/moment/-/moment-2.13.0.tgz#604ebd189bc3bc34a1548689404e61a2a4aac896"
-  dependencies:
-    moment "*"
 
 "@types/node@*", "@types/node@^7.0.8":
   version "7.0.18"
@@ -438,7 +432,7 @@ atob@~1.1.0:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/atob/-/atob-1.1.3.tgz#95f13629b12c3a51a5d215abdce2aa9f32f80773"
 
-axios, axios@*:
+axios:
   version "0.16.1"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.16.1.tgz#c0b6d26600842384b8f509e57111f0d2df8223ca"
   dependencies:
@@ -1683,7 +1677,13 @@ inversify-inject-decorators@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/inversify-inject-decorators/-/inversify-inject-decorators-3.0.1.tgz#de46df46ba72642eacac79451ec5c101e4dbcb00"
 
-inversify@^3.1.0:
+inversify-vanillajs-helpers@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/inversify-vanillajs-helpers/-/inversify-vanillajs-helpers-2.0.0.tgz#a1ce00ec603d1de9e66709979b5655694f58e52e"
+  dependencies:
+    inversify "^3.0.0"
+
+inversify@^3.0.0, inversify@^3.1.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/inversify/-/inversify-3.3.0.tgz#57ca2e0aaac7b54aa5018ad69a10c5aba366e96e"
 
@@ -2487,7 +2487,7 @@ mocha@^3.0.0:
     mkdirp "0.5.1"
     supports-color "3.1.2"
 
-moment@*, moment@^2.15.1, moment@^2.18.1:
+moment@^2.15.1, moment@^2.18.1:
   version "2.18.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.18.1.tgz#c36193dd3ce1c2eed2adb7c802dbbc77a81b1c0f"
 
@@ -3057,7 +3057,7 @@ rollup-plugin-hypothetical@^1.1.0:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/rollup-plugin-hypothetical/-/rollup-plugin-hypothetical-1.2.1.tgz#f427077b7bab592cc298197ab9aaac4fe4efa055"
 
-rollup-plugin-typescript@^0.8.1:
+rollup-plugin-typescript:
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/rollup-plugin-typescript/-/rollup-plugin-typescript-0.8.1.tgz#2ff7eecc21cf6bb2b43fc27e5b688952ce71924a"
   dependencies:
@@ -3547,9 +3547,9 @@ typescript@^1.8.9:
   version "1.8.10"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-1.8.10.tgz#b475d6e0dff0bf50f296e5ca6ef9fbb5c7320f1e"
 
-typescript@^2.3:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.3.2.tgz#f0f045e196f69a72f06b25fd3bd39d01c3ce9984"
+typescript@^2.4.1:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.2.tgz#f8395f85d459276067c988aa41837a8f82870844"
 
 typescript@2.2.2:
   version "2.2.2"
