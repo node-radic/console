@@ -2755,6 +2755,14 @@ mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@0.5.1, mkdirp@0.5.x:
   dependencies:
     minimist "0.0.8"
 
+mocha-cli:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/mocha-cli/-/mocha-cli-1.0.1.tgz#32002ca5b5e956e84bfe846827eb0bc4b4561b05"
+  dependencies:
+    chalk "^1.1.1"
+    debug "^2.2.0"
+    resolve "^1.1.7"
+
 mocha-typescript@^1.1.7:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/mocha-typescript/-/mocha-typescript-1.1.7.tgz#86bca3d74891beeab99e755f74140a51050a7c77"
