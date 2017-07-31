@@ -1,8 +1,6 @@
 import { suite, test } from "mocha-typescript";
-import { Cli, CliConfig, CommandConfig, defaults, prepareArguments } from "../src";
-import { parseArguments } from "../src/utils";
+import { CommandArgumentConfig, parseArguments, Cli, CliConfig, CommandConfig, defaults, prepareArguments } from "../src";
 import { bootstrap } from "./_support/bootstrap";
-import { CommandArgumentConfig } from "../src/interfaces";
 
 
 @suite

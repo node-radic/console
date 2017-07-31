@@ -9,9 +9,22 @@ pipelines:
     default:
         - step:
             script:
+                # add github remote and push all to keep it in sync
                 - apt-get update
                 - apt-get install -y --no-install-recommends git
                 - git remote add github git@github.com:node-radic/console
                 - git push github --all
                 - git push github --tags
                 - echo "Everything is awesome!"
+    master:
+        - step:
+            script:
+                # deploy typedoc
+                - npm run dev:docs
+                - npm run deploy:docs
+    custom:
+        deploy_ghpages_docs:
+            - step:
+                script:
+                    - npm run dev:docs
+                    - npm run deploy:docs
