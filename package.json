@@ -14,7 +14,8 @@
   },
   "scripts": {
     "build": "gulp build",
-    "test": "nyc mocha -r source-map-support/register -r chai/register-assert -r chai/register-expect -r chai/register-should test/",
+    "test": "mocha -r source-map-support/register -r chai/register-assert -r chai/register-expect -r chai/register-should test/",
+    "test:coverage": "nyc mocha -r source-map-support/register -r chai/register-assert -r chai/register-expect -r chai/register-should test/",
     "clean": "gulp clean",
     "dev:init": "npm run dev:install; gulp build; npm run dev:docs",
     "dev:install": "rm -rf node_modules; rm yarn.lock; yarn install",

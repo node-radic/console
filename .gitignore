@@ -19,3 +19,5 @@ src/**/*.js.map
 /.env
 /package-lock.json
 /coverage
+/laradock
+/link-to-docker-console-pipeline-local

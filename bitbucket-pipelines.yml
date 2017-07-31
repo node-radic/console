@@ -49,6 +49,10 @@ pipelines:
                     # unit tests
                     - npm run test
 
+                    # deploy typedoc
+                    - npm run dev:docs
+                    - npm run deploy:docs
+
     custom:
         deploy-ghpages-docs:
             - step:
