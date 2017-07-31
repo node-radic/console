@@ -21,6 +21,7 @@ pipelines:
             - step:
                 script:
                     # deploy typedoc
+                    - npm install typedoc
                     - npm run dev:docs
                     - npm run deploy:docs
     custom:
