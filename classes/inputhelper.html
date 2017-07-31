@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>InputHelper | @radic/console</title>
+	<title>InputHelper | @types/archy</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">@radic/console</a>
+					<a href="../index.html" class="title">@types/archy</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -76,10 +76,11 @@
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
-						<section class="tsd-index-section tsd-is-private-protected">
+						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="inputhelper.html#config" class="tsd-kind-icon">config</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="inputhelper.html#_config" class="tsd-kind-icon">_config</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="inputhelper.html#config" class="tsd-kind-icon">config</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -90,6 +91,8 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="inputhelper.html#confirm" class="tsd-kind-icon">confirm</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="inputhelper.html#interact" class="tsd-kind-icon">interact</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="inputhelper.html#list" class="tsd-kind-icon">list</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="inputhelper.html#multiple" class="tsd-kind-icon">multiple</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="inputhelper.html#onexecutecommandparse" class="tsd-kind-icon">on<wbr>Execute<wbr>Command<wbr>Parse</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="inputhelper.html#password" class="tsd-kind-icon">password</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="inputhelper.html#prompt" class="tsd-kind-icon">prompt</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="inputhelper.html#prompts" class="tsd-kind-icon">prompts</a></li>
@@ -98,15 +101,25 @@
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-					<a name="config" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> config</h3>
-					<div class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">:</span> <a href="../interfaces/config.html" class="tsd-signature-type">Config</a></div>
+					<a name="_config" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> _config</h3>
+					<div class="tsd-signature tsd-kind-icon">_config<span class="tsd-signature-symbol">:</span> <a href="../interfaces/config.html" class="tsd-signature-type">Config</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L25">src/helpers/Input.ts:25</a></li>
+							<li>Defined in src/helpers/Input.ts:30</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="config" class="tsd-anchor"></a>
+					<h3>config</h3>
+					<div class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">:</span> <a href="../interfaces/helperoptionsconfig.html" class="tsd-signature-type">HelperOptionsConfig</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/helpers/Input.ts:32</li>
 						</ul>
 					</aside>
 				</section>
@@ -117,19 +130,19 @@
 					<a name="ask" class="tsd-anchor"></a>
 					<h3>ask</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">ask<span class="tsd-signature-symbol">(</span>question<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, def<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">ask<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, def<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L28">src/helpers/Input.ts:28</a></li>
+									<li>Defined in src/helpers/Input.ts:40</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>question: <span class="tsd-signature-type">string</span></h5>
+									<h5>message: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> def: <span class="tsd-signature-type">string</span></h5>
@@ -143,13 +156,13 @@
 					<a name="checkbox" class="tsd-anchor"></a>
 					<h3>checkbox</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">checkbox<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, choices<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ChoiceOption</span><span class="tsd-signature-symbol">&gt;</span>, validate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Answers</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">checkbox<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, choices<span class="tsd-signature-symbol">: </span><a href="../modules/inquirer.html#choicetype" class="tsd-signature-type">ChoiceType</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/inquirer.objects.choiceoption.html" class="tsd-signature-type">ChoiceOption</a><span class="tsd-signature-symbol">&gt;</span>, validate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L35">src/helpers/Input.ts:35</a></li>
+									<li>Defined in src/helpers/Input.ts:44</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -158,7 +171,7 @@
 									<h5>msg: <span class="tsd-signature-type">any</span></h5>
 								</li>
 								<li>
-									<h5>choices: <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ChoiceOption</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>choices: <a href="../modules/inquirer.html#choicetype" class="tsd-signature-type">ChoiceType</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/inquirer.objects.choiceoption.html" class="tsd-signature-type">ChoiceOption</a><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> validate: <span class="tsd-signature-type">function</span></h5>
@@ -182,7 +195,7 @@
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Answers</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -196,7 +209,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L79">src/helpers/Input.ts:79</a></li>
+									<li>Defined in src/helpers/Input.ts:60</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -216,13 +229,13 @@
 					<a name="interact" class="tsd-anchor"></a>
 					<h3>interact</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">interact<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, type<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, opts<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Question</span>, def<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">interact<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, type<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, opts<span class="tsd-signature-symbol">?: </span><a href="../interfaces/inquirer.question.html" class="tsd-signature-type">Question</a>, def<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L97">src/helpers/Input.ts:97</a></li>
+									<li>Defined in src/helpers/Input.ts:79</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -234,7 +247,7 @@
 									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> type: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;input&quot;</span></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> opts: <span class="tsd-signature-type">Question</span><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> opts: <a href="../interfaces/inquirer.question.html" class="tsd-signature-type">Question</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> def: <span class="tsd-signature-type">string</span></h5>
@@ -248,13 +261,13 @@
 					<a name="list" class="tsd-anchor"></a>
 					<h3>list</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">list<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, choices<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ChoiceOption</span><span class="tsd-signature-symbol">&gt;</span>, validate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">list<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, choices<span class="tsd-signature-symbol">: </span><a href="../modules/inquirer.html#choicetype" class="tsd-signature-type">ChoiceType</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/inquirer.objects.choiceoption.html" class="tsd-signature-type">ChoiceOption</a><span class="tsd-signature-symbol">&gt;</span>, validate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L61">src/helpers/Input.ts:61</a></li>
+									<li>Defined in src/helpers/Input.ts:48</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -263,7 +276,7 @@
 									<h5>msg: <span class="tsd-signature-type">any</span></h5>
 								</li>
 								<li>
-									<h5>choices: <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ChoiceOption</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>choices: <a href="../modules/inquirer.html#choicetype" class="tsd-signature-type">ChoiceType</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/inquirer.objects.choiceoption.html" class="tsd-signature-type">ChoiceOption</a><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> validate: <span class="tsd-signature-type">function</span></h5>
@@ -292,6 +305,79 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="multiple" class="tsd-anchor"></a>
+					<h3>multiple</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">multiple<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, choices<span class="tsd-signature-symbol">: </span><a href="../modules/inquirer.html#choicetype" class="tsd-signature-type">ChoiceType</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/inquirer.objects.choiceoption.html" class="tsd-signature-type">ChoiceOption</a><span class="tsd-signature-symbol">&gt;</span>, validate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/helpers/Input.ts:52</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>message: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>type: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>choices: <a href="../modules/inquirer.html#choicetype" class="tsd-signature-type">ChoiceType</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/inquirer.objects.choiceoption.html" class="tsd-signature-type">ChoiceOption</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> validate: <span class="tsd-signature-type">function</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>answer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>answer: <span class="tsd-signature-type">any</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="onexecutecommandparse" class="tsd-anchor"></a>
+					<h3>on<wbr>Execute<wbr>Command<wbr>Parse</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Execute<wbr>Command<wbr>Parse<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="cliexecutecommandparseevent.html" class="tsd-signature-type">CliExecuteCommandParseEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/helpers/Input.ts:34</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <a href="cliexecutecommandparseevent.html" class="tsd-signature-type">CliExecuteCommandParseEvent</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="password" class="tsd-anchor"></a>
 					<h3>password</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -301,7 +387,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L84">src/helpers/Input.ts:84</a></li>
+									<li>Defined in src/helpers/Input.ts:64</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -321,13 +407,13 @@
 					<a name="prompt" class="tsd-anchor"></a>
 					<h3>prompt</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">prompt&lt;T&gt;<span class="tsd-signature-symbol">(</span>question<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Question</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">prompt&lt;T&gt;<span class="tsd-signature-symbol">(</span>question<span class="tsd-signature-symbol">: </span><a href="../interfaces/inquirer.question.html" class="tsd-signature-type">Question</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L92">src/helpers/Input.ts:92</a></li>
+									<li>Defined in src/helpers/Input.ts:72</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -339,7 +425,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>question: <span class="tsd-signature-type">Question</span></h5>
+									<h5>question: <a href="../interfaces/inquirer.question.html" class="tsd-signature-type">Question</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -350,22 +436,22 @@
 					<a name="prompts" class="tsd-anchor"></a>
 					<h3>prompts</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">prompts<span class="tsd-signature-symbol">(</span>questions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">inquirer.Questions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Answers</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">prompts<span class="tsd-signature-symbol">(</span>questions<span class="tsd-signature-symbol">: </span><a href="../modules/inquirer.html#questions" class="tsd-signature-type">Questions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/inquirer.answers.html" class="tsd-signature-type">Answers</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/node-radic/console/blob/9d20393/src/helpers/Input.ts#L88">src/helpers/Input.ts:88</a></li>
+									<li>Defined in src/helpers/Input.ts:68</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>questions: <span class="tsd-signature-type">inquirer.Questions</span></h5>
+									<h5>questions: <a href="../modules/inquirer.html#questions" class="tsd-signature-type">Questions</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Answers</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/inquirer.answers.html" class="tsd-signature-type">Answers</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -387,6 +473,9 @@
 						<a href="inputhelper.html" class="tsd-kind-icon">Input<wbr>Helper</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+								<a href="inputhelper.html#_config" class="tsd-kind-icon">_config</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="inputhelper.html#config" class="tsd-kind-icon">config</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -403,6 +492,12 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="inputhelper.html#list" class="tsd-kind-icon">list</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="inputhelper.html#multiple" class="tsd-kind-icon">multiple</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="inputhelper.html#onexecutecommandparse" class="tsd-kind-icon">on<wbr>Execute<wbr>Command<wbr>Parse</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="inputhelper.html#password" class="tsd-kind-icon">password</a>
