@@ -38,6 +38,7 @@ const tsProject = {
 };
 
 gulp.task('clean', [ 'clean:src:js', 'clean:build' ]);
+gulp.task('clean:docs', (cb) => pump([ gulp.src([ 'docs' ]), clean() ]))
 gulp.task('clean:build', (cb) => pump([ gulp.src([ 'lib', 'lib-es6', 'dts', 'coverage', '.publish', 'docs' ]), clean() ]));
 
 gulp.task('clean:src:js', (cb) => pump([ gulp.src([ '{src,spec}/*.{js,js.map}', '*.{js,js.map}' ]), clean() ]));

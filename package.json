@@ -18,7 +18,7 @@
     "clean": "gulp clean",
     "dev:init": "npm run dev:install; gulp build; npm run dev:docs",
     "dev:install": "rm -rf node_modules; rm yarn.lock; yarn install",
-    "dev:docs": "rm -r docs 2&> /dev/null ; typedoc --includeDeclarations --target ES6 --exclude spec example example2 node_modules types/lodash --ignoreCompilerErrors --mode file --excludeExternals --excludePrivate --readme docs.md --out docs ./lib/index.d.ts",
+    "dev:docs": "gulp clean:docs && typedoc --includeDeclarations --target ES6 --exclude spec example example2 node_modules types/lodash --ignoreCompilerErrors --mode file --excludeExternals --excludePrivate --readme docs.md --out docs ./lib/index.d.ts",
     "deploy:docs": "npm run dev:docs; gulp ghpages",
     "patch": "mversion patch -m",
     "minor": "mversion minor -m",

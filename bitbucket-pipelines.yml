@@ -41,7 +41,7 @@ pipelines:
                     - npm run dev:docs
                     - npm run deploy:docs
     custom:
-        deploy_ghpages_docs:
+        deploy-ghpages-docs:
             - step:
                 script:
                     - npm run dev:docs
