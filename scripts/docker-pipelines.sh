@@ -7,6 +7,8 @@ set -e
 #git push github --all
 #git push github --tags
 
+
+
 # install yarn
 curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 0.18.1
 export PATH=$HOME/.yarn/bin:$PATH
@@ -19,5 +21,7 @@ npm run build
 npm run test
 
 # deploy typedoc
+# install ts and td for docs generation. they specifically use a certain version cause the latest versions where failing to generate.
+npm i -g typescript@2.2.2 typedoc@0.5.10
 npm run dev:docs
 npm run deploy:docs

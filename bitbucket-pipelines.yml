@@ -50,6 +50,9 @@ pipelines:
                     - npm run test
 
                     # deploy typedoc
+                    # install ts and td for docs generation.
+                    # they specifically use this set version cause the latest versions where failing to generate.
+                    - npm i -g typescript@2.2.2 typedoc@0.5.10
                     - npm run dev:docs
                     - npm run deploy:docs
 
