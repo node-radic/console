@@ -11,7 +11,7 @@ pipelines:
             script:
                 - apt-get update
                 - apt-get install -y --no-install-recommends git
-                - git remote add github git@github.com:node-radic/rcli
+                - git remote add github git@github.com:node-radic/console
                 - git push github --all
                 - git push github --tags
                 - echo "Everything is awesome!"
