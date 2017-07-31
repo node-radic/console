@@ -1,8 +1,4 @@
-import * as gulp from "gulp";
-import * as tsc from "gulp-typescript";
-import * as ts from "typescript";
-
-const c                = {
+const c = {
     src          : [
         'src/**/*.ts',
         "!src/**/*.spec.ts"
@@ -13,6 +9,7 @@ const c                = {
 };
 
 const
+    gulp         = require('gulp'),
     pump         = require('pump'),
     source       = require("vinyl-source-stream"),
     buffer       = require("vinyl-buffer"),
@@ -23,10 +20,12 @@ const
     runSequence  = require("run-sequence"),
     istanbul     = require("gulp-istanbul"),
 
-    jasmine      = require("gulp-jasmine"),
     clean        = require('gulp-clean'),
     SpecReporter = require('jasmine-spec-reporter'),
-    ghPages      = require("gulp-gh-pages")
+    ghPages      = require("gulp-gh-pages"),
+
+    tsc          = require('gulp-typescript'),
+    ts           = require('typescript')
 ;
 
 const tsProject = {
@@ -85,17 +84,17 @@ gulp.task("build", (cb) => runSequence(
 ));
 
 
-gulp.task("test", () => {
-    let jasmineJson = require('./jasmine.json');
-    return gulp.src(jasmineJson.spec_files)
-        .pipe(jasmine({
-            reporter: new SpecReporter({
-                displayStacktrace  : true,
-                displaySpecDuration: true
-            }),
-            config  : jasmineJson
-        }))
-});
+// gulp.task("test", () => {
+//     let jasmineJson = require('./jasmine.json');
+//     return gulp.src(jasmineJson.spec_files)
+//         .pipe(jasmine({
+//             reporter: new SpecReporter({
+//                 displayStacktrace  : true,
+//                 displaySpecDuration: true
+//             }),
+//             config  : jasmineJson
+//         }))
+// });
 
 gulp.task("default", (cb) => runSequence("build", cb))
 

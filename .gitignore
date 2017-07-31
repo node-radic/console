@@ -17,3 +17,5 @@ src/**/*.js.map
 /dts
 /lib-es6
 /.env
+/package-lock.json
+/coverage
