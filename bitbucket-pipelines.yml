@@ -15,13 +15,22 @@ pipelines:
                 - git remote add github git@github.com:node-radic/console
                 - git push github --all
                 - git push github --tags
-                - echo "Everything is awesome!"
+
+                # install yarn
+                - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 0.18.1
+                - export PATH=$HOME/.yarn/bin:$PATH
+
+                # run yarn install
+                - yarn install
+
+                # unit tests
+                - npm run test
+
     branches:
         master:
             - step:
                 script:
                     # deploy typedoc
-                    - npm install typedoc
                     - npm run dev:docs
                     - npm run deploy:docs
     custom:
