@@ -16,3 +16,4 @@ src/**/*.js.map
 /spec.puml
 /dts
 /lib-es6
+/.env
