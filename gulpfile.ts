@@ -1,3 +1,6 @@
+import * as gulp from "gulp";
+import { WatchOptions } from "gulp";
+
 const c = {
     src          : [
         'src/**/*.ts',
@@ -9,7 +12,6 @@ const c = {
 };
 
 const
-    gulp         = require('gulp'),
     pump         = require('pump'),
     source       = require("vinyl-source-stream"),
     buffer       = require("vinyl-buffer"),
@@ -36,11 +38,12 @@ const tsProject = {
     test: tsc.createProject("tsconfig.json", { target: "es6", sourceMap: true, typescript: ts })
 };
 
-gulp.task('clean', [ 'clean:src:js', 'clean:build' ]);
-gulp.task('clean:docs', (cb) => pump([ gulp.src([ 'docs' ]), clean() ]))
+gulp.task('clean', [ 'clean:src:js', 'clean:build', 'clean:docs' ], (cb) => pump([ gulp.src([ '.nyc_output', 'coverage' ]), clean() ]))
+gulp.task('clean:docs', (cb) => pump([ gulp.src([ 'docs', '.publish' ]), clean() ]))
 gulp.task('clean:build', (cb) => pump([ gulp.src([ 'lib', 'lib-es6', 'dts', 'coverage', '.publish', 'docs' ]), clean() ]));
+gulp.task('clean:watch', (cb) => pump([ gulp.src([ 'lib', 'dts' ]), clean() ]));
 
-gulp.task('clean:src:js', (cb) => pump([ gulp.src([ '{src,spec}/*.{js,js.map}', '*.{js,js.map}' ]), clean() ]));
+gulp.task('clean:src:js', (cb) => pump([ gulp.src([ '{src,examples}/*.{js,js.map}', '*.{js,js.map}' ]), clean() ]));
 gulp.task('clean:test:js', (cb) => pump([ gulp.src([ '{tests}/*.{js,js.map}', '*.{js,js.map}' ]), clean() ]));
 
 gulp.task('clean:dts:js', (cb) => pump([ gulp.src([ 'dts/**/*.js' ]), clean() ]))
@@ -83,6 +86,12 @@ gulp.task("build", (cb) => runSequence(
     "build:test", cb
 ));
 
+gulp.task("build:watch", (cb) => runSequence(
+    "clean:watch",
+    [ 'build:lib', 'build:dts' ],
+    cb
+));
+
 
 // gulp.task("test", () => {
 //     let jasmineJson = require('./jasmine.json');
@@ -95,7 +104,10 @@ gulp.task("build", (cb) => runSequence(
 //             config  : jasmineJson
 //         }))
 // });
+gulp.task('watch', () => gulp.watch(c.src, <WatchOptions>{ debounceDelay: 3000, interval: 3000 }, [ 'build:watch' ]))
 
-gulp.task("default", (cb) => runSequence("build", cb))
+gulp.task("default", [ 'build' ]); //(cb) => runSequence("build", cb))
 
-gulp.task('ghpages', () => pump([ gulp.src('./docs/**/*'), ghPages() ]));
+gulp.task('ghpages', () => pump([ gulp.src('./docs/**/*'), ghPages({
+    remoteUrl: 'github.com:node-radic/console'
+}) ]));

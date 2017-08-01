@@ -1,14 +1,36 @@
 import { EventAndListener, EventEmitter2, eventNS, Listener } from "eventemitter2";
-import { container, inject, lazyInject, singleton } from "./Container";
+import { lazyInject, singleton } from "./Container";
 import { defined } from "@radic/util";
 import { Log } from "./Log";
-import { Cli } from "./Cli";
 import { defaults } from "../defaults";
 import { HaltEvent, Event } from "./events";
-import { injectable } from "inversify";
-
 
 @singleton('cli.events')
+/**
+ * Event dispatcher. Bound to `cli.events` as singleton. Utilizes EventEmitter2 under the hood.
+ *
+ * It adds some extra functionality, primarily the fire(), halt() and dispatch() methods.
+ * The fire() class expects a subclass of Event to be provided, which will be passed to the listeners.
+ * This is the preferred way of firing events within the application
+ *
+ * @see Event
+ * @see HaltEvent
+ * @example
+ * ```typescript
+ * const events= container.get<Dispatcher>('cli.events')
+ *
+ + export class CliParsedEvent extends HaltEvent {
+ +    constructor(public config: CommandConfig, public argv: YargsParserArgv, public globals: OptionConfig[]) {
+ +        super('cli:parsed')
+ +    }
+ + }
+ *
+ * events.listen('cli:parsed, (event:CliParsedEvent) => {
+ *      event.config.alwaysRun = true;
+ * })
+ * events.fire(new CliParsedEvent(config, argv, globals)
+ * ```
+ */
 export class Dispatcher {
     private ee: EventEmitter2;
     @lazyInject('cli.log')
@@ -19,9 +41,9 @@ export class Dispatcher {
 
     }
 
-    fire<T extends Event|HaltEvent>(ctx: T): T
-    fire<T extends Event|HaltEvent>(event: string | string[], ctx: T): T
-    fire<T extends Event|HaltEvent>(...args: any[]): T {
+    fire<T extends Event | HaltEvent>(ctx: T): T
+    fire<T extends Event | HaltEvent>(event: string | string[], ctx: T): T
+    fire<T extends Event | HaltEvent>(...args: any[]): T {
         let event: string | string[];
         let ctx: T = args[ args.length - 1 ];
 

@@ -2,6 +2,7 @@ import { KindOf } from "@radic/util";
 import { interfaces } from "inversify";
 import { Container } from "./core/Container";
 import BindingInWhenOnSyntax = interfaces.BindingInWhenOnSyntax;
+import { Cli } from "./core/Cli";
 
 
 export interface CommandArguments {
@@ -164,4 +165,10 @@ export interface NumericDictionary<T> {
 
 export interface StringRepresentable {
     toString(): string;
+}
+
+
+export interface Plugin {
+    name:string
+    register(container:Container, cli:Cli) : void
 }

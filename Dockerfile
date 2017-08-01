@@ -10,4 +10,4 @@ RUN chmod +x /docker-pipelines.sh
 RUN mkdir /pipeline
 WORKDIR /pipeline
 VOLUME ["/pipeline"]
-#CMD ["/docker-pipelines.sh"]
+CMD ["/docker-pipelines.sh"]

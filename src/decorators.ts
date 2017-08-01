@@ -3,7 +3,7 @@ import { kindOf, KindOf } from "@radic/util";
 import { merge } from "lodash";
 import { CommandConfig, HelperOptions, OptionConfig } from "./interfaces";
 import { Cli, container } from "./core";
-import { getCommandConfig, getOptionConfig } from "./utils";
+import { CommandConfigFunction, OptionConfigFunction } from "./utils";
 import { decorate, injectable } from "inversify";
 
 
@@ -17,9 +17,9 @@ export function command(name: string, description?: string, config?: CommandConf
 export function command(name: string, description?: string, subCommands?: string[], config?: CommandConfig): ClassDecorator
 export function command(...args: any[]) {
     const handle = (cls) => {
-        let config = getCommandConfig<CommandConfig>(cls, args)
+        let config = container.get<CommandConfigFunction>('cli.fn.command.config')<CommandConfig>(cls, args)
         set('command', config, cls);
-        if(!config.enabled) return;
+        if ( ! config.enabled ) return;
         container.get<Cli>('cli').parse(config);
     }
 
@@ -44,7 +44,7 @@ export function option(...args: any[]): PropertyDecorator {
         return;
     }
     return (cls: Object, propertyKey: string) => {
-        let config    = getOptionConfig(cls, propertyKey, args)
+        let config    = container.get<OptionConfigFunction>('cli.fn.options.config')(cls, propertyKey, args)
         const options = get('options', cls) || [];
         options.push(config);
         set('options', options, cls);

@@ -1,4 +1,4 @@
-import { Container as BaseContainer, decorate, inject as _inject, injectable as _injectable, interfaces } from "inversify";
+import { Container as BaseContainer, decorate, inject as _inject, injectable as _injectable, interfaces, postConstruct } from "inversify";
 import { makeFluentProvideDecorator, makeProvideDecorator } from "inversify-binding-decorators";
 import getDecorators from "inversify-inject-decorators";
 
@@ -120,3 +120,7 @@ export const inject = (id: ServiceIdentifier) => {
 export const bindTo = (id: ServiceIdentifier) => {
     return container.bindTo(id);
 }
+
+export {postConstruct} from 'inversify'
+export {autoProvide,makeFluentProvideDecorator,makeProvideDecorator} from 'inversify-binding-decorators'
+export * from 'inversify-inject-decorators'

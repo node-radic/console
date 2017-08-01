@@ -4,14 +4,56 @@ import { statSync } from "fs";
 import { basename, dirname, join, sep } from "path";
 import { defaults } from "./defaults";
 import * as globule from "globule";
-import { container } from "./core/Container";
+import { container, ServiceIdentifier } from "./core/Container";
 import { Log } from "./core/Log";
 import { kindOf } from "@radic/util";
 import { kebabCase, merge } from "lodash";
 import { Cli } from "./core/Cli";
+import { interfaces } from "inversify";
+import Factory = interfaces.Factory;
 const callsites = require('callsites');
 
+
+function bindFn<T>(id:ServiceIdentifier,fn){
+    container.bind<T>(id).toFunction(fn);
+    container.bind(id.toString().replace('fn', 'factory')).toAutoFactory(id);
+}
+
 // region: decorator utils
+
+/**
+ *
+ * @param cls
+ * @param args
+ * @returns {T}
+ */
+function getCommandConfig<T extends CommandConfig>(cls: Function, args: any[] = []): T {
+    let argt                         = args.map(kindOf),
+        len = args.length, config: T = defaults.command<T>(cls);
+
+    let sites = callsites();
+    for ( let i = 0; i < sites.length; i ++ ) {
+        if ( sites[ i ].getFunctionName() == '__decorate' ) {
+            config.filePath = sites[ i ].getFileName()
+            break;
+        }
+    }
+
+    // convert args into config
+    if ( argt[ 0 ] === "string" ) config.name = args[ 0 ]
+    if ( len > 1 && argt[ 1 ] === 'string' ) config.description = args[ 1 ]
+    if ( len > 2 && argt[ 2 ] === 'array' ) config.subCommands = args[ 2 ]
+    if ( argt[ len - 1 ] === 'object' ) merge(config, args[ len - 1 ])
+
+    // transform / format / handle the config
+    config             = prepareArguments(config);
+    config.description = config.description.toLowerCase();
+    if ( kindOf(config.enabled) === 'function' ) {
+        config.enabled = (<Function>config.enabled).apply(config, [ container ])
+    }
+
+    return config;
+}
 
 /**
  *
@@ -20,7 +62,7 @@ const callsites = require('callsites');
  * @param args
  * @returns {OptionConfig}
  */
-export function getOptionConfig(cls: Object, key: string, args: any[]): OptionConfig {
+function getOptionConfig(cls: Object, key: string, args: any[]): OptionConfig {
     let argt                 = args.map(kindOf),
         len                  = args.length,
         config: OptionConfig = defaults.option(cls, key);
@@ -48,7 +90,7 @@ export function getOptionConfig(cls: Object, key: string, args: any[]): OptionCo
 }
 
 /** called in decorator, transforms config.name with all arguments to a proper structure */
-export function prepareArguments<T extends CommandConfig = CommandConfig>(config: T): T {
+function prepareArguments<T extends CommandConfig = CommandConfig>(config: T): T {
 //https://regex101.com/r/vSqbuK/1
 
     let name            = config.name.replace(/\[\]/g, '__')
@@ -109,47 +151,21 @@ export function prepareArguments<T extends CommandConfig = CommandConfig>(config
     return config;
 }
 
-/**
- *
- * @param cls
- * @param args
- * @returns {T}
- */
-export function getCommandConfig<T extends CommandConfig>(cls: Function, args: any[] = []): T {
-    let argt                         = args.map(kindOf),
-        len = args.length, config: T = defaults.command<T>(cls);
-
-    let sites = callsites();
-    for ( let i = 0; i < sites.length; i ++ ) {
-        if ( sites[ i ].getFunctionName() == '__decorate' ) {
-            config.filePath = sites[ i ].getFileName()
-            break;
-        }
-    }
-
-    // convert args into config
-    if ( argt[ 0 ] === "string" ) config.name = args[ 0 ]
-    if ( len > 1 && argt[ 1 ] === 'string' ) config.description = args[ 1 ]
-    if ( len > 2 && argt[ 2 ] === 'array' ) config.subCommands = args[ 2 ]
-    if ( argt[ len - 1 ] === 'object' ) merge(config, args[ len - 1 ])
-
-    // transform / format / handle the config
-    config             = prepareArguments(config);
-    config.description = config.description.toLowerCase();
-    if ( kindOf(config.enabled) === 'function' ) {
-        config.enabled = (<Function>config.enabled).apply(config, [ container ])
-    }
-
-    return config;
-}
-
 // endregion
+
+export type CommandConfigFunction = <T extends CommandConfig>(cls: Function, args?: any[]) => T
+export type OptionConfigFunction = (cls:Object, key:string, args: any[]) => OptionConfig;
+export type PrepareArgumentsFunction = <T extends CommandConfig=CommandConfig>(config:T) => T
+
+bindFn<CommandConfigFunction>('cli.fn.command.config',getCommandConfig);
+bindFn<OptionConfigFunction>('cli.fn.options.config',getOptionConfig);
+bindFn<PrepareArgumentsFunction>('cli.fn.arguments.prepare',prepareArguments);
 
 
 // region: cli utils
 
 /** transforms my option structure to the yargs-parser option structure */
-export function transformOptions(configs: OptionConfig[]): YargsParserOptions {
+function transformOptions(configs: OptionConfig[]): YargsParserOptions {
     let options: YargsParserOptions = {
         array        : [],
         boolean      : [],
@@ -204,7 +220,7 @@ export function transformOptions(configs: OptionConfig[]): YargsParserOptions {
  * @param args
  * @returns {{arguments: {}, missing: Array, valid: boolean}}
  */
-export function parseArguments(argv_: string[], args: CommandArgumentConfig[] = []): ParsedCommandArguments {
+function parseArguments(argv_: string[], args: CommandArgumentConfig[] = []): ParsedCommandArguments {
 
     let invalid = [];
     let res     = {};
@@ -241,7 +257,7 @@ export function parseArguments(argv_: string[], args: CommandArgumentConfig[] = 
  * @param arg
  * @returns {any}
  */
-export function transformArgumentType<T extends any = any>(val: any, arg: CommandArgumentConfig): T | T[] {
+function transformArgumentType<T extends any = any>(val: any, arg: CommandArgumentConfig): T | T[] {
     if ( val === undefined ) {
         return undefined
     }
@@ -274,7 +290,7 @@ transformArgumentType[ 'transformers' ] = {
  * @param filePath
  * @returns {Array}
  */
-export function findSubCommandsPaths(filePath): string[] {
+function findSubCommandsPaths(filePath:string): string[] {
 
     let dirName  = dirname(filePath);
     let baseName = basename(filePath, '.js');
@@ -302,7 +318,7 @@ export function findSubCommandsPaths(filePath): string[] {
     return paths;
 }
 
-export function getSubCommands<T extends Dictionary<CommandConfig> | CommandConfig[]>(filePath: string, recursive: boolean = false, asArray: boolean = false): T {
+function getSubCommands<T extends Dictionary<CommandConfig> | CommandConfig[]>(filePath: string, recursive: boolean = false, asArray: boolean = false): T {
     let subCommands: any = {}
     if ( asArray ) {
         subCommands = [];
@@ -336,4 +352,17 @@ export function getSubCommands<T extends Dictionary<CommandConfig> | CommandConf
     return subCommands
 }
 
+
 // endregion
+
+export type TransformOptionsFunction = (configs: OptionConfig[]) => YargsParserOptions
+export type ParseArgumentsFunction = (argv_: string[], args?: CommandArgumentConfig[] ) => ParsedCommandArguments
+export type TransformArgumentFunction = <T extends any = any>(val: any, arg: CommandArgumentConfig) => T | T[]
+export type SubCommandsFindFunction =(filePath:string) => string[]
+export type SubCommandsGetFunction = <T extends Dictionary<CommandConfig> | CommandConfig[]>(filePath: string, recursive?: boolean, asArray?: boolean ) =>  T
+
+bindFn<TransformOptionsFunction>('cli.fn.options.transform',transformOptions);
+bindFn<ParseArgumentsFunction>('cli.fn.arguments.parse',parseArguments);
+bindFn<TransformArgumentFunction>('cli.fn.arguments.transform',transformArgumentType);
+bindFn<SubCommandsFindFunction>('cli.fn.commands.find',findSubCommandsPaths);
+bindFn<SubCommandsGetFunction>('cli.fn.commands.get',getSubCommands);

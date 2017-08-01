@@ -1,7 +1,5 @@
-*.ts
-!*.d.ts
 
-/types
+
 /.gitignore
 /.mversionrc
 /console-colors.iml
@@ -37,5 +35,4 @@ index.html
 
 
 
-/src
 /test

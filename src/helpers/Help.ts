@@ -1,10 +1,10 @@
-import { kindOf } from "@radic/util";
+import { kindOf, stringify } from "@radic/util";
 import { CommandArgumentConfig, CommandConfig, HelperOptionsConfig, OptionConfig } from "../interfaces";
 import { helper } from "../decorators";
 import { CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParseEvent } from "../core/events";
-import { inject } from "../core/Container";
+import { container, inject } from "../core/Container";
 import { OutputHelper } from "./Output";
-import { getSubCommands } from "../utils";
+import { SubCommandsGetFunction } from "../utils";
 import { Log } from "../core/Log";
 import { Cli } from "../core/Cli";
 import { Dispatcher } from "../core/Dispatcher";
@@ -80,6 +80,9 @@ export class CommandDescriptionHelper {
 
     @inject('cli.helpers.output')
     out: OutputHelper;
+
+    public get getSubCommands(): SubCommandsGetFunction { return container.get<SubCommandsGetFunction>('cli.fn.commands.get') }
+
 
     public showHelp(config: CommandConfig, options: OptionConfig[]) {
         if ( config.helpers[ 'help' ] ) {
@@ -202,7 +205,7 @@ export class CommandDescriptionHelper {
     protected printSubCommands(config: CommandConfig) {
         let rows                                   = []
         let groups: { [name: string]: string[][] } = {}
-        getSubCommands<CommandConfig[]>(config.filePath, false, true).forEach(command => {
+        this.getSubCommands<CommandConfig[]>(config.filePath, false, true).forEach(command => {
             let desc                          = '',
                 name                          = null,
                 args: CommandArgumentConfig[] = [];
@@ -297,6 +300,9 @@ export class CommandDescriptionHelper {
             if ( option.array ) {
                 type = `{cyan}Array<{/cyan}${type}{cyan}>{/cyan}`
             }
+            if(option.default){
+                type += '=' + stringify(option.default)
+            }
             type = '[' + type + ']';
 
             // Format key
@@ -330,7 +336,7 @@ export class CommandDescriptionHelper {
     }
 
     protected getTreeSubcommands(config: CommandConfig): any[] {
-        let obj = getSubCommands(config.filePath);
+        let obj = this.getSubCommands(config.filePath);
         return Object.keys(obj).map(subCommand => {
             // let filePath                 = obj[ subCommand ].filePath
             // let subConfig: CommandConfig = obj[ subCommand ];

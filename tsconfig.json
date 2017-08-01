@@ -12,7 +12,6 @@
         "target": "es5",
         "lib": ["es2017", "es2017.object"],
         "noResolve": false,
-        "types": ["reflect-metadata","winston"],
         "typeRoots": [
             "./node_modules/@types",
             "./types"
@@ -21,7 +20,7 @@
     "include": [
         "./node_modules/@types",
         "./src",
-        "./spec",
+        "./examples",
         "./gruntfile.ts",
         "./types"
     ]

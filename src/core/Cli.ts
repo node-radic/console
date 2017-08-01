@@ -1,11 +1,11 @@
 import { kindOf } from "@radic/util";
 import { container, injectable, lazyInject } from "./Container";
-import { CommandConfig, HelperOptionsConfig, OptionConfig } from "../interfaces";
+import { CommandConfig, HelperOptionsConfig, OptionConfig, Plugin } from "../interfaces";
 import { YargsParserArgv } from "../../types/yargs-parser";
 import { CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent, CliStartEvent } from "./events";
 import { Log } from "./Log";
 import { Config } from "./config";
-import { getSubCommands, parseArguments, transformOptions } from "../utils";
+import { ParseArgumentsFunction, SubCommandsGetFunction, TransformOptionsFunction } from "../utils";
 import { resolve } from "path";
 import { interfaces } from "inversify";
 import * as _ from "lodash";
@@ -13,6 +13,7 @@ import { Helpers } from "./Helpers";
 import { Dispatcher } from "./Dispatcher";
 import Context = interfaces.Context;
 import BindingWhenOnSyntax = interfaces.BindingWhenOnSyntax;
+import Factory = interfaces.Factory;
 const parser = require('yargs-parser')
 const get    = Reflect.getMetadata
 declare var v8debug;
@@ -46,6 +47,11 @@ export class Cli {
     @lazyInject('cli.config')
     public config: Config;
 
+    public get transformOptions(): TransformOptionsFunction { return container.get<TransformOptionsFunction>('cli.fn.options.transform') }
+
+    public get parseArguments(): ParseArgumentsFunction { return container.get<ParseArgumentsFunction>('cli.fn.arguments.parse') }
+
+    public get getSubCommands(): SubCommandsGetFunction { return container.get<SubCommandsGetFunction>('cli.fn.commands.get') }
 
     public start(requirePath: string): this {
 
@@ -67,9 +73,10 @@ export class Cli {
         }
 
         this.events.fire(new CliParseEvent(config, this.globalOptions))
-        let transformedOptions = transformOptions(this.globalOptions);
+
+        let transformedOptions           = this.transformOptions(this.globalOptions);
         transformedOptions.configuration = this.config('parser.yargs')
-        let result             = parser(config.args, transformedOptions) as YargsParserArgv;
+        let result                       = parser(config.args, transformedOptions) as YargsParserArgv;
         this.events.fire(new CliParsedEvent(config, result, this.globalOptions))
         this._parsedCommands.push(config);
 
@@ -77,7 +84,7 @@ export class Cli {
             if ( config.alwaysRun ) {
                 this.executeCommand(config, true);
             }
-            const subCommands = getSubCommands(config.filePath)
+            const subCommands = this.getSubCommands(config.filePath)
             if ( subCommands[ result._[ 0 ] ] ) {
                 const command: CommandConfig = subCommands[ result._[ 0 ] ];
                 command.args.shift();
@@ -106,9 +113,9 @@ export class Cli {
         if ( ! isAlwaysRun )
             this.events.fire(new CliExecuteCommandParseEvent(config, optionConfigs))
 
-        let transformedOptions = transformOptions(this.globalOptions.concat(optionConfigs));
+        let transformedOptions           = this.transformOptions(this.globalOptions.concat(optionConfigs));
         transformedOptions.configuration = this.config('parser.yargs')
-        let argv               = parser(config.args, transformedOptions) as YargsParserArgv;
+        let argv                         = parser(config.args, transformedOptions) as YargsParserArgv;
 
         if ( ! isAlwaysRun )
             this.events.fire(new CliExecuteCommandParsedEvent(argv, config, optionConfigs))
@@ -136,7 +143,7 @@ export class Cli {
             instance[ argName ] = argv[ argName ];
         })
 
-        let parsed = parseArguments(argv._, config.arguments)
+        let parsed = this.parseArguments(argv._, config.arguments)
         this.events.fire(new CliExecuteCommandHandleEvent(instance, parsed, argv, config, optionConfigs))
 
         // if any missing, execute the way we should handle the arguments.
@@ -173,7 +180,7 @@ export class Cli {
 
         this.events.fire(new CliExecuteCommandHandledEvent(result, instance, argv, config, optionConfigs))
 
-        if ( result === null || result === undefined) process.exit();
+        if ( result === null || result === undefined ) process.exit();
 
         if ( result === true ) process.exit();
 
@@ -231,6 +238,10 @@ export class Cli {
         }
         (<OptionConfig[]> configs).forEach(config => this.global(config));
         return this;
+    }
+
+    public use(plugin: Plugin) {
+
     }
 }
 
