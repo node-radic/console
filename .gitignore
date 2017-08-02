@@ -2,7 +2,11 @@ yarn-error.log
 npm-debug.log
 /node_modules
 /*.js
-/.idea
+
+/.idea/workspace.xml
+/.idea/misc.xml
+/.idea/dataSource*
+/.idea/sonar*
 src/**/*.js
 src/**/*.js.map
 /lib

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/console.iml" filepath="$PROJECT_DIR$/.idea/console.iml" group="console" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/radical-console-crypto-file-config.iml" filepath="$PROJECT_DIR$/.idea/modules/radical-console-crypto-file-config.iml" group="console/plugins" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/radical-console-database.iml" filepath="$PROJECT_DIR$/.idea/modules/radical-console-database.iml" group="console/plugins" />
+    </modules>
+  </component>
+</project>
