@@ -1,6 +1,6 @@
 {
   "name": "radical-console",
-  "version": "0.0.19-1",
+  "version": "0.0.19",
   "description": "Console ",
   "main": "src/index.js",
   "typings": "dts/index.d.ts",
