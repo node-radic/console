@@ -15,3 +15,6 @@ declare module 'callsites' {
     declare const callsites: () => CallSites[]
     export = callsites
 }
+
+
+declare module 'mocha-typescript'

@@ -1,7 +1,2 @@
-import "./yargs-parser";
-
-declare namespace global {
-    export interface CliTable extends Array<string[]> {
-
-    }
-}
+export * from "./yargs-parser";
+export * from "./inquirer";

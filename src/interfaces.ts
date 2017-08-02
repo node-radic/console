@@ -1,8 +1,12 @@
 import { KindOf } from "@radic/util";
 import { interfaces } from "inversify";
-import { Container } from "./core/Container";
+import {  Container } from "./core/Container";
 import BindingInWhenOnSyntax = interfaces.BindingInWhenOnSyntax;
 import { Cli } from "./core/Cli";
+import { Config } from "./core/config";
+import { Dispatcher } from "./core/Dispatcher";
+import { Helpers } from "./core/Helpers";
+import { LoggerInstance } from "winston";
 
 
 export interface CommandArguments {
@@ -10,24 +14,57 @@ export interface CommandArguments {
 }
 
 export interface ParsedCommandArguments {
+    /** arguments that where not found on the command. */
     missing: string[]
     valid: boolean
+    /** parsed and type-transformed argument values structure { name: value } **/
     arguments: CommandArguments
 }
 
 export interface CommandArgumentConfig {
+    /** points to the index of arguments given, used to resolve the argument value from the parsed results */
     position?: number
+
+    /**
+     * the name of the argument.
+     * usually defined in the @command name parameter.
+     * will be used to map arguments to a name for the result in the CommandArguments which is passed to the command's handle() func
+     */
     name?: string
+
+    /**
+     * same as the name, defined in the @command parameter, used to map arguments
+     */
     alias?: string | null
+
+    /** If set as required, the command will error if the argument isn't given */
     required?: boolean
+
+    /** only the last argument should be variadic, this makes it an array of all arguments given after the position of this argument */
     variadic?: boolean
+
+    /** a brief description of what this argument is about */
     description?: string
-    type?: string
+
+    /**
+     * used to transform the user's input (string) into the right data-type.
+     * default: string
+     * can be: boolean, string, numeric
+     * or a custom function, which transforms the user's input string to the right data-type
+     */
+    type?: string | (<T>(input:string) => T)
+
+    /**
+     * if not given, use this default as value
+     */
     default?:any | null
 }
 export type CommandConfigEnabledType = boolean | ((container: Container) => boolean)
 export interface CommandConfig {
     alwaysRun?: boolean
+
+    /** The name of the command. This will be checked and purged for argument definitions. */
+
     name?: string
     alias?: string
     usage?: string | null
@@ -168,7 +205,20 @@ export interface StringRepresentable {
 }
 
 
-export interface Plugin {
+export interface PluginRegisterHelper {
+    cli: Cli
+    config: Config
+    container: Container
+    events: Dispatcher
+    helpers: Helpers
+    log: LoggerInstance
+}
+export interface BasePluginConfig {
+    [key:string]: any
+}
+export interface Plugin<T extends BasePluginConfig> {
     name:string
-    register(container:Container, cli:Cli) : void
+    depends?: string[]
+    config?:T
+    register(config:T, helper:PluginRegisterHelper) : void
 }

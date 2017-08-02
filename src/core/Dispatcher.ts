@@ -3,7 +3,7 @@ import { lazyInject, singleton } from "./Container";
 import { defined } from "@radic/util";
 import { Log } from "./Log";
 import { defaults } from "../defaults";
-import { HaltEvent, Event } from "./events";
+import { HaltEvent, Event, CancelEvent } from "./events";
 
 @singleton('cli.events')
 /**
@@ -41,9 +41,9 @@ export class Dispatcher {
 
     }
 
-    fire<T extends Event | HaltEvent>(ctx: T): T
-    fire<T extends Event | HaltEvent>(event: string | string[], ctx: T): T
-    fire<T extends Event | HaltEvent>(...args: any[]): T {
+    fire<T extends Event | HaltEvent | CancelEvent>(ctx: T): T
+    fire<T extends Event | HaltEvent | CancelEvent>(event: string | string[], ctx: T): T
+    fire<T extends Event | HaltEvent | CancelEvent>(...args: any[]): T {
         let event: string | string[];
         let ctx: T = args[ args.length - 1 ];
 
@@ -53,7 +53,7 @@ export class Dispatcher {
         this.log.silly('firing event: ' + event, { ctx })
         this.emit(event, ctx);
         if ( ctx instanceof HaltEvent ) {
-            if ( ctx.halt ) {
+            if ( ctx['_halt'] ) {
                 this.halt<typeof ctx>(event, ctx);
             }
         }

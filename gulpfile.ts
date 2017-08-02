@@ -4,7 +4,8 @@ import { WatchOptions } from "gulp";
 const c = {
     src          : [
         'src/**/*.ts',
-        "!src/**/*.spec.ts"
+        "!src/**/*.spec.ts",
+        "types/**/*.d.ts"
     ],
     fileName     : 'console',
     moduleName   : '@radic/console',
@@ -20,10 +21,8 @@ const
     rollup       = require('gulp-rollup'),
     rename       = require("gulp-rename"),
     runSequence  = require("run-sequence"),
-    istanbul     = require("gulp-istanbul"),
 
     clean        = require('gulp-clean'),
-    SpecReporter = require('jasmine-spec-reporter'),
     ghPages      = require("gulp-gh-pages"),
 
     tsc          = require('gulp-typescript'),
@@ -78,7 +77,7 @@ gulp.task("build:test", (cb) => pump([
     gulp.dest("tests/")
 ]))
 
-gulp.task('build:dts', (cb) => runSequence('build:dts:ts', 'clean:dts:js'))
+gulp.task('build:dts', (cb) => runSequence('build:dts:ts', 'clean:dts:js', cb))
 
 gulp.task("build", (cb) => runSequence(
     "clean",
@@ -91,6 +90,7 @@ gulp.task("build:watch", (cb) => runSequence(
     [ 'build:lib', 'build:dts' ],
     cb
 ));
+gulp.task('watch', () => { gulp.watch(c.src, <WatchOptions>{ debounceDelay: 3000, interval: 3000 }, [ 'build:watch' ])})
 
 
 // gulp.task("test", () => {
@@ -104,7 +104,6 @@ gulp.task("build:watch", (cb) => runSequence(
 //             config  : jasmineJson
 //         }))
 // });
-gulp.task('watch', () => gulp.watch(c.src, <WatchOptions>{ debounceDelay: 3000, interval: 3000 }, [ 'build:watch' ]))
 
 gulp.task("default", [ 'build' ]); //(cb) => runSequence("build", cb))
 

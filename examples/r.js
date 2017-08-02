@@ -45,5 +45,5 @@ var Help = (function (_super) {
         });
     };
     return Help;
-}(src_1.CommandDescriptionHelper));
+}(src_1.HelpHelper));
 //# sourceMappingURL=r.js.map

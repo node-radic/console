@@ -47,12 +47,12 @@ export class Helpers {
     public startHelpers(customConfigs: { [name: string]: HelperOptionsConfig } = {}) {
         let enabledHelpers: string[] = this.config.get<string[]>('enabledHelpers', [])
         if ( this.started === false ) {
-            if(this.events.fire(new HelpersStartingEvent(this, enabledHelpers, customConfigs)).halt){
+            if(this.events.fire(new HelpersStartingEvent(this, enabledHelpers, customConfigs))._halt){
                 return;
             }
         }
         enabledHelpers.forEach(name => {
-            if ( this.events.fire(new HelperStartingEvent(this, name, customConfigs[ name ] || {})).halt ) {
+            if ( this.events.fire(new HelperStartingEvent(this, name, customConfigs[ name ] || {}))._halt ) {
                 return;
             }
             this.startHelper(name, customConfigs[ name ] || {});

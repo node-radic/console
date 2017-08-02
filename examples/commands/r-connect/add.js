@@ -28,7 +28,11 @@ var RcliConnectAddCmd = (function () {
             localPath: '/mnt/' + args.name,
             hostPath: '/'
         };
+        // this.out.dump(this);
+        // this.log.info('config', this.config)
         this.out.dump(this.config.get(''));
+        // this.out.dump(this.config);
+        // this.log.info('Im in RcliConnectCmmand. Njou')
     };
     __decorate([
         src_1.lazyInject('cli.helpers.output'),

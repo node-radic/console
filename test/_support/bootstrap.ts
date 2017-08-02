@@ -1,8 +1,7 @@
-
-import { Dictionary, HelperOptionsConfig,Cli,cli, CliConfig, CommandConfig, defaults, prepareArguments } from "../../src";
+import { Cli, cli, CliConfig, Dictionary, HelperOptionsConfig } from "../../src";
 import { objectLoop } from "@radic/util";
 
-export function bootstrap(helpers: Dictionary<HelperOptionsConfig>, config:CliConfig={}) : Cli {
+export function bootstrap(helpers: Dictionary<HelperOptionsConfig>, config: CliConfig = {}): Cli {
     cli.config.merge(config)
 
     objectLoop(helpers, (name, config) => {

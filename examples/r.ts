@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import "reflect-metadata";
-import { cli, CliConfig, CommandDescriptionHelper as BaseHelper, OptionConfig } from "../src";
+import { cli, CliConfig, HelpHelper as BaseHelper, OptionConfig } from "../src";
 
 cli.config(<CliConfig> {
     commands: {

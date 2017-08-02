@@ -1,8 +1,8 @@
 import { kindOf } from "@radic/util";
 import { container, injectable, lazyInject } from "./Container";
 import { CommandConfig, HelperOptionsConfig, OptionConfig, Plugin } from "../interfaces";
-import { YargsParserArgv } from "../../types/yargs-parser";
-import { CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent, CliStartEvent } from "./events";
+// import { YargsParserArgv } from "../../types/yargs-parser";
+import { CliExecuteCommandEvent, CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent, CliStartEvent } from "./events";
 import { Log } from "./Log";
 import { Config } from "./config";
 import { ParseArgumentsFunction, SubCommandsGetFunction, TransformOptionsFunction } from "../utils";
@@ -14,10 +14,12 @@ import { Dispatcher } from "./Dispatcher";
 import Context = interfaces.Context;
 import BindingWhenOnSyntax = interfaces.BindingWhenOnSyntax;
 import Factory = interfaces.Factory;
-const parser = require('yargs-parser')
+// import { YargsParserArgv } from "../../types/yargs-parser";
+// const parser = require('yargs-parser')
 const get    = Reflect.getMetadata
 declare var v8debug;
 
+import * as parser from 'yargs-parser'
 
 // @singleton('cli')
 @injectable()
@@ -56,7 +58,7 @@ export class Cli {
     public start(requirePath: string): this {
 
         requirePath = resolve(requirePath);
-        this.events.fire(new CliStartEvent(requirePath))
+        this.events.fire(new CliStartEvent(requirePath)).exitIfHalt()
         // this._requiredCommands.push(requirePath.endsWith('.js') ? requirePath : requirePath + '.js');
         require(requirePath)
         return this
@@ -72,12 +74,14 @@ export class Cli {
             this._rootCommand = config;
         }
 
-        this.events.fire(new CliParseEvent(config, this.globalOptions))
+        this.events.fire(new CliParseEvent(config, this.globalOptions)).exitIfHalt()
+
+
 
         let transformedOptions           = this.transformOptions(this.globalOptions);
         transformedOptions.configuration = this.config('parser.yargs')
         let result                       = parser(config.args, transformedOptions) as YargsParserArgv;
-        this.events.fire(new CliParsedEvent(config, result, this.globalOptions))
+        this.events.fire(new CliParsedEvent(config, result, this.globalOptions)).exitIfHalt()
         this._parsedCommands.push(config);
 
         if ( ! this._runningCommand && result._.length > 0 && config.isGroup ) {
@@ -103,8 +107,7 @@ export class Cli {
 
 
     protected async executeCommand(config: CommandConfig, isAlwaysRun: boolean = false) {
-
-
+        this.events.fire(new CliExecuteCommandEvent(config, isAlwaysRun)).exitIfHalt()
         this.helpers.startHelpers(config.helpers);
 
         let optionConfigs: OptionConfig[] = get('options', config.cls.prototype) || [];

@@ -3,13 +3,50 @@ import { CommandArgumentConfig, CommandConfig, HelperOptionsConfig, OptionConfig
 import { helper } from "../decorators";
 import { CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParseEvent } from "../core/events";
 import { container, inject } from "../core/Container";
-import { OutputHelper } from "./Output";
+import { OutputHelper } from "./helper.output";
 import { SubCommandsGetFunction } from "../utils";
 import { Log } from "../core/Log";
 import { Cli } from "../core/Cli";
 import { Dispatcher } from "../core/Dispatcher";
 import { HelpHelperOnInvalidArgumentsShowHelpEvent, HelpHelperShowHelpEvent } from "./events";
 import * as _ from "lodash";
+
+export type HelpHelperOverrideType = (helper: HelpHelper, command: CommandConfig, options?: OptionConfig[]) => string
+export interface HelpHelperOptionsConfig extends HelperOptionsConfig {
+
+    app: { title: string }
+    addShowHelpCommand: boolean
+    showOnError: boolean
+    option: {
+        enabled: boolean,
+        key: string,
+        name: string
+    }
+
+    overrides: {
+        arguments: HelpHelperOverrideType
+        title: HelpHelperOverrideType
+        options: HelpHelperOverrideType
+        description: HelpHelperOverrideType
+        explenation: HelpHelperOverrideType
+        usage: HelpHelperOverrideType
+        example: HelpHelperOverrideType
+    }
+    display: {
+        title: boolean
+        titleLines: boolean
+        description: boolean
+        descriptionAsTitle: boolean
+        usage: boolean
+        example: boolean
+        explenation: boolean
+        arguments: boolean
+        subCommands: boolean
+        options: boolean
+        globalOptions: boolean
+    }
+
+}
 
 @helper('help', {
     config   : {
@@ -46,11 +83,21 @@ import * as _ from "lodash";
 
             }).join(' ')}`
         },
+        overrides         : {
+            arguments  : null,
+            title      : null,
+            options    : null,
+            description: null,
+            explenation: null,
+            usage      : null,
+            example    : null
+        },
         display           : {
             title             : true,
             titleLines        : true,
+            explenation       : true,
             description       : true,
-            descriptionAsTitle: true,
+            descriptionAsTitle: false,
             usage             : true,
             example           : true,
             arguments         : true,
@@ -66,8 +113,8 @@ import * as _ from "lodash";
     },
     depends  : [ 'output' ]
 })
-export class CommandDescriptionHelper {
-    config: HelperOptionsConfig;
+export class HelpHelper {
+    config: HelpHelperOptionsConfig;
 
     @inject('cli.events')
     events: Dispatcher
@@ -104,11 +151,9 @@ export class CommandDescriptionHelper {
         if ( this.config.display.description && ! this.config.display.descriptionAsTitle && config.description.length > 0 ) {
             this.out.line(config.description); //line('{group}Description:{/group}')
         }
-
         if ( this.config.display.explenation && config.explenation.length > 0 ) {
             this.out.line(config.explenation)
         }
-
         if ( this.config.display.usage ) {
             if ( usage.length === 0 && config.arguments.length > 0 ) {
                 usage = this.getParsedCommandNames().join(' ');
@@ -273,7 +318,8 @@ export class CommandDescriptionHelper {
 
     protected printOptions(options: OptionConfig[]) {
         let rows = [];
-        let s    = this.config.styles
+
+        let s = this.config.styles
         options.forEach(option => {
             // Format description
             let desc: string = option.description;
@@ -291,6 +337,7 @@ export class CommandDescriptionHelper {
                 desc = result;
             }
 
+
             // Format type
             let type: string = option.type
             if ( type === undefined && option.count ) {
@@ -300,7 +347,7 @@ export class CommandDescriptionHelper {
             if ( option.array ) {
                 type = `{cyan}Array<{/cyan}${type}{cyan}>{/cyan}`
             }
-            if(option.default){
+            if ( option.default ) {
                 type += '=' + stringify(option.default)
             }
             type = '[' + type + ']';
@@ -412,7 +459,7 @@ export class CommandDescriptionHelper {
 
     public onInvalidArguments(event: CliExecuteCommandInvalidArgumentsEvent) {
         if ( this.config.showOnError === true && event.config.onMissingArgument === 'help' ) {
-            if ( this.events.fire(new HelpHelperOnInvalidArgumentsShowHelpEvent(event)).halt ) return
+            if ( this.events.fire(new HelpHelperOnInvalidArgumentsShowHelpEvent(event))._halt ) return
             this.showHelp(event.config, event.options);
             this.out.nl;
             for ( let m in event.parsed.missing ) {

@@ -1,10 +1,12 @@
 import { Cli } from "./Cli";
-import { container } from "./Container";
-import { Dictionary, CommandConfig, HelperOptionsConfig, OptionConfig, ParsedCommandArguments } from "../interfaces";
-import { YargsParserArgv } from "../../types/yargs-parser";
+import { container, injectable } from "./Container";
+import { CommandConfig, Dictionary, HelperOptionsConfig, OptionConfig, ParsedCommandArguments } from "../interfaces";
+import { YargsParserArgv } from "yargs-parser";
 import { ChildProcess } from "child_process";
 import { Helpers } from "./Helpers";
+import { Mixin } from "@radic/util";
 
+@injectable()
 export abstract class Event {
     public get cli(): Cli {
         return container.get<Cli>('cli');
@@ -13,15 +15,35 @@ export abstract class Event {
     constructor(public event: string | string[] = undefined) {}
 }
 
+@injectable()
 export abstract class HaltEvent extends Event {
-    public halt: boolean = false;
+    protected _halt: boolean    = false;
+    protected _haltCode: number = 0;
 
-    public stop() { this.halt = true }
+    protected halt(code: number = 0) {
+        this._halt     = true
+        this._haltCode = code;
+    }
+
+    public exitIfHalt() {
+        if ( this._halt ) {
+            process.exit(this._haltCode);
+        }
+    }
+
+    public shouldHalt(): boolean { return this._halt; }
+}
+
+export interface CancelPromiseEvent extends Event, Promise<any> {
+
+}
+export abstract class CancelEvent extends Mixin<CancelPromiseEvent>(Event, Promise) {
+
 }
 
 
 export class CliStartEvent extends HaltEvent {
-    constructor(public requiredPath:string) {
+    constructor(public requiredPath: string) {
         super('cli:start')
     }
 }
@@ -39,6 +61,12 @@ export class CliParsedEvent extends HaltEvent {
 export class CliSpawnEvent extends HaltEvent {
     constructor(public args: string[], public file: string, public proc: ChildProcess) {
         super('cli:spawn')
+    }
+}
+
+export class CliExecuteCommandEvent extends HaltEvent {
+    constructor(public config: CommandConfig, public isAlwaysRun: boolean) {
+        super('cli:execute')
     }
 }
 export class CliExecuteCommandParseEvent extends HaltEvent {
@@ -77,7 +105,6 @@ export class CliExecuteCommandHandledEvent<T = any> extends HaltEvent {
         super('cli:execute:handled')
     }
 }
-
 
 
 export class HelpersStartingEvent extends HaltEvent {

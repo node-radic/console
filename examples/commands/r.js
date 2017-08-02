@@ -32,6 +32,7 @@ var RcliCmd = (function () {
     RcliCmd = __decorate([
         src_1.command('r {command:string@any of the listed commands}', {
             isGroup: true,
+            // subCommands: [ 'connect' ],
             alwaysRun: true,
             onMissingArgument: 'help'
         })

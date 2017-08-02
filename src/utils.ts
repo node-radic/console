@@ -1,4 +1,4 @@
-import { YargsParserOptions } from "../types/yargs-parser";
+import { YargsParserOptions } from "yargs-parser";
 import { CommandArgumentConfig, CommandConfig, Dictionary, OptionConfig, ParsedCommandArguments } from "./interfaces";
 import { statSync } from "fs";
 import { basename, dirname, join, sep } from "path";
@@ -265,10 +265,10 @@ function transformArgumentType<T extends any = any>(val: any, arg: CommandArgume
         if ( val === undefined ) {
             return []
         }
-        return val.map((item => transformArgumentType[ 'transformers' ][ arg.type ](item)));
+        return val.map((item => this.transformers [ arg.type ](item)));
     }
-    if ( transformArgumentType[ 'transformers' ][ arg.type ] ) {
-        return transformArgumentType[ 'transformers' ][ arg.type ](val);
+    if ( this.transformers [ arg.type ] ) {
+        return this.transformers [ arg.type ](val);
     }
     return val;
 }
@@ -355,6 +355,12 @@ function getSubCommands<T extends Dictionary<CommandConfig> | CommandConfig[]>(f
 
 // endregion
 
+/**
+ * Transforms a OptionConfig array (usually found on CommandConfig) to yargs-parser options.
+ * This is used on the `cli:parse` event (fired in Cli#parse) and cli:execute:parse (fired in Cli#executeCommand)
+ *
+ * @see {Cli)
+ */
 export type TransformOptionsFunction = (configs: OptionConfig[]) => YargsParserOptions
 export type ParseArgumentsFunction = (argv_: string[], args?: CommandArgumentConfig[] ) => ParsedCommandArguments
 export type TransformArgumentFunction = <T extends any = any>(val: any, arg: CommandArgumentConfig) => T | T[]
