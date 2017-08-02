@@ -1,7 +1,9 @@
 import { suite, test } from "mocha-typescript";
-import { CommandArgumentConfig, parseArguments, Cli, CliConfig, CommandConfig, defaults, prepareArguments } from "../src";
+import { container, Cli, CliConfig, CommandArgumentConfig, CommandConfig, defaults, ParseArgumentsFunction, PrepareArgumentsFunction } from "../src";
 import { bootstrap } from "./_support/bootstrap";
 
+const parseArguments   = container.get<ParseArgumentsFunction>('cli.fn.arguments.parse');
+const prepareArguments = container.get<PrepareArgumentsFunction>('cli.fn.arguments.prepare');
 
 @suite
 class CommandArguments {

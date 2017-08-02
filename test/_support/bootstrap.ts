@@ -1,3 +1,6 @@
+import 'chai/register-assert';  // Using Assert style
+import 'chai/register-expect';  // Using Expect style
+import 'chai/register-should';  // Using Should style
 import { Cli, cli, CliConfig, Dictionary, HelperOptionsConfig } from "../../src";
 import { objectLoop } from "@radic/util";
 

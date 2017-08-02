@@ -100,7 +100,7 @@ export class Helpers {
             helperClass[ options.configKey ] = this.config('helpers.' + options.name);
             return helperClass
         });
-        this.log.info('started helper ' + name);
+        this.log.debug('started helper ' + name);
 
         let instance;
         // add the event listeners and bind them to the given function names

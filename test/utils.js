@@ -9,6 +9,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mocha_typescript_1 = require("mocha-typescript");
 const src_1 = require("../src");
 const bootstrap_1 = require("./_support/bootstrap");
+const parseArguments = src_1.container.get('cli.fn.arguments.parse');
+const prepareArguments = src_1.container.get('cli.fn.arguments.prepare');
 let CommandArguments = class CommandArguments {
     static before() {
         let helpers = {};
@@ -20,7 +22,7 @@ let CommandArguments = class CommandArguments {
         this.config = src_1.defaults.command(Cmd);
     }
     prepare(argDef) {
-        let config = src_1.prepareArguments(Object.assign({}, this.config, { name: `testcmd\n${argDef}` }));
+        let config = prepareArguments(Object.assign({}, this.config, { name: `testcmd\n${argDef}` }));
         return config;
     }
     testPrepareArgumentVariations() {
