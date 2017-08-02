@@ -2,7 +2,7 @@ yarn-error.log
 npm-debug.log
 /node_modules
 /*.js
-
+/examples
 /.idea/workspace.xml
 /.idea/misc.xml
 /.idea/dataSource*

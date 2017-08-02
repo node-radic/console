@@ -7,6 +7,7 @@
   "jsnext:main": "lib-es6/index.js",
   "author": "Robin Radic",
   "license": "MIT",
+  "homepage": "https://node-radic.github.io/console",
   "repository": "https://bitbucket.org/robin-radic/console",
   "private": false,
   "publishConfig": {
@@ -25,13 +26,10 @@
     "docs": "npm run docs:generate && npm run docs:serve",
     "docs:generate": "rm -r docs &> /dev/null ; typedoc --name \"Radical Console\" --readme docs.md --target ES6 --exclude spec example example2 node_modules types/lodash --ignoreCompilerErrors --mode file --excludeNotExported --excludePrivate --out docs ./dts/index.d.ts",
     "docs:serve": "cd docs && lite-server",
-    "docs:deploy": "npm run dev:docs; gulp ghpages",
+    "docs:deploy": "npm run docs:generate; gulp ghpages",
     "preversion": "npm test",
     "version": "npm run build && git add -A",
-    "postversion": "git push && git push --tags",
-    "patch": "mversion patch -m",
-    "minor": "mversion minor -m",
-    "major": "mversion major -m"
+    "postversion": "git push && git push --tags  && npm run docs:deploy"
   },
   "dependencies": {
     "@radic/console-colors": "^0.9.5",
