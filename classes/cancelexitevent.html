@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>HelperStartingEvent | Radical Console</title>
+	<title>CancelExitEvent | Radical Console</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,10 +54,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="helperstartingevent.html">HelperStartingEvent</a>
+					<a href="cancelexitevent.html">CancelExitEvent</a>
 				</li>
 			</ul>
-			<h1>Class HelperStartingEvent</h1>
+			<h1>Class CancelExitEvent</h1>
 		</div>
 	</div>
 </header>
@@ -68,10 +68,18 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="cancelevent.html" class="tsd-signature-type">CancelEvent</a>
+						<a href="exitevent.html" class="tsd-signature-type">ExitEvent</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">HelperStartingEvent</span>
+								<span class="target">CancelExitEvent</span>
+								<ul class="tsd-hierarchy">
+									<li>
+										<a href="cliparseevent.html" class="tsd-signature-type">CliParseEvent</a>
+									</li>
+									<li>
+										<a href="helphelperoninvalidargumentsshowhelpevent.html" class="tsd-signature-type">HelpHelperOnInvalidArgumentsShowHelpEvent</a>
+									</li>
+								</ul>
 							</li>
 						</ul>
 					</li>
@@ -81,84 +89,68 @@
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
-						<section class="tsd-index-section ">
+						<section class="tsd-index-section tsd-is-inherited">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="helperstartingevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><a href="cancelexitevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section ">
+						<section class="tsd-index-section tsd-is-inherited">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="helperstartingevent.html#customconfig" class="tsd-kind-icon">custom<wbr>Config</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="helperstartingevent.html#event" class="tsd-kind-icon">event</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="helperstartingevent.html#helpers" class="tsd-kind-icon">helpers</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="helperstartingevent.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="cancelexitevent.html#event" class="tsd-kind-icon">event</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-inherited">
 							<h3>Accessors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited"><a href="helperstartingevent.html#cli" class="tsd-kind-icon">cli</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited"><a href="cancelexitevent.html#cli" class="tsd-kind-icon">cli</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section tsd-is-inherited">
+						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="helperstartingevent.html#cancel" class="tsd-kind-icon">cancel</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="helperstartingevent.html#canceled" class="tsd-kind-icon">canceled</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="helperstartingevent.html#iscanceled" class="tsd-kind-icon">is<wbr>Canceled</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="helperstartingevent.html#proceed" class="tsd-kind-icon">proceed</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="cancelexitevent.html#cancel" class="tsd-kind-icon">cancel</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="cancelexitevent.html#canceled" class="tsd-kind-icon">canceled</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="cancelexitevent.html#exit" class="tsd-kind-icon">exit</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="cancelexitevent.html#iscanceled" class="tsd-kind-icon">is<wbr>Canceled</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="cancelexitevent.html#proceed" class="tsd-kind-icon">proceed</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="cancelexitevent.html#shouldexit" class="tsd-kind-icon">should<wbr>Exit</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="cancelexitevent.html#stopifexit" class="tsd-kind-icon">stop<wbr>IfExit</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group ">
+			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
 				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Helper<wbr>Starting<wbr>Event<span class="tsd-signature-symbol">(</span>helpers<span class="tsd-signature-symbol">: </span><a href="helpers.html" class="tsd-signature-type">Helpers</a>, name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, customConfig<span class="tsd-signature-symbol">: </span><a href="../interfaces/helperoptionsconfig.html" class="tsd-signature-type">HelperOptionsConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="helperstartingevent.html" class="tsd-signature-type">HelperStartingEvent</a></li>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Cancel<wbr>Exit<wbr>Event<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="cancelexitevent.html" class="tsd-signature-type">CancelExitEvent</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="event.html">Event</a>.<a href="event.html#constructor">constructor</a></p>
+								<p>Inherited from <a href="event.html">Event</a>.<a href="event.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in src/core/events.ts:151</li>
+									<li>Defined in src/core/events.ts:13</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>helpers: <a href="helpers.html" class="tsd-signature-type">Helpers</a></h5>
-								</li>
-								<li>
-									<h5>name: <span class="tsd-signature-type">string</span></h5>
-								</li>
-								<li>
-									<h5>customConfig: <a href="../interfaces/helperoptionsconfig.html" class="tsd-signature-type">HelperOptionsConfig</a></h5>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> event: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;undefined</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="helperstartingevent.html" class="tsd-signature-type">HelperStartingEvent</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="cancelexitevent.html" class="tsd-signature-type">CancelExitEvent</a></h4>
 						</li>
 					</ul>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group ">
+			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="customconfig" class="tsd-anchor"></a>
-					<h3>custom<wbr>Config</h3>
-					<div class="tsd-signature tsd-kind-icon">custom<wbr>Config<span class="tsd-signature-symbol">:</span> <a href="../interfaces/helperoptionsconfig.html" class="tsd-signature-type">HelperOptionsConfig</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in src/core/events.ts:152</li>
-						</ul>
-					</aside>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a name="event" class="tsd-anchor"></a>
 					<h3>event</h3>
@@ -167,26 +159,6 @@
 						<p>Inherited from <a href="event.html">Event</a>.<a href="event.html#event-1">event</a></p>
 						<ul>
 							<li>Defined in src/core/events.ts:15</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="helpers" class="tsd-anchor"></a>
-					<h3>helpers</h3>
-					<div class="tsd-signature tsd-kind-icon">helpers<span class="tsd-signature-symbol">:</span> <a href="helpers.html" class="tsd-signature-type">Helpers</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in src/core/events.ts:152</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="name" class="tsd-anchor"></a>
-					<h3>name</h3>
-					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in src/core/events.ts:152</li>
 						</ul>
 					</aside>
 				</section>
@@ -212,38 +184,36 @@
 					</ul>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
 					<a name="cancel" class="tsd-anchor"></a>
-					<h3>cancel</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> cancel</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
 						<li class="tsd-signature tsd-kind-icon">cancel<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="cancelevent.html">CancelEvent</a>.<a href="cancelevent.html#cancel">cancel</a></p>
 								<ul>
-									<li>Defined in src/core/events.ts:41</li>
+									<li>Defined in src/core/events.ts:62</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="canceled" class="tsd-anchor"></a>
 					<h3>canceled</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 						<li class="tsd-signature tsd-kind-icon">canceled<span class="tsd-signature-symbol">(</span>cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="cancelevent.html">CancelEvent</a>.<a href="cancelevent.html#canceled">canceled</a></p>
 								<ul>
-									<li>Defined in src/core/events.ts:44</li>
+									<li>Defined in src/core/events.ts:65</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -269,35 +239,57 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="exit" class="tsd-anchor"></a>
+					<h3>exit</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">exit<span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="exitevent.html">ExitEvent</a>.<a href="exitevent.html#exit">exit</a></p>
+								<ul>
+									<li>Defined in src/core/events.ts:23</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> code: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;0</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="iscanceled" class="tsd-anchor"></a>
 					<h3>is<wbr>Canceled</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 						<li class="tsd-signature tsd-kind-icon">is<wbr>Canceled<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="cancelevent.html">CancelEvent</a>.<a href="cancelevent.html#iscanceled">isCanceled</a></p>
 								<ul>
-									<li>Defined in src/core/events.ts:56</li>
+									<li>Defined in src/core/events.ts:77</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="proceed" class="tsd-anchor"></a>
 					<h3>proceed</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 						<li class="tsd-signature tsd-kind-icon">proceed<span class="tsd-signature-symbol">(</span>cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from <a href="cancelevent.html">CancelEvent</a>.<a href="cancelevent.html#proceed">proceed</a></p>
 								<ul>
-									<li>Defined in src/core/events.ts:50</li>
+									<li>Defined in src/core/events.ts:71</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -318,6 +310,42 @@
 									</ul>
 								</li>
 							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="shouldexit" class="tsd-anchor"></a>
+					<h3>should<wbr>Exit</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">should<wbr>Exit<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="exitevent.html">ExitEvent</a>.<a href="exitevent.html#shouldexit">shouldExit</a></p>
+								<ul>
+									<li>Defined in src/core/events.ts:35</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="stopifexit" class="tsd-anchor"></a>
+					<h3>stop<wbr>IfExit</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">stop<wbr>IfExit<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="exitevent.html">ExitEvent</a>.<a href="exitevent.html#stopifexit">stopIfExit</a></p>
+								<ul>
+									<li>Defined in src/core/events.ts:28</li>
+								</ul>
+							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
 						</li>
 					</ul>
@@ -337,37 +365,37 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="helperstartingevent.html" class="tsd-kind-icon">Helper<wbr>Starting<wbr>Event</a>
+						<a href="cancelexitevent.html" class="tsd-kind-icon">Cancel<wbr>Exit<wbr>Event</a>
 						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-								<a href="helperstartingevent.html#constructor" class="tsd-kind-icon">constructor</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="helperstartingevent.html#customconfig" class="tsd-kind-icon">custom<wbr>Config</a>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
+								<a href="cancelexitevent.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-								<a href="helperstartingevent.html#event" class="tsd-kind-icon">event</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="helperstartingevent.html#helpers" class="tsd-kind-icon">helpers</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="helperstartingevent.html#name" class="tsd-kind-icon">name</a>
+								<a href="cancelexitevent.html#event" class="tsd-kind-icon">event</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited">
-								<a href="helperstartingevent.html#cli" class="tsd-kind-icon">cli</a>
+								<a href="cancelexitevent.html#cli" class="tsd-kind-icon">cli</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+								<a href="cancelexitevent.html#cancel" class="tsd-kind-icon">cancel</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="cancelexitevent.html#canceled" class="tsd-kind-icon">canceled</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="helperstartingevent.html#cancel" class="tsd-kind-icon">cancel</a>
+								<a href="cancelexitevent.html#exit" class="tsd-kind-icon">exit</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="cancelexitevent.html#iscanceled" class="tsd-kind-icon">is<wbr>Canceled</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="cancelexitevent.html#proceed" class="tsd-kind-icon">proceed</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="helperstartingevent.html#canceled" class="tsd-kind-icon">canceled</a>
+								<a href="cancelexitevent.html#shouldexit" class="tsd-kind-icon">should<wbr>Exit</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="helperstartingevent.html#iscanceled" class="tsd-kind-icon">is<wbr>Canceled</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="helperstartingevent.html#proceed" class="tsd-kind-icon">proceed</a>
+								<a href="cancelexitevent.html#stopifexit" class="tsd-kind-icon">stop<wbr>IfExit</a>
 							</li>
 						</ul>
 					</li>

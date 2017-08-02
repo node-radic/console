@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>CommandArgumentConfig | @types/archy</title>
+	<title>CommandArgumentConfig | Radical Console</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">@types/archy</a>
+					<a href="../index.html" class="title">Radical Console</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -38,8 +38,8 @@
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -100,9 +100,14 @@
 					<div class="tsd-signature tsd-kind-icon">alias<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/interfaces.ts:20</li>
+							<li>Defined in src/interfaces.ts:38</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>same as the name, defined in the @command parameter, used to map arguments</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="default" class="tsd-anchor"></a>
@@ -110,9 +115,14 @@
 					<div class="tsd-signature tsd-kind-icon">default<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/interfaces.ts:25</li>
+							<li>Defined in src/interfaces.ts:60</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>if not given, use this default as value</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="description" class="tsd-anchor"></a>
@@ -120,9 +130,14 @@
 					<div class="tsd-signature tsd-kind-icon">description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/interfaces.ts:23</li>
+							<li>Defined in src/interfaces.ts:47</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>a brief description of what this argument is about</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="name" class="tsd-anchor"></a>
@@ -130,9 +145,16 @@
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/interfaces.ts:19</li>
+							<li>Defined in src/interfaces.ts:33</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>the name of the argument.
+								usually defined in the @command name parameter.
+							will be used to map arguments to a name for the result in the CommandArguments which is passed to the command&#39;s handle() func</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="position" class="tsd-anchor"></a>
@@ -140,9 +162,14 @@
 					<div class="tsd-signature tsd-kind-icon">position<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/interfaces.ts:18</li>
+							<li>Defined in src/interfaces.ts:26</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>points to the index of arguments given, used to resolve the argument value from the parsed results</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="required" class="tsd-anchor"></a>
@@ -150,9 +177,14 @@
 					<div class="tsd-signature tsd-kind-icon">required<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/interfaces.ts:21</li>
+							<li>Defined in src/interfaces.ts:41</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If set as required, the command will error if the argument isn&#39;t given</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="type" class="tsd-anchor"></a>
@@ -160,9 +192,17 @@
 					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/interfaces.ts:24</li>
+							<li>Defined in src/interfaces.ts:55</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>used to transform the user&#39;s input (string) into the right data-type.
+								default: string
+								can be: boolean, string, numeric
+							or a custom function, which transforms the user&#39;s input string to the right data-type</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="variadic" class="tsd-anchor"></a>
@@ -170,9 +210,14 @@
 					<div class="tsd-signature tsd-kind-icon">variadic<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/interfaces.ts:22</li>
+							<li>Defined in src/interfaces.ts:44</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>only the last argument should be variadic, this makes it an array of all arguments given after the position of this argument</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>

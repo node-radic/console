@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>HelperStartingEvent | Radical Console</title>
+	<title>CliExecuteCommandEvent | Radical Console</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,10 +54,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="helperstartingevent.html">HelperStartingEvent</a>
+					<a href="cliexecutecommandevent.html">CliExecuteCommandEvent</a>
 				</li>
 			</ul>
-			<h1>Class HelperStartingEvent</h1>
+			<h1>Class CliExecuteCommandEvent</h1>
 		</div>
 	</div>
 </header>
@@ -71,7 +71,7 @@
 						<a href="cancelevent.html" class="tsd-signature-type">CancelEvent</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">HelperStartingEvent</span>
+								<span class="target">CliExecuteCommandEvent</span>
 							</li>
 						</ul>
 					</li>
@@ -84,31 +84,30 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="helperstartingevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="cliexecutecommandevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="helperstartingevent.html#customconfig" class="tsd-kind-icon">custom<wbr>Config</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="helperstartingevent.html#event" class="tsd-kind-icon">event</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="helperstartingevent.html#helpers" class="tsd-kind-icon">helpers</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="helperstartingevent.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="cliexecutecommandevent.html#alwaysrun" class="tsd-kind-icon">always<wbr>Run</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="cliexecutecommandevent.html#config" class="tsd-kind-icon">config</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="cliexecutecommandevent.html#event" class="tsd-kind-icon">event</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-inherited">
 							<h3>Accessors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited"><a href="helperstartingevent.html#cli" class="tsd-kind-icon">cli</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited"><a href="cliexecutecommandevent.html#cli" class="tsd-kind-icon">cli</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-inherited">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="helperstartingevent.html#cancel" class="tsd-kind-icon">cancel</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="helperstartingevent.html#canceled" class="tsd-kind-icon">canceled</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="helperstartingevent.html#iscanceled" class="tsd-kind-icon">is<wbr>Canceled</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="helperstartingevent.html#proceed" class="tsd-kind-icon">proceed</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="cliexecutecommandevent.html#cancel" class="tsd-kind-icon">cancel</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="cliexecutecommandevent.html#canceled" class="tsd-kind-icon">canceled</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="cliexecutecommandevent.html#iscanceled" class="tsd-kind-icon">is<wbr>Canceled</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="cliexecutecommandevent.html#proceed" class="tsd-kind-icon">proceed</a></li>
 							</ul>
 						</section>
 					</div>
@@ -120,29 +119,26 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Helper<wbr>Starting<wbr>Event<span class="tsd-signature-symbol">(</span>helpers<span class="tsd-signature-symbol">: </span><a href="helpers.html" class="tsd-signature-type">Helpers</a>, name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, customConfig<span class="tsd-signature-symbol">: </span><a href="../interfaces/helperoptionsconfig.html" class="tsd-signature-type">HelperOptionsConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="helperstartingevent.html" class="tsd-signature-type">HelperStartingEvent</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Cli<wbr>Execute<wbr>Command<wbr>Event<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><a href="../interfaces/commandconfig.html" class="tsd-signature-type">CommandConfig</a>, alwaysRun<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="cliexecutecommandevent.html" class="tsd-signature-type">CliExecuteCommandEvent</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="event.html">Event</a>.<a href="event.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in src/core/events.ts:151</li>
+									<li>Defined in src/core/events.ts:103</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>helpers: <a href="helpers.html" class="tsd-signature-type">Helpers</a></h5>
+									<h5>config: <a href="../interfaces/commandconfig.html" class="tsd-signature-type">CommandConfig</a></h5>
 								</li>
 								<li>
-									<h5>name: <span class="tsd-signature-type">string</span></h5>
-								</li>
-								<li>
-									<h5>customConfig: <a href="../interfaces/helperoptionsconfig.html" class="tsd-signature-type">HelperOptionsConfig</a></h5>
+									<h5>alwaysRun: <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="helperstartingevent.html" class="tsd-signature-type">HelperStartingEvent</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="cliexecutecommandevent.html" class="tsd-signature-type">CliExecuteCommandEvent</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -150,12 +146,22 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="customconfig" class="tsd-anchor"></a>
-					<h3>custom<wbr>Config</h3>
-					<div class="tsd-signature tsd-kind-icon">custom<wbr>Config<span class="tsd-signature-symbol">:</span> <a href="../interfaces/helperoptionsconfig.html" class="tsd-signature-type">HelperOptionsConfig</a></div>
+					<a name="alwaysrun" class="tsd-anchor"></a>
+					<h3>always<wbr>Run</h3>
+					<div class="tsd-signature tsd-kind-icon">always<wbr>Run<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/core/events.ts:152</li>
+							<li>Defined in src/core/events.ts:104</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="config" class="tsd-anchor"></a>
+					<h3>config</h3>
+					<div class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">:</span> <a href="../interfaces/commandconfig.html" class="tsd-signature-type">CommandConfig</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/core/events.ts:104</li>
 						</ul>
 					</aside>
 				</section>
@@ -167,26 +173,6 @@
 						<p>Inherited from <a href="event.html">Event</a>.<a href="event.html#event-1">event</a></p>
 						<ul>
 							<li>Defined in src/core/events.ts:15</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="helpers" class="tsd-anchor"></a>
-					<h3>helpers</h3>
-					<div class="tsd-signature tsd-kind-icon">helpers<span class="tsd-signature-symbol">:</span> <a href="helpers.html" class="tsd-signature-type">Helpers</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in src/core/events.ts:152</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="name" class="tsd-anchor"></a>
-					<h3>name</h3>
-					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in src/core/events.ts:152</li>
 						</ul>
 					</aside>
 				</section>
@@ -337,37 +323,34 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="helperstartingevent.html" class="tsd-kind-icon">Helper<wbr>Starting<wbr>Event</a>
+						<a href="cliexecutecommandevent.html" class="tsd-kind-icon">Cli<wbr>Execute<wbr>Command<wbr>Event</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-								<a href="helperstartingevent.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="cliexecutecommandevent.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="helperstartingevent.html#customconfig" class="tsd-kind-icon">custom<wbr>Config</a>
+								<a href="cliexecutecommandevent.html#alwaysrun" class="tsd-kind-icon">always<wbr>Run</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="cliexecutecommandevent.html#config" class="tsd-kind-icon">config</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-								<a href="helperstartingevent.html#event" class="tsd-kind-icon">event</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="helperstartingevent.html#helpers" class="tsd-kind-icon">helpers</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="helperstartingevent.html#name" class="tsd-kind-icon">name</a>
+								<a href="cliexecutecommandevent.html#event" class="tsd-kind-icon">event</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited">
-								<a href="helperstartingevent.html#cli" class="tsd-kind-icon">cli</a>
+								<a href="cliexecutecommandevent.html#cli" class="tsd-kind-icon">cli</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="helperstartingevent.html#cancel" class="tsd-kind-icon">cancel</a>
+								<a href="cliexecutecommandevent.html#cancel" class="tsd-kind-icon">cancel</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="helperstartingevent.html#canceled" class="tsd-kind-icon">canceled</a>
+								<a href="cliexecutecommandevent.html#canceled" class="tsd-kind-icon">canceled</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="helperstartingevent.html#iscanceled" class="tsd-kind-icon">is<wbr>Canceled</a>
+								<a href="cliexecutecommandevent.html#iscanceled" class="tsd-kind-icon">is<wbr>Canceled</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-								<a href="helperstartingevent.html#proceed" class="tsd-kind-icon">proceed</a>
+								<a href="cliexecutecommandevent.html#proceed" class="tsd-kind-icon">proceed</a>
 							</li>
 						</ul>
 					</li>
