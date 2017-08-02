@@ -26,6 +26,7 @@
     "docs:generate": "rm -r docs &> /dev/null ; typedoc --name \"Radical Console\" --readme docs.md --target ES6 --exclude spec example example2 node_modules types/lodash --ignoreCompilerErrors --mode file --excludeNotExported --excludePrivate --out docs ./dts/index.d.ts",
     "docs:serve": "cd docs && lite-server",
     "docs:deploy": "npm run dev:docs; gulp ghpages",
+    "version": "echo \"$*\"",
     "patch": "mversion patch -m",
     "minor": "mversion minor -m",
     "major": "mversion major -m"
