@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var src_1 = require("../../src");
+var decorators_1 = require("../../src/decorators");
 var RcliCmd = (function () {
     function RcliCmd() {
     }
@@ -29,11 +30,16 @@ var RcliCmd = (function () {
         src_1.lazyInject('cli.config'),
         __metadata("design:type", Function)
     ], RcliCmd.prototype, "config", void 0);
+    __decorate([
+        decorators_1.alwaysRun(),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", []),
+        __metadata("design:returntype", void 0)
+    ], RcliCmd.prototype, "always", null);
     RcliCmd = __decorate([
         src_1.command('r {command:string@any of the listed commands}', {
             isGroup: true,
             // subCommands: [ 'connect' ],
-            alwaysRun: true,
             onMissingArgument: 'help'
         })
     ], RcliCmd);

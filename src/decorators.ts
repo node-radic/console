@@ -19,6 +19,10 @@ export function command(...args: any[]) {
     const handle = (cls) => {
         let config = container.get<CommandConfigFunction>('cli.fn.command.config')<CommandConfig>(cls, args)
         set('command', config, cls);
+        if(kindOf(get('alwaysRun', cls) === 'string')){
+            config.alwaysRun = get('alwaysRun', cls)
+        }
+
         if ( ! config.enabled ) return;
         container.get<Cli>('cli').parse(config);
     }
@@ -32,6 +36,12 @@ export function command(...args: any[]) {
     }
 }
 
+
+export function alwaysRun():MethodDecorator {
+    return <T extends any>(cls:Object, propertyKey:string, descriptor: TypedPropertyDescriptor<T>) => {
+        set('alwaysRun', propertyKey, cls);
+    }
+}
 
 export function option(opt: any)
 export function option(config: OptionConfig): PropertyDecorator

@@ -6,7 +6,7 @@ import { kindOf } from "@radic/util";
 import { Config } from "./config";
 import * as _ from "lodash";
 import { Dispatcher } from "./Dispatcher";
-import { Event, HaltEvent, HelpersStartedEvent, HelpersStartingEvent, HelperStartedEvent, HelperStartingEvent } from "./events";
+import { HelpersStartedEvent, HelpersStartingEvent, HelperStartedEvent, HelperStartingEvent } from "./events";
 import Context = interfaces.Context;
 
 @singleton('cli.helpers')
@@ -47,16 +47,13 @@ export class Helpers {
     public startHelpers(customConfigs: { [name: string]: HelperOptionsConfig } = {}) {
         let enabledHelpers: string[] = this.config.get<string[]>('enabledHelpers', [])
         if ( this.started === false ) {
-            if(this.events.fire(new HelpersStartingEvent(this, enabledHelpers, customConfigs))._halt){
-                return;
-            }
+            if ( this.events.fire(new HelpersStartingEvent(this, enabledHelpers, customConfigs)).isCanceled() ) return
         }
         enabledHelpers.forEach(name => {
-            if ( this.events.fire(new HelperStartingEvent(this, name, customConfigs[ name ] || {}))._halt ) {
-                return;
-            }
-            this.startHelper(name, customConfigs[ name ] || {});
-            this.events.fire(new HelperStartedEvent(this, name))
+            this.events.fire(new HelperStartingEvent(this, name, customConfigs[ name ] || {})).proceed(() => {
+                this.startHelper(name, customConfigs[ name ] || {});
+                this.events.fire(new HelperStartedEvent(this, name))
+            })
         })
         if ( this.started === false ) {
             this.events.fire(new HelpersStartedEvent(this, enabledHelpers))

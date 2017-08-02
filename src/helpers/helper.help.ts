@@ -188,6 +188,23 @@ export class HelpHelper {
         }
     }
 
+    protected printTitle(config: CommandConfig) {
+        let title = config.name;
+        // check if root command
+        if ( this.cli.rootCommand.cls === config.cls ) {
+            title = this.config.app.title || config.name;
+        } else if ( this.config.display.descriptionAsTitle && config.description.length > 0 ) {
+            title = config.description; //line('{group}Description:{/group}')
+        }
+        if ( this.config.display.title ) {
+            this.out.nl.line(`{title}${title}{/title}`)
+            if ( this.config.display.titleLines ) {
+                this.out.line(`{titleLines}${'-'.repeat(title.length)}{/titleLines}`)
+            }
+        }
+
+    }
+
     protected printArguments(args: CommandArgumentConfig[] = []) {
         let rows = []
         args.forEach(arg => {
@@ -228,23 +245,6 @@ export class HelpHelper {
             showHeaders     : false,
             preserveNewLines: true
         })
-    }
-
-    protected printTitle(config: CommandConfig) {
-        let title = config.name;
-        // check if root command
-        if ( this.cli.rootCommand.cls === config.cls ) {
-            title = this.config.app.title || config.name;
-        } else if ( this.config.display.descriptionAsTitle && config.description.length > 0 ) {
-            title = config.description; //line('{group}Description:{/group}')
-        }
-        if ( this.config.display.title ) {
-            this.out.nl.line(`{title}${title}{/title}`)
-            if ( this.config.display.titleLines ) {
-                this.out.line(`{titleLines}${'-'.repeat(title.length)}{/titleLines}`)
-            }
-        }
-
     }
 
     protected printSubCommands(config: CommandConfig) {
@@ -449,23 +449,23 @@ export class HelpHelper {
                 this.events.emit('help:' + event.config.name)
                 if ( kindOf(event.instance[ 'help' ]) === 'function' ) {
                     event.instance[ 'help' ].apply(event.instance, [ event.config, event.options ]);
-                    return event.stop();
+                    return event.exit();
                 }
                 this.showHelp(event.config, event.options);
-                return event.stop();
+                return event.exit();
             }
         }
     }
 
     public onInvalidArguments(event: CliExecuteCommandInvalidArgumentsEvent) {
         if ( this.config.showOnError === true && event.config.onMissingArgument === 'help' ) {
-            if ( this.events.fire(new HelpHelperOnInvalidArgumentsShowHelpEvent(event))._halt ) return
+            if ( this.events.fire(new HelpHelperOnInvalidArgumentsShowHelpEvent(event)).stopIfExit().isCanceled()) return
             this.showHelp(event.config, event.options);
             this.out.nl;
             for ( let m in event.parsed.missing ) {
                 this.log.error(`Missing required argument <${event.parsed.missing[ m ]}>`)
             }
-            return event.stop();
+            return event.exit();
         }
     }
 

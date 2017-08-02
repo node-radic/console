@@ -3,7 +3,7 @@ import { lazyInject, singleton } from "./Container";
 import { defined } from "@radic/util";
 import { Log } from "./Log";
 import { defaults } from "../defaults";
-import { HaltEvent, Event, CancelEvent } from "./events";
+import { ExitEvent, Event, CancelEvent } from "./events";
 
 @singleton('cli.events')
 /**
@@ -14,7 +14,7 @@ import { HaltEvent, Event, CancelEvent } from "./events";
  * This is the preferred way of firing events within the application
  *
  * @see Event
- * @see HaltEvent
+ * @see ExitEvent
  * @example
  * ```typescript
  * const events= container.get<Dispatcher>('cli.events')
@@ -41,9 +41,9 @@ export class Dispatcher {
 
     }
 
-    fire<T extends Event | HaltEvent | CancelEvent>(ctx: T): T
-    fire<T extends Event | HaltEvent | CancelEvent>(event: string | string[], ctx: T): T
-    fire<T extends Event | HaltEvent | CancelEvent>(...args: any[]): T {
+    fire<T extends Event | ExitEvent | CancelEvent>(ctx: T): T
+    fire<T extends Event | ExitEvent | CancelEvent>(event: string | string[], ctx: T): T
+    fire<T extends Event | ExitEvent | CancelEvent>(...args: any[]): T {
         let event: string | string[];
         let ctx: T = args[ args.length - 1 ];
 
@@ -52,7 +52,7 @@ export class Dispatcher {
 
         this.log.silly('firing event: ' + event, { ctx })
         this.emit(event, ctx);
-        if ( ctx instanceof HaltEvent ) {
+        if ( ctx instanceof ExitEvent ) {
             if ( ctx['_halt'] ) {
                 this.halt<typeof ctx>(event, ctx);
             }
@@ -60,7 +60,7 @@ export class Dispatcher {
         return ctx;
     }
 
-    halt<T extends HaltEvent>(event: string | string[], ctx: T) {
+    halt<T extends ExitEvent>(event: string | string[], ctx: T) {
         process.exit()
     }
 

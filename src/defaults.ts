@@ -43,7 +43,7 @@ export const defaults = {
     command<T extends CommandConfig = CommandConfig>(cls: Function): T {
         let config = container.get<Config>('cli.config');
         return <T> cloneDeep(<T>{
-            alwaysRun        : false,
+            alwaysRun        : null,
             name             : cls.name.replace('Command', '').toLowerCase(),
             alias            : null,
             usage            : null,

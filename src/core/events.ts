@@ -16,70 +16,106 @@ export abstract class Event {
 }
 
 @injectable()
-export abstract class HaltEvent extends Event {
-    protected _halt: boolean    = false;
-    protected _haltCode: number = 0;
+export abstract class ExitEvent extends Event {
+    private _exit: boolean    = false;
+    private _exitCode: number = 0;
 
-    protected halt(code: number = 0) {
-        this._halt     = true
-        this._haltCode = code;
+    public exit(code: number = 0) {
+        this._exit     = true
+        this._exitCode = code;
     }
 
-    public exitIfHalt() {
-        if ( this._halt ) {
-            process.exit(this._haltCode);
+    public stopIfExit():this {
+        if ( this._exit ) {
+            process.exit(this._exitCode);
         }
+        return this;
     }
 
-    public shouldHalt(): boolean { return this._halt; }
+    public shouldExit(): boolean { return this._exit; }
 }
 
-export interface CancelPromiseEvent extends Event, Promise<any> {
-
+@injectable()
+export abstract class CancelEvent extends Event {
+    private _canceled: boolean = false;
+    public cancel(){
+        this._canceled = true;
+    }
+    public canceled(cb:()=>void) : this  {
+        if(this._canceled === true){
+            cb();
+        }
+        return this;
+    }
+    public proceed(cb:()=>void) : this  {
+        if(this._canceled === false){
+            cb();
+        }
+        return this;
+    }
+    public isCanceled():boolean { return this._canceled }
 }
-export abstract class CancelEvent extends Mixin<CancelPromiseEvent>(Event, Promise) {
 
+@injectable()
+export abstract class CancelExitEvent extends ExitEvent {
+    private _canceled: boolean = false;
+    protected cancel(){
+        this._canceled = true;
+    }
+    public canceled(cb:()=>void) : this  {
+        if(this._canceled === true){
+            cb();
+        }
+        return this;
+    }
+    public proceed(cb:()=>void) : this  {
+        if(this._canceled === false){
+            cb();
+        }
+        return this;
+    }
+    public isCanceled():boolean { return this._canceled }
 }
 
 
-export class CliStartEvent extends HaltEvent {
+export class CliStartEvent extends CancelEvent {
     constructor(public requiredPath: string) {
         super('cli:start')
     }
 }
 
-export class CliParseEvent extends HaltEvent {
-    constructor(public config: CommandConfig, public globals: OptionConfig[]) {
+export class CliParseEvent extends CancelExitEvent {
+    constructor(public config: CommandConfig, public globals: OptionConfig[], public isRootCommand: boolean) {
         super('cli:parse')
     }
 }
-export class CliParsedEvent extends HaltEvent {
-    constructor(public config: CommandConfig, public argv: YargsParserArgv, public globals: OptionConfig[]) {
+export class CliParsedEvent extends ExitEvent {
+    constructor(public config: CommandConfig, public globals: OptionConfig[], public isRootCommand: boolean, public argv: YargsParserArgv) {
         super('cli:parsed')
     }
 }
-export class CliSpawnEvent extends HaltEvent {
+export class CliSpawnEvent extends ExitEvent {
     constructor(public args: string[], public file: string, public proc: ChildProcess) {
         super('cli:spawn')
     }
 }
 
-export class CliExecuteCommandEvent extends HaltEvent {
-    constructor(public config: CommandConfig, public isAlwaysRun: boolean) {
+export class CliExecuteCommandEvent extends CancelEvent {
+    constructor(public config: CommandConfig, public alwaysRun: null | string) {
         super('cli:execute')
     }
 }
-export class CliExecuteCommandParseEvent extends HaltEvent {
+export class CliExecuteCommandParseEvent extends ExitEvent {
     constructor(public config: CommandConfig, public options: OptionConfig[]) {
         super('cli:execute:parse')
     }
 }
-export class CliExecuteCommandParsedEvent extends HaltEvent {
+export class CliExecuteCommandParsedEvent extends ExitEvent {
     constructor(public argv: YargsParserArgv, public config: CommandConfig, public options: OptionConfig[]) {
         super('cli:execute:parsed')
     }
 }
-export class CliExecuteCommandInvalidArgumentsEvent<T = any> extends HaltEvent {
+export class CliExecuteCommandInvalidArgumentsEvent<T = any> extends ExitEvent {
     constructor(public instance: T,
                 public parsed: ParsedCommandArguments,
                 public config: CommandConfig,
@@ -87,7 +123,7 @@ export class CliExecuteCommandInvalidArgumentsEvent<T = any> extends HaltEvent {
         super('cli:execute:invalid')
     }
 }
-export class CliExecuteCommandHandleEvent<T = any> extends HaltEvent {
+export class CliExecuteCommandHandleEvent<T = any> extends ExitEvent {
     constructor(public instance: T,
                 public parsed: ParsedCommandArguments,
                 public argv: YargsParserArgv,
@@ -96,7 +132,7 @@ export class CliExecuteCommandHandleEvent<T = any> extends HaltEvent {
         super('cli:execute:handle')
     }
 }
-export class CliExecuteCommandHandledEvent<T = any> extends HaltEvent {
+export class CliExecuteCommandHandledEvent<T = any> extends ExitEvent {
     constructor(public result: any,
                 public instance: T,
                 public argv: YargsParserArgv,
@@ -107,12 +143,12 @@ export class CliExecuteCommandHandledEvent<T = any> extends HaltEvent {
 }
 
 
-export class HelpersStartingEvent extends HaltEvent {
+export class HelpersStartingEvent extends CancelEvent {
     constructor(public helpers: Helpers, public enabledHelpers: string[], public customConfigs: Dictionary<HelperOptionsConfig>) {
         super('helpers:starting')
     }
 }
-export class HelperStartingEvent extends HaltEvent {
+export class HelperStartingEvent extends CancelEvent {
     constructor(public helpers: Helpers, public name: string, public customConfig: HelperOptionsConfig) {
         super('helper:starting')
     }

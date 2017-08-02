@@ -52,7 +52,7 @@ export interface CommandArgumentConfig {
      * can be: boolean, string, numeric
      * or a custom function, which transforms the user's input string to the right data-type
      */
-    type?: string | (<T>(input:string) => T)
+    type?: string
 
     /**
      * if not given, use this default as value
@@ -61,7 +61,7 @@ export interface CommandArgumentConfig {
 }
 export type CommandConfigEnabledType = boolean | ((container: Container) => boolean)
 export interface CommandConfig {
-    alwaysRun?: boolean
+    alwaysRun?: null | string
 
     /** The name of the command. This will be checked and purged for argument definitions. */
 

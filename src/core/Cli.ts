@@ -1,6 +1,6 @@
 import { kindOf } from "@radic/util";
 import { container, injectable, lazyInject } from "./Container";
-import { CommandConfig, HelperOptionsConfig, OptionConfig, Plugin } from "../interfaces";
+import { BasePluginConfig, CommandConfig, HelperOptionsConfig, OptionConfig, Plugin } from "../interfaces";
 // import { YargsParserArgv } from "../../types/yargs-parser";
 import { CliExecuteCommandEvent, CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent, CliStartEvent } from "./events";
 import { Log } from "./Log";
@@ -11,15 +11,14 @@ import { interfaces } from "inversify";
 import * as _ from "lodash";
 import { Helpers } from "./Helpers";
 import { Dispatcher } from "./Dispatcher";
+import * as parser from "yargs-parser";
 import Context = interfaces.Context;
 import BindingWhenOnSyntax = interfaces.BindingWhenOnSyntax;
 import Factory = interfaces.Factory;
 // import { YargsParserArgv } from "../../types/yargs-parser";
 // const parser = require('yargs-parser')
-const get    = Reflect.getMetadata
+const get = Reflect.getMetadata
 declare var v8debug;
-
-import * as parser from 'yargs-parser'
 
 // @singleton('cli')
 @injectable()
@@ -58,35 +57,31 @@ export class Cli {
     public start(requirePath: string): this {
 
         requirePath = resolve(requirePath);
-        this.events.fire(new CliStartEvent(requirePath)).exitIfHalt()
-        // this._requiredCommands.push(requirePath.endsWith('.js') ? requirePath : requirePath + '.js');
-        require(requirePath)
+        this.events.fire(new CliStartEvent(requirePath)).proceed(() => require(requirePath))
         return this
     }
-
 
     public parse(config: CommandConfig): this {
 
         if ( ! this.parseCommands ) {
             return;
         }
-        if ( ! this._rootCommand ) {
+        let isRootCommand : boolean = ! this._rootCommand
+        if ( isRootCommand ) {
             this._rootCommand = config;
         }
 
-        this.events.fire(new CliParseEvent(config, this.globalOptions)).exitIfHalt()
-
-
+        if(this.events.fire(new CliParseEvent(config, this.globalOptions, isRootCommand)).stopIfExit().isCanceled()) return
 
         let transformedOptions           = this.transformOptions(this.globalOptions);
         transformedOptions.configuration = this.config('parser.yargs')
         let result                       = parser(config.args, transformedOptions) as YargsParserArgv;
-        this.events.fire(new CliParsedEvent(config, result, this.globalOptions)).exitIfHalt()
+        this.events.fire(new CliParsedEvent(config, this.globalOptions, isRootCommand, result)).stopIfExit()
         this._parsedCommands.push(config);
 
         if ( ! this._runningCommand && result._.length > 0 && config.isGroup ) {
             if ( config.alwaysRun ) {
-                this.executeCommand(config, true);
+                this.events.fire(new CliExecuteCommandEvent(config, config.alwaysRun)).proceed(() => this.executeCommand(config));
             }
             const subCommands = this.getSubCommands(config.filePath)
             if ( subCommands[ result._[ 0 ] ] ) {
@@ -99,28 +94,27 @@ export class Cli {
         }
         if ( ! this._runningCommand ) {
             this._runningCommand = config;
-            this.executeCommand(config);
+            this.events.fire(new CliExecuteCommandEvent(config, config.alwaysRun)).proceed(() => this.executeCommand(config));
         }
 
         return this;
     }
 
 
-    protected async executeCommand(config: CommandConfig, isAlwaysRun: boolean = false) {
-        this.events.fire(new CliExecuteCommandEvent(config, isAlwaysRun)).exitIfHalt()
+    protected async executeCommand(config: CommandConfig) {
         this.helpers.startHelpers(config.helpers);
 
         let optionConfigs: OptionConfig[] = get('options', config.cls.prototype) || [];
 
         // Parse
-        if ( ! isAlwaysRun )
+        if ( ! config.alwaysRun )
             this.events.fire(new CliExecuteCommandParseEvent(config, optionConfigs))
 
         let transformedOptions           = this.transformOptions(this.globalOptions.concat(optionConfigs));
         transformedOptions.configuration = this.config('parser.yargs')
         let argv                         = parser(config.args, transformedOptions) as YargsParserArgv;
 
-        if ( ! isAlwaysRun )
+        if ( ! config.alwaysRun )
             this.events.fire(new CliExecuteCommandParsedEvent(argv, config, optionConfigs))
 
         // Create
@@ -136,8 +130,8 @@ export class Cli {
 
 
         // the 'always run' doesn't pass this point
-        if ( isAlwaysRun && kindOf(instance[ 'always' ]) === 'function' ) {
-            return instance[ 'always' ].apply(instance, [ argv ]);
+        if ( config.alwaysRun && kindOf(instance[ config.alwaysRun ]) === 'function' ) {
+            return instance[ config.alwaysRun ].apply(instance, [ argv ]);
         }
 
         // Argument assignment to the instance
@@ -243,7 +237,7 @@ export class Cli {
         return this;
     }
 
-    public use(plugin: Plugin) {
+    public use<T extends BasePluginConfig>(plugin: Plugin<T>) {
 
     }
 }

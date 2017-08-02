@@ -8,7 +8,6 @@ src/**/*.js.map
 /lib
 .publish
 /docs
-/console.iml
 /bin
 /gulpfile.js
 /vpproject
@@ -21,3 +20,4 @@ src/**/*.js.map
 /coverage
 /laradock
 /link-to-docker-console-pipeline-local
+/plugins
