@@ -1,7 +1,0 @@
-{
-    "scripts": {
-        "preupdate": "echo 'Bumping version'",
-        "postcommit": "git push && git push --tags && npm publish --access public",
-        "postupdate": "echo 'Updated to version %s in manifest files'"
-    }
-}
