@@ -63,6 +63,108 @@
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
 				<h1 id="radical-console">Radical Console</h1>
+				<h2 id="quick-glance">Quick glance</h2>
+				<h4 id="bootstrapping">Bootstrapping</h4>
+				<p><strong><code>bin/foobar.ts</code></strong></p>
+				<ul>
+					<li>This should be the <code>bin</code> entry point specified in <strong>package.json</strong>.</li>
+					<li>This  could contain things like configuration, overrides, adding of features and the likes.</li>
+					<li>After that&#39;s done, it requires the &#39;root&#39; command and pass it to the start function.
+					The Cli will then parse the <code>process.argv</code></li>
+				</ul>
+				<pre><code class="lang-typescript">#!<span class="hljs-regexp">/usr/</span>bin/env node
+<span class="hljs-keyword">import</span> { cli } <span class="hljs-keyword">from</span> <span class="hljs-string">"@radic/console"</span>;
+
+<span class="hljs-comment">// override some of the default config</span>
+cli.config.merge({
+    parser: { yargs: { <span class="hljs-string">'boolean-negation'</span>: <span class="hljs-literal">false</span> } },
+    commands: { onMissingArgument: <span class="hljs-string">'help'</span> }
+})
+
+<span class="hljs-comment">// enable helpers you'd like to use and override configuration to your needs.</span>
+<span class="hljs-comment">// A lot more on this can be found in the documentation </span>
+cli
+    .helper(<span class="hljs-string">'input'</span>)
+    .helper(<span class="hljs-string">'output'</span>, { <span class="hljs-comment">// adds global options: </span>
+        <span class="hljs-comment">// -q|--quiet       : disable any output</span>
+        <span class="hljs-comment">// -C|--no-colors   : disable colors</span>
+        options: {
+            quiet : { enabled: <span class="hljs-literal">true</span> }, <span class="hljs-comment">// key: 'q', name: 'quiet'</span>
+            colors: { enabled: <span class="hljs-literal">true</span>, } <span class="hljs-comment">// key: 'C', name: 'no-colors'</span>
+        }
+    })
+    .helper(<span class="hljs-string">'help'</span>, {
+        showOnError        : <span class="hljs-literal">true</span>,
+        option             : { enabled: <span class="hljs-literal">true</span>, } <span class="hljs-comment">//key: 'h', name: 'help' }</span>
+    })
+    .helper(<span class="hljs-string">'verbose'</span>, {
+        option: { key: <span class="hljs-string">'v'</span>, name: <span class="hljs-string">'verbose'</span> }
+    });
+
+<span class="hljs-comment">// require the 'root' command and pass it to the start function </span>
+cli.start(<span class="hljs-built_in">require</span>(<span class="hljs-string">'../commands/foobar'</span>));
+</code></pre>
+				<h4 id="group-definition">Group definition</h4>
+				<p>The &#39;root&#39; command is in this case configured as a group
+				This means we&#39;ll be making a hierarchical command tree</p>
+				<p><strong><code>commands/foobar.ts</code></strong></p>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { command, option, inject, OutputHelper, InputHelper, Config, LoggerInstance } <span class="hljs-keyword">from</span> <span class="hljs-string">"@radic/console"</span>;
+
+
+<span class="hljs-meta">@command</span>(<span class="hljs-string">`foobar {command:string@any of the existing sub-commands/groups}`</span>, {
+    description: <span class="hljs-string">'Foobar eats your foo\'s and bars'</span>,
+    isGroup: <span class="hljs-literal">true</span>
+})
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> FoobarGroup {}
+</code></pre>
+				<hr>
+				<p><strong><code>commands/foobar/git.ts</code></strong></p>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { command, option, inject, OutputHelper, InputHelper, Config, LoggerInstance } <span class="hljs-keyword">from</span> <span class="hljs-string">"@radic/console"</span>;
+
+<span class="hljs-meta">@command</span>(<span class="hljs-string">`git {command:string@any of the existing sub-commands}`</span>, <span class="hljs-string">'Git Operations'</span>)
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> GitCmd {}
+</code></pre>
+				<hr>
+				<h4 id="command-definition">Command definition</h4>
+				<p><strong><code>commands/foobar/git/fetch.ts</code></strong></p>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { command, option, inject, OutputHelper, InputHelper, Config, LoggerInstance, CommandArguments } <span class="hljs-keyword">from</span> <span class="hljs-string">"@radic/console"</span>;
+
+<span class="hljs-meta">@command</span>(<span class="hljs-string">`fetch
+[repository:string@the repository name]
+[refspec:string[]@refspecs to fetch]
+`</span>, <span class="hljs-string">'Fetches some git stuff'</span>, { 
+    examples: <span class="hljs-string">`{bold}Fetching `</span>
+})
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> GitFetchCmd {
+    <span class="hljs-meta">@inject</span>(<span class="hljs-string">'cli.helpers.output'</span>)
+    out: OutputHelper;
+
+    <span class="hljs-meta">@inject</span>(<span class="hljs-string">'cli.helpers.input'</span>)
+    ask: InputHelper;
+
+    <span class="hljs-meta">@inject</span>(<span class="hljs-string">'cli.config'</span>)
+    config: Config;
+
+    <span class="hljs-meta">@inject</span>(<span class="hljs-string">'cli.log'</span>)
+    log: LoggerInstance;
+
+    <span class="hljs-meta">@option</span>(<span class="hljs-string">'a'</span>, <span class="hljs-string">'append to .git/FETCH_HEAD instead of overwriting'</span>)
+    append:<span class="hljs-built_in">boolean</span>
+
+    <span class="hljs-meta">@option</span>({ description: <span class="hljs-string">'path to upload pack on remote end'</span> })
+    uploadPack:<span class="hljs-built_in">string</span>
+
+    <span class="hljs-comment">// some random stuff</span>
+    <span class="hljs-keyword">async</span> handle(args:CommandArguments, argv:<span class="hljs-built_in">string</span>[]){
+        <span class="hljs-keyword">let</span> repository = args.repository || <span class="hljs-keyword">await</span> <span class="hljs-keyword">this</span>.ask.question(<span class="hljs-string">'Please enter a repository name'</span>);
+
+        <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span>.append){
+            repository += <span class="hljs-string">'appended'</span> 
+        }
+        args.refspec.forEach(<span class="hljs-function">(<span class="hljs-params">refspec:<span class="hljs-built_in">string</span></span>) =&gt;</span> <span class="hljs-keyword">this</span>.log.verbose(refspec))        
+    }
+}
+</code></pre>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
