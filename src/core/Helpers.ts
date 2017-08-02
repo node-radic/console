@@ -4,6 +4,7 @@ import { container, inject, lazyInject, singleton } from "./Container";
 import { interfaces } from "inversify";
 import { kindOf } from "@radic/util";
 import { Config } from "./config";
+import { Log } from "./Log";
 import * as _ from "lodash";
 import { Dispatcher } from "./Dispatcher";
 import { HelpersStartedEvent, HelpersStartingEvent, HelperStartedEvent, HelperStartingEvent } from "./events";
@@ -19,6 +20,8 @@ export class Helpers {
     @inject('cli.events')
     public events: Dispatcher;
 
+    @lazyInject('cli.log')
+    public log: Log;
 
     @lazyInject('cli.config')
     protected config: Config;
@@ -97,6 +100,7 @@ export class Helpers {
             helperClass[ options.configKey ] = this.config('helpers.' + options.name);
             return helperClass
         });
+        this.log.info('started helper ' + name);
 
         let instance;
         // add the event listeners and bind them to the given function names

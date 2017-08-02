@@ -141,11 +141,11 @@ export class Cli {
         })
 
         let parsed = this.parseArguments(argv._, config.arguments)
-        this.events.fire(new CliExecuteCommandHandleEvent(instance, parsed, argv, config, optionConfigs))
+        this.events.fire(new CliExecuteCommandHandleEvent(instance, parsed, argv, config, optionConfigs)).stopIfExit()
 
         // if any missing, execute the way we should handle the arguments.
         if ( ! parsed.valid ) {
-            this.events.fire(new CliExecuteCommandInvalidArgumentsEvent(instance, parsed, config, optionConfigs));
+            this.events.fire(new CliExecuteCommandInvalidArgumentsEvent(instance, parsed, config, optionConfigs)).stopIfExit();
             if ( config.onMissingArgument === "fail" ) {
                 this.fail(`Missing required argument [${parsed.missing.shift()}]`);
             }
@@ -175,7 +175,7 @@ export class Cli {
 
         let result = instance[ 'handle' ].apply(instance, [ parsed.arguments, argv ]);
 
-        this.events.fire(new CliExecuteCommandHandledEvent(result, instance, argv, config, optionConfigs))
+        this.events.fire(new CliExecuteCommandHandledEvent(result, instance, argv, config, optionConfigs)).stopIfExit()
 
         if ( result === null || result === undefined ) process.exit();
 

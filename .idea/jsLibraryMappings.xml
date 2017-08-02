@@ -2,5 +2,8 @@
 <project version="4">
   <component name="JavaScriptLibraryMappings">
     <file url="file://$PROJECT_DIR$" libraries="{Node.js Core}" />
+    <file url="file://$PROJECT_DIR$/../radical-console-crypto-file-config" libraries="{Node.js Core}" />
+    <file url="file://$PROJECT_DIR$/../radical-console-database" libraries="{Node.js Core}" />
+    <file url="file://$PROJECT_DIR$/../radical-console-demo" libraries="{Node.js Core}" />
   </component>
 </project>

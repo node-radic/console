@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="reinstall all" type="js.build_tools.npm" factoryName="npm">
+    <package-json value="$PROJECT_DIR$/../radical-console-demo/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="reinstall" />
+    </scripts>
+    <node-interpreter value="project" />
+    <envs />
+    <method>
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="radical-console reinstall" run_configuration_type="js.build_tools.npm" />
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="plugin/crypto-file-config reinstall" run_configuration_type="js.build_tools.npm" />
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="plugin/database reinstall" run_configuration_type="js.build_tools.npm" />
+    </method>
+  </configuration>
+</component>

@@ -4,6 +4,8 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../radical-console-crypto-file-config">
       <sourceFolder url="file://$MODULE_DIR$/../../../radical-console-crypto-file-config/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../radical-console-crypto-file-config/dts" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../radical-console-crypto-file-config/lib" />
     </content>
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />

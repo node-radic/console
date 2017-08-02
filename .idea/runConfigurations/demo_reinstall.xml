@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="demo reinstall" type="js.build_tools.npm" factoryName="npm">
+    <package-json value="$PROJECT_DIR$/../radical-console-demo/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="reinstall" />
+    </scripts>
+    <node-interpreter value="project" />
+    <envs />
+    <method />
+  </configuration>
+</component>

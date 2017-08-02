@@ -238,6 +238,7 @@ function parseArguments(argv_: string[], args: CommandArgumentConfig[] = []): Pa
             }
         }
 
+
         if(!val && arg.default){
             val = JSON.parse(arg.default)
         }
@@ -258,6 +259,17 @@ function parseArguments(argv_: string[], args: CommandArgumentConfig[] = []): Pa
  * @returns {any}
  */
 function transformArgumentType<T extends any = any>(val: any, arg: CommandArgumentConfig): T | T[] {
+    const transformers = {
+        boolean(val: any): boolean {
+            return val === 'true' || val === true || val === '1';
+        },
+        number(val: any): number {
+            return parseInt(val);
+        },
+        string(val: any): string {
+            return typeof val.toString === 'function' ? val.toString() : val;
+        }
+    }
     if ( val === undefined ) {
         return undefined
     }
@@ -265,24 +277,15 @@ function transformArgumentType<T extends any = any>(val: any, arg: CommandArgume
         if ( val === undefined ) {
             return []
         }
-        return val.map((item => this.transformers [ arg.type ](item)));
+        return val.map((item => transformers [ arg.type ](item)));
     }
-    if ( this.transformers [ arg.type ] ) {
-        return this.transformers [ arg.type ](val);
+    if ( transformers[ arg.type ] ) {
+        return transformers[ arg.type ](val);
     }
     return val;
 }
 
 transformArgumentType[ 'transformers' ] = {
-    boolean(val: any): boolean {
-        return val === 'true' || val === true || val === '1';
-    },
-    number(val: any): number {
-        return parseInt(val);
-    },
-    string(val: any): string {
-        return typeof val.toString === 'function' ? val.toString() : val;
-    }
 }
 
 /**

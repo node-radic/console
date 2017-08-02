@@ -39,7 +39,7 @@ export function command(...args: any[]) {
 
 export function alwaysRun():MethodDecorator {
     return <T extends any>(cls:Object, propertyKey:string, descriptor: TypedPropertyDescriptor<T>) => {
-        set('alwaysRun', propertyKey, cls);
+        set('alwaysRun', propertyKey, cls.constructor);
     }
 }
 

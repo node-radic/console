@@ -4,6 +4,9 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../radical-console-database">
       <sourceFolder url="file://$MODULE_DIR$/../../../radical-console-database/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../radical-console-database/dts" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../radical-console-database/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../radical-console-database/lib-es6" />
     </content>
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
