@@ -28,7 +28,8 @@ const
     tsc          = require('gulp-typescript'),
     ts           = require('typescript')
 ;
-
+import typedoc from 'gulp-typedoc';
+typedoc({})
 const tsProject = {
     es  : tsc.createProject("tsconfig.json", { module: "es2015", declaration: false, typescript: ts }),
     src : tsc.createProject("tsconfig.json", { typescript: ts, sourceMap: true }),

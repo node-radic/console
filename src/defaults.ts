@@ -59,7 +59,7 @@ export const defaults = {
             subCommands      : [],
             helpers          : {},
             // argv       : process.argv,
-            args             : process.argv.slice(2),
+            argv             : [],//process.argv.slice(2),
             cls
         });
     },

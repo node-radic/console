@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="r connect add -a -b" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" path-to-js-file="examples/r.js" application-parameters="connect add -a -b" working-dir="$PROJECT_DIR$">
+    <method />
+  </configuration>
+</component>

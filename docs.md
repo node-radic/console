@@ -1,14 +1,62 @@
 # Radical Console
 
+- [Bootstrapping](#)
+- [Creating commands](#)
+- [Creating a command structure](#)
+- [Core API & Bindings](#)
+    -  [Cli](#)
+    -  [Config](#)
+    -  [Container](#)
+    -  [Events/Dispatcher](#)
+    -  [Helpers](#)
+    -  [Log](#)
+    -  [decorators](#)
+    -  [defaults](#)
+    -  [utils](#)
+- [Helpers](#)
+    -  [help](#)
+    -  [input](#)
+    -  [output](#)
+    -  [verbose](#)
+- [Plugins](#)
+    -  [database](#)
+    -  [crypro](#)
+
+
+Bootstrapping
+-------------
+- This should be the `bin` entry point specified in **package.json**.
+- This  could contain things like configuration, overrides, adding of features and the likes.
+- After that's done, it requires the 'root' command and pass it to the start function.
+The Cli will then parse the `process.argv`
+
+
+Creating Commands
+-----------------
+
+Creating a command structure
+----------------------------
+
+Core API & Bindings
+-------------------
+
+
+Helpers
+-------
+
+
+Plugins
+-------
+
+
+
+
+
 Quick glance
 ------------
 
 #### Bootstrapping
 **`bin/foobar.ts`**
-- This should be the `bin` entry point specified in **package.json**.
-- This  could contain things like configuration, overrides, adding of features and the likes.
-- After that's done, it requires the 'root' command and pass it to the start function.
-The Cli will then parse the `process.argv`
 
 ```typescript
 #!/usr/bin/env node

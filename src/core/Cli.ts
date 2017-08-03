@@ -1,6 +1,6 @@
 import { kindOf } from "@radic/util";
 import { container, injectable, lazyInject } from "./Container";
-import { BasePluginConfig, CommandConfig, HelperOptionsConfig, OptionConfig, Plugin } from "../interfaces";
+import { BasePluginConfig, CliConfig, CommandConfig, HelperOptionsConfig, OptionConfig, Plugin } from "../interfaces";
 // import { YargsParserArgv } from "../../types/yargs-parser";
 import { CliExecuteCommandEvent, CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent, CliStartEvent } from "./events";
 import { Log } from "./Log";
@@ -27,6 +27,7 @@ export class Cli {
     protected _parsedCommands: CommandConfig[] = []
     protected _rootCommand: CommandConfig;
     protected globalOptions: OptionConfig[]    = [];
+    protected _argv:string[]
 
     public get runningCommand(): CommandConfig { return <CommandConfig> this._runningCommand; }
 
@@ -54,8 +55,21 @@ export class Cli {
 
     public get getSubCommands(): SubCommandsGetFunction { return container.get<SubCommandsGetFunction>('cli.fn.commands.get') }
 
-    public start(requirePath: string): this {
+    public configure(config:CliConfig) : this {
+        this.config.merge(config);
+        return this;
+    }
 
+    public useArgv(argv:string[]) : this {
+        this._argv = argv;
+        return this;
+    }
+
+    public get argv():string[]{
+        return this._argv || process.argv.slice(2);
+    }
+
+    public start(requirePath: string): this {
         requirePath = resolve(requirePath);
         this.events.fire(new CliStartEvent(requirePath)).proceed(() => require(requirePath))
         return this
@@ -68,6 +82,7 @@ export class Cli {
         }
         let isRootCommand : boolean = ! this._rootCommand
         if ( isRootCommand ) {
+            config.argv       = this.argv;
             this._rootCommand = config;
         }
 
@@ -75,7 +90,7 @@ export class Cli {
 
         let transformedOptions           = this.transformOptions(this.globalOptions);
         transformedOptions.configuration = this.config('parser.yargs')
-        let result                       = parser(config.args, transformedOptions) as YargsParserArgv;
+        let result                       = parser(config.argv, transformedOptions) as YargsParserArgv;
         this.events.fire(new CliParsedEvent(config, this.globalOptions, isRootCommand, result)).stopIfExit()
         this._parsedCommands.push(config);
 
@@ -86,8 +101,8 @@ export class Cli {
             const subCommands = this.getSubCommands(config.filePath)
             if ( subCommands[ result._[ 0 ] ] ) {
                 const command: CommandConfig = subCommands[ result._[ 0 ] ];
-                command.args.shift();
-                process.argv.shift();
+                command.argv.shift();
+                // process.argv.shift();
                 this.parse(command);
                 return this
             }
@@ -112,7 +127,7 @@ export class Cli {
 
         let transformedOptions           = this.transformOptions(this.globalOptions.concat(optionConfigs));
         transformedOptions.configuration = this.config('parser.yargs')
-        let argv                         = parser(config.args, transformedOptions) as YargsParserArgv;
+        let argv                         = parser(config.argv, transformedOptions) as YargsParserArgv;
 
         if ( ! config.alwaysRun )
             this.events.fire(new CliExecuteCommandParsedEvent(argv, config, optionConfigs))

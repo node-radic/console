@@ -78,7 +78,7 @@ export interface CommandConfig {
     cls?: Function
     filePath?: string
     action?: Function | string
-    args?: string[]
+    argv?: string[]
     helpers?: { [name: string]: HelperOptionsConfig }
     arguments?: CommandArgumentConfig[]
     onMissingArgument?: string | 'fail' | 'handle'
