@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>@radic/util</title>
+	<title>Radical Console</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">@radic/util</a>
+					<a href="index.html" class="title">Radical Console</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -38,8 +38,8 @@
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -54,7 +54,7 @@
 					<a href="globals.html">Globals</a>
 				</li>
 			</ul>
-			<h1> @radic/util</h1>
+			<h1> Radical Console</h1>
 		</div>
 	</div>
 </header>
@@ -62,32 +62,238 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<h1 id="radic-utils">radic/utils</h1>
-				<p>Utility JS functions for use in both browser and node.</p>
-				<p><a href="docs/index.md">View Documentation</a></p>
-				<h3 id="install">Install</h3>
-				<pre><code class="lang-bash"><span class="hljs-comment"># using npm</span>
-npm i -S @radic/util
+				<h1 id="radical-console">Radical Console</h1>
+				<ul>
+					<li><a href="#examples">Examples</a></li>
+					<li><a href="#bootstrapping">Bootstrapping</a></li>
+					<li><a href="#creating-commands">Creating commands</a></li>
+					<li><a href="#creating-a-command-structure">Creating a command structure</a></li>
+					<li><a href="#core-api--bindings">Core API &amp; Bindings</a><ul>
+							<li><a href="#">Cli</a></li>
+							<li><a href="#">Config</a></li>
+							<li><a href="#">Container</a></li>
+							<li><a href="#">Events/Dispatcher</a></li>
+							<li><a href="#">Helpers</a></li>
+							<li><a href="#">Log</a></li>
+							<li><a href="#">decorators</a></li>
+							<li><a href="#">defaults</a></li>
+							<li><a href="#">utils</a></li>
+						</ul>
+					</li>
+					<li><a href="#helpers">Helpers</a><ul>
+							<li><a href="#">help</a></li>
+							<li><a href="#">input</a></li>
+							<li><a href="#">output</a></li>
+							<li><a href="#">verbose</a></li>
+						</ul>
+					</li>
+					<li><a href="#plugins">Plugins</a><ul>
+							<li><a href="#">database</a></li>
+							<li><a href="#">crypro</a></li>
+						</ul>
+					</li>
+				</ul>
+				<h2 id="examples">Examples</h2>
+				<ul>
+					<li><a href="https://github.com/node-radic/radical-console-demo">radical-console-demo</a> a basic example</li>
+					<li><a href="https://github.com/node-radic/rcli">@radic/cli</a> a advanced example</li>
+				</ul>
+				<h2 id="bootstrapping">Bootstrapping</h2>
+				<ul>
+					<li>This should be the <code>bin</code> entry point specified in <strong>package.json</strong>.</li>
+					<li>This  could contain things like configuration, overrides, adding of features and the likes.</li>
+					<li>After that&#39;s done, it requires the &#39;root&#39; command and pass it to the start function.
+					The Cli will then parse the <code>process.argv</code></li>
+				</ul>
+				<h2 id="creating-commands">Creating Commands</h2>
+				<h3 id="inline">Inline</h3>
+				<pre><code class="lang-typescript">#!<span class="hljs-regexp">/usr/</span>bin/env node
+<span class="hljs-keyword">import</span> <span class="hljs-string">"reflect-metadata"</span>;
+<span class="hljs-keyword">import</span> { cli, CommandArguments, InlineCommand } <span class="hljs-keyword">from</span> <span class="hljs-string">"radical-console"</span>;
 
-<span class="hljs-comment"># using yarn</span>
-yarn add @radic/util
+
+cli.parse({
+    options  : [
+        { key: <span class="hljs-string">'s'</span>, name: <span class="hljs-string">'symlink'</span>, description: <span class="hljs-string">'sym is good for link'</span> }
+    ],
+    <span class="hljs-built_in">arguments</span>: [
+        { name: <span class="hljs-string">'path'</span>, description: <span class="hljs-string">'The path to the stuff'</span>, required: <span class="hljs-literal">true</span>, <span class="hljs-keyword">type</span>: <span class="hljs-string">'string'</span> }
+    ],
+    action   : <span class="hljs-function">(<span class="hljs-params">args: CommandArguments</span>) =&gt;</span> {
+        <span class="hljs-comment">/** @this {InlineCommand} */</span>
+        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'hello!'</span>)
+        <span class="hljs-built_in">console</span>.dir({ args, me: <span class="hljs-keyword">this</span> });
+    }
+});
 </code></pre>
-				<h3 id="contribute">Contribute</h3>
+				<h3 id="single">Single</h3>
+				<pre><code class="lang-typescript">#!<span class="hljs-regexp">/usr/</span>bin/env node
+<span class="hljs-keyword">import</span> <span class="hljs-string">"reflect-metadata"</span>;
+<span class="hljs-keyword">import</span> { cli, command, CommandArguments, inject, OutputHelper } <span class="hljs-keyword">from</span> <span class="hljs-string">"radical-console"</span>;
+
+<span class="hljs-meta">@command</span>(<span class="hljs-string">'single'</span>, {
+    options: [
+        { key: <span class="hljs-string">'a'</span>, name: <span class="hljs-string">'append'</span>, description: <span class="hljs-string">'append it'</span> }
+    ]
+})
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> {
+    <span class="hljs-meta">@inject</span>(<span class="hljs-string">'cli.helpers.output'</span>)
+    out: OutputHelper;
+
+    handle(args: CommandArguments, argv: <span class="hljs-built_in">string</span>[]) {
+        <span class="hljs-keyword">this</span>.out.success(<span class="hljs-string">'YES!'</span>)
+    }
+}
+
+cli.helper(<span class="hljs-string">'output'</span>).start(__filename);
+</code></pre>
+				<h2 id="creating-a-command-structure">Creating a command structure</h2>
+				<h4 id="bootstrapping">Bootstrapping</h4>
+				<p><strong><code>bin/foobar.ts</code></strong></p>
+				<pre><code class="lang-typescript">#!<span class="hljs-regexp">/usr/</span>bin/env node
+<span class="hljs-keyword">import</span> { cli } <span class="hljs-keyword">from</span> <span class="hljs-string">"radical-console"</span>;
+
+<span class="hljs-comment">// override some of the default config</span>
+cli.config.merge({
+    parser: { yargs: { <span class="hljs-string">'boolean-negation'</span>: <span class="hljs-literal">false</span> } },
+    commands: { onMissingArgument: <span class="hljs-string">'help'</span> }
+})
+
+<span class="hljs-comment">// enable helpers you'd like to use and override configuration to your needs.</span>
+<span class="hljs-comment">// A lot more on this can be found in the documentation </span>
+cli
+    .helper(<span class="hljs-string">'input'</span>)
+    .helper(<span class="hljs-string">'output'</span>, { <span class="hljs-comment">// adds global options: </span>
+        <span class="hljs-comment">// -q|--quiet       : disable any output</span>
+        <span class="hljs-comment">// -C|--no-colors   : disable colors</span>
+        options: {
+            quiet : { enabled: <span class="hljs-literal">true</span> }, <span class="hljs-comment">// key: 'q', name: 'quiet'</span>
+            colors: { enabled: <span class="hljs-literal">true</span>, } <span class="hljs-comment">// key: 'C', name: 'no-colors'</span>
+        }
+    })
+    .helper(<span class="hljs-string">'help'</span>, {
+        showOnError        : <span class="hljs-literal">true</span>,
+        option             : { enabled: <span class="hljs-literal">true</span>, } <span class="hljs-comment">//key: 'h', name: 'help' }</span>
+    })
+    .helper(<span class="hljs-string">'verbose'</span>, {
+        option: { key: <span class="hljs-string">'v'</span>, name: <span class="hljs-string">'verbose'</span> }
+    });
+
+<span class="hljs-comment">// require the 'root' command and pass it to the start function </span>
+cli.start(<span class="hljs-built_in">require</span>(<span class="hljs-string">'../commands/foobar'</span>));
+</code></pre>
+				<h4 id="group-definition">Group definition</h4>
+				<p>The &#39;root&#39; command is in this case configured as a group
+				This means we&#39;ll be making a hierarchical command tree</p>
+				<p><strong><code>commands/foobar.ts</code></strong></p>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { command, option, inject, OutputHelper, InputHelper, Config, LoggerInstance } <span class="hljs-keyword">from</span> <span class="hljs-string">"@radic/console"</span>;
+
+
+<span class="hljs-meta">@command</span>(<span class="hljs-string">`foobar {command:string@any of the existing sub-commands/groups}`</span>, {
+    description: <span class="hljs-string">'Foobar eats your foo\'s and bars'</span>,
+    isGroup: <span class="hljs-literal">true</span>
+})
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> FoobarGroup {}
+</code></pre>
+				<hr>
+				<p><strong><code>commands/foobar/git.ts</code></strong></p>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { command, option, inject, OutputHelper, InputHelper, Config, LoggerInstance } <span class="hljs-keyword">from</span> <span class="hljs-string">"@radic/console"</span>;
+
+<span class="hljs-meta">@command</span>(<span class="hljs-string">`git {command:string@any of the existing sub-commands}`</span>, <span class="hljs-string">'Git Operations'</span>)
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> GitCmd {}
+</code></pre>
+				<hr>
+				<h4 id="command-definition">Command definition</h4>
+				<p><strong><code>commands/foobar/git/fetch.ts</code></strong></p>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { command, option, inject, OutputHelper, InputHelper, Config, LoggerInstance, CommandArguments } <span class="hljs-keyword">from</span> <span class="hljs-string">"@radic/console"</span>;
+
+<span class="hljs-meta">@command</span>(<span class="hljs-string">`fetch
+[repository:string@the repository name]
+[refspec:string[]@refspecs to fetch]
+`</span>, <span class="hljs-string">'Fetches some git stuff'</span>, { 
+    examples: <span class="hljs-string">`{bold}Fetching `</span>
+})
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> GitFetchCmd {
+    <span class="hljs-meta">@inject</span>(<span class="hljs-string">'cli.helpers.output'</span>)
+    out: OutputHelper;
+
+    <span class="hljs-meta">@inject</span>(<span class="hljs-string">'cli.helpers.input'</span>)
+    ask: InputHelper;
+
+    <span class="hljs-meta">@inject</span>(<span class="hljs-string">'cli.config'</span>)
+    config: Config;
+
+    <span class="hljs-meta">@inject</span>(<span class="hljs-string">'cli.log'</span>)
+    log: LoggerInstance;
+
+    <span class="hljs-meta">@option</span>(<span class="hljs-string">'a'</span>, <span class="hljs-string">'append to .git/FETCH_HEAD instead of overwriting'</span>)
+    append:<span class="hljs-built_in">boolean</span>
+
+    <span class="hljs-meta">@option</span>({ description: <span class="hljs-string">'path to upload pack on remote end'</span> })
+    uploadPack:<span class="hljs-built_in">string</span>
+
+    <span class="hljs-comment">// some random stuff</span>
+    <span class="hljs-keyword">async</span> handle(args:CommandArguments, argv:<span class="hljs-built_in">string</span>[]){
+        <span class="hljs-keyword">let</span> repository = args.repository || <span class="hljs-keyword">await</span> <span class="hljs-keyword">this</span>.ask.question(<span class="hljs-string">'Please enter a repository name'</span>);
+
+        <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span>.append){
+            repository += <span class="hljs-string">'appended'</span> 
+        }
+        args.refspec.forEach(<span class="hljs-function">(<span class="hljs-params">refspec:<span class="hljs-built_in">string</span></span>) =&gt;</span> <span class="hljs-keyword">this</span>.log.verbose(refspec))        
+    }
+}
+</code></pre>
+				<h2 id="core-api-bindings">Core API &amp; Bindings</h2>
+				<h3 id="cli">Cli</h3>
 				<ul>
-					<li>fork</li>
-					<li>git clone </li>
-					<li><code>cd utils</code></li>
-					<li><code>npm install</code></li>
-					<li><code>npm test</code></li>
-					<li>modify and/or add code/test. </li>
-					<li>Commit, push and PR it</li>
+					<li><strong>Binding</strong>: <code>cli</code></li>
+					<li><strong>API</strong>: <a href="classes/cli.html">Dispatcher</a>
+					...</li>
 				</ul>
-				<h3 id="publish">Publish</h3>
+				<h3 id="config">Config</h3>
 				<ul>
-					<li><code>gulp</code> to build &amp; test</li>
-					<li><code>git commit</code> if required</li>
-					<li><code>mversion (major|minor|patch) -m</code> to increase version, commit &amp; tag it and publish it</li>
+					<li><strong>Binding</strong>: <code>cli.config</code></li>
+					<li><strong>API</strong>: <a href="classes/dispatcher.html">Config</a></li>
+					<li><strong>From</strong>: <code>@radic/util</code></li>
 				</ul>
+				<p>Configuration is stored here. It works like Grunt config, enabling you to use inline javascript.</p>
+				<h3 id="container">Container</h3>
+				<ul>
+					<li><strong>API</strong>: <a href="classes/container.html">Container</a></li>
+					<li><strong>From</strong>: <code>inversifyjs</code></li>
+				</ul>
+				<p>The IoC container is extended from InversifyJS</p>
+				<h3 id="events-dispatcher">Events/Dispatcher</h3>
+				<ul>
+					<li><strong>Binding</strong>: <code>cli.</code></li>
+					<li><strong>API</strong>: <a href="classes/dispatcher.html">Dispatcher</a></li>
+					<li><strong>From</strong>: <code>eventemitter2</code></li>
+				</ul>
+				<p>Event dispatcher. Bound to <code>cli.events</code> as singleton. Utilizes EventEmitter2 under the hood.
+					It adds some extra functionality, primarily the fire(), halt() and dispatch() methods.
+					The fire() class expects a subclass of Event to be provided, which will be passed to the listeners.
+				This is the preferred way of firing events within the application</p>
+				<h3 id="helpers">Helpers</h3>
+				<ul>
+					<li><strong>Binding</strong>: <code>cli.helpers</code></li>
+					<li><strong>API</strong>: <a href="classes/helpers.html">Helpers</a>
+					...</li>
+				</ul>
+				<h3 id="log">Log</h3>
+				<p><strong>Binding</strong>: <code>cli.</code></p>
+				<p><strong>From</strong>: <code>winston</code></p>
+				<h3 id="decorators">decorators</h3>
+				<p><strong>Binding</strong>: <code>cli.</code>
+				...</p>
+				<h3 id="defaults">defaults</h3>
+				<p><strong>Binding</strong>: <code>cli.</code>
+				...</p>
+				<h3 id="utils">utils</h3>
+				<p><strong>Binding</strong>: <code>cli.</code>
+				...</p>
+				<h2 id="helpers">Helpers</h2>
+				<h2 id="plugins">Plugins</h2>
+				<h2 id="quick-glance">Quick glance</h2>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -101,178 +307,277 @@ yarn add @radic/util
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-class">
-						<a href="classes/basestorageprovider.html" class="tsd-kind-icon">Base<wbr>Storage<wbr>Provider</a>
+						<a href="classes/cancelevent.html" class="tsd-kind-icon">Cancel<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/config.html" class="tsd-kind-icon">Config</a>
+						<a href="classes/cancelexitevent.html" class="tsd-kind-icon">Cancel<wbr>Exit<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/cookiestorage.html" class="tsd-kind-icon">Cookie<wbr>Storage</a>
+						<a href="classes/cli.html" class="tsd-kind-icon">Cli</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/dependencysorter.html" class="tsd-kind-icon">Dependency<wbr>Sorter</a>
+						<a href="classes/cliexecutecommandevent.html" class="tsd-kind-icon">Cli<wbr>Execute<wbr>Command<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/cliexecutecommandhandleevent.html" class="tsd-kind-icon">Cli<wbr>Execute<wbr>Command<wbr>Handle<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/cliexecutecommandhandledevent.html" class="tsd-kind-icon">Cli<wbr>Execute<wbr>Command<wbr>Handled<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/cliexecutecommandinvalidargumentsevent.html" class="tsd-kind-icon">Cli<wbr>Execute<wbr>Command<wbr>Invalid<wbr>Arguments<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/localstorage.html" class="tsd-kind-icon">Local<wbr>Storage</a>
+						<a href="classes/cliexecutecommandparseevent.html" class="tsd-kind-icon">Cli<wbr>Execute<wbr>Command<wbr>Parse<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/persistentconfig.html" class="tsd-kind-icon">Persistent<wbr>Config</a>
+						<a href="classes/cliexecutecommandparsedevent.html" class="tsd-kind-icon">Cli<wbr>Execute<wbr>Command<wbr>Parsed<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/sessionstorage.html" class="tsd-kind-icon">Session<wbr>Storage</a>
+						<a href="classes/cliparseevent.html" class="tsd-kind-icon">Cli<wbr>Parse<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/storage.html" class="tsd-kind-icon">Storage</a>
+						<a href="classes/cliparsedevent.html" class="tsd-kind-icon">Cli<wbr>Parsed<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/storagebag.html" class="tsd-kind-icon">Storage<wbr>Bag</a>
+						<a href="classes/clispawnevent.html" class="tsd-kind-icon">Cli<wbr>Spawn<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/stringtype.html" class="tsd-kind-icon">String<wbr>Type</a>
+						<a href="classes/clistartevent.html" class="tsd-kind-icon">Cli<wbr>Start<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/commanddescriber.html" class="tsd-kind-icon">Command<wbr>Describer</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/container.html" class="tsd-kind-icon">Container</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/dispatcher.html" class="tsd-kind-icon">Dispatcher</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/event.html" class="tsd-kind-icon">Event</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/exitevent.html" class="tsd-kind-icon">Exit<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/helphelper.html" class="tsd-kind-icon">Help<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/helphelperoninvalidargumentsshowhelpevent.html" class="tsd-kind-icon">Help<wbr>Helper<wbr>OnInvalid<wbr>Arguments<wbr>Show<wbr>Help<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/helphelpershowhelpevent.html" class="tsd-kind-icon">Help<wbr>Helper<wbr>Show<wbr>Help<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/helperstartedevent.html" class="tsd-kind-icon">Helper<wbr>Started<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/helperstartingevent.html" class="tsd-kind-icon">Helper<wbr>Starting<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/helpers.html" class="tsd-kind-icon">Helpers</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/helpersstartedevent.html" class="tsd-kind-icon">Helpers<wbr>Started<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/helpersstartingevent.html" class="tsd-kind-icon">Helpers<wbr>Starting<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/inputhelper.html" class="tsd-kind-icon">Input<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/inputscmd.html" class="tsd-kind-icon">Inputs<wbr>Cmd</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/outputhelper.html" class="tsd-kind-icon">Output<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/rclicmd.html" class="tsd-kind-icon">Rcli<wbr>Cmd</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/rcliconnectaddcmd.html" class="tsd-kind-icon">Rcli<wbr>Connect<wbr>Add<wbr>Cmd</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/rcliconnectcmd.html" class="tsd-kind-icon">Rcli<wbr>Connect<wbr>Cmd</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/tree.html" class="tsd-kind-icon">Tree</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/treecmd.html" class="tsd-kind-icon">Tree<wbr>Cmd</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/verbosityhelper.html" class="tsd-kind-icon">Verbosity<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/default.html" class="tsd-kind-icon">default</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/iconfig.html" class="tsd-kind-icon">IConfig</a>
+						<a href="interfaces/basepluginconfig.html" class="tsd-kind-icon">Base<wbr>Plugin<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/iconfigproperty.html" class="tsd-kind-icon">IConfig<wbr>Property</a>
+						<a href="interfaces/checklistitem.html" class="tsd-kind-icon">Check<wbr>List<wbr>Item</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/idelimiter.html" class="tsd-kind-icon">IDelimiter</a>
+						<a href="interfaces/cliconfig.html" class="tsd-kind-icon">Cli<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/idelimiterlodash.html" class="tsd-kind-icon">IDelimiter<wbr>Lodash</a>
+						<a href="interfaces/commandargumentconfig.html" class="tsd-kind-icon">Command<wbr>Argument<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/idelimiterscollection.html" class="tsd-kind-icon">IDelimiters<wbr>Collection</a>
+						<a href="interfaces/commandarguments.html" class="tsd-kind-icon">Command<wbr>Arguments</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/istoragebagoptions.html" class="tsd-kind-icon">IStorage<wbr>Bag<wbr>Options</a>
+						<a href="interfaces/commandconfig.html" class="tsd-kind-icon">Command<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/istorageprovider.html" class="tsd-kind-icon">IStorage<wbr>Provider</a>
+						<a href="interfaces/config.html" class="tsd-kind-icon">Config</a>
 					</li>
-					<li class=" tsd-kind-interface tsd-is-not-exported">
-						<a href="interfaces/mixinfunction.html" class="tsd-kind-icon">Mixin<wbr>Function</a>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/dictionary.html" class="tsd-kind-icon">Dictionary</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/helphelperoptionsconfig.html" class="tsd-kind-icon">Help<wbr>Helper<wbr>Options<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/helperoptions.html" class="tsd-kind-icon">Helper<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/helperoptionsconfig.html" class="tsd-kind-icon">Helper<wbr>Options<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/inlinecommand.html" class="tsd-kind-icon">Inline<wbr>Command</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/log.html" class="tsd-kind-icon">Log</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/numericdictionary.html" class="tsd-kind-icon">Numeric<wbr>Dictionary</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/optionconfig.html" class="tsd-kind-icon">Option<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/outputcolumnsoptions.html" class="tsd-kind-icon">Output<wbr>Columns<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/parsedcommandarguments.html" class="tsd-kind-icon">Parsed<wbr>Command<wbr>Arguments</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/parserconfiguration.html" class="tsd-kind-icon">Parser<wbr>Configuration</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/plugin.html" class="tsd-kind-icon">Plugin</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/pluginregisterhelper.html" class="tsd-kind-icon">Plugin<wbr>Register<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/stringrepresentable.html" class="tsd-kind-icon">String<wbr>Representable</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#keyobjectarray" class="tsd-kind-icon">Key<wbr>Object<wbr>Array</a>
+						<a href="globals.html#commandconfigenabledtype" class="tsd-kind-icon">Command<wbr>Config<wbr>Enabled<wbr>Type</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#kindof" class="tsd-kind-icon">Kind<wbr>Of</a>
+						<a href="globals.html#commandconfigfunction" class="tsd-kind-icon">Command<wbr>Config<wbr>Function</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#storagetype" class="tsd-kind-icon">Storage<wbr>Type</a>
+						<a href="globals.html#helphelperoverridetype" class="tsd-kind-icon">Help<wbr>Helper<wbr>Override<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#loglevel" class="tsd-kind-icon">Log<wbr>Level</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#optionconfigfunction" class="tsd-kind-icon">Option<wbr>Config<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#parseargumentsfunction" class="tsd-kind-icon">Parse<wbr>Arguments<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#prepareargumentsfunction" class="tsd-kind-icon">Prepare<wbr>Arguments<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#serviceidentifier" class="tsd-kind-icon">Service<wbr>Identifier</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#subcommandsfindfunction" class="tsd-kind-icon">Sub<wbr>Commands<wbr>Find<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#subcommandsgetfunction" class="tsd-kind-icon">Sub<wbr>Commands<wbr>Get<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#transformargumentfunction" class="tsd-kind-icon">Transform<wbr>Argument<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#transformoptionsfunction" class="tsd-kind-icon">Transform<wbr>Options<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#cli" class="tsd-kind-icon">cli</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#colors" class="tsd-kind-icon">colors</a>
 					</li>
-					<li class=" tsd-kind-variable tsd-is-not-exported">
-						<a href="globals.html#kindsof" class="tsd-kind-icon">kinds<wbr>Of</a>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#config" class="tsd-kind-icon">config</a>
 					</li>
-					<li class=" tsd-kind-variable tsd-is-not-exported">
-						<a href="globals.html#nativetrim" class="tsd-kind-icon">native<wbr>Trim</a>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#container" class="tsd-kind-icon">container</a>
 					</li>
-					<li class=" tsd-kind-variable tsd-is-not-exported">
-						<a href="globals.html#old_json" class="tsd-kind-icon">old_<wbr>json</a>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#lazyinject" class="tsd-kind-icon">lazy<wbr>Inject</a>
 					</li>
-					<li class=" tsd-kind-function tsd-has-type-parameter">
-						<a href="globals.html#mixin" class="tsd-kind-icon">Mixin</a>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#levels" class="tsd-kind-icon">levels</a>
 					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="globals.html#___extends" class="tsd-kind-icon">___extends</a>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#loglevels" class="tsd-kind-icon">log<wbr>Levels</a>
 					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="globals.html#applymixins" class="tsd-kind-icon">apply<wbr>Mixins</a>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#parser" class="tsd-kind-icon">parser</a>
 					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#clone" class="tsd-kind-icon">clone</a>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#provide" class="tsd-kind-icon">provide</a>
 					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#color" class="tsd-kind-icon">color</a>
-					</li>
-					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
-						<a href="globals.html#copyobject" class="tsd-kind-icon">copy<wbr>Object</a>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#transports" class="tsd-kind-icon">transports</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#def" class="tsd-kind-icon">def</a>
+						<a href="globals.html#alwaysrun" class="tsd-kind-icon">always<wbr>Run</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#defaulttowhitespace" class="tsd-kind-icon">default<wbr>ToWhite<wbr>Space</a>
+						<a href="globals.html#bindto" class="tsd-kind-icon">bind<wbr>To</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#defined" class="tsd-kind-icon">defined</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="globals.html#dotize" class="tsd-kind-icon">dotize</a>
-					</li>
-					<li class=" tsd-kind-function tsd-has-type-parameter">
-						<a href="globals.html#everykey" class="tsd-kind-icon">every<wbr>Key</a>
+						<a href="globals.html#command" class="tsd-kind-icon">command</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#getcallerfile" class="tsd-kind-icon">get<wbr>Caller<wbr>File</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="globals.html#getparts" class="tsd-kind-icon">get<wbr>Parts</a>
+						<a href="globals.html#getconsolemeta" class="tsd-kind-icon">get<wbr>Console<wbr>Meta</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#getrandomid" class="tsd-kind-icon">get<wbr>Random<wbr>Id</a>
+						<a href="globals.html#helper" class="tsd-kind-icon">helper</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#guid" class="tsd-kind-icon">guid</a>
+						<a href="globals.html#inject" class="tsd-kind-icon">inject</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#guidseg" class="tsd-kind-icon">guid<wbr>Seg</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="globals.html#inspect" class="tsd-kind-icon">inspect</a>
+						<a href="globals.html#injectable" class="tsd-kind-icon">injectable</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#isalllength" class="tsd-kind-icon">is<wbr>All<wbr>Length</a>
+						<a href="globals.html#option" class="tsd-kind-icon">option</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#isanylength" class="tsd-kind-icon">is<wbr>Any<wbr>Length</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="globals.html#islength" class="tsd-kind-icon">is<wbr>Length</a>
+						<a href="globals.html#setloglevel" class="tsd-kind-icon">set<wbr>Log<wbr>Level</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#kindof" class="tsd-kind-icon">kind<wbr>Of</a>
+						<a href="globals.html#setverbosity" class="tsd-kind-icon">set<wbr>Verbosity</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="globals.html#makestring" class="tsd-kind-icon">make<wbr>String</a>
+						<a href="globals.html#singleton" class="tsd-kind-icon">singleton</a>
 					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="globals.html#objectexists" class="tsd-kind-icon">object<wbr>Exists</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="globals.html#objectget" class="tsd-kind-icon">object<wbr>Get</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="globals.html#objectloop" class="tsd-kind-icon">object<wbr>Loop</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="globals.html#objectset" class="tsd-kind-icon">object<wbr>Set</a>
-					</li>
-					<li class=" tsd-kind-function tsd-has-type-parameter">
-						<a href="globals.html#omap" class="tsd-kind-icon">omap</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#parse" class="tsd-kind-icon">parse</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-not-exported">
-						<a href="globals.html#recurse" class="tsd-kind-icon">recurse</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#round" class="tsd-kind-icon">round</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#stringify" class="tsd-kind-icon">stringify</a>
-					</li>
-					<li class=" tsd-kind-object-literal tsd-is-not-exported">
-						<a href="globals.html#entitymap" class="tsd-kind-icon">entity<wbr>Map</a>
-					</li>
-					<li class=" tsd-kind-object-literal tsd-is-not-exported">
-						<a href="globals.html#materialcolors" class="tsd-kind-icon">material<wbr>Colors</a>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#defaults" class="tsd-kind-icon">defaults</a>
 					</li>
 				</ul>
 			</nav>
