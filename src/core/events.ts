@@ -144,12 +144,12 @@ export class CliExecuteCommandHandledEvent<T = any> extends ExitEvent {
 
 
 export class HelpersStartingEvent extends CancelEvent {
-    constructor(public helpers: Helpers, public enabledHelpers: string[], public customConfigs: Dictionary<HelperOptionsConfig>) {
+    constructor(public helpers: Helpers, public enabledHelpers: string[]) {
         super('helpers:starting')
     }
 }
 export class HelperStartingEvent extends CancelEvent {
-    constructor(public helpers: Helpers, public name: string, public customConfig: HelperOptionsConfig) {
+    constructor(public helpers: Helpers, public name: string) {
         super('helper:starting')
     }
 }

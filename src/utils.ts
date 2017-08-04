@@ -19,14 +19,8 @@ function bindFn<T>(id:ServiceIdentifier,fn){
     container.bind(id.toString().replace('fn', 'factory')).toAutoFactory(id);
 }
 
-// region: decorator utils
-
-/**
- *
- * @param cls
- * @param args
- * @returns {T}
- */
+/** */
+export type CommandConfigFunction = <T extends CommandConfig>(cls: Function, args?: any[]) => T
 function getCommandConfig<T extends CommandConfig>(cls: Function, args: any[] = []): T {
     let argt                         = args.map(kindOf),
         len = args.length, config: T = defaults.command<T>(cls);
@@ -54,14 +48,10 @@ function getCommandConfig<T extends CommandConfig>(cls: Function, args: any[] = 
 
     return config;
 }
+bindFn<CommandConfigFunction>('cli.fn.command.config',getCommandConfig);
 
-/**
- *
- * @param cls
- * @param key
- * @param args
- * @returns {OptionConfig}
- */
+/** */
+export type OptionConfigFunction = (cls:Object, key:string, args: any[]) => OptionConfig;
 function getOptionConfig(cls: Object, key: string, args: any[]): OptionConfig {
     let argt                 = args.map(kindOf),
         len                  = args.length,
@@ -88,8 +78,11 @@ function getOptionConfig(cls: Object, key: string, args: any[]): OptionConfig {
     config.type = type;
     return config;
 }
+bindFn<OptionConfigFunction>('cli.fn.options.config',getOptionConfig);
+
 
 /** called in decorator, transforms config.name with all arguments to a proper structure */
+export type PrepareArgumentsFunction = <T extends CommandConfig=CommandConfig>(config:T) => T
 function prepareArguments<T extends CommandConfig = CommandConfig>(config: T): T {
 //https://regex101.com/r/vSqbuK/1
 
@@ -150,21 +143,16 @@ function prepareArguments<T extends CommandConfig = CommandConfig>(config: T): T
     }
     return config;
 }
-
-// endregion
-
-export type CommandConfigFunction = <T extends CommandConfig>(cls: Function, args?: any[]) => T
-export type OptionConfigFunction = (cls:Object, key:string, args: any[]) => OptionConfig;
-export type PrepareArgumentsFunction = <T extends CommandConfig=CommandConfig>(config:T) => T
-
-bindFn<CommandConfigFunction>('cli.fn.command.config',getCommandConfig);
-bindFn<OptionConfigFunction>('cli.fn.options.config',getOptionConfig);
 bindFn<PrepareArgumentsFunction>('cli.fn.arguments.prepare',prepareArguments);
 
 
-// region: cli utils
-
-/** transforms my option structure to the yargs-parser option structure */
+/**
+ * Transforms a OptionConfig array (usually found on CommandConfig) to yargs-parser options.
+ * This is used on the `cli:parse` event (fired in Cli#parse) and cli:execute:parse (fired in Cli#executeCommand)
+ *
+ * @see {Cli)
+ */
+export type TransformOptionsFunction = (configs: OptionConfig[]) => YargsParserOptions
 function transformOptions(configs: OptionConfig[]): YargsParserOptions {
     let options: YargsParserOptions = {
         array        : [],
@@ -212,6 +200,8 @@ function transformOptions(configs: OptionConfig[]): YargsParserOptions {
     })
     return options;
 }
+bindFn<TransformOptionsFunction>('cli.fn.options.transform',transformOptions);
+
 
 /**
  * Used in the CLI, after parsing the argv, this arguments go to the handle for the command
@@ -220,6 +210,7 @@ function transformOptions(configs: OptionConfig[]): YargsParserOptions {
  * @param args
  * @returns {{arguments: {}, missing: Array, valid: boolean}}
  */
+export type ParseArgumentsFunction = (argv_: string[], args?: CommandArgumentConfig[] ) => ParsedCommandArguments
 function parseArguments(argv_: string[], args: CommandArgumentConfig[] = []): ParsedCommandArguments {
 
     let invalid = [];
@@ -251,13 +242,10 @@ function parseArguments(argv_: string[], args: CommandArgumentConfig[] = []): Pa
     })
     return { arguments: res, missing: invalid, valid: invalid.length === 0 };
 }
+bindFn<ParseArgumentsFunction>('cli.fn.arguments.parse',parseArguments);
 
-/**
- *
- * @param val
- * @param arg
- * @returns {any}
- */
+/** */
+export type TransformArgumentFunction = <T extends any = any>(val: any, arg: CommandArgumentConfig) => T | T[]
 function transformArgumentType<T extends any = any>(val: any, arg: CommandArgumentConfig): T | T[] {
     const transformers = {
         boolean(val: any): boolean {
@@ -284,15 +272,12 @@ function transformArgumentType<T extends any = any>(val: any, arg: CommandArgume
     }
     return val;
 }
-
 transformArgumentType[ 'transformers' ] = {
 }
+bindFn<TransformArgumentFunction>('cli.fn.arguments.transform',transformArgumentType);
 
-/**
- *
- * @param filePath
- * @returns {Array}
- */
+/** */
+export type SubCommandsFindFunction =(filePath:string) => string[]
 function findSubCommandsPaths(filePath:string): string[] {
 
     let dirName  = dirname(filePath);
@@ -320,7 +305,10 @@ function findSubCommandsPaths(filePath:string): string[] {
     });
     return paths;
 }
+bindFn<SubCommandsFindFunction>('cli.fn.commands.find',findSubCommandsPaths);
 
+/** */
+export type SubCommandsGetFunction = <T extends Dictionary<CommandConfig> | CommandConfig[]>(filePath: string, recursive?: boolean, asArray?: boolean ) =>  T
 function getSubCommands<T extends Dictionary<CommandConfig> | CommandConfig[]>(filePath: string, recursive: boolean = false, asArray: boolean = false): T {
     let subCommands: any = {}
     if ( asArray ) {
@@ -354,24 +342,7 @@ function getSubCommands<T extends Dictionary<CommandConfig> | CommandConfig[]>(f
     cli.parseCommands = true
     return subCommands
 }
-
-
-// endregion
-
-/**
- * Transforms a OptionConfig array (usually found on CommandConfig) to yargs-parser options.
- * This is used on the `cli:parse` event (fired in Cli#parse) and cli:execute:parse (fired in Cli#executeCommand)
- *
- * @see {Cli)
- */
-export type TransformOptionsFunction = (configs: OptionConfig[]) => YargsParserOptions
-export type ParseArgumentsFunction = (argv_: string[], args?: CommandArgumentConfig[] ) => ParsedCommandArguments
-export type TransformArgumentFunction = <T extends any = any>(val: any, arg: CommandArgumentConfig) => T | T[]
-export type SubCommandsFindFunction =(filePath:string) => string[]
-export type SubCommandsGetFunction = <T extends Dictionary<CommandConfig> | CommandConfig[]>(filePath: string, recursive?: boolean, asArray?: boolean ) =>  T
-
-bindFn<TransformOptionsFunction>('cli.fn.options.transform',transformOptions);
-bindFn<ParseArgumentsFunction>('cli.fn.arguments.parse',parseArguments);
-bindFn<TransformArgumentFunction>('cli.fn.arguments.transform',transformArgumentType);
-bindFn<SubCommandsFindFunction>('cli.fn.commands.find',findSubCommandsPaths);
 bindFn<SubCommandsGetFunction>('cli.fn.commands.get',getSubCommands);
+
+
+

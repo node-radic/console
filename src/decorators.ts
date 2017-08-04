@@ -3,38 +3,69 @@ import { kindOf, KindOf } from "@radic/util";
 import { merge } from "lodash";
 import { CommandConfig, HelperOptions, OptionConfig } from "./interfaces";
 import { Cli, container } from "./core";
-import { CommandConfigFunction, OptionConfigFunction } from "./utils";
+import { CommandConfigFunction, OptionConfigFunction, PrepareArgumentsFunction } from "./utils";
 import { decorate, injectable } from "inversify";
-
+import { defaults } from "./defaults";
+const callsites = require('callsites');
 
 const get = Reflect.getMetadata;
 const set = Reflect.defineMetadata;
 
-export function command(cls: Function)
-export function command(config: CommandConfig): ClassDecorator
 export function command(name: string, config?: CommandConfig): ClassDecorator
 export function command(name: string, description?: string, config?: CommandConfig): ClassDecorator
-export function command(name: string, description?: string, subCommands?: string[], config?: CommandConfig): ClassDecorator
-export function command(...args: any[]) {
-    const handle = (cls) => {
-        let config = container.get<CommandConfigFunction>('cli.fn.command.config')<CommandConfig>(cls, args)
-        set('command', config, cls);
-        if(kindOf(get('alwaysRun', cls) === 'string')){
-            config.alwaysRun = get('alwaysRun', cls)
+export function command(name: string, description?: string | CommandConfig, config?: CommandConfig): ClassDecorator {
+    return (cls) => {
+        // fix function overloading variables
+        decorate(injectable(), cls)
+        if ( kindOf(description) === 'object' ) {
+            config      = <CommandConfig> description;
+            description = '';
+        }
+        config = {
+            ...defaults.command(cls),
+            ...config || {},
+            name,
+            description: description ? description.toString().toLowerCase() : ''
+        }
+        config = container.get<PrepareArgumentsFunction>('cli.fn.arguments.prepare')(config);
+
+        config.filePath  = callsites().filter(site => site.getFunctionName() == '__decorate').map(site => site.getFileName()).shift()
+        config.enabled   = kindOf(config.enabled) === 'function' ? (<Function>config.enabled).apply(config, [ container ]) : config.enabled;
+        config.alwaysRun = kindOf(get('alwaysRun', cls) === 'string') ? get('alwaysRun', cls) : config.alwaysRun
+
+        if(config.options){
+            const options = <OptionConfig[]>get('options', cls.prototype) || [];
+            set('options', options.concat(config.options), cls.prototype);
         }
 
-        if ( ! config.enabled ) return;
-        container.get<Cli>('cli').parse(config);
-    }
-
-    if ( kindOf(args[ 0 ]) === 'function' ) {
-        return handle(args[ 0 ]);
-    }
-    return (cls) => {
-        decorate(injectable(), cls);
-        return handle(cls);
+        set('command', config, cls);
     }
 }
+// export function command(cls: Function)
+// export function command(config: CommandConfig): ClassDecorator
+// export function command(name: string, config?: CommandConfig): ClassDecorator
+// export function command(name: string, description?: string, config?: CommandConfig): ClassDecorator
+// export function command(name: string, description?: string, subCommands?: string[], config?: CommandConfig): ClassDecorator
+// export function command(...args: any[]) {
+//     const handle = (cls) => {
+//         let config = container.get<CommandConfigFunction>('cli.fn.command.config')<CommandConfig>(cls, args)
+//         set('command', config, cls);
+//         if(kindOf(get('alwaysRun', cls) === 'string')){
+//             config.alwaysRun = get('alwaysRun', cls)
+//         }
+//
+//         if ( ! config.enabled ) return;
+//         // container.get<Cli>('cli').parse(config);
+//     }
+//
+//     if ( kindOf(args[ 0 ]) === 'function' ) {
+//         return handle(args[ 0 ]);
+//     }
+//     return (cls) => {
+//         decorate(injectable(), cls);
+//         return handle(cls);
+//     }
+// }
 
 
 export function alwaysRun():MethodDecorator {

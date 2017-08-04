@@ -81,6 +81,7 @@ export interface CommandConfig {
     argv?: string[]
     helpers?: { [name: string]: HelperOptionsConfig }
     arguments?: CommandArgumentConfig[]
+    options?: OptionConfig[],
     onMissingArgument?: string | 'fail' | 'handle'
 }
 

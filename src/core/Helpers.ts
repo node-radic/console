@@ -45,16 +45,19 @@ export class Helpers {
         let a = this.config.get<string[]>('enabledHelpers', [])
         this.config.set('enabledHelpers', a.concat([ name ]));
 
+        if(this.started){
+            this.startHelper(name);
+        }
     }
 
-    public startHelpers(customConfigs: { [name: string]: HelperOptionsConfig } = {}) {
+    public startHelpers() {
         let enabledHelpers: string[] = this.config.get<string[]>('enabledHelpers', [])
         if ( this.started === false ) {
-            if ( this.events.fire(new HelpersStartingEvent(this, enabledHelpers, customConfigs)).isCanceled() ) return
+            if ( this.events.fire(new HelpersStartingEvent(this, enabledHelpers)).isCanceled() ) return
         }
         enabledHelpers.forEach(name => {
-            this.events.fire(new HelperStartingEvent(this, name, customConfigs[ name ] || {})).proceed(() => {
-                this.startHelper(name, customConfigs[ name ] || {});
+            this.events.fire(new HelperStartingEvent(this, name)).proceed(() => {
+                this.startHelper(name);
                 this.events.fire(new HelperStartedEvent(this, name))
             })
         })

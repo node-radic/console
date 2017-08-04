@@ -27,7 +27,7 @@ export class Cli {
     protected _parsedCommands: CommandConfig[] = []
     protected _rootCommand: CommandConfig;
     protected globalOptions: OptionConfig[]    = [];
-    protected _argv:string[]
+    protected _argv: string[]
 
     public get runningCommand(): CommandConfig { return <CommandConfig> this._runningCommand; }
 
@@ -55,23 +55,30 @@ export class Cli {
 
     public get getSubCommands(): SubCommandsGetFunction { return container.get<SubCommandsGetFunction>('cli.fn.commands.get') }
 
-    public configure(config:CliConfig) : this {
+    public configure(config: CliConfig): this {
         this.config.merge(config);
         return this;
     }
 
-    public useArgv(argv:string[]) : this {
+    public useArgv(argv: string[]): this {
         this._argv = argv;
         return this;
     }
 
-    public get argv():string[]{
+    public get argv(): string[] {
         return this._argv || process.argv.slice(2);
+
     }
 
     public start(requirePath: string): this {
         requirePath = resolve(requirePath);
-        this.events.fire(new CliStartEvent(requirePath)).proceed(() => require(requirePath))
+        this.events.fire(new CliStartEvent(requirePath)).proceed(() => {
+            this.helpers.startHelpers();
+            let mod = require(requirePath)
+            let command =<CommandConfig> Reflect.getMetadata('command', mod.default);
+            command.argv = this.argv;
+            this.parse(command)
+        })
         return this
     }
 
@@ -80,13 +87,12 @@ export class Cli {
         if ( ! this.parseCommands ) {
             return;
         }
-        let isRootCommand : boolean = ! this._rootCommand
+        let isRootCommand: boolean = ! this._rootCommand
         if ( isRootCommand ) {
-            config.argv       = this.argv;
             this._rootCommand = config;
         }
 
-        if(this.events.fire(new CliParseEvent(config, this.globalOptions, isRootCommand)).stopIfExit().isCanceled()) return
+        if ( this.events.fire(new CliParseEvent(config, this.globalOptions, isRootCommand)).stopIfExit().isCanceled() ) return
 
         let transformedOptions           = this.transformOptions(this.globalOptions);
         transformedOptions.configuration = this.config('parser.yargs')
@@ -94,19 +100,26 @@ export class Cli {
         this.events.fire(new CliParsedEvent(config, this.globalOptions, isRootCommand, result)).stopIfExit()
         this._parsedCommands.push(config);
 
+        if ( config.alwaysRun ) {
+            this.events.fire(new CliExecuteCommandEvent(config, config.alwaysRun)).proceed(() => {
+                let instance = container.resolve(<any> config.cls);
+                if ( kindOf(instance[ config.alwaysRun ]) === 'function' ) {
+                    return instance[ config.alwaysRun ].apply(instance, [ config.argv ]);
+                }
+            });
+        }
+
         if ( ! this._runningCommand && result._.length > 0 && config.isGroup ) {
-            if ( config.alwaysRun ) {
-                this.events.fire(new CliExecuteCommandEvent(config, config.alwaysRun)).proceed(() => this.executeCommand(config));
-            }
             const subCommands = this.getSubCommands(config.filePath)
             if ( subCommands[ result._[ 0 ] ] ) {
                 const command: CommandConfig = subCommands[ result._[ 0 ] ];
-                command.argv.shift();
+                command.argv = result._.slice(1)
                 // process.argv.shift();
                 this.parse(command);
                 return this
             }
         }
+
         if ( ! this._runningCommand ) {
             this._runningCommand = config;
             this.events.fire(new CliExecuteCommandEvent(config, config.alwaysRun)).proceed(() => this.executeCommand(config));
@@ -117,37 +130,33 @@ export class Cli {
 
 
     protected async executeCommand(config: CommandConfig) {
-        this.helpers.startHelpers(config.helpers);
+
 
         let optionConfigs: OptionConfig[] = get('options', config.cls.prototype) || [];
 
         // Parse
-        if ( ! config.alwaysRun )
-            this.events.fire(new CliExecuteCommandParseEvent(config, optionConfigs))
+        this.events.fire(new CliExecuteCommandParseEvent(config, optionConfigs))
 
         let transformedOptions           = this.transformOptions(this.globalOptions.concat(optionConfigs));
         transformedOptions.configuration = this.config('parser.yargs')
         let argv                         = parser(config.argv, transformedOptions) as YargsParserArgv;
 
-        if ( ! config.alwaysRun )
-            this.events.fire(new CliExecuteCommandParsedEvent(argv, config, optionConfigs))
+        this.events.fire(new CliExecuteCommandParsedEvent(argv, config, optionConfigs))
+
+        let instance;
 
         // Create
         if ( kindOf(config.action) === 'function' ) {
+            config.cls = function(){}
             config.cls.prototype[ 'handle' ] = config.action
+            instance = new (<any> config.cls)
+        } else {
+            instance = container.resolve(<any> config.cls);
         }
-
-        let instance = container.resolve(<any> config.cls);
 
         // Assign the config itself to the instance, so it's possible to check back on it
         instance[ '_config' ]  = config;
         instance[ '_options' ] = optionConfigs;
-
-
-        // the 'always run' doesn't pass this point
-        if ( config.alwaysRun && kindOf(instance[ config.alwaysRun ]) === 'function' ) {
-            return instance[ config.alwaysRun ].apply(instance, [ argv ]);
-        }
 
         // Argument assignment to the instance
         // Object.assign(instance, _.without(Object.keys(argv), '_'))
