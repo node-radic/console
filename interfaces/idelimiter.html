@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>StringRepresentable | Radical Console</title>
+	<title>IDelimiter | @radic/util</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Radical Console</a>
+					<a href="../index.html" class="title">@radic/util</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -38,8 +38,8 @@
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -54,10 +54,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="stringrepresentable.html">StringRepresentable</a>
+					<a href="idelimiter.html">IDelimiter</a>
 				</li>
 			</ul>
-			<h1>Interface StringRepresentable</h1>
+			<h1>Interface IDelimiter</h1>
 		</div>
 	</div>
 </header>
@@ -68,7 +68,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">StringRepresentable</span>
+						<span class="target">IDelimiter</span>
 					</li>
 				</ul>
 			</section>
@@ -77,32 +77,47 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Methods</h3>
+							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="stringrepresentable.html#tostring" class="tsd-kind-icon">to<wbr>String</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="idelimiter.html#closer" class="tsd-kind-icon">closer</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="idelimiter.html#lodash" class="tsd-kind-icon">lodash</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="idelimiter.html#opener" class="tsd-kind-icon">opener</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="tostring" class="tsd-anchor"></a>
-					<h3>to<wbr>String</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">to<wbr>String<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in src/interfaces.ts:204</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
-						</li>
-					</ul>
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="closer" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> closer</h3>
+					<div class="tsd-signature tsd-kind-icon">closer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/config.ts:18</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="lodash" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> lodash</h3>
+					<div class="tsd-signature tsd-kind-icon">lodash<span class="tsd-signature-symbol">:</span> <a href="idelimiterlodash.html" class="tsd-signature-type">IDelimiterLodash</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/config.ts:19</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="opener" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> opener</h3>
+					<div class="tsd-signature tsd-kind-icon">opener<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/config.ts:17</li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 		</div>
@@ -119,10 +134,16 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="stringrepresentable.html" class="tsd-kind-icon">String<wbr>Representable</a>
+						<a href="idelimiter.html" class="tsd-kind-icon">IDelimiter</a>
 						<ul>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="stringrepresentable.html#tostring" class="tsd-kind-icon">to<wbr>String</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="idelimiter.html#closer" class="tsd-kind-icon">closer</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="idelimiter.html#lodash" class="tsd-kind-icon">lodash</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="idelimiter.html#opener" class="tsd-kind-icon">opener</a>
 							</li>
 						</ul>
 					</li>

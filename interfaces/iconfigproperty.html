@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Config | Radical Console</title>
+	<title>IConfigProperty | @radic/util</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Radical Console</a>
+					<a href="../index.html" class="title">@radic/util</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -38,8 +38,8 @@
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -54,10 +54,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="config.html">Config</a>
+					<a href="iconfigproperty.html">IConfigProperty</a>
 				</li>
 			</ul>
-			<h1>Interface Config</h1>
+			<h1>Interface IConfigProperty</h1>
 		</div>
 	</div>
 </header>
@@ -68,10 +68,10 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">IConfigProperty</span>
+						<a href="iconfig.html" class="tsd-signature-type">IConfig</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">Config</span>
+								<span class="target">IConfigProperty</span>
 							</li>
 						</ul>
 					</li>
@@ -88,7 +88,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in node_modules/@radic/util/lib/config.d.ts:24</li>
+								<li>Defined in src/config.ts:36</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -102,7 +102,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in node_modules/@radic/util/lib/config.d.ts:25</li>
+								<li>Defined in src/config.ts:37</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -116,7 +116,7 @@
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in node_modules/@radic/util/lib/config.d.ts:26</li>
+								<li>Defined in src/config.ts:38</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -139,13 +139,13 @@
 						<section class="tsd-index-section tsd-is-inherited">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-interface tsd-has-type-parameter tsd-is-inherited"><a href="config.html#get" class="tsd-kind-icon">get</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="config.html#has" class="tsd-kind-icon">has</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="config.html#merge" class="tsd-kind-icon">merge</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="config.html#process" class="tsd-kind-icon">process</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="config.html#raw" class="tsd-kind-icon">raw</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="config.html#set" class="tsd-kind-icon">set</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="config.html#unset" class="tsd-kind-icon">unset</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-has-type-parameter tsd-is-inherited"><a href="iconfigproperty.html#get" class="tsd-kind-icon">get</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="iconfigproperty.html#has" class="tsd-kind-icon">has</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="iconfigproperty.html#merge" class="tsd-kind-icon">merge</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="iconfigproperty.html#process" class="tsd-kind-icon">process</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="iconfigproperty.html#raw" class="tsd-kind-icon">raw</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="iconfigproperty.html#set" class="tsd-kind-icon">set</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="iconfigproperty.html#unset" class="tsd-kind-icon">unset</a></li>
 							</ul>
 						</section>
 					</div>
@@ -162,9 +162,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from IConfig.get</p>
+								<p>Inherited from <a href="iconfig.html">IConfig</a>.<a href="iconfig.html#get">get</a></p>
 								<ul>
-									<li>Defined in node_modules/@radic/util/lib/config.d.ts:15</li>
+									<li>Defined in src/config.ts:26</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -195,9 +195,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from IConfig.has</p>
+								<p>Inherited from <a href="iconfig.html">IConfig</a>.<a href="iconfig.html#has">has</a></p>
 								<ul>
-									<li>Defined in node_modules/@radic/util/lib/config.d.ts:22</li>
+									<li>Defined in src/config.ts:33</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -214,15 +214,15 @@
 					<a name="merge" class="tsd-anchor"></a>
 					<h3>merge</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">merge<span class="tsd-signature-symbol">(</span>obj<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IConfig</span></li>
-						<li class="tsd-signature tsd-kind-icon">merge<span class="tsd-signature-symbol">(</span>prop<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, obj<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IConfig</span></li>
+						<li class="tsd-signature tsd-kind-icon">merge<span class="tsd-signature-symbol">(</span>obj<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="iconfig.html" class="tsd-signature-type">IConfig</a></li>
+						<li class="tsd-signature tsd-kind-icon">merge<span class="tsd-signature-symbol">(</span>prop<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, obj<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="iconfig.html" class="tsd-signature-type">IConfig</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from IConfig.merge</p>
+								<p>Inherited from <a href="iconfig.html">IConfig</a>.<a href="iconfig.html#merge">merge</a></p>
 								<ul>
-									<li>Defined in node_modules/@radic/util/lib/config.d.ts:17</li>
+									<li>Defined in src/config.ts:28</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -231,13 +231,13 @@
 									<h5>obj: <span class="tsd-signature-type">Object</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">IConfig</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="iconfig.html" class="tsd-signature-type">IConfig</a></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from IConfig.merge</p>
+								<p>Inherited from <a href="iconfig.html">IConfig</a>.<a href="iconfig.html#merge">merge</a></p>
 								<ul>
-									<li>Defined in node_modules/@radic/util/lib/config.d.ts:18</li>
+									<li>Defined in src/config.ts:29</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -249,7 +249,7 @@
 									<h5>obj: <span class="tsd-signature-type">Object</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">IConfig</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="iconfig.html" class="tsd-signature-type">IConfig</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -262,9 +262,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from IConfig.process</p>
+								<p>Inherited from <a href="iconfig.html">IConfig</a>.<a href="iconfig.html#process">process</a></p>
 								<ul>
-									<li>Defined in node_modules/@radic/util/lib/config.d.ts:20</li>
+									<li>Defined in src/config.ts:31</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -286,9 +286,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from IConfig.raw</p>
+								<p>Inherited from <a href="iconfig.html">IConfig</a>.<a href="iconfig.html#raw">raw</a></p>
 								<ul>
-									<li>Defined in node_modules/@radic/util/lib/config.d.ts:19</li>
+									<li>Defined in src/config.ts:30</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -305,14 +305,14 @@
 					<a name="set" class="tsd-anchor"></a>
 					<h3>set</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">set<span class="tsd-signature-symbol">(</span>prop<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Object</span>, value<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IConfig</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<span class="tsd-signature-symbol">(</span>prop<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Object</span>, value<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="iconfig.html" class="tsd-signature-type">IConfig</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from IConfig.set</p>
+								<p>Inherited from <a href="iconfig.html">IConfig</a>.<a href="iconfig.html#set">set</a></p>
 								<ul>
-									<li>Defined in node_modules/@radic/util/lib/config.d.ts:16</li>
+									<li>Defined in src/config.ts:27</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -324,7 +324,7 @@
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> value: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">IConfig</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="iconfig.html" class="tsd-signature-type">IConfig</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -337,9 +337,9 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from IConfig.unset</p>
+								<p>Inherited from <a href="iconfig.html">IConfig</a>.<a href="iconfig.html#unset">unset</a></p>
 								<ul>
-									<li>Defined in node_modules/@radic/util/lib/config.d.ts:21</li>
+									<li>Defined in src/config.ts:32</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -367,28 +367,28 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="config.html" class="tsd-kind-icon">Config</a>
+						<a href="iconfigproperty.html" class="tsd-kind-icon">IConfig<wbr>Property</a>
 						<ul>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-has-type-parameter tsd-is-inherited">
-								<a href="config.html#get" class="tsd-kind-icon">get</a>
+								<a href="iconfigproperty.html#get" class="tsd-kind-icon">get</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-								<a href="config.html#has" class="tsd-kind-icon">has</a>
+								<a href="iconfigproperty.html#has" class="tsd-kind-icon">has</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-								<a href="config.html#merge" class="tsd-kind-icon">merge</a>
+								<a href="iconfigproperty.html#merge" class="tsd-kind-icon">merge</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-								<a href="config.html#process" class="tsd-kind-icon">process</a>
+								<a href="iconfigproperty.html#process" class="tsd-kind-icon">process</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-								<a href="config.html#raw" class="tsd-kind-icon">raw</a>
+								<a href="iconfigproperty.html#raw" class="tsd-kind-icon">raw</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-								<a href="config.html#set" class="tsd-kind-icon">set</a>
+								<a href="iconfigproperty.html#set" class="tsd-kind-icon">set</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-								<a href="config.html#unset" class="tsd-kind-icon">unset</a>
+								<a href="iconfigproperty.html#unset" class="tsd-kind-icon">unset</a>
 							</li>
 						</ul>
 					</li>

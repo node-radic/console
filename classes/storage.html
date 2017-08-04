@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ExitEvent | Radical Console</title>
+	<title>Storage | @radic/util</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">Radical Console</a>
+					<a href="../index.html" class="title">@radic/util</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -38,8 +38,8 @@
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -54,10 +54,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="exitevent.html">ExitEvent</a>
+					<a href="storage.html">Storage</a>
 				</li>
 			</ul>
-			<h1>Class ExitEvent</h1>
+			<h1>Class Storage</h1>
 		</div>
 	</div>
 </header>
@@ -68,41 +68,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="event.html" class="tsd-signature-type">Event</a>
-						<ul class="tsd-hierarchy">
-							<li>
-								<span class="target">ExitEvent</span>
-								<ul class="tsd-hierarchy">
-									<li>
-										<a href="cancelexitevent.html" class="tsd-signature-type">CancelExitEvent</a>
-									</li>
-									<li>
-										<a href="cliparsedevent.html" class="tsd-signature-type">CliParsedEvent</a>
-									</li>
-									<li>
-										<a href="clispawnevent.html" class="tsd-signature-type">CliSpawnEvent</a>
-									</li>
-									<li>
-										<a href="cliexecutecommandparseevent.html" class="tsd-signature-type">CliExecuteCommandParseEvent</a>
-									</li>
-									<li>
-										<a href="cliexecutecommandparsedevent.html" class="tsd-signature-type">CliExecuteCommandParsedEvent</a>
-									</li>
-									<li>
-										<a href="cliexecutecommandinvalidargumentsevent.html" class="tsd-signature-type">CliExecuteCommandInvalidArgumentsEvent</a>
-									</li>
-									<li>
-										<a href="cliexecutecommandhandleevent.html" class="tsd-signature-type">CliExecuteCommandHandleEvent</a>
-									</li>
-									<li>
-										<a href="cliexecutecommandhandledevent.html" class="tsd-signature-type">CliExecuteCommandHandledEvent</a>
-									</li>
-									<li>
-										<a href="helphelpershowhelpevent.html" class="tsd-signature-type">HelpHelperShowHelpEvent</a>
-									</li>
-								</ul>
-							</li>
-						</ul>
+						<span class="target">Storage</span>
 					</li>
 				</ul>
 			</section>
@@ -110,153 +76,166 @@
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
-						<section class="tsd-index-section tsd-is-inherited">
-							<h3>Constructors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><a href="exitevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section tsd-is-inherited">
+						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="exitevent.html#event" class="tsd-kind-icon">event</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section tsd-is-inherited">
-							<h3>Accessors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited"><a href="exitevent.html#cli" class="tsd-kind-icon">cli</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="storage.html#bags" class="tsd-kind-icon">bags</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="exitevent.html#exit" class="tsd-kind-icon">exit</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="exitevent.html#shouldexit" class="tsd-kind-icon">should<wbr>Exit</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="exitevent.html#stopifexit" class="tsd-kind-icon">stop<wbr>IfExit</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="storage.html#createbag" class="tsd-kind-icon">create<wbr>Bag</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="storage.html#getbag" class="tsd-kind-icon">get<wbr>Bag</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="storage.html#getorcreatebag" class="tsd-kind-icon">get<wbr>OrCreate<wbr>Bag</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="storage.html#hasbag" class="tsd-kind-icon">has<wbr>Bag</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="storage.html#issupportedprovider" class="tsd-kind-icon">is<wbr>Supported<wbr>Provider</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Exit<wbr>Event<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="exitevent.html" class="tsd-signature-type">ExitEvent</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from <a href="event.html">Event</a>.<a href="event.html#constructor">constructor</a></p>
-								<ul>
-									<li>Defined in src/core/events.ts:13</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> event: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;undefined</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="exitevent.html" class="tsd-signature-type">ExitEvent</a></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-					<a name="event" class="tsd-anchor"></a>
-					<h3>event</h3>
-					<div class="tsd-signature tsd-kind-icon">event<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
+					<a name="bags" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> bags</h3>
+					<div class="tsd-signature tsd-kind-icon">bags<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="event.html">Event</a>.<a href="event.html#event-1">event</a></p>
 						<ul>
-							<li>Defined in src/core/events.ts:15</li>
+							<li>Defined in src/storage.ts:7</li>
 						</ul>
 					</aside>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
-				<h2>Accessors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited">
-					<a name="cli" class="tsd-anchor"></a>
-					<h3>cli</h3>
-					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> cli<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="cli.html" class="tsd-signature-type">Cli</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from <a href="event.html">Event</a>.<a href="event.html#cli">cli</a></p>
-								<ul>
-									<li>Defined in src/core/events.ts:11</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="cli.html" class="tsd-signature-type">Cli</a></h4>
-						</li>
-					</ul>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>name: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="storagebag.html" class="tsd-signature-type">StorageBag</a></h5>
+							</li>
+						</ul>
+					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="exit" class="tsd-anchor"></a>
-					<h3>exit</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">exit<span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="createbag" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> create<wbr>Bag</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Bag<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, storageType<span class="tsd-signature-symbol">: </span><a href="../globals.html#storagetype" class="tsd-signature-type">StorageType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storagebag.html" class="tsd-signature-type">StorageBag</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/core/events.ts:23</li>
+									<li>Defined in src/storage.ts:13</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> code: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;0</span></h5>
+									<h5>name: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>storageType: <a href="../globals.html#storagetype" class="tsd-signature-type">StorageType</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="storagebag.html" class="tsd-signature-type">StorageBag</a></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="shouldexit" class="tsd-anchor"></a>
-					<h3>should<wbr>Exit</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">should<wbr>Exit<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="getbag" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> get<wbr>Bag</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Bag<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storagebag.html" class="tsd-signature-type">StorageBag</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/core/events.ts:35</li>
+									<li>Defined in src/storage.ts:20</li>
 								</ul>
 							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>name: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="storagebag.html" class="tsd-signature-type">StorageBag</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="getorcreatebag" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> get<wbr>OrCreate<wbr>Bag</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>OrCreate<wbr>Bag<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, storageType<span class="tsd-signature-symbol">: </span><a href="../globals.html#storagetype" class="tsd-signature-type">StorageType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="storagebag.html" class="tsd-signature-type">StorageBag</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/storage.ts:27</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>name: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>storageType: <a href="../globals.html#storagetype" class="tsd-signature-type">StorageType</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="storagebag.html" class="tsd-signature-type">StorageBag</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="hasbag" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> has<wbr>Bag</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">has<wbr>Bag<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/storage.ts:9</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>name: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="stopifexit" class="tsd-anchor"></a>
-					<h3>stop<wbr>IfExit</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">stop<wbr>IfExit<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="issupportedprovider" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>Supported<wbr>Provider</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Supported<wbr>Provider<span class="tsd-signature-symbol">(</span>provider<span class="tsd-signature-symbol">: </span><a href="storagebag.html" class="tsd-signature-type">StorageBag</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/core/events.ts:28</li>
+									<li>Defined in src/storage.ts:41</li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>provider: <a href="storagebag.html" class="tsd-signature-type">StorageBag</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -275,25 +254,25 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="exitevent.html" class="tsd-kind-icon">Exit<wbr>Event</a>
+						<a href="storage.html" class="tsd-kind-icon">Storage</a>
 						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited">
-								<a href="exitevent.html#constructor" class="tsd-kind-icon">constructor</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
+								<a href="storage.html#bags" class="tsd-kind-icon">bags</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-								<a href="exitevent.html#event" class="tsd-kind-icon">event</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="storage.html#createbag" class="tsd-kind-icon">create<wbr>Bag</a>
 							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited">
-								<a href="exitevent.html#cli" class="tsd-kind-icon">cli</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="storage.html#getbag" class="tsd-kind-icon">get<wbr>Bag</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="exitevent.html#exit" class="tsd-kind-icon">exit</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="storage.html#getorcreatebag" class="tsd-kind-icon">get<wbr>OrCreate<wbr>Bag</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="exitevent.html#shouldexit" class="tsd-kind-icon">should<wbr>Exit</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="storage.html#hasbag" class="tsd-kind-icon">has<wbr>Bag</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="exitevent.html#stopifexit" class="tsd-kind-icon">stop<wbr>IfExit</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="storage.html#issupportedprovider" class="tsd-kind-icon">is<wbr>Supported<wbr>Provider</a>
 							</li>
 						</ul>
 					</li>
