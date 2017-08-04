@@ -83,7 +83,11 @@ export class Cli {
     }
 
     public parse(config: CommandConfig): this {
-
+        if(kindOf(config.action) ==='function'){
+            config.argv = this.argv;
+            this.executeCommand(config);
+            return this;
+        }
         if ( ! this.parseCommands ) {
             return;
         }
@@ -113,7 +117,7 @@ export class Cli {
             const subCommands = this.getSubCommands(config.filePath)
             if ( subCommands[ result._[ 0 ] ] ) {
                 const command: CommandConfig = subCommands[ result._[ 0 ] ];
-                command.argv = result._.slice(1)
+                command.argv = config.argv.slice(1)
                 // process.argv.shift();
                 this.parse(command);
                 return this
@@ -132,7 +136,8 @@ export class Cli {
     protected async executeCommand(config: CommandConfig) {
 
 
-        let optionConfigs: OptionConfig[] = get('options', config.cls.prototype) || [];
+        // let optionConfigs: OptionConfig[] = get('options', config.cls.prototype) || [];
+        let optionConfigs: OptionConfig[] = config.options
 
         // Parse
         this.events.fire(new CliExecuteCommandParseEvent(config, optionConfigs))
@@ -143,16 +148,13 @@ export class Cli {
 
         this.events.fire(new CliExecuteCommandParsedEvent(argv, config, optionConfigs))
 
-        let instance;
 
-        // Create
-        if ( kindOf(config.action) === 'function' ) {
+        if(kindOf(config.action) ==='function'){
             config.cls = function(){}
-            config.cls.prototype[ 'handle' ] = config.action
-            instance = new (<any> config.cls)
-        } else {
-            instance = container.resolve(<any> config.cls);
+            container.ensureInjectable(config.cls);
+            config.cls.prototype['handle'] = (<Function> config.action)
         }
+        let instance  = container.resolve(<any> config.cls);
 
         // Assign the config itself to the instance, so it's possible to check back on it
         instance[ '_config' ]  = config;

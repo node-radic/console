@@ -73,6 +73,15 @@ function getOptionConfig(cls: Object, key: string, args: any[]): OptionConfig {
         config.array = true;
         type         = config.type
     }
+    try{
+        let ins = new (<any> cls.constructor)
+        let def = ins[key]
+        if(def && kindOf(def) === type){
+            config.default = def;
+        }
+    } catch (e){
+
+    }
 
     config.name = kebabCase(config.name);
     config.type = type;

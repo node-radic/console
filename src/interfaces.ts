@@ -64,19 +64,37 @@ export interface CommandConfig {
     alwaysRun?: null | string
 
     /** The name of the command. This will be checked and purged for argument definitions. */
-
     name?: string
+    /** [optional] alias that can be used instead of the name */
     alias?: string
+
+    /** [auto/optional] Describes the input of the command. This is auto-generated if not defined */
     usage?: string | null
+
+    /** Brief description of the command / group */
     description?: string
+
+    /** [optional] long description of the command / group */
+    explanation?: string
+
+    /** [optional] Can be used to show some examples */
     example?: string
-    explenation?: string
+
     subCommands?: CommandConfig[] | Dictionary<CommandConfig>
+
+    /** If enabled the command will be treated as a group. The Cli will try and locate sub-commands. */
     isGroup?: boolean
+
+    /** Commands can be disabled by setting this on false or passing a callback that returns a boolean value */
     enabled?: CommandConfigEnabledType
+
+
     group?: string | null
+
     cls?: Function
     filePath?: string
+
+    /** Defaults to 'handle' and refers to the function name in the class that should be called. It can also be a function, which can replace the need of using a class */
     action?: Function | string
     argv?: string[]
     helpers?: { [name: string]: HelperOptionsConfig }
@@ -222,4 +240,12 @@ export interface Plugin<T extends BasePluginConfig> {
     depends?: string[]
     config?:T
     register(config:T, helper:PluginRegisterHelper) : void
+}
+
+export interface InlineCommand extends Object{
+    [key:string] : any
+    action(args:CommandArguments)
+    _config: CommandConfig
+    _options: OptionConfig[]
+
 }

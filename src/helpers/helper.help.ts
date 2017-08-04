@@ -1,8 +1,8 @@
 import { kindOf, stringify } from "@radic/util";
-import { CommandArgumentConfig, CommandConfig, HelperOptionsConfig, OptionConfig } from "../interfaces";
+import { CommandArgumentConfig, CommandConfig, HelperOptionsConfig, OptionConfig, OutputColumnsOptions } from "../interfaces";
 import { helper } from "../decorators";
 import { CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParseEvent } from "../core/events";
-import { container, inject } from "../core/Container";
+import { bindTo, container, inject } from "../core/Container";
 import { OutputHelper } from "./helper.output";
 import { SubCommandsGetFunction } from "../utils";
 import { Log } from "../core/Log";
@@ -11,7 +11,7 @@ import { Dispatcher } from "../core/Dispatcher";
 import { HelpHelperOnInvalidArgumentsShowHelpEvent, HelpHelperShowHelpEvent } from "./events";
 import * as _ from "lodash";
 
-export type HelpHelperOverrideType = (helper: HelpHelper, command: CommandConfig, options?: OptionConfig[]) => string
+export type HelpHelperOverrideType = (command: CommandConfig, describer:CommandDescriber, helper: HelpHelper) => string
 export interface HelpHelperOptionsConfig extends HelperOptionsConfig {
 
     app: { title: string }
@@ -22,13 +22,16 @@ export interface HelpHelperOptionsConfig extends HelperOptionsConfig {
         key: string,
         name: string
     }
+    style: {
 
+    }
+    order: string[]
     overrides: {
         arguments: HelpHelperOverrideType
         title: HelpHelperOverrideType
         options: HelpHelperOverrideType
         description: HelpHelperOverrideType
-        explenation: HelpHelperOverrideType
+        explanation: HelpHelperOverrideType
         usage: HelpHelperOverrideType
         example: HelpHelperOverrideType
     }
@@ -39,13 +42,24 @@ export interface HelpHelperOptionsConfig extends HelperOptionsConfig {
         descriptionAsTitle: boolean
         usage: boolean
         example: boolean
-        explenation: boolean
+        explanation: boolean
         arguments: boolean
-        subCommands: boolean
         options: boolean
         globalOptions: boolean
+        commands: boolean
+        groups: boolean
     }
-
+    headers: {
+        usage: string
+        description: string
+        explanation: string
+        groups: string
+        commands: string
+        arguments: string
+        options: string
+        globalOptions: string
+        example: string
+    }
 }
 
 @helper('help', {
@@ -64,7 +78,7 @@ export interface HelpHelperOptionsConfig extends HelperOptionsConfig {
             titleLines : 'darkorange',
             header     : 'darkorange bold',
             group      : 'darkcyan bold',
-            grouped    : '<%= helpers.help.style.group %>',
+            grouped    : 'darkcyan bold',
             command    : 'steelblue',
             required   : 'green',
             description: 'darkslategray',
@@ -83,27 +97,53 @@ export interface HelpHelperOptionsConfig extends HelperOptionsConfig {
 
             }).join(' ')}`
         },
+        order             : [
+            'usage',
+            'description',
+            'explanation',
+            'groups',
+            'commands',
+            'arguments',
+            'options',
+            'globalOptions',
+            'example'
+        ],
+        headers: {
+            usage:'{header}Usage: {/header}',
+            description:'{header}Description: {/header}\n',
+            explanation:'{header}Explanation: {/header}\n',
+            groups:'{header}Groups: {/header}\n',
+            commands:'{header}Commands: {/header}\n',
+            arguments:'{header}Arguments: {/header}\n',
+            options:'{header}Options: {/header}\n',
+            globalOptions:'{header}Global options: {/header}\n',
+            example:'{header}Example: {/header}\n',
+        },
         overrides         : {
-            arguments  : null,
-            title      : null,
-            options    : null,
+            usage: null,
             description: null,
-            explenation: null,
-            usage      : null,
-            example    : null
+            explanation: null,
+            groups: null,
+            commands: null,
+            arguments: null,
+            options: null,
+            globalOptions: null,
+            example: null,
         },
         display           : {
             title             : true,
             titleLines        : true,
-            explenation       : true,
+            explanation       : true,
             description       : true,
             descriptionAsTitle: false,
             usage             : true,
+            usageOnGroups     : false,
             example           : true,
             arguments         : true,
-            subCommands       : true,
             options           : true,
-            globalOptions     : true
+            globalOptions     : true,
+            commands          : true,
+            groups            : true
         }
     },
     listeners: {
@@ -128,253 +168,27 @@ export class HelpHelper {
     @inject('cli.helpers.output')
     out: OutputHelper;
 
+    createDescriber(command: CommandConfig):CommandDescriber {
+        let describer = container.get<CommandDescriber>('cli.helpers.help.describer')
+        describer.command = command;
+        return describer;
+    }
+
     public get getSubCommands(): SubCommandsGetFunction { return container.get<SubCommandsGetFunction>('cli.fn.commands.get') }
 
 
-    public showHelp(config: CommandConfig, options: OptionConfig[]) {
+    public async showHelp(config: CommandConfig, options: OptionConfig[]) {
         if ( config.helpers[ 'help' ] ) {
             _.merge(this.config, config.helpers[ 'help' ]);
         }
         this.events.fire(new HelpHelperShowHelpEvent(config, options))
-        this.printHelp(config, options);
-    }
-
-    protected printHelp(config: CommandConfig, options: OptionConfig[]) {
-        let name    = config.name,
-            desc    = config.description || '',
-            example = config.example || '',
-            usage   = config.usage || '';
-
-
-        this.printTitle(config);
-
-        if ( this.config.display.description && ! this.config.display.descriptionAsTitle && config.description.length > 0 ) {
-            this.out.line(config.description); //line('{group}Description:{/group}')
-        }
-        if ( this.config.display.explenation && config.explenation.length > 0 ) {
-            this.out.line(config.explenation)
-        }
-        if ( this.config.display.usage ) {
-            if ( usage.length === 0 && config.arguments.length > 0 ) {
-                usage = this.getParsedCommandNames().join(' ');
-                usage += ' '
-                usage += config.arguments.map(arg => {
-                    name = arg.name + (arg.alias ? '|' + arg.alias : '')
-                    return arg.required ? '<' + name + '>' : '[' + name + ']'
-                }).join(' ')
+        let describer = this.createDescriber(config)
+        this.config.order.forEach((item, i) => {
+            if(kindOf(this.config.overrides[item]) === 'function'){
+                return this.config.overrides[item](config,describer, this);
             }
-            if ( usage.length > 0 ) {
-                this.out.nl.line(this.config.templates.usage).line(usage);
-            }
-        }
-        if ( this.config.display.arguments && config.arguments.length > 0 ) {
-            this.out.nl.line('{header}Arguments:{/header}');
-            this.printArguments(config.arguments);
-        }
-        if ( this.config.display.subCommands && config.isGroup ) {
-            this.out.nl.line('{header}Commands:{/header}');
-            this.printSubCommands(config);
-        }
-        if ( this.config.display.options && options.length > 0 ) {
-            this.out.nl.line('{header}Options:{/header}')
-            this.printOptions(options);
-        }
-        if ( this.config.display.globalOptions ) {
-            this.out.nl.line('{header}Global options:{/header}')
-            this.printGlobalOptions();
-        }
-        if ( this.config.display.example && example.length > 0 ) {
-            this.out.nl.line('{header}Examples:{/header}').line(example);
-        }
-    }
-
-    protected printTitle(config: CommandConfig) {
-        let title = config.name;
-        // check if root command
-        if ( this.cli.rootCommand.cls === config.cls ) {
-            title = this.config.app.title || config.name;
-        } else if ( this.config.display.descriptionAsTitle && config.description.length > 0 ) {
-            title = config.description; //line('{group}Description:{/group}')
-        }
-        if ( this.config.display.title ) {
-            this.out.nl.line(`{title}${title}{/title}`)
-            if ( this.config.display.titleLines ) {
-                this.out.line(`{titleLines}${'-'.repeat(title.length)}{/titleLines}`)
-            }
-        }
-
-    }
-
-    protected printArguments(args: CommandArgumentConfig[] = []) {
-        let rows = []
-        args.forEach(arg => {
-            let row  = [];
-            let name = [
-                arg.required ? '<' : '[',
-                arg.name,
-                arg.alias ? '|' + arg.alias : '',
-                arg.required ? '>' : ']',
-            ].join('');
-            row.push(name)
-
-            row.push(arg.description || '')
-
-            let type = [
-                '[',
-                arg.variadic ? '{array}Array<{/array}' : '',
-                `{type}${arg.type !== undefined ? arg.type : 'string'}{/type}`,
-                arg.variadic ? '{array}>{/array}' : '',
-                ']'
-            ].join('')
-            row.push(type)
-
-            if ( arg.required ) {
-                type += ' [{required}required{/required}]'
-            }
-            //
-            // let row = [
-            //     name,
-            //     arg.desc,
-            //     type
-            // ]
-
-            rows.push(row); //[ arg.name, arg.desc, arg.type, arg.variadic, arg.required ])
+            describer[item]()
         })
-        this.out.columns(rows, {
-            columnSplitter  : '  ',
-            showHeaders     : false,
-            preserveNewLines: true
-        })
-    }
-
-    protected printSubCommands(config: CommandConfig) {
-        let rows                                   = []
-        let groups: { [name: string]: string[][] } = {}
-        this.getSubCommands<CommandConfig[]>(config.filePath, false, true).forEach(command => {
-            let desc                          = '',
-                name                          = null,
-                args: CommandArgumentConfig[] = [];
-
-            desc = command.description;
-            name = command.name
-            args = command.arguments
-
-            let type = command.isGroup ? 'grouped' : 'command';
-            let line = [ `{${type}}${command.name}{/${type}}`, `{desc}${desc}{/desc}` ];
-
-            if ( command.group ) {
-                if ( ! groups[ command.group ] ) groups[ command.group ] = []
-                groups[ command.group ].push(line)
-            } else {
-                rows.push(line)
-            }
-        })
-        // findSubCommandsPaths(config.filePath).forEach(modulePath => {
-        //     let desc                          = '',
-        //         name                          = null,
-        //         args: CommandArgumentConfig[] = [];
-        //
-        //     let module = require(modulePath);
-        //     if ( kindOf(module.default) === 'function' ) {
-        //         let command: CommandConfig = Reflect.getMetadata('command', module.default);
-        //
-        //         desc = command.description;
-        //         name = command.name
-        //         args = command.arguments
-        //         // let sub = ' '
-        //         // if(config.subCommands && config.subCommands.length > 0){
-        //         //     sub = config.subCommands.map(subCommand => `{command}${subCommand}{/command}\n`).join('')
-        //         // }
-        //
-        //         let type = command.isGroup ? 'grouped' : 'command';
-        //         let line = [ `{${type}}${command.name}{/${type}}`, `{desc}${desc}{/desc}` ];
-        //
-        //         if ( command.group ) {
-        //             if ( ! groups[ command.group ] ) groups[ command.group ] = []
-        //             groups[ command.group ].push(line)
-        //         } else {
-        //             rows.push(line)
-        //         }
-        //     }
-        // })
-        this.out.columns(rows, {
-            columnSplitter  : '   ',
-            showHeaders     : false,
-            preserveNewLines: true
-        })
-        Object.keys(groups).forEach(group => {
-            this.out.nl.line(`{orange}${group} commands:{/orange}`)
-            this.out.columns(groups[ group ], {
-                columnSplitter  : '   ',
-                showHeaders     : false,
-                preserveNewLines: true
-            })
-        })
-    }
-
-    protected printGlobalOptions() {
-        this.printOptions(this.cli[ 'globalOptions' ]);
-    }
-
-    protected printOptions(options: OptionConfig[]) {
-        let rows = [];
-
-        let s = this.config.styles
-        options.forEach(option => {
-            // Format description
-            let desc: string = option.description;
-            let maxWidth     = 50;
-            if ( desc && desc.length > maxWidth ) {
-                let remaining = desc.length
-                let result    = '';
-                while ( remaining > maxWidth ) {
-                    result += desc.slice(desc.length - remaining, result.length + maxWidth) + '\n';
-                    remaining -= maxWidth;
-                }
-                if ( remaining > 0 ) {
-                    result += desc.slice(desc.length - remaining, result.length + maxWidth)
-                }
-                desc = result;
-            }
-
-
-            // Format type
-            let type: string = option.type
-            if ( type === undefined && option.count ) {
-                type = 'count'
-            }
-            type = `{type}${type}{/type}`
-            if ( option.array ) {
-                type = `{cyan}Array<{/cyan}${type}{cyan}>{/cyan}`
-            }
-            if ( option.default ) {
-                type += '=' + stringify(option.default)
-            }
-            type = '[' + type + ']';
-
-            // Format key
-            let name    = option.name;
-            let hasName = ! ! name;
-            let key     = '-' + option.key + (name ? '|--' + name : '');
-            if ( option.arguments > 0 ) {
-            }
-            if ( option.default ) {
-                // type = `[default=${JSON.stringify(option.default)}] ${type}`
-            }
-
-            let columns = [
-                key,
-                desc,
-                type
-            ]
-            rows.push(columns);
-        })
-        this.out.columns(rows, {
-            columnSplitter  : '   ',
-            showHeaders     : false,
-            preserveNewLines: true
-        })
-
     }
 
     public printCommandTree(label: string = 'Command tree:', config?: CommandConfig) {
@@ -422,12 +236,6 @@ export class HelpHelper {
         return obj
     }
 
-    protected getParsedCommandNames(): string[] {
-        return this.cli.parsedCommands.map(cmd => {
-            return cmd.name
-        })
-    }
-
     public onCommandParse(event: CliExecuteCommandParseEvent) {
         if ( this.config.option.enabled === true ) {
             event.cli.global(this.config.option.key, {
@@ -459,7 +267,7 @@ export class HelpHelper {
 
     public onInvalidArguments(event: CliExecuteCommandInvalidArgumentsEvent) {
         if ( this.config.showOnError === true && event.config.onMissingArgument === 'help' ) {
-            if ( this.events.fire(new HelpHelperOnInvalidArgumentsShowHelpEvent(event)).stopIfExit().isCanceled()) return
+            if ( this.events.fire(new HelpHelperOnInvalidArgumentsShowHelpEvent(event)).stopIfExit().isCanceled() ) return
             this.showHelp(event.config, event.options);
             this.out.nl;
             for ( let m in event.parsed.missing ) {
@@ -467,6 +275,229 @@ export class HelpHelper {
             }
             return event.exit();
         }
+    }
+
+}
+
+container.bind('cli.helpers.help.describer.factory').toFactory((ctx) => {
+    return async (command: CommandConfig) => {
+        const describer   = ctx.container.get<CommandDescriber>('cli.helpers.help.describer')
+        describer.command = command;
+        return describer;
+    }
+})
+
+@bindTo('cli.helpers.help.describer')
+export class CommandDescriber {
+    public command: CommandConfig = null;
+
+    @inject('cli.helpers.help')
+    protected help: HelpHelper
+
+    @inject('cli.helpers.output')
+    protected out: OutputHelper
+
+    protected get config(): HelpHelperOptionsConfig {
+        return this.help.config;
+    }
+
+    protected get display() {
+        return this.config.display;
+    }
+
+    get nl(): this {
+        this.write('\n')
+        return this;
+    }
+
+    write(text: string): this {
+        this.out.write(text)
+        return this;
+    }
+
+    line(text: string = ''): this {
+        this.out.line(text)
+        return this;
+    }
+
+    protected columns(data: any, options: OutputColumnsOptions = {}): this {
+        return this.write(this.out.columns(data, options, true))
+    }
+
+    usage(): this {
+        if ( ! this.display.usage ) return this;
+        let config = this.command,
+            usage  = config.usage || '',
+            name   = config.name
+        if ( usage.length === 0 && config.arguments.length > 0 ) {
+            usage = this.help.cli.parsedCommands.map(cmd => cmd.name).join(' ');
+            usage += ' '
+            usage += config.arguments.map(arg => {
+                name = arg.name + (arg.alias ? '|' + arg.alias : '')
+                return arg.required ? '<' + name + '>' : '[' + name + ']'
+            }).join(' ')
+        }
+        usage += ' [...options]'
+        return this.write(this.config.headers.usage).write(usage).nl.nl
+    }
+
+    arguments(): this {
+        if ( this.command.isGroup || ! this.display.arguments || this.command.arguments.length === 0 ) return this;
+        let rows = []
+        this.command.arguments.forEach(arg => {
+            let row  = [];
+            let name = [
+                arg.required ? '<' : '[',
+                arg.name,
+                arg.alias ? '|' + arg.alias : '',
+                arg.required ? '>' : ']',
+            ].join('');
+            row.push(name)
+
+            row.push(arg.description || '')
+
+            let type = [
+                '[',
+                arg.variadic ? '{array}Array<{/array}' : '',
+                `{type}${arg.type !== undefined ? arg.type : 'string'}{/type}`,
+                arg.variadic ? '{array}>{/array}' : '',
+                ']'
+            ].join('')
+
+            if ( arg.required ) {
+                type += ' [{required}required{/required}]'
+            }
+            row.push(type)
+            rows.push(row); //[ arg.name, arg.desc, arg.type, arg.variadic, arg.required ])
+        })
+        if ( rows.length === 0 ) return this;
+        return this.write(this.config.headers.arguments).columns(rows, {
+            columnSplitter  : '  ',
+            showHeaders     : false,
+            preserveNewLines: true
+        }).nl.nl
+    }
+
+    commands(): this {
+        if ( ! this.command.isGroup || ! this.display.commands ) return this;
+        let rows = []
+        this.help.getSubCommands<CommandConfig[]>(this.command.filePath, false, true).forEach(command => {
+            let type = command.isGroup ? 'grouped' : 'command';
+            if ( command.isGroup ) return;
+            rows.push([ `{command}${command.name}{/command}`, `{desc}${command.description}{/desc}` ]);
+
+        })
+        if ( rows.length === 0 ) return this;
+        return this.write(this.config.headers.commands).columns(rows, {
+            columnSplitter  : '   ',
+            showHeaders     : false,
+            preserveNewLines: true
+        }).nl.nl
+    }
+
+    groups(): this {
+        if ( ! this.command.isGroup || ! this.display.commands ) return this;
+
+        let rows = []
+        this.help.getSubCommands<CommandConfig[]>(this.command.filePath, false, true).forEach(command => {
+            if ( ! command.isGroup ) return;
+            rows.push([ `{grouped}${command.name}{/grouped}`, `{desc}${command.description}{/desc}` ]);
+
+        })
+        if ( rows.length === 0 ) return this;
+        return this.write(this.config.headers.groups).columns(rows, {
+            columnSplitter  : '   ',
+            showHeaders     : false,
+            preserveNewLines: true
+        }).nl.nl
+    }
+
+    globalOptions(): this {
+        if ( ! this.display.globalOptions || this.help.cli[ 'globalOptions' ].length === 0 ) return this;
+        return this.write(this.config.headers.globalOptions).printOptions(this.help.cli[ 'globalOptions' ]).nl.nl
+    }
+
+    options(): this {
+        if ( ! this.display.options || this.command.options.length === 0 ) return this;
+        return this.write(this.config.headers.options).printOptions(this.command.options).nl.nl
+    }
+
+    description(): this {
+        if ( ! this.display.description || this.command.description.length === 0 ) return this;
+        return this.write(this.config.headers.description).write(this.command.description).nl.nl
+    }
+
+    explanation(): this {
+        if ( ! this.display.explanation || !this.command.explanation) return this;
+
+        return this.write(this.config.headers.explanation).write(this.command.explanation).nl.nl
+    }
+
+    example(): this {
+        if ( ! this.display.example || !this.command.example ) return this;
+        return this.write(this.config.headers.example).write(this.command.example).nl.nl
+    }
+
+    protected printOptions(options: OptionConfig[]): this {
+        let rows = [];
+
+        let s = this.help.config.styles
+        options.forEach(option => {
+            // Format description
+            let desc: string = option.description;
+            let maxWidth     = 50;
+            if ( desc && desc.length > maxWidth ) {
+                let remaining = desc.length
+                let result    = '';
+                while ( remaining > maxWidth ) {
+                    result += desc.slice(desc.length - remaining, result.length + maxWidth) + '\n';
+                    remaining -= maxWidth;
+                }
+                if ( remaining > 0 ) {
+                    result += desc.slice(desc.length - remaining, result.length + maxWidth)
+                }
+                desc = result;
+            }
+
+
+            // Format type
+            let type: string = option.type
+            if ( type === undefined && option.count ) {
+                type = 'count'
+            }
+            type = `{type}${type}{/type}`
+            if ( option.array ) {
+                type = `{cyan}Array<{/cyan}${type}{cyan}>{/cyan}`
+            }
+            if ( option.default ) {
+                type += '=' + stringify(option.default)
+            }
+            type = '[' + type + ']';
+
+
+            // Format key
+            let name    = option.name;
+            let hasName = ! ! name;
+            let key     = '-' + option.key + (name ? '|--' + name : '');
+            if ( option.arguments > 0 ) {
+            }
+            if ( option.default ) {
+                // type = `[default=${JSON.stringify(option.default)}] ${type}`
+            }
+
+            let columns = [
+                key,
+                desc,
+                type
+            ]
+            rows.push(columns);
+        })
+        return this.columns(rows, {
+            columnSplitter  : '   ',
+            showHeaders     : false,
+            preserveNewLines: true
+        })
+
     }
 
 }

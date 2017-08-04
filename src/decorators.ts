@@ -24,19 +24,17 @@ export function command(name: string, description?: string | CommandConfig, conf
         config = {
             ...defaults.command(cls),
             ...config || {},
-            name,
-            description: description ? description.toString().toLowerCase() : ''
+            name
         }
+        config.description = description ? description.toString().toLowerCase() : config.description || ''
         config = container.get<PrepareArgumentsFunction>('cli.fn.arguments.prepare')(config);
 
         config.filePath  = callsites().filter(site => site.getFunctionName() == '__decorate').map(site => site.getFileName()).shift()
         config.enabled   = kindOf(config.enabled) === 'function' ? (<Function>config.enabled).apply(config, [ container ]) : config.enabled;
         config.alwaysRun = kindOf(get('alwaysRun', cls) === 'string') ? get('alwaysRun', cls) : config.alwaysRun
 
-        if(config.options){
-            const options = <OptionConfig[]>get('options', cls.prototype) || [];
-            set('options', options.concat(config.options), cls.prototype);
-        }
+        const options = <OptionConfig[]>get('options', cls.prototype) || [];
+        set('options', config.options = options.concat(config.options), cls);
 
         set('command', config, cls);
     }
