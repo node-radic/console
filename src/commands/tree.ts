@@ -23,6 +23,15 @@ export class TreeCmd {
 
     all: boolean = false
 
+    colors = {
+        group: 'darkcyan bold',
+        command: 'steelblue',
+        description: 'darkslategray',
+        argument: 'green',
+        requiredArgument: 'yellow',
+        option: 'darkslategray lighten 40'
+    }
+
     public get getSubCommands(): SubCommandsGetFunction { return container.get<SubCommandsGetFunction>('cli.fn.commands.get') }
 
 
@@ -39,9 +48,9 @@ export class TreeCmd {
             .concat(this.getSubCommands<CommandConfig[]>(config.filePath, false, true).filter(command => ! command.isGroup))
             .map(command => {
                 if ( command.isGroup ) {
-                    let label = `{darkcyan bold}${command.name}{reset}`;
+                    let label = `{${this.colors.group}}${command.name}{reset}`;
                     if(this.desc && command.description.length > 0){
-                        label += ` : {darkslategray}${command.description}{/darkslategray}`
+                        label += ` : {${this.colors.description}}${command.description}{reset}`
                     }
                     return { label, nodes: this.getChildren(command) }
                 }
@@ -59,23 +68,23 @@ export class TreeCmd {
         let args  = config.arguments.map(arg => {
             let output = [];
             let name   = arg.name;
-            output.push(arg.required ? `<{yellow}${arg.name}{/yellow}` : `[{green}${arg.name}{/green}`);
+            output.push(arg.required ? `<{${this.colors.requiredArgument}}${arg.name}{reset}` : `[{${this.colors.argument}}${arg.name}{reset}`);
             // if(arg.type && types[arg.type] ){
             //     output.push(`({${types[arg.type]}}${arg.type}{/${types[arg.type]}})`);
             // }
             if ( this.desc && this.desc ) {
-                output.push(`:{darkslategray}${arg.description}{/darkslategray}`)
+                output.push(`:{${this.colors.description}}${arg.description}{reset}`)
             }
             output.push(arg.required ? '>' : ']')
             return output.join('')
 
         }).join(' ');
-        let name  = `{steelblue}${config.name}{/steelblue}`
+        let name  = `{${this.colors.command}}${config.name}{reset}`
         let opts  = '';
         if ( this.opts && config.options && config.options.length > 0 ) {
             opts = config.options.map(opt => '--' + opt.name).join(' ')
         }
 
-        return `${name} ${args} {darkslategray lighten 40}${opts}{/darkslategray}`;
+        return `${name} ${args} {${this.colors.option}}${opts}{reset}`;
     }
 }

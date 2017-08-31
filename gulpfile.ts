@@ -88,7 +88,7 @@ gulp.task("build", (cb) => runSequence(
 
 gulp.task("build:watch", (cb) => runSequence(
     "clean:watch",
-    [ 'build:lib', 'build:dts' ],
+    [ 'build:lib','build:lib:es6', 'build:dts' ],
     cb
 ));
 gulp.task('watch', () => { gulp.watch(c.src, <WatchOptions>{ debounceDelay: 3000, interval: 3000 }, [ 'build:watch' ])})

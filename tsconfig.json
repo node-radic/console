@@ -13,7 +13,7 @@
         "lib": ["es2017", "es2017.object"],
         "noResolve": false,
         "types": [
-
+            "ora"
         ],
         "typeRoots": [
             "./node_modules/@types",

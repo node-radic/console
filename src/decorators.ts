@@ -106,6 +106,6 @@ export function helper(options: HelperOptions): ClassDecorator;
 export function helper(name: string, options: HelperOptions): ClassDecorator;
 export function helper(...args: any[]): ClassDecorator {
     return (cls) => {
-        container.get<Cli>('cli').helpers.addHelper(makeNodeConfig(cls, args));
+        container.get<Cli>('cli').helpers.add(makeNodeConfig(cls, args));
     }
 }

@@ -4,12 +4,13 @@ import { kindOf } from "@radic/util";
 import { Parser } from "@radic/console-colors";
 import { inspect } from "util";
 import { helper } from "../decorators";
-import { HelperOptionsConfig, OutputColumnsOptions } from "../interfaces";
+import { HelperOptionsConfig, OutputColumnsOptions, OutputHelperOptionsConfig } from "../interfaces";
 import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent } from "../core/events";
-const tty       = require('tty');
+import * as ora from 'ora'
 
-
-// truwrap({})
+const tty = require('tty');
+import * as Table from 'cli-table2';
+import { TableConstructorOptions } from 'cli-table2'
 
 
 @helper('output', {
@@ -61,7 +62,7 @@ const tty       = require('tty');
     }
 })
 export class OutputHelper {
-    config: HelperOptionsConfig;
+    config: OutputHelperOptionsConfig;
     macros: { [name: string]: Function }
     _parser: Parser;
 
@@ -104,9 +105,6 @@ export class OutputHelper {
         else
             text = this.parser.parse(text);
 
-        // if ( ! this.colorsEnabled )
-        // text = this.parser.clean
-
         process.stdout.write(text)
         return this
     }
@@ -141,16 +139,34 @@ export class OutputHelper {
         return this.line(tree)
     }
 
-    table(options: any = {}): any [] {
+    protected modifiedTable: boolean = false
 
-//         var Table = require('cli-table2');
-//
-// // instantiate
-//         var table = new Table({
-//             head: ['TH 1 label', 'TH 2 label']
-//             , colWidths: [100, 200]
-//         });
-        return new (require('cli-table2'))(kindOf(options) === 'array' ? { head: options } : options)
+    /**
+     * Integrates the color parser for cells into the table
+     */
+    protected modifyTablePush() {
+        if ( this.modifiedTable ) return;
+        const _push          = Table.prototype.push;
+        Table.prototype.push = (...items: any[]): number => {
+            items.map(item => {
+                if ( kindOf(item) === 'string' ) {
+                    item = this.parse(item)
+                }
+                return item;
+            })
+            return _push.apply(this, items);
+        }
+        this.modifiedTable   = true;
+    }
+
+    /**
+     * Create a table
+     * @param {CliTable2.TableConstructorOptions | string[]} options Accepts a options object or header names as string array
+     * @returns {any[]}
+     */
+    table(options: TableConstructorOptions | string[] = {}): Table.Table {
+        this.modifyTablePush();
+        return new Table(kindOf(options) === 'array' ? { head: <string[]> options } : <TableConstructorOptions> options)
     }
 
     columns(data: any, options: OutputColumnsOptions = {}, ret: boolean = false) {
@@ -187,6 +203,13 @@ export class OutputHelper {
     warning(text: string): this {
         this.styleString('error', text)
         return this
+    }
+
+    spinner(text: string = '', options: ora.Options = {}): ora.Ora {
+        let spinner  = ora(options)
+        spinner.text = text;
+        return spinner;
+
     }
 
 

@@ -1,9 +1,10 @@
 # Radical Console
 
-- [Bootstrapping](#)
-- [Creating commands](#)
-- [Creating a command structure](#)
-- [Core API & Bindings](#)
+- [Examples](#examples)
+- [Bootstrapping](#bootstrapping)
+- [Creating commands](#creating-commands)
+- [Creating a command structure](#creating-a-command-structure)
+- [Core API & Bindings](#core-api--bindings)
     -  [Cli](#)
     -  [Config](#)
     -  [Container](#)
@@ -13,15 +14,19 @@
     -  [decorators](#)
     -  [defaults](#)
     -  [utils](#)
-- [Helpers](#)
+- [Helpers](#helpers)
     -  [help](#)
     -  [input](#)
     -  [output](#)
     -  [verbose](#)
-- [Plugins](#)
+- [Plugins](#plugins)
     -  [database](#)
     -  [crypro](#)
 
+Examples
+--------
+- [radical-console-demo](https://github.com/node-radic/radical-console-demo) a basic example
+- [@radic/cli](https://github.com/node-radic/rcli) a advanced example
 
 Bootstrapping
 -------------
@@ -33,34 +38,60 @@ The Cli will then parse the `process.argv`
 
 Creating Commands
 -----------------
+### Inline
+```typescript
+#!/usr/bin/env node
+import "reflect-metadata";
+import { cli, CommandArguments, InlineCommand } from "radical-console";
+
+
+cli.parse({
+    options  : [
+        { key: 's', name: 'symlink', description: 'sym is good for link' }
+    ],
+    arguments: [
+        { name: 'path', description: 'The path to the stuff', required: true, type: 'string' }
+    ],
+    action   : (args: CommandArguments) => {
+        /** @this {InlineCommand} */
+        console.log('hello!')
+        console.dir({ args, me: this });
+    }
+});
+```
+
+### Single
+```typescript
+#!/usr/bin/env node
+import "reflect-metadata";
+import { cli, command, CommandArguments, inject, OutputHelper } from "radical-console";
+
+@command('single', {
+    options: [
+        { key: 'a', name: 'append', description: 'append it' }
+    ]
+})
+export default class {
+    @inject('cli.helpers.output')
+    out: OutputHelper;
+
+    handle(args: CommandArguments, argv: string[]) {
+        this.out.success('YES!')
+    }
+}
+
+cli.helper('output').start(__filename);
+```
 
 Creating a command structure
 ----------------------------
-
-Core API & Bindings
--------------------
-
-
-Helpers
--------
-
-
-Plugins
--------
-
-
-
-
-
-Quick glance
-------------
 
 #### Bootstrapping
 **`bin/foobar.ts`**
 
 ```typescript
 #!/usr/bin/env node
-import { cli } from "@radic/console";
+import { cli } from "radical-console";
 
 // override some of the default config
 cli.config.merge({
@@ -162,3 +193,72 @@ export default class GitFetchCmd {
     }
 }
 ```
+
+Core API & Bindings
+-------------------
+### Cli
+- **Binding**: `cli`
+- **API**: [Dispatcher](classes/cli.html)
+...
+
+### Config
+- **Binding**: `cli.config`
+- **API**: [Config](classes/dispatcher.html)
+- **From**: `@radic/util`
+
+Configuration is stored here. It works like Grunt config, enabling you to use inline javascript.
+
+### Container
+- **API**: [Container](classes/container.html)
+- **From**: `inversifyjs`
+
+The IoC container is extended from InversifyJS
+
+
+### Events/Dispatcher
+- **Binding**: `cli.`
+- **API**: [Dispatcher](classes/dispatcher.html)
+- **From**: `eventemitter2`
+
+Event dispatcher. Bound to `cli.events` as singleton. Utilizes EventEmitter2 under the hood.
+It adds some extra functionality, primarily the fire(), halt() and dispatch() methods.
+The fire() class expects a subclass of Event to be provided, which will be passed to the listeners.
+This is the preferred way of firing events within the application
+
+### Helpers
+- **Binding**: `cli.helpers`
+- **API**: [Helpers](classes/helpers.html)
+...
+
+### Log
+**Binding**: `cli.`
+
+**From**: `winston`
+
+
+### decorators
+**Binding**: `cli.`
+...
+
+### defaults
+**Binding**: `cli.`
+...
+
+### utils
+**Binding**: `cli.`
+...
+
+
+Helpers
+-------
+
+
+Plugins
+-------
+
+
+
+
+
+Quick glance
+------------
