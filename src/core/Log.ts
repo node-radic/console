@@ -3,6 +3,8 @@ import { container } from "./Container";
 import { Parser } from "@radic/console-colors";
 import { kindOf } from "@radic/util";
 import * as util from "util";
+import { Helpers } from "./Helpers";
+import { OutputHelper } from "../helpers/helper.output";
 
 export interface Log extends LoggerInstance {}
 
@@ -52,7 +54,7 @@ export function getConsoleMeta(options: ConsoleTransportOptions) {
 
 }
 
-export const parser                          = new Parser()
+let parser                          :Parser = new Parser;
 export const transports: TransportInstance[] = [
     new (wtransports.Console)({
         // json       : true,
@@ -62,10 +64,19 @@ export const transports: TransportInstance[] = [
         // timestamp  : true,
         showLevel: true,
         formatter: function (options: ConsoleTransportOptions) {
+            if(container.get<Helpers>('cli.helpers').isEnabled('output')){
+                const out = container.get<OutputHelper>('cli.helpers.output')
+                options.colorize = out.config.colors
+                parser = out.parser;
+            }
             // Return string will be passed to logger.
             let message    = options[ 'message' ] ? options[ 'message' ] : ''
             let color      = config.syslog.colors[ options.level ] || config.cli.colors[ options.level ]
-            let level      = parser.parse(`{${color}}${options.level}{/${color}}`)
+            let level      = options.level;
+            if(options.colorize){
+                message = parser.parse(message);
+                level = parser.parse(`{${color}}${level}{/${color}}`)
+            }
             let meta: any  = getConsoleMeta(options);
             let metaPrefix = meta.length > 200 ? '\n' : '\t'
             return `${level} :: ${message} ${metaPrefix}${meta}`

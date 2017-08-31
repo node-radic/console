@@ -158,7 +158,23 @@ export interface ParserConfiguration {
 
 export interface HelperOptionsConfig {
     [name: string]: any
+}
+export interface HelperOptionsConfigOption {
+    enabled: boolean,
+    key: string,
+    name: string
+}
 
+export interface OutputHelperOptionsConfig extends HelperOptionsConfig {
+    quiet: boolean,
+    colors: boolean,
+    options: {
+        quiet: HelperOptionsConfigOption,
+        colors: HelperOptionsConfigOption
+    },
+    resetOnNewline: boolean,
+    styles: { [name: string]: string },
+    tableStyle: { [name: string]: { [name: string]: string } }
 }
 
 /**
@@ -240,6 +256,9 @@ export interface Plugin<T extends BasePluginConfig> {
     depends?: string[]
     config?:T
     register(config:T, helper:PluginRegisterHelper) : void
+}
+export type PluginConstructor<T extends BasePluginConfig> = {
+    new() : Plugin<T>
 }
 
 export interface InlineCommand extends Object{

@@ -28,14 +28,17 @@ export class Helpers {
 
     protected started: boolean = false;
 
+    public has(name: string): boolean { return !! this._helpers[name] }
 
-    public addHelper<T>(options: HelperOptions): HelperOptions {
+    public isEnabled(name: string): boolean { return this._helpers[name].enabled === true }
+
+    public add<T>(options: HelperOptions): HelperOptions {
         options = _.merge(defaults.helper(), options);
         this.config.set('helpers.' + options.name, options.config);
         return this._helpers[ options.name ] = options;
     }
 
-    public enableHelper(name: string, customConfig: HelperOptionsConfig = {}) {
+    public enable(name: string, customConfig: HelperOptionsConfig = {}) {
         this._helpers[ name ].enabled = true;
 
         let config = this.config.get('helpers.' + name);
