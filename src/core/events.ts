@@ -1,6 +1,6 @@
 import { Cli } from "./Cli";
 import { container, injectable } from "./Container";
-import { CommandConfig, Dictionary, HelperOptionsConfig, OptionConfig, ParsedCommandArguments } from "../interfaces";
+import { BasePluginConfig, CommandConfig, Dictionary, HelperOptionsConfig, OptionConfig, ParsedCommandArguments, Plugin } from "../interfaces";
 import { YargsParserArgv } from "yargs-parser";
 import { ChildProcess } from "child_process";
 import { Helpers } from "./Helpers";
@@ -41,9 +41,9 @@ export abstract class CancelEvent extends Event {
     public cancel(){
         this._canceled = true;
     }
-    public canceled(cb:()=>void) : this  {
+    public canceled<T>(cb:(event?:this)=>T) : T | this {
         if(this._canceled === true){
-            cb();
+            return cb(this);
         }
         return this;
     }
@@ -142,6 +142,17 @@ export class CliExecuteCommandHandledEvent<T = any> extends ExitEvent {
     }
 }
 
+export class CliPluginRegisterEvent<T extends BasePluginConfig=BasePluginConfig> extends CancelEvent {
+    constructor(public plugin:Plugin<T>,
+                public config:T){
+        super('cli:plugin:register')
+    }
+}
+export class CliPluginRegisteredEvent<T extends BasePluginConfig=BasePluginConfig> extends Event {
+    constructor(public plugin:Plugin<T>){
+        super('cli:plugins:registered')
+    }
+}
 
 export class HelpersStartingEvent extends CancelEvent {
     constructor(public helpers: Helpers, public enabledHelpers: string[]) {

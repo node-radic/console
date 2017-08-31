@@ -1,8 +1,8 @@
 import { kindOf } from "@radic/util";
 import { container, injectable, lazyInject } from "./Container";
-import { BasePluginConfig, CliConfig, CommandConfig, HelperOptionsConfig, OptionConfig, Plugin } from "../interfaces";
+import { BasePluginConfig, CliConfig, CommandConfig, HelperOptionsConfig, OptionConfig, Plugin, PluginConstructor } from "../interfaces";
 // import { YargsParserArgv } from "../../types/yargs-parser";
-import { CliExecuteCommandEvent, CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent, CliStartEvent } from "./events";
+import { CliExecuteCommandEvent, CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent, CliPluginRegisterEvent, CliStartEvent, CliPluginRegisteredEvent } from "./events";
 import { Log } from "./Log";
 import { Config } from "./config";
 import { ParseArgumentsFunction, SubCommandsGetFunction, TransformOptionsFunction } from "../utils";
@@ -70,26 +70,26 @@ export class Cli {
 
     }
 
-    public start(requirePath: string): this {
+    public async start(requirePath: string) {
         requirePath = resolve(requirePath);
         this.events.fire(new CliStartEvent(requirePath)).proceed(() => {
             this.helpers.startHelpers();
-            let mod = require(requirePath)
-            let command =<CommandConfig> Reflect.getMetadata('command', mod.default);
+            let mod      = require(requirePath)
+            let command  = <CommandConfig> Reflect.getMetadata('command', mod.default);
             command.argv = this.argv;
-            this.parse(command)
+            return this.parse(command)
         })
-        return this
+        return Promise.resolve()
+
     }
 
-    public parse(config: CommandConfig): this {
-        if(kindOf(config.action) ==='function'){
+    public async parse(config: CommandConfig) {
+        if ( kindOf(config.action) === 'function' ) {
             config.argv = this.argv;
-            this.executeCommand(config);
-            return this;
+            return this.executeCommand(config);
         }
         if ( ! this.parseCommands ) {
-            return;
+            return Promise.resolve()
         }
         let isRootCommand: boolean = ! this._rootCommand
         if ( isRootCommand ) {
@@ -108,7 +108,8 @@ export class Cli {
             this.events.fire(new CliExecuteCommandEvent(config, config.alwaysRun)).proceed(() => {
                 let instance = container.resolve(<any> config.cls);
                 if ( kindOf(instance[ config.alwaysRun ]) === 'function' ) {
-                    return instance[ config.alwaysRun ].apply(instance, [ config.argv ]);
+                    instance[ config.alwaysRun ].apply(instance, [ config.argv ]);
+                    return Promise.resolve()
                 }
             });
         }
@@ -117,19 +118,20 @@ export class Cli {
             const subCommands = this.getSubCommands(config.filePath)
             if ( subCommands[ result._[ 0 ] ] ) {
                 const command: CommandConfig = subCommands[ result._[ 0 ] ];
-                command.argv = config.argv.slice(1)
+                command.argv                 = config.argv.slice(1)
                 // process.argv.shift();
-                this.parse(command);
-                return this
+                return this.parse(command);
             }
         }
 
         if ( ! this._runningCommand ) {
             this._runningCommand = config;
-            this.events.fire(new CliExecuteCommandEvent(config, config.alwaysRun)).proceed(() => this.executeCommand(config));
+            if ( ! this.events.fire(new CliExecuteCommandEvent(config, config.alwaysRun)).isCanceled() ) {
+                return this.executeCommand(config)
+            }
         }
 
-        return this;
+        return Promise.resolve();
     }
 
 
@@ -149,12 +151,12 @@ export class Cli {
         this.events.fire(new CliExecuteCommandParsedEvent(argv, config, optionConfigs))
 
 
-        if(kindOf(config.action) ==='function'){
-            config.cls = function(){}
+        if ( kindOf(config.action) === 'function' ) {
+            config.cls = function () {}
             container.ensureInjectable(config.cls);
-            config.cls.prototype['handle'] = (<Function> config.action)
+            config.cls.prototype[ 'handle' ] = (<Function> config.action)
         }
-        let instance  = container.resolve(<any> config.cls);
+        let instance = container.resolve(<any> config.cls);
 
         // Assign the config itself to the instance, so it's possible to check back on it
         instance[ '_config' ]  = config;
@@ -186,12 +188,21 @@ export class Cli {
             }
         }
 
+
         // give a way to validate / format arguments. We'll pass em to the method (if exist)
         if ( kindOf(instance[ 'validate' ]) === 'function' ) {
-            // if it returns a string, its a failed validation string.
+            let md = Reflect.getMetadataKeys(instance[ 'validate' ]).map(key => Reflect.getMetadata(key, instance[ 'validate' ]))
+            console.log(md)
             let validate = instance[ 'validate' ].apply(instance, [ parsed.arguments, argv ])
+            // if it returns a string, its a failed validation string.
             if ( kindOf(validate) === 'string' ) {
                 this.fail(validate)
+            }
+            // if it returns a function, it should be a promise with formatted arguments
+            if ( kindOf(validate) === 'function' && kindOf(validate[ 'then' ]) === 'function' ) {
+                console.log('await validate')
+
+                parsed.arguments = await validate
             }
             // If it returns an object, assume its formatted arguments, so we assign em to the eventually passed arguments
             if ( kindOf(validate) === 'object' ) {
@@ -220,7 +231,7 @@ export class Cli {
     }
 
     public helper(name: string, config ?: HelperOptionsConfig): this {
-        this.helpers.enableHelper(name, config)
+        this.helpers.enable(name, config)
         return this;
     }
 
@@ -263,8 +274,31 @@ export class Cli {
         return this;
     }
 
-    public use<T extends BasePluginConfig>(plugin: Plugin<T>) {
+    protected plugins: { [name: string]: Plugin<BasePluginConfig> }
 
+    public use<T extends BasePluginConfig>(PlugIn: PluginConstructor<T>, config?: T) {
+        const plugin = container.resolve<Plugin<T>>(PlugIn);
+
+        const missing = (plugin.depends || []).filter(name => {
+            return ! this.plugins[ name ]
+        })
+        if ( missing.length > 0 ) {
+            this.log.warn(`Could not load plugin [${plugin.name}]. Missing dependencies: ${missing.join(', ')}`)
+            return;
+        }
+        if ( this.events.fire(new CliPluginRegisterEvent<T>(plugin, config)).isCanceled() ) return;
+        container.constant('plugin.' + plugin.name, plugin);
+        plugin.register(config || <T>{}, {
+            cli    : this,
+            config : this.config,
+            log    : this.log,
+            events : this.events,
+            helpers: this.helpers,
+            container
+        })
+
+        this.plugins[ plugin.name ] = plugin;
+        this.events.fire(new CliPluginRegisteredEvent<T>(plugin));
     }
 }
 
