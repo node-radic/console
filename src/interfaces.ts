@@ -246,7 +246,7 @@ export interface VerboseHelperOptionsConfig extends HelperOptionsConfig {
  * @interface
  * @see helper The helper decorator function
  */
-export interface HelperOptions {
+export interface HelperOptions<T extends HelperOptionsConfig=HelperOptionsConfig>{
     singleton?: boolean
     /** set by the decorator */
     name?: string
@@ -262,7 +262,7 @@ export interface HelperOptions {
     /**
      * sdfsdf
      */
-    config?: HelperOptionsConfig,
+    config?: T
     /** other helpers that this helper depends on */
     depends?: string[]
     /** should the helper enable it's dependencies if their not already enabled */

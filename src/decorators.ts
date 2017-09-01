@@ -6,6 +6,7 @@ import { Cli, container } from "./core";
 import { CommandConfigFunction, OptionConfigFunction, PrepareArgumentsFunction } from "./utils";
 import { decorate, injectable } from "inversify";
 import { defaults } from "./defaults";
+import { HelperOptionsConfig } from "radical-console";
 const callsites = require('callsites');
 
 const get = Reflect.getMetadata;
@@ -102,8 +103,8 @@ function makeNodeConfig<T extends HelperOptions>(cls: any, args: any[]): T {
     return config;
 }
 export function helper(name: string): ClassDecorator;
-export function helper(options: HelperOptions): ClassDecorator;
-export function helper(name: string, options: HelperOptions): ClassDecorator;
+export function helper<T extends HelperOptionsConfig>(options: HelperOptions<HelperOptionsConfig>): ClassDecorator;
+export function helper<K extends keyof HelperOptionsConfig>(name: K, options: HelperOptions<HelperOptionsConfig[K]>): ClassDecorator;
 export function helper(...args: any[]): ClassDecorator {
     return (cls) => {
         container.get<Cli>('cli').helpers.add(makeNodeConfig(cls, args));

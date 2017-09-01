@@ -32,13 +32,13 @@ const c = {
     }
 };
 
-gulp.task('clean', [ 'clean:src:js', 'clean:build', 'clean:docs' ], (cb) => pump(gulp.src([ '.nyc_output', 'coverage' ]), clean()))
-gulp.task('clean:docs', (cb) => pump(gulp.src([ 'docs', '.publish' ]), clean()))
-gulp.task('clean:build', (cb) => pump(gulp.src([ 'lib', 'es', 'dts', 'coverage', '.publish', 'docs' ]), clean()));
-gulp.task('clean:watch', (cb) => pump(gulp.src([ 'lib', 'dts' ]), clean()));
-gulp.task('clean:src:js', (cb) => pump(gulp.src([ '{src,examples}/*.{js,js.map}', '*.{js,js.map}' ]), clean()));
-gulp.task('clean:test:js', (cb) => pump(gulp.src([ '{tests}/*.{js,js.map}', '*.{js,js.map}' ]), clean()));
-gulp.task('clean:dts:js', (cb) => pump(gulp.src([ 'dts/**/*.js' ]), clean()))
+gulp.task('clean', [ 'clean:src:js', 'clean:build', 'clean:docs' ], () => pump(gulp.src([ '.nyc_output', 'coverage' ]), clean()))
+gulp.task('clean:docs', () => pump(gulp.src([ 'docs', '.publish' ]), clean()))
+gulp.task('clean:build', () => pump(gulp.src([ 'lib', 'es', 'dts', 'coverage', '.publish', 'docs' ]), clean()));
+gulp.task('clean:watch', () => pump(gulp.src([ 'lib', 'dts' ]), clean()));
+gulp.task('clean:src:js', () => pump(gulp.src([ '{src,examples}/*.{js,js.map}', '*.{js,js.map}' ]), clean()));
+gulp.task('clean:test:js', () => pump(gulp.src([ '{tests}/*.{js,js.map}', '*.{js,js.map}' ]), clean()));
+gulp.task('clean:dts:js', () => pump(gulp.src([ 'dts/**/*.js' ]), clean()))
 
 gulp.task("build:es", () => pump(gulp.src(c.src), c.tsc.es(), gulp.dest("es/")))
 gulp.task("build:dts:ts", () => pump(gulp.src(c.src), c.tsc.dts(), gulp.dest('dts/')))
