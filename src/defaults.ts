@@ -1,4 +1,4 @@
-import { CliConfig, CommandArgumentConfig, CommandConfig, HelperOptions, OptionConfig } from "./interfaces";
+import { CliConfig, CommandArgumentConfig, CommandConfig, HelperOptions, HelperOptionsConfig, OptionConfig } from "./interfaces";
 import { ConstructorOptions as EventsConstructorOptions } from "eventemitter2";
 import { cloneDeep, merge } from "lodash";
 import { container } from "./core/Container";
@@ -93,8 +93,8 @@ export const defaults = {
             default: null
         });
     },
-    helper(): HelperOptions {
-        return <HelperOptions> cloneDeep({
+    helper<T extends HelperOptionsConfig>(): HelperOptions<T> {
+        return <HelperOptions<T>> cloneDeep({
             name         : null,
             cls          : null,
             singleton    : false,

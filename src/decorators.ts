@@ -6,7 +6,7 @@ import { Cli, container } from "./core";
 import { CommandConfigFunction, OptionConfigFunction, PrepareArgumentsFunction } from "./utils";
 import { decorate, injectable } from "inversify";
 import { defaults } from "./defaults";
-import { HelperOptionsConfig } from "radical-console";
+import { HelperOptionsConfig } from "./interfaces";
 const callsites = require('callsites');
 
 const get = Reflect.getMetadata;
