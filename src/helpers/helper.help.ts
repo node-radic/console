@@ -1,5 +1,5 @@
 import { kindOf, stringify } from "@radic/util";
-import { CommandArgumentConfig, CommandConfig, HelperOptionsConfig, OptionConfig, OutputColumnsOptions } from "../interfaces";
+import { CommandArgumentConfig, CommandConfig, HelperOptionsConfig, HelpHelperOptionsConfig, OptionConfig, OutputColumnsOptions } from "../interfaces";
 import { helper } from "../decorators";
 import { CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParseEvent } from "../core/events";
 import { bindTo, container, inject } from "../core/Container";
@@ -10,57 +10,6 @@ import { Cli } from "../core/Cli";
 import { Dispatcher } from "../core/Dispatcher";
 import { HelpHelperOnInvalidArgumentsShowHelpEvent, HelpHelperShowHelpEvent } from "./events";
 import * as _ from "lodash";
-
-export type HelpHelperOverrideType = (command: CommandConfig, describer:CommandDescriber, helper: HelpHelper) => string
-export interface HelpHelperOptionsConfig extends HelperOptionsConfig {
-
-    app: { title: string }
-    addShowHelpCommand: boolean
-    showOnError: boolean
-    option: {
-        enabled: boolean,
-        key: string,
-        name: string
-    }
-    style: {
-
-    }
-    order: string[]
-    overrides: {
-        arguments: HelpHelperOverrideType
-        title: HelpHelperOverrideType
-        options: HelpHelperOverrideType
-        description: HelpHelperOverrideType
-        explanation: HelpHelperOverrideType
-        usage: HelpHelperOverrideType
-        example: HelpHelperOverrideType
-    }
-    display: {
-        title: boolean
-        titleLines: boolean
-        description: boolean
-        descriptionAsTitle: boolean
-        usage: boolean
-        example: boolean
-        explanation: boolean
-        arguments: boolean
-        options: boolean
-        globalOptions: boolean
-        commands: boolean
-        groups: boolean
-    }
-    headers: {
-        usage: string
-        description: string
-        explanation: string
-        groups: string
-        commands: string
-        arguments: string
-        options: string
-        globalOptions: string
-        example: string
-    }
-}
 
 @helper('help', {
     config   : {

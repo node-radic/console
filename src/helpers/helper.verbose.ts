@@ -1,5 +1,5 @@
 import { helper } from "../decorators";
-import { HelperOptionsConfig } from "../interfaces";
+import { HelperOptionsConfig, VerboseHelperOptionsConfig } from "../interfaces";
 import { inject } from "../core/Container";
 import { LoggerInstance } from "winston";
 import { logLevels, setVerbosity } from "../core/Log";
@@ -22,7 +22,7 @@ import { kindOf } from "@radic/util";
     }
 })
 export class VerbosityHelper {
-    config: HelperOptionsConfig;
+    config: VerboseHelperOptionsConfig;
 
     @inject('cli.log')
     log: LoggerInstance;

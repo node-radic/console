@@ -1,6 +1,6 @@
 import { kindOf } from "@radic/util";
 import { container, injectable, lazyInject } from "./Container";
-import { BasePluginConfig, CliConfig, CommandConfig, HelperOptionsConfig, OptionConfig, Plugin, PluginConstructor } from "../interfaces";
+import { BasePluginConfig, CliConfig, CommandConfig, HelperOptionsConfig, OptionConfig, Plugin, PluginConstructor, HelpersOptionsConfig } from "../interfaces";
 // import { YargsParserArgv } from "../../types/yargs-parser";
 import { CliExecuteCommandEvent, CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent, CliPluginRegisterEvent, CliStartEvent, CliPluginRegisteredEvent } from "./events";
 import { Log } from "./Log";
@@ -71,6 +71,14 @@ export class Cli {
     }
 
     public async start(requirePath: string) {
+        process
+            .on('unhandledRejection', (reason, p) => {
+                console.error(reason, 'Unhandled sdfRejection at Promise', p);
+            })
+            .on('uncaughtException', err => {
+                console.error(err, 'Uncaught Exceptifon thrown');
+                process.exit(1);
+            });
         requirePath = resolve(requirePath);
         this.events.fire(new CliStartEvent(requirePath)).proceed(() => {
             this.helpers.startHelpers();
@@ -230,7 +238,7 @@ export class Cli {
         process.exit(1);
     }
 
-    public helper(name: string, config ?: HelperOptionsConfig): this {
+    public helper<T extends keyof HelpersOptionsConfig>(name: T, config ?: HelpersOptionsConfig[T]): this {
         this.helpers.enable(name, config)
         return this;
     }

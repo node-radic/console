@@ -6,7 +6,7 @@ import { Config } from "../core/config";
 import * as _ from "lodash";
 import { kindOf } from "@radic/util";
 import { CliExecuteCommandParseEvent } from "../core/events";
-import { HelperOptionsConfig } from "../interfaces";
+import { HelperOptionsConfig, InputHelperOptionsConfig } from "../interfaces";
 export interface CheckListItem extends inquirer.objects.ChoiceOption {
     name?: string
     disabled?: string
@@ -30,7 +30,7 @@ export class InputHelper {
 
     public get types(): QuestionType[] { return [ 'input', 'confirm', 'list', 'rawlist', 'expand', 'checkbox', 'password', 'autocomplete', 'datetime' ] }
 
-    config: HelperOptionsConfig
+    config: InputHelperOptionsConfig
 
     public onExecuteCommandParse(event: CliExecuteCommandParseEvent) {
         let promptNames = Object.keys(inquirer.prompts);

@@ -73,6 +73,12 @@
   version "0.4.31"
   resolved "https://registry.yarnpkg.com/@types/chalk/-/chalk-0.4.31.tgz#a31d74241a6b1edbb973cf36d97a2896834a51f9"
 
+"@types/chokidar@*":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@types/chokidar/-/chokidar-1.7.2.tgz#7c6da2d5bd6a47c9bce0f09b904a30770581f605"
+  dependencies:
+    "@types/node" "*"
+
 "@types/cli-table2@^0.2.1":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@types/cli-table2/-/cli-table2-0.2.1.tgz#08faf5ce07115b0fd5c73c3dca9e8de3e2cf1d8e"
@@ -122,6 +128,12 @@
     "@types/glob" "*"
     "@types/minimatch" "*"
 
+"@types/gulp-gh-pages@^0.0.30":
+  version "0.0.30"
+  resolved "https://registry.yarnpkg.com/@types/gulp-gh-pages/-/gulp-gh-pages-0.0.30.tgz#86a489837344efe47ea4914ba5c2976f4ee3788f"
+  dependencies:
+    "@types/node" "*"
+
 "@types/gulp-mocha@^0.0.30":
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/gulp-mocha/-/gulp-mocha-0.0.30.tgz#a412d0741aebb53477ebe26e5a677d4ecb8cd89b"
@@ -169,6 +181,14 @@
     "@types/node" "*"
     "@types/through2" "*"
     "@types/vinyl" "*"
+
+"@types/gulp@*":
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/@types/gulp/-/gulp-4.0.4.tgz#753ffe5b0ddaf0c9a60101b346141bb80e602f25"
+  dependencies:
+    "@types/chokidar" "*"
+    "@types/undertaker" "*"
+    "@types/vinyl-fs" "*"
 
 "@types/gulp@^3.8.32":
   version "3.8.33"
@@ -234,6 +254,12 @@
     "@types/node" "*"
     "@types/q" "^0"
 
+"@types/pump@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@types/pump/-/pump-1.0.1.tgz#ae8157cefef04d1a4d24c1cc91d403c2f5da5cd0"
+  dependencies:
+    "@types/node" "*"
+
 "@types/q@^0":
   version "0.0.37"
   resolved "https://registry.yarnpkg.com/@types/q/-/q-0.0.37.tgz#7d6a934b35ee2f0ed0646d286eba559599021c9e"
@@ -241,6 +267,13 @@
 "@types/reflect-metadata@^0.0.5":
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/@types/reflect-metadata/-/reflect-metadata-0.0.5.tgz#9c042bfa9803d577aad4f57dfbca4b7cae4286fe"
+
+"@types/run-sequence@^0.0.29":
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/@types/run-sequence/-/run-sequence-0.0.29.tgz#6ad0f7383136e13925322e69fc41db77b30b2075"
+  dependencies:
+    "@types/gulp" "*"
+    "@types/node" "*"
 
 "@types/rx-core-binding@*":
   version "4.0.4"
@@ -379,13 +412,23 @@
   dependencies:
     "@types/source-map" "*"
 
+"@types/undertaker-registry@*":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/undertaker-registry/-/undertaker-registry-1.0.0.tgz#6f61a0be75a22e9ef62df68b480c68bce344fe5f"
+
+"@types/undertaker@*":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@types/undertaker/-/undertaker-1.1.2.tgz#cf0f62cdcbdf62ad9f70a4d78f81869a5c349a09"
+  dependencies:
+    "@types/undertaker-registry" "*"
+
 "@types/vinyl-buffer@^0.0.29":
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/vinyl-buffer/-/vinyl-buffer-0.0.29.tgz#78c1bdb88ce1aa7a3c624e2ce23534fbce886628"
   dependencies:
     "@types/node" "*"
 
-"@types/vinyl-fs@^2.4.5":
+"@types/vinyl-fs@*", "@types/vinyl-fs@^2.4.5":
   version "2.4.7"
   resolved "https://registry.yarnpkg.com/@types/vinyl-fs/-/vinyl-fs-2.4.7.tgz#9165d331758b351641debcfe656a133597bacb2f"
   dependencies:
@@ -814,6 +857,10 @@ chai@^4.1.0:
     get-func-name "^2.0.0"
     pathval "^1.0.0"
     type-detect "^4.0.0"
+
+chain-able@^4.0.6:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/chain-able/-/chain-able-4.0.6.tgz#b3bab1ac9546e5f80aa201e4909b6631e47680f0"
 
 chalk@*, chalk@^2.0.0:
   version "2.1.0"
@@ -1253,6 +1300,10 @@ end-of-stream@~0.1.5:
   resolved "https://registry.yarnpkg.com/end-of-stream/-/end-of-stream-0.1.5.tgz#8e177206c3c80837d85632e8b9359dfe8b2f6eaf"
   dependencies:
     once "~1.3.0"
+
+env-paths@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/env-paths/-/env-paths-1.0.0.tgz#4168133b42bb05c38a35b1ae4397c8298ab369e0"
 
 error-ex@^1.2.0:
   version "1.3.1"

@@ -1,12 +1,14 @@
 import { KindOf } from "@radic/util";
 import { interfaces } from "inversify";
-import {  Container } from "./core/Container";
+import { Container } from "./core/Container";
 import BindingInWhenOnSyntax = interfaces.BindingInWhenOnSyntax;
 import { Cli } from "./core/Cli";
 import { Config } from "./core/config";
 import { Dispatcher } from "./core/Dispatcher";
 import { Helpers } from "./core/Helpers";
 import { LoggerInstance } from "winston";
+import { CommandDescriber, HelpHelper } from "./helpers/helper.help";
+import * as inquirer from "inquirer";
 
 
 export interface CommandArguments {
@@ -57,9 +59,11 @@ export interface CommandArgumentConfig {
     /**
      * if not given, use this default as value
      */
-    default?:any | null
+    default?: any | null
 }
+
 export type CommandConfigEnabledType = boolean | ((container: Container) => boolean)
+
 export interface CommandConfig {
     alwaysRun?: null | string
 
@@ -159,6 +163,7 @@ export interface ParserConfiguration {
 export interface HelperOptionsConfig {
     [name: string]: any
 }
+
 export interface HelperOptionsConfigOption {
     enabled: boolean,
     key: string,
@@ -166,15 +171,73 @@ export interface HelperOptionsConfigOption {
 }
 
 export interface OutputHelperOptionsConfig extends HelperOptionsConfig {
-    quiet: boolean,
-    colors: boolean,
-    options: {
-        quiet: HelperOptionsConfigOption,
-        colors: HelperOptionsConfigOption
+    quiet?: boolean,
+    colors?: boolean,
+    options?: {
+        quiet?: HelperOptionsConfigOption,
+        colors?: HelperOptionsConfigOption
     },
-    resetOnNewline: boolean,
-    styles: { [name: string]: string },
-    tableStyle: { [name: string]: { [name: string]: string } }
+    resetOnNewline?: boolean,
+    styles?: { [name: string]: string },
+    tableStyle?: { [name: string]: { [name: string]: string } }
+}
+
+export type HelpHelperOverrideType = (command: CommandConfig, describer: CommandDescriber, helper: HelpHelper) => string
+
+export interface HelpHelperOptionsConfig extends HelperOptionsConfig {
+
+    app?: { title?: string }
+    addShowHelpCommand?: boolean
+    showOnError?: boolean
+    option?: {
+        enabled?: boolean,
+        key?: string,
+        name?: string
+    }
+    style?: {}
+    order?: string[]
+    overrides?: {
+        arguments?: HelpHelperOverrideType
+        title?: HelpHelperOverrideType
+        options?: HelpHelperOverrideType
+        description?: HelpHelperOverrideType
+        explanation?: HelpHelperOverrideType
+        usage?: HelpHelperOverrideType
+        example?: HelpHelperOverrideType
+    }
+    display?: {
+        title?: boolean
+        titleLines?: boolean
+        description?: boolean
+        descriptionAsTitle?: boolean
+        usage?: boolean
+        example?: boolean
+        explanation?: boolean
+        arguments?: boolean
+        options?: boolean
+        globalOptions?: boolean
+        commands?: boolean
+        groups?: boolean
+    }
+    headers?: {
+        usage?: string
+        description?: string
+        explanation?: string
+        groups?: string
+        commands?: string
+        arguments?: string
+        options?: string
+        globalOptions?: string
+        example?: string
+    }
+}
+
+export interface InputHelperOptionsConfig extends HelperOptionsConfig {
+    registerPrompts?: (inquirer: inquirer.Inquirer) => void
+}
+
+export interface VerboseHelperOptionsConfig extends HelperOptionsConfig {
+    option?: HelperOptionsConfigOption
 }
 
 /**
@@ -209,6 +272,12 @@ export interface HelperOptions {
     bindings?: { [key: string]: string }
 }
 
+export interface HelpersOptionsConfig {
+    help: HelpHelperOptionsConfig
+    output: OutputHelperOptionsConfig
+    verbose: VerboseHelperOptionsConfig
+    input: InputHelperOptionsConfig
+}
 
 export interface OutputColumnsOptions {
     columns?: string[]
@@ -248,22 +317,28 @@ export interface PluginRegisterHelper {
     helpers: Helpers
     log: LoggerInstance
 }
+
 export interface BasePluginConfig {
-    [key:string]: any
-}
-export interface Plugin<T extends BasePluginConfig> {
-    name:string
-    depends?: string[]
-    config?:T
-    register(config:T, helper:PluginRegisterHelper) : void
-}
-export type PluginConstructor<T extends BasePluginConfig> = {
-    new() : Plugin<T>
+    [key: string]: any
 }
 
-export interface InlineCommand extends Object{
-    [key:string] : any
-    action(args:CommandArguments)
+export interface Plugin<T extends BasePluginConfig> {
+    name: string
+    depends?: string[]
+    config?: T
+
+    register(config: T, helper: PluginRegisterHelper): void
+}
+
+export type PluginConstructor<T extends BasePluginConfig> = {
+    new(): Plugin<T>
+}
+
+export interface InlineCommand extends Object {
+    [key: string]: any
+
+    action(args: CommandArguments)
+
     _config: CommandConfig
     _options: OptionConfig[]
 
