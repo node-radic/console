@@ -1,14 +1,17 @@
+import { interfaces } from "inversify";
+import { kindOf } from "@radic/util";
+import * as _ from "lodash";
+
+import { Config } from "./config";
+import { Log } from "./Log";
+import { Dispatcher } from "./Dispatcher";
+import { HelperContainerResolvedEvent,  HelperDependencyMissingEvent ,HelpersStartedEvent, HelpersStartingEvent, HelperStartedEvent, HelperStartingEvent } from "./events";
+import Context = interfaces.Context;
+import { Modules } from "./Modules";
 import { HelperOptions, HelperOptionsConfig } from "../interfaces";
 import { defaults } from "../defaults";
 import { container, inject, lazyInject, singleton } from "./Container";
-import { interfaces } from "inversify";
-import { kindOf } from "@radic/util";
-import { Config } from "./config";
-import { Log } from "./Log";
-import * as _ from "lodash";
-import { Dispatcher } from "./Dispatcher";
-import { HelpersStartedEvent, HelpersStartingEvent, HelperStartedEvent, HelperStartingEvent } from "./events";
-import Context = interfaces.Context;
+
 
 @singleton('cli.helpers')
 export class Helpers {
@@ -16,21 +19,27 @@ export class Helpers {
     protected _startedHelpers: Array<string>              = []
     protected _helpers: { [name: string]: HelperOptions } = {}
 
-
     @inject('cli.events')
     public events: Dispatcher;
 
-    @lazyInject('cli.log')
+    @inject('cli.log')
     public log: Log;
 
-    @lazyInject('cli.config')
+    @inject('cli.config')
     protected config: Config;
+
+    @inject('cli.modules')
+    protected modules: Modules;
 
     protected started: boolean = false;
 
-    public has(name: string): boolean { return !! this._helpers[name] }
+    public has(name: string): boolean {
+        return ! ! this._helpers[ name ]
+    }
 
-    public isEnabled(name: string): boolean { return this._helpers[name].enabled === true }
+    public isEnabled(name: string): boolean {
+        return this._helpers[ name ].enabled === true
+    }
 
     public add<T>(options: HelperOptions): HelperOptions {
         options = _.merge(defaults.helper(), options);
@@ -39,20 +48,25 @@ export class Helpers {
     }
 
     public enable(name: string, customConfig: HelperOptionsConfig = {}) {
+        // enable the helper so it'll start when needed
         this._helpers[ name ].enabled = true;
+        let a                         = this.config.get<string[]>('enabledHelpers', [])
+        this.config.set('enabledHelpers', a.concat([ name ]));
 
+        // merge any configuration overrides
         let config = this.config.get('helpers.' + name);
         config     = _.merge({}, config, customConfig);
         this.config.set('helpers.' + name, config);
 
-        let a = this.config.get<string[]>('enabledHelpers', [])
-        this.config.set('enabledHelpers', a.concat([ name ]));
-
-        if(this.started){
+        // auto-start the helper if it is enabled after cli start
+        if ( this.started ) {
             this.startHelper(name);
         }
     }
 
+    /**
+     * loops trough all enabled helpers and starts them
+     */
     public startHelpers() {
         let enabledHelpers: string[] = this.config.get<string[]>('enabledHelpers', [])
         if ( this.started === false ) {
@@ -70,49 +84,52 @@ export class Helpers {
         this.started = true
     }
 
-    /** some helpers can/need to be enabled before usage **/
+    /**
+     * some helpers can/need to be enabled before usage
+     */
     protected startHelper(name: string, customConfig: HelperOptionsConfig = {}) {
-        let options = this._helpers[ name ];
+        let options: HelperOptions = this._helpers[ name ];
         if ( this._startedHelpers.includes(name) ) {
             return;
         }
 
-        this._startedHelpers.push(name);
-
+        // check if the helper is contained in a module and load it if so
+        if ( this.modules.exists(name) ) {
+            this.modules.get(name);
+        }
 
         // start dependency helpers
         if ( options.depends.length > 0 ) {
             options.depends.forEach(depend => {
                 if ( ! Object.keys(this._helpers).includes(depend) ) {
-                    if ( ! options.enableDepends ) {
-                        throw new Error(`Cannot start helper [${name}]. It depends on [${depend}]. Either enable it or set config [helpers.${name}.enableDepends] to [true]`);
-                    }
-                    this.startHelper(depend);
+                    this.events.fire(new HelperDependencyMissingEvent(name, depend, options).proceed(() => {
+                        if ( ! options.enableDepends ) {
+                            throw new HelperDependencyMissingError(name, depend)
+                        }
+                        this.startHelper(depend);
+                    }))
                 }
             })
         }
 
-        let bindingName = 'cli.helpers.' + options.name;
         // bind the helper into the container, if needed as singleton
-        // if ( container.isBound(bindingName) ) {
+        let bindingName = 'cli.helpers.' + options.name;
         container.ensureInjectable(options.cls);
         options.binding = container.bind(bindingName).to(options.cls);
         if ( options.singleton ) {
             options.binding.inSingletonScope()
         }
+
+        // applies the configuration on activation
         options.binding.onActivation((ctx: Context, helperClass: Function): any => {
-            // console.dir(ctx.plan, {depth: 50, colors: true }); //.plan.rootRequest.serviceIdentifier
-            // process.exit();
             helperClass[ options.configKey ] = this.config('helpers.' + options.name);
+            this.events.fire(new HelperContainerResolvedEvent(helperClass, options))
             return helperClass
         });
         this.log.debug('started helper ' + name);
 
+        // add the event listeners (if any) and let them call the corresponding methods
         let instance;
-        // add the event listeners and bind them to the given function names
-        // if ( container.isBound(bindingName) ) {
-        //     return;
-        // }
         Object.keys(options.listeners).forEach(eventName => {
             let fnName = options.listeners[ eventName ];
 
@@ -123,6 +140,8 @@ export class Helpers {
                 }
             })
         })
+
+        this._startedHelpers.push(name);
         this._helpers[ name ] = options;
     }
 

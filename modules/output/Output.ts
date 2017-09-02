@@ -1,12 +1,16 @@
-import { IOutput, IOutputUtil, OutputOptions, TreeData, TreeOptions } from "./interfaces";
+import { merge } from 'lodash'
+import { OutputOptions, TreeData, TreeOptions, ColumnsOptions } from "./interfaces";
 import { inspect, InspectOptions } from 'util';
-import { requirePeer, singleton, Diff } from "../../src";
+import { requirePeer, singleton, Diff } from "radical-console";
 import { OutputUtil } from './OutputUtil'
+import * as Table from "cli-table2";
+import { TableConstructorOptions } from "cli-table2";
+import { kindOf } from "@radic/util";
+import { Colors, Parser } from "@radic/console-colors";
 
 @singleton('cli.output')
-export class Output implements IOutput {
-    public util: IOutputUtil;
-    public stdout: NodeJS.WriteStream = process.stdout
+export class Output {
+    protected _parser: Parser
     protected macros: { [name: string]: (...args: any[]) => string }
     protected _options: OutputOptions = {
         enabled: true,
@@ -14,22 +18,41 @@ export class Output implements IOutput {
         inspect: { showHidden: true, depth: 10 }
     }
 
+    public util: OutputUtil;
+    public stdout: NodeJS.WriteStream = process.stdout
+
+    get parser(): Parser { return this._parser }
+
+    get colors(): Colors { return this._parser.colors; }
+
     get options(): OutputOptions { return this._options}
 
     get nl(): this { return this.write('\n') }
 
-    constructor() { this.util = new OutputUtil(this); }
+    constructor() {
+        this._parser = new Parser()
+        this.util    = new OutputUtil(this);
+    }
+
+    parse(text: string, force?: boolean): string {return this._parser.parse(text) }
+
+    clean(text: string): string { return this._parser.clean(text)}
 
     write(text: string): this {
+        if ( this.options.colors ) {
+            text = this.parse(text);
+        } else {
+            text = this.clean(text);
+        }
         this.stdout.write(text);
         return this;
     }
 
-    writeln = (text: string = ''): this => this.write(text + '\n')
+    writeln(text: string = ''): this { return this.write(text + '\n') }
 
-    line = (text: string = ''): this => this.write(text + '\n')
+    line(text: string = ''): this { return this.write(text + '\n')}
 
-    dump = (...args: any[]): this => {
+    dump(...args: any[]): this {
         this._options.inspect.colors = this._options.colors
         args.forEach(arg => this.line(inspect(arg, this._options.inspect)));
         return this
@@ -46,9 +69,14 @@ export class Output implements IOutput {
         return this
     }
 
-    diff = (o: object, o2: object): Diff => new Diff(o, o2)
+    diff(o: object, o2: object): Diff { return new Diff(o, o2) }
 
-    spinner = (text?: string): ora.Ora => requirePeer<ora.Ora>('ora')
+    spinner(text: string = '', options: ora.Options = {}): ora.Ora {
+        const ora     = requirePeer<ora.oraFactory>('ora')
+        const spinner = ora(options);
+        spinner.text  = text;
+        return spinner;
+    }
 
     spinners: any[];
 
@@ -57,8 +85,63 @@ export class Output implements IOutput {
         return this
     }
 
-    tree(obj: TreeData, prefix?: string, opts?: TreeOptions) : this{
+    tree(obj: TreeData, opts: TreeOptions = {}, returnValue: boolean = false): string | this {
+        let prefix = opts.prefix;
+        delete opts.prefix
         let tree = requirePeer('archy')(obj, prefix, opts);
-        return this.line(tree);
+        return returnValue ? tree : this.line(tree);
+    }
+
+    protected modifiedTable: boolean = false
+
+    /**
+     * Integrates the color parser for cells into the table
+     */
+    protected modifyTablePush() {
+        if ( this.modifiedTable ) return;
+        const _push                 = Table.prototype.push;
+        let self                    = this;
+        Table.prototype[ 'addRow' ] = function (row: any[]) {
+            this.push(
+                row.map(col => {
+                    if ( kindOf(col) === 'string' ) {
+                        col = self.parse(col)
+                    }
+                    return col;
+                })
+            )
+        }
+        this.modifiedTable          = true;
+    }
+
+    /**
+     * Create a table
+     * @param {CliTable2.TableConstructorOptions | string[]} options Accepts a options object or header names as string array
+     * @returns {any[]}
+     */
+    table(options: TableConstructorOptions | string[] = {}): Table.Table {
+        this.modifyTablePush();
+        let CliTable: typeof Table = requirePeer('cli-table2');
+        return new CliTable(kindOf(options) === 'array' ? { head: <string[]> options } : <TableConstructorOptions> options)
+    }
+
+    columns(data: any, options: ColumnsOptions = {}, ret: boolean = false) {
+        let defaults: ColumnsOptions = {
+            minWidth        : 20,
+            maxWidth        : 120,
+            preserveNewLines: true,
+            columnSplitter  : ' | '
+        }
+        let iCol: number             = 0;
+        if ( kindOf(data) === 'array' && kindOf(data[ 0 ]) === 'object' ) {
+            iCol = Object.keys(data[ 0 ]).length;
+        }
+        if ( process.stdout.isTTY && iCol > 0 ) {
+            // defaults.minWidth = (process.stdout[ 'getWindowSize' ]()[ 0 ] / 1.1) / iCol;
+            // defaults.minWidth = defaults.minWidth > defaults.maxWidth ? defaults.maxWidth : defaults.minWidth;
+        }
+        let res = requirePeer('columnify')(data, merge({}, defaults, options));
+        if ( ret ) return res;
+        this.writeln(res);
     }
 }

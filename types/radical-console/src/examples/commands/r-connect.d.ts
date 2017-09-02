@@ -1,4 +1,5 @@
-import { CommandArguments, CommandConfig, Config, Log, OptionConfig, OutputHelper } from "../../src";
+import { CommandArguments, CommandConfig, Config, Log, OptionConfig } from "radical-console";
+import { OutputHelper } from "@output";
 export declare class RcliConnectCmd {
     showHelp: () => void;
     _config: CommandConfig;

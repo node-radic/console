@@ -1,8 +1,9 @@
 import { kindOf } from "@radic/util";
 import { container, injectable, lazyInject } from "./Container";
-import { BasePluginConfig, CliConfig, CommandConfig, HelperOptionsConfig, OptionConfig, Plugin, PluginConstructor } from "../interfaces";
+import {  HelpersOptionsConfig,CliConfig, CommandConfig, HelperOptionsConfig, OptionConfig } from "../interfaces";
 // import { YargsParserArgv } from "../../types/yargs-parser";
-import { CliExecuteCommandEvent, CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent, CliPluginRegisterEvent, CliStartEvent, CliPluginRegisteredEvent } from "./events";
+import { CliExecuteCommandEvent, CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent,
+    CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent, CliStartEvent } from "./events";
 import { Log } from "./Log";
 import { Config } from "./config";
 import { ParseArgumentsFunction, SubCommandsGetFunction, TransformOptionsFunction } from "../utils";
@@ -15,7 +16,7 @@ import * as parser from "yargs-parser";
 import Context = interfaces.Context;
 import BindingWhenOnSyntax = interfaces.BindingWhenOnSyntax;
 import Factory = interfaces.Factory;
-import { HelpersOptionsConfig } from "radical-console";
+
 // import { YargsParserArgv } from "../../types/yargs-parser";
 // const parser = require('yargs-parser')
 const get = Reflect.getMetadata
@@ -244,12 +245,6 @@ export class Cli {
         return this;
     }
 
-    //
-    // public helpers(...names: string[]): this {
-    //     names.forEach(name => this.helper(name));
-    //     return this
-    // }
-
     public fail(msg ?: string) {
         if ( msg ) {
             this.log.error(msg);
@@ -283,32 +278,6 @@ export class Cli {
         return this;
     }
 
-    protected plugins: { [name: string]: Plugin<BasePluginConfig> }
-
-    public use<T extends BasePluginConfig>(PlugIn: PluginConstructor<T>, config?: T) {
-        const plugin = container.resolve<Plugin<T>>(PlugIn);
-
-        const missing = (plugin.depends || []).filter(name => {
-            return ! this.plugins[ name ]
-        })
-        if ( missing.length > 0 ) {
-            this.log.warn(`Could not load plugin [${plugin.name}]. Missing dependencies: ${missing.join(', ')}`)
-            return;
-        }
-        if ( this.events.fire(new CliPluginRegisterEvent<T>(plugin, config)).isCanceled() ) return;
-        container.constant('plugin.' + plugin.name, plugin);
-        plugin.register(config || <T>{}, {
-            cli    : this,
-            config : this.config,
-            log    : this.log,
-            events : this.events,
-            helpers: this.helpers,
-            container
-        })
-
-        this.plugins[ plugin.name ] = plugin;
-        this.events.fire(new CliPluginRegisteredEvent<T>(plugin));
-    }
 }
 
 container.constant('cli', new Cli);

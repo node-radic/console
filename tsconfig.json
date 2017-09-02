@@ -17,11 +17,9 @@
         "noResolve": false,
         "baseUrl": "./",
         "paths": {
-            "radical-console": ["src/"],
-            "modules": ["modules/"],
-            "modules/*": ["modules/*/"]
+            "@log": ["modules/log/"],
+            "@output": ["modules/output/"]
         },
-
         "typeRoots": [
             "./node_modules/@types",
             "./types"

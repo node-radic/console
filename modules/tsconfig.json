@@ -1,0 +1,10 @@
+{
+    "extends": "../tsconfig",
+    "compilerOptions": {
+        "baseUrl": "./",
+        "paths": {
+            "radical-console": ["src/"],
+
+        }
+    }
+}

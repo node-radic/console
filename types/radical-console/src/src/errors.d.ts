@@ -12,3 +12,7 @@ export declare class ModuleNotFoundError extends ErrorBase {
     readonly code: string;
     constructor(message: string);
 }
+export declare class HelperDependencyMissingError extends ErrorBase {
+    readonly code: string;
+    constructor(helperName: string, dependencyName: string);
+}

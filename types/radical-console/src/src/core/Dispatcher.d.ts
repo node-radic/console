@@ -5,6 +5,7 @@ export declare class Dispatcher {
     private ee;
     protected log: Log;
     constructor();
+    static readonly instance: Dispatcher;
     fire<T extends Event | ExitEvent | CancelEvent>(ctx: T): T;
     fire<T extends Event | ExitEvent | CancelEvent>(event: string | string[], ctx: T): T;
     halt<T extends ExitEvent>(event: string | string[], ctx: T): void;

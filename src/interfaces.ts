@@ -308,22 +308,6 @@ export interface HelperOptions<T extends HelperOptionsConfig=HelperOptionsConfig
 }
 
 
-export interface OutputColumnsOptions {
-    columns?: string[]
-    minWidth?: number
-    maxWidth?: number
-    align?: 'left' | 'right' | 'center'
-    paddingChr?: string
-    columnSplitter?: string
-    preserveNewLines?: boolean
-    showHeaders?: boolean
-    dataTransform?: (data) => string
-    truncate?: boolean
-    truncateMarker?: string
-    widths?: { [name: string]: OutputColumnsOptions }
-    config?: { [name: string]: OutputColumnsOptions }
-}
-
 
 export interface Dictionary<T> {
     [index: string]: T;
@@ -338,30 +322,6 @@ export interface StringRepresentable {
 }
 
 
-export interface PluginRegisterHelper {
-    cli: Cli
-    config: Config
-    container: Container
-    events: Dispatcher
-    helpers: Helpers
-    log: LoggerInstance
-}
-
-export interface BasePluginConfig {
-    [key: string]: any
-}
-
-export interface Plugin<T extends BasePluginConfig> {
-    name: string
-    depends?: string[]
-    config?: T
-
-    register(config: T, helper: PluginRegisterHelper): void
-}
-
-export type PluginConstructor<T extends BasePluginConfig> = {
-    new(): Plugin<T>
-}
 
 export interface InlineCommand extends Object {
     [key: string]: any
@@ -373,62 +333,3 @@ export interface InlineCommand extends Object {
 
 }
 
-
-export interface Figures {
-    tick: string
-    cross: string
-    star: string
-    square: string
-    squareSmall: string
-    squareSmallFilled: string
-    play: string
-    circle: string
-    circleFilled: string
-    circleDotted: string
-    circleDouble: string
-    circleCircle: string
-    circleCross: string
-    circlePipe: string
-    circleQuestionMark: string
-    bullet: string
-    dot: string
-    line: string
-    ellipsis: string
-    pointer: string
-    pointerSmall: string
-    info: string
-    warning: string
-    hamburger: string
-    smiley: string
-    mustache: string
-    heart: string
-    arrowUp: string
-    arrowDown: string
-    arrowLeft: string
-    arrowRight: string
-    radioOn: string
-    radioOff: string
-    checkboxOn: string
-    checkboxOff: string
-    checkboxCircleOn: string
-    checkboxCircleOff: string
-    questionMarkPrefix: string
-    oneHalf: string
-    oneThird: string
-    oneQuarter: string
-    oneFifth: string
-    oneSixth: string
-    oneSeventh: string
-    oneEighth: string
-    oneNinth: string
-    oneTenth: string
-    twoThirds: string
-    twoFifths: string
-    threeQuarters: string
-    threeFifths: string
-    threeEighths: string
-    fourFifths: string
-    fiveSixths: string
-    fiveEighths: string
-    sevenEighths: string
-}

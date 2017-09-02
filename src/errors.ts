@@ -31,3 +31,10 @@ export class ModuleNotFoundError extends ErrorBase {
         super(message);
     }
 }
+
+export class HelperDependencyMissingError extends ErrorBase {
+    readonly code: string = 'HELPER_DEPENDENCY_MISSING'
+    constructor(helperName:string, dependencyName:string){
+        super(`Cannot start helper [${helperName}]. It depends on [${dependencyName}]. Either enable it or set config [helpers.${helperName}.enableDepends] to [true]`)
+    }
+}

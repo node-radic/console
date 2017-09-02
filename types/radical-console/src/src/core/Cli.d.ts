@@ -1,10 +1,9 @@
-import { BasePluginConfig, CliConfig, CommandConfig, OptionConfig, Plugin, PluginConstructor } from "../interfaces";
+import { HelpersOptionsConfig, CliConfig, CommandConfig, OptionConfig } from "../interfaces";
 import { Log } from "./Log";
 import { Config } from "./config";
 import { ParseArgumentsFunction, SubCommandsGetFunction, TransformOptionsFunction } from "../utils";
 import { Helpers } from "./Helpers";
 import { Dispatcher } from "./Dispatcher";
-import { HelpersOptionsConfig } from "radical-console";
 export declare class Cli {
     protected _runningCommand: CommandConfig;
     protected _parsedCommands: CommandConfig[];
@@ -35,9 +34,5 @@ export declare class Cli {
     globals(configs: OptionConfig[] | {
         [key: string]: OptionConfig;
     }): this;
-    protected plugins: {
-        [name: string]: Plugin<BasePluginConfig>;
-    };
-    use<T extends BasePluginConfig>(PlugIn: PluginConstructor<T>, config?: T): void;
 }
 export declare const cli: Cli;

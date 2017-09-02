@@ -11,6 +11,7 @@
       <excludeFolder url="file://$MODULE_DIR$/es" />
       <excludeFolder url="file://$MODULE_DIR$/lib" />
       <excludeFolder url="file://$MODULE_DIR$/lib-es6" />
+      <excludeFolder url="file://$MODULE_DIR$/types/radical-console" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

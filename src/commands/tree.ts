@@ -1,8 +1,6 @@
-import { container, inject, injectable } from "../core/Container";
-import { Config } from "../core/config";
-import { OutputHelper } from "../helpers/helper.output";
+import { container, inject, injectable ,Config,Cli } from "../core";
+import { OutputHelper } from "@output";
 import { SubCommandsGetFunction } from "../utils";
-import { Cli } from "../core/Cli";
 import { CommandConfig } from "../interfaces";
 
 @injectable()
@@ -24,12 +22,12 @@ export class TreeCmd {
     all: boolean = false
 
     colors = {
-        group: 'darkcyan bold',
-        command: 'steelblue',
-        description: 'darkslategray',
-        argument: 'green',
+        group           : 'darkcyan bold',
+        command         : 'steelblue',
+        description     : 'darkslategray',
+        argument        : 'green',
         requiredArgument: 'yellow',
-        option: 'darkslategray lighten 40'
+        option          : 'darkslategray lighten 40'
     }
 
     public get getSubCommands(): SubCommandsGetFunction { return container.get<SubCommandsGetFunction>('cli.fn.commands.get') }
@@ -39,7 +37,7 @@ export class TreeCmd {
         if ( this.all ) {
             this.desc = this.opts = true;
         }
-        this.out.tree(label, this.getChildren(config))
+        this.out.tree({ label, nodes: this.getChildren(config) })
     }
 
     protected getChildren(config: CommandConfig) {
@@ -49,7 +47,7 @@ export class TreeCmd {
             .map(command => {
                 if ( command.isGroup ) {
                     let label = `{${this.colors.group}}${command.name}{reset}`;
-                    if(this.desc && command.description.length > 0){
+                    if ( this.desc && command.description.length > 0 ) {
                         label += ` : {${this.colors.description}}${command.description}{reset}`
                     }
                     return { label, nodes: this.getChildren(command) }

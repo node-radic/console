@@ -13,7 +13,9 @@
         "access": "public"
     },
     "_moduleAliases": {
-        "radical-console": "src"
+        "radical-console": "src",
+        "@log": "modules/log",
+        "@output": "modules/output"
     },
     "scripts": {
         "link": "npm link @radic/console-colors && npm link @radic/util",

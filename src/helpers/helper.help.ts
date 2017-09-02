@@ -1,15 +1,19 @@
-import { kindOf, stringify } from "@radic/util";
-import { CommandArgumentConfig, CommandConfig, HelperOptionsConfig, HelpHelperOptionsConfig, OptionConfig, OutputColumnsOptions } from "../interfaces";
-import { helper } from "../decorators";
-import { CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParseEvent } from "../core/events";
-import { bindTo, container, inject } from "../core/Container";
-import { OutputHelper } from "./helper.output";
-import { SubCommandsGetFunction } from "../utils";
-import { Log } from "../core/Log";
-import { Cli } from "../core/Cli";
-import { Dispatcher } from "../core/Dispatcher";
-import { HelpHelperOnInvalidArgumentsShowHelpEvent, HelpHelperShowHelpEvent } from "./events";
 import * as _ from "lodash";
+import { kindOf, stringify } from "@radic/util";
+
+import { CommandArgumentConfig, CommandConfig, HelperOptionsConfig, HelpHelperOptionsConfig, OptionConfig } from "../interfaces";
+import { HelpHelperOnInvalidArgumentsShowHelpEvent, HelpHelperShowHelpEvent } from "./events";
+
+import { helper } from "../decorators";
+import { SubCommandsGetFunction } from "../utils";
+import { OutputHelper } from "@output";
+
+import {
+    CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParseEvent,
+    bindTo, container, inject,
+    Log, Cli, Dispatcher
+} from "../core";
+import { ColumnsOptions } from "@output";
 
 @helper('help', {
     config   : {
@@ -57,27 +61,27 @@ import * as _ from "lodash";
             'globalOptions',
             'example'
         ],
-        headers: {
-            usage:'{header}Usage: {/header}',
-            description:'{header}Description: {/header}\n',
-            explanation:'{header}Explanation: {/header}\n',
-            groups:'{header}Groups: {/header}\n',
-            commands:'{header}Commands: {/header}\n',
-            arguments:'{header}Arguments: {/header}\n',
-            options:'{header}Options: {/header}\n',
-            globalOptions:'{header}Global options: {/header}\n',
-            example:'{header}Example: {/header}\n',
+        headers           : {
+            usage        : '{header}Usage: {/header}',
+            description  : '{header}Description: {/header}\n',
+            explanation  : '{header}Explanation: {/header}\n',
+            groups       : '{header}Groups: {/header}\n',
+            commands     : '{header}Commands: {/header}\n',
+            arguments    : '{header}Arguments: {/header}\n',
+            options      : '{header}Options: {/header}\n',
+            globalOptions: '{header}Global options: {/header}\n',
+            example      : '{header}Example: {/header}\n',
         },
         overrides         : {
-            usage: null,
-            description: null,
-            explanation: null,
-            groups: null,
-            commands: null,
-            arguments: null,
-            options: null,
+            usage        : null,
+            description  : null,
+            explanation  : null,
+            groups       : null,
+            commands     : null,
+            arguments    : null,
+            options      : null,
             globalOptions: null,
-            example: null,
+            example      : null,
         },
         display           : {
             title             : true,
@@ -117,72 +121,26 @@ export class HelpHelper {
     @inject('cli.helpers.output')
     out: OutputHelper;
 
-    createDescriber(command: CommandConfig):CommandDescriber {
-        let describer = container.get<CommandDescriber>('cli.helpers.help.describer')
+    public get getSubCommands(): SubCommandsGetFunction { return container.get<SubCommandsGetFunction>('cli.fn.commands.get') }
+
+    public createDescriber(command: CommandConfig): CommandDescriber {
+        let describer     = container.get<CommandDescriber>('cli.helpers.help.describer')
         describer.command = command;
         return describer;
     }
 
-    public get getSubCommands(): SubCommandsGetFunction { return container.get<SubCommandsGetFunction>('cli.fn.commands.get') }
-
-
-    public async showHelp(config: CommandConfig, options: OptionConfig[]) {
+    public showHelp(config: CommandConfig, options: OptionConfig[]) {
         if ( config.helpers[ 'help' ] ) {
             _.merge(this.config, config.helpers[ 'help' ]);
         }
         this.events.fire(new HelpHelperShowHelpEvent(config, options))
         let describer = this.createDescriber(config)
         this.config.order.forEach((item, i) => {
-            if(kindOf(this.config.overrides[item]) === 'function'){
-                return this.config.overrides[item](config,describer, this);
+            if ( kindOf(this.config.overrides[ item ]) === 'function' ) {
+                return this.config.overrides[ item ](config, describer, this);
             }
-            describer[item]()
+            describer[ item ]()
         })
-    }
-
-    public printCommandTree(label: string = 'Command tree:', config?: CommandConfig) {
-
-        this.out.tree(label, this.getTreeSubcommands(this.cli.rootCommand || config || {}))
-    }
-
-    protected getTreeSubcommands(config: CommandConfig): any[] {
-        let obj = this.getSubCommands(config.filePath);
-        return Object.keys(obj).map(subCommand => {
-            // let filePath                 = obj[ subCommand ].filePath
-            // let subConfig: CommandConfig = obj[ subCommand ];
-            //
-            // let optionConfigs: OptionConfig[] = Reflect.getMetadata('options', subConfig.cls.prototype) || [];
-            // if ( subConfig.isGroup ) {
-            //     subConfig.subCommands = Object.keys(getSubCommands(config.filePath))
-            // }
-            // if ( subConfig.subCommands && subConfig.subCommands.length > 0 ) {
-            //     return { label: this.config.templates.treeItem(subConfig, optionConfigs), nodes: this.getTreeSubcommands(subConfig) }
-            // }
-            return this.config.templates.treeItem(subCommand, Reflect.getMetadata('options', subCommand[ 'cls' ].prototype))
-
-        })
-    }
-
-    getSubcommandsNameTree(config: CommandConfig): any {
-        let obj = {};
-        //
-        // config.subCommands.map(subCommand => {
-        //     let filePath = findSubCommandFilePath(subCommand, config.filePath)
-        //     let module   = require(filePath);
-        //     if ( kindOf(module.default) === 'function' ) {
-        //         let subConfig: CommandConfig      = Reflect.getMetadata('command', module.default);
-        //         let optionConfigs: OptionConfig[] = Reflect.getMetadata('options', subConfig.cls.prototype) || [];
-        //         if ( subConfig.subCommands && subConfig.subCommands.length > 0 ) {
-        //             return { [subConfig.name]: this.getSubcommandsNameTree(subConfig) }
-        //         }
-        //
-        //         return { [subConfig.name]: optionConfigs.map(opt => '--' + opt.name) };
-        //     }
-        //     return false;
-        // }).filter(subConfig => subConfig !== false).forEach(subj => {
-        //     _.merge(obj, subj);
-        // });
-        return obj
     }
 
     public onCommandParse(event: CliExecuteCommandParseEvent) {
@@ -197,7 +155,7 @@ export class HelpHelper {
     }
 
     public onCommandHandle(event: CliExecuteCommandHandleEvent): void {
-        if ( this.config.addShowHelpFunction ) {
+        if ( this.config.addShowHelpCommand ) {
             this.out.styles(this.config.style);
             event.instance[ 'showHelp' ] = () => {
                 this.showHelp(event.config, event.options)
@@ -269,7 +227,7 @@ export class CommandDescriber {
         return this;
     }
 
-    protected columns(data: any, options: OutputColumnsOptions = {}): this {
+    protected columns(data: any, options: ColumnsOptions  = {}): this {
         return this.write(this.out.columns(data, options, true))
     }
 
@@ -377,13 +335,13 @@ export class CommandDescriber {
     }
 
     explanation(): this {
-        if ( ! this.display.explanation || !this.command.explanation) return this;
+        if ( ! this.display.explanation || ! this.command.explanation ) return this;
 
         return this.write(this.config.headers.explanation).write(this.command.explanation).nl.nl
     }
 
     example(): this {
-        if ( ! this.display.example || !this.command.example ) return this;
+        if ( ! this.display.example || ! this.command.example ) return this;
         return this.write(this.config.headers.example).write(this.command.example).nl.nl
     }
 

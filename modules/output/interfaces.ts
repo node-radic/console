@@ -16,6 +16,7 @@ export interface TreeData {
 }
 
 export interface TreeOptions {
+    prefix?:string
     unicode?: boolean;
 }
 
@@ -48,80 +49,29 @@ export interface WrapOptions {
     trim?: boolean
 }
 
+export interface ColumnsOptions {
+    columns?: string[]
+    minWidth?: number
+    maxWidth?: number
+    align?: 'left' | 'right' | 'center'
+    paddingChr?: string
+    columnSplitter?: string
+    preserveNewLines?: boolean
+    showHeaders?: boolean
+    dataTransform?: (data) => string
+    truncate?: boolean
+    truncateMarker?: string
+    widths?: { [name: string]: ColumnsOptions }
+    config?: { [name: string]: ColumnsOptions }
+}
+
+
 
 export interface OutputOptions {
     enabled?: boolean
     colors?: boolean
     inspect?: InspectOptions
 }
-
-export interface IOutputUtil {
-    parser: Parser
-    colors: Colors
-    figures: Figures
-    useColors: boolean
-
-    disableColors(): this
-
-    enableColors(): this
-
-    /** transforms a text with color-brackets to text with color-codes */
-    parse: (text: string, force?: boolean) => string
-    /** clears a text from its color-brackets */
-    clean: (text: string) => string
-    /** Truncate a string with ANSI escape codes, uses "cli-truncate" */
-    truncate: (input: string, columns: number, options?: TruncateOptions) => string
-    /** Wordwrap a string with ANSI escape codes, uses: "wrap-ansi" */
-    wrap: (input: string, columns: number, options?: WrapOptions) => string
-    /** Slice a string with ANSI escape codes, uses: "slice-ansi" */
-    slice: (inputu: string, beginSlice: number, endSlice?: number) => string
-    /**
-     * Get the visual width of the widest line in a string - the number of columns required to display it
-     * Some Unicode characters are fullwidth and use double the normal width. ANSI escape codes are stripped and doesn't affect the width.
-     * Useful to be able to know the maximum width a string will take up in the terminal.
-     * @param {string} input
-     */
-    widest: (input: string) => number
-    /**
-     * Get the visual width of a string - the number of columns required to display it
-     * Some Unicode characters are fullwidth and use double the normal width. ANSI escape codes are stripped and doesn't affect the width.
-     *
-     * Useful to be able to measure the actual width of command-line output.
-     * @param {string} input
-     * @returns {number}
-     */
-    width: (input: string) => number
-
-}
-
-export interface IOutput {
-    stdout: NodeJS.WriteStream
-    options: OutputOptions
-
-    /** writes new line to stdout */
-    nl: this
-    /** write text to stdout */
-    write: (text: string) => this
-    /** write new line or text + new line to stdout */
-    line?: (text: string) => this
-    /** dumps objects to stdout */
-    dump?: (...args: any[]) => this
-    /** returns a macro */
-    macro: (name: string) => (...args: any[]) => string
-    /** defines a macro */
-    setMacro: (name: string, macro: (...args: any[]) => string) => this
-    /** displays the difference between 2 objects */
-    diff?: (o: object, o2: object) => Diff
-
-    spinner?: (text?: string) => any
-
-    spinners?: any[]
-
-    beep?: (val?: number, cb?: Function) => this
-
-    util: IOutputUtil
-}
-
 
 export interface HelpersOptionsConfig {
     output: OutputHelperOptionsConfig

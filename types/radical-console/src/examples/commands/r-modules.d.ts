@@ -1,5 +1,6 @@
-import { Config, CommandConfig, OptionConfig, OutputHelper, Modules } from "radical-console";
-import { Log } from "modules/log";
+import { Config, CommandConfig, OptionConfig, Modules } from "radical-console";
+import { Log } from "@log";
+import { OutputHelper } from "@output";
 export declare class ModulesCmd {
     _config: CommandConfig;
     _options: OptionConfig[];

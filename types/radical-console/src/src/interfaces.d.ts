@@ -1,14 +1,8 @@
 /// <reference types="inquirer" />
-/// <reference types="winston" />
 import { KindOf } from "@radic/util";
 import { interfaces } from "inversify";
 import { Container } from "./core/Container";
 import BindingInWhenOnSyntax = interfaces.BindingInWhenOnSyntax;
-import { Cli } from "./core/Cli";
-import { Config } from "./core/config";
-import { Dispatcher } from "./core/Dispatcher";
-import { Helpers } from "./core/Helpers";
-import { LoggerInstance } from "winston";
 import { CommandDescriber, HelpHelper } from "./helpers/helper.help";
 import * as inquirer from "inquirer";
 export interface CommandArguments {
@@ -273,25 +267,6 @@ export interface HelperOptions<T extends HelperOptionsConfig = HelperOptionsConf
         [key: string]: string;
     };
 }
-export interface OutputColumnsOptions {
-    columns?: string[];
-    minWidth?: number;
-    maxWidth?: number;
-    align?: 'left' | 'right' | 'center';
-    paddingChr?: string;
-    columnSplitter?: string;
-    preserveNewLines?: boolean;
-    showHeaders?: boolean;
-    dataTransform?: (data) => string;
-    truncate?: boolean;
-    truncateMarker?: string;
-    widths?: {
-        [name: string]: OutputColumnsOptions;
-    };
-    config?: {
-        [name: string]: OutputColumnsOptions;
-    };
-}
 export interface Dictionary<T> {
     [index: string]: T;
 }
@@ -301,87 +276,9 @@ export interface NumericDictionary<T> {
 export interface StringRepresentable {
     toString(): string;
 }
-export interface PluginRegisterHelper {
-    cli: Cli;
-    config: Config;
-    container: Container;
-    events: Dispatcher;
-    helpers: Helpers;
-    log: LoggerInstance;
-}
-export interface BasePluginConfig {
-    [key: string]: any;
-}
-export interface Plugin<T extends BasePluginConfig> {
-    name: string;
-    depends?: string[];
-    config?: T;
-    register(config: T, helper: PluginRegisterHelper): void;
-}
-export declare type PluginConstructor<T extends BasePluginConfig> = {
-    new (): Plugin<T>;
-};
 export interface InlineCommand extends Object {
     [key: string]: any;
     action(args: CommandArguments): any;
     _config: CommandConfig;
     _options: OptionConfig[];
-}
-export interface Figures {
-    tick: string;
-    cross: string;
-    star: string;
-    square: string;
-    squareSmall: string;
-    squareSmallFilled: string;
-    play: string;
-    circle: string;
-    circleFilled: string;
-    circleDotted: string;
-    circleDouble: string;
-    circleCircle: string;
-    circleCross: string;
-    circlePipe: string;
-    circleQuestionMark: string;
-    bullet: string;
-    dot: string;
-    line: string;
-    ellipsis: string;
-    pointer: string;
-    pointerSmall: string;
-    info: string;
-    warning: string;
-    hamburger: string;
-    smiley: string;
-    mustache: string;
-    heart: string;
-    arrowUp: string;
-    arrowDown: string;
-    arrowLeft: string;
-    arrowRight: string;
-    radioOn: string;
-    radioOff: string;
-    checkboxOn: string;
-    checkboxOff: string;
-    checkboxCircleOn: string;
-    checkboxCircleOff: string;
-    questionMarkPrefix: string;
-    oneHalf: string;
-    oneThird: string;
-    oneQuarter: string;
-    oneFifth: string;
-    oneSixth: string;
-    oneSeventh: string;
-    oneEighth: string;
-    oneNinth: string;
-    oneTenth: string;
-    twoThirds: string;
-    twoFifths: string;
-    threeQuarters: string;
-    threeFifths: string;
-    threeEighths: string;
-    fourFifths: string;
-    fiveSixths: string;
-    fiveEighths: string;
-    sevenEighths: string;
 }

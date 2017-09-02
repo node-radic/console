@@ -1,10 +1,10 @@
 import { Cli } from "./Cli";
 import { container, injectable } from "./Container";
-import { BasePluginConfig, CommandConfig, Dictionary, HelperOptionsConfig, OptionConfig, ParsedCommandArguments, Plugin } from "../interfaces";
+import { CommandConfig, Dictionary, HelperOptionsConfig, OptionConfig, ParsedCommandArguments } from "../interfaces";
 import { YargsParserArgv } from "yargs-parser";
 import { ChildProcess } from "child_process";
 import { Helpers } from "./Helpers";
-import { Mixin } from "@radic/util";
+import { HelperOptions } from "radical-console";
 
 @injectable()
 export abstract class Event {
@@ -25,7 +25,7 @@ export abstract class ExitEvent extends Event {
         this._exitCode = code;
     }
 
-    public stopIfExit():this {
+    public stopIfExit(): this {
         if ( this._exit ) {
             process.exit(this._exitCode);
         }
@@ -38,43 +38,51 @@ export abstract class ExitEvent extends Event {
 @injectable()
 export abstract class CancelEvent extends Event {
     private _canceled: boolean = false;
-    public cancel(){
+
+    public cancel() {
         this._canceled = true;
     }
-    public canceled<T>(cb:(event?:this)=>T) : T | this {
-        if(this._canceled === true){
+
+    public canceled<T>(cb: (event?: this) => T): T | this {
+        if ( this._canceled === true ) {
             return cb(this);
         }
         return this;
     }
-    public proceed(cb:()=>void) : this  {
-        if(this._canceled === false){
+
+    public proceed(cb: () => void): this {
+        if ( this._canceled === false ) {
             cb();
         }
         return this;
     }
-    public isCanceled():boolean { return this._canceled }
+
+    public isCanceled(): boolean { return this._canceled }
 }
 
 @injectable()
 export abstract class CancelExitEvent extends ExitEvent {
     private _canceled: boolean = false;
-    protected cancel(){
+
+    protected cancel() {
         this._canceled = true;
     }
-    public canceled(cb:()=>void) : this  {
-        if(this._canceled === true){
+
+    public canceled(cb: () => void): this {
+        if ( this._canceled === true ) {
             cb();
         }
         return this;
     }
-    public proceed(cb:()=>void) : this  {
-        if(this._canceled === false){
+
+    public proceed(cb: () => void): this {
+        if ( this._canceled === false ) {
             cb();
         }
         return this;
     }
-    public isCanceled():boolean { return this._canceled }
+
+    public isCanceled(): boolean { return this._canceled }
 }
 
 
@@ -89,11 +97,13 @@ export class CliParseEvent extends CancelExitEvent {
         super('cli:parse')
     }
 }
+
 export class CliParsedEvent extends ExitEvent {
     constructor(public config: CommandConfig, public globals: OptionConfig[], public isRootCommand: boolean, public argv: YargsParserArgv) {
         super('cli:parsed')
     }
 }
+
 export class CliSpawnEvent extends ExitEvent {
     constructor(public args: string[], public file: string, public proc: ChildProcess) {
         super('cli:spawn')
@@ -105,16 +115,19 @@ export class CliExecuteCommandEvent extends CancelEvent {
         super('cli:execute')
     }
 }
+
 export class CliExecuteCommandParseEvent extends ExitEvent {
     constructor(public config: CommandConfig, public options: OptionConfig[]) {
         super('cli:execute:parse')
     }
 }
+
 export class CliExecuteCommandParsedEvent extends ExitEvent {
     constructor(public argv: YargsParserArgv, public config: CommandConfig, public options: OptionConfig[]) {
         super('cli:execute:parsed')
     }
 }
+
 export class CliExecuteCommandInvalidArgumentsEvent<T = any> extends ExitEvent {
     constructor(public instance: T,
                 public parsed: ParsedCommandArguments,
@@ -123,6 +136,7 @@ export class CliExecuteCommandInvalidArgumentsEvent<T = any> extends ExitEvent {
         super('cli:execute:invalid')
     }
 }
+
 export class CliExecuteCommandHandleEvent<T = any> extends ExitEvent {
     constructor(public instance: T,
                 public parsed: ParsedCommandArguments,
@@ -132,6 +146,7 @@ export class CliExecuteCommandHandleEvent<T = any> extends ExitEvent {
         super('cli:execute:handle')
     }
 }
+
 export class CliExecuteCommandHandledEvent<T = any> extends ExitEvent {
     constructor(public result: any,
                 public instance: T,
@@ -142,35 +157,63 @@ export class CliExecuteCommandHandledEvent<T = any> extends ExitEvent {
     }
 }
 
-export class CliPluginRegisterEvent<T extends BasePluginConfig=BasePluginConfig> extends CancelEvent {
-    constructor(public plugin:Plugin<T>,
-                public config:T){
-        super('cli:plugin:register')
-    }
-}
-export class CliPluginRegisteredEvent<T extends BasePluginConfig=BasePluginConfig> extends Event {
-    constructor(public plugin:Plugin<T>){
-        super('cli:plugins:registered')
-    }
-}
+
+
 
 export class HelpersStartingEvent extends CancelEvent {
     constructor(public helpers: Helpers, public enabledHelpers: string[]) {
         super('helpers:starting')
     }
 }
+
 export class HelperStartingEvent extends CancelEvent {
     constructor(public helpers: Helpers, public name: string) {
         super('helper:starting')
     }
 }
+
 export class HelperStartedEvent extends Event {
     constructor(public helpers: Helpers, public name: string) {
         super('helper:started')
     }
 }
+
 export class HelpersStartedEvent extends Event {
     constructor(public helpers: Helpers, public startedHelpers: string[]) {
         super('helpers:started')
+    }
+}
+
+
+/**
+ * Fires when a helper is getting started but a dependency is missing.
+ *
+ * If `options.enableDepends === false` then a `HelperDependencyMissingError` will be thrown.
+ * This can be countered by canceling, which will make it so that the depended helper will **NOT** start, but the program  **WILL** continue.
+ *
+ * Refer to the `Helpers.startHelper()` method if you want to know more.
+ */
+export class HelperDependencyMissingEvent extends CancelEvent {
+    constructor(public helperName:string, public dependencyName:string, public helperOptions:HelperOptions){
+        super('helper:starting:dependency:missing')
+    }
+}
+
+/**
+ * Fires when a helper class is resolved from the container.
+ * This is actually Inversify's binding onActivation being used, which is responsible for setting the configuration on the helper instance.
+ * This event is fired AFTER the configuration has been set on the helper instance
+ *
+ * It is possible to listen to all helpers triggering this event using the event wildcard:
+ * `helper:resolved:*`
+ *
+ * It is also possible to listen for a specific helper triggering this event:
+ * `helper:resolved:<name>`
+ * For example, the verbose helper:
+ * `helper:resolved:verbose`
+ */
+export class HelperContainerResolvedEvent<T=any> extends Event {
+    constructor(public helper:T, public options:HelperOptions){
+        super('helper:resolved:' + options.name)
     }
 }

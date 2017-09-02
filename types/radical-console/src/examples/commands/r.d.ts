@@ -1,4 +1,5 @@
-import { Config, CommandConfig, OptionConfig, Log, OutputHelper } from "radical-console";
+import { Config, CommandConfig, OptionConfig, Log } from "radical-console";
+import { OutputHelper } from "@output";
 export declare class RcliCmd {
     _config: CommandConfig;
     _options: OptionConfig[];

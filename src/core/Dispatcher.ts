@@ -1,9 +1,10 @@
 import { EventAndListener, EventEmitter2, eventNS, Listener } from "eventemitter2";
-import { lazyInject, singleton } from "./Container";
+import { container, inject, singleton } from "./Container";
 import { defined } from "@radic/util";
 import { Log } from "./Log";
 import { defaults } from "../defaults";
 import { ExitEvent, Event, CancelEvent } from "./events";
+
 
 @singleton('cli.events')
 /**
@@ -33,13 +34,15 @@ import { ExitEvent, Event, CancelEvent } from "./events";
  */
 export class Dispatcher {
     private ee: EventEmitter2;
-    @lazyInject('cli.log')
+
+    @inject('cli.log')
     protected log: Log;
 
     constructor() {
         this.ee = new EventEmitter2(defaults.events())
-
     }
+
+    public static get instance(): Dispatcher { return container.get<Dispatcher>('cli.events') }
 
     fire<T extends Event | ExitEvent | CancelEvent>(ctx: T): T
     fire<T extends Event | ExitEvent | CancelEvent>(event: string | string[], ctx: T): T
@@ -53,7 +56,7 @@ export class Dispatcher {
         this.log.silly('firing event: ' + event, { ctx })
         this.emit(event, ctx);
         if ( ctx instanceof ExitEvent ) {
-            if ( ctx['_halt'] ) {
+            if ( ctx[ '_halt' ] ) {
                 this.halt<typeof ctx>(event, ctx);
             }
         }

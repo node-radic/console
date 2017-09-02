@@ -1,22 +1,17 @@
-import { CommandConfig, HelpHelperOptionsConfig, OptionConfig, OutputColumnsOptions } from "../interfaces";
-import { CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParseEvent } from "../core/events";
-import { OutputHelper } from "./helper.output";
+import { CommandConfig, HelpHelperOptionsConfig, OptionConfig } from "../interfaces";
 import { SubCommandsGetFunction } from "../utils";
-import { Log } from "../core/Log";
-import { Cli } from "../core/Cli";
-import { Dispatcher } from "../core/Dispatcher";
+import { OutputHelper } from "@output";
+import { CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParseEvent, Log, Cli, Dispatcher } from "../core";
+import { ColumnsOptions } from "@output";
 export declare class HelpHelper {
     config: HelpHelperOptionsConfig;
     events: Dispatcher;
     cli: Cli;
     log: Log;
     out: OutputHelper;
-    createDescriber(command: CommandConfig): CommandDescriber;
     readonly getSubCommands: SubCommandsGetFunction;
-    showHelp(config: CommandConfig, options: OptionConfig[]): Promise<void>;
-    printCommandTree(label?: string, config?: CommandConfig): void;
-    protected getTreeSubcommands(config: CommandConfig): any[];
-    getSubcommandsNameTree(config: CommandConfig): any;
+    createDescriber(command: CommandConfig): CommandDescriber;
+    showHelp(config: CommandConfig, options: OptionConfig[]): void;
     onCommandParse(event: CliExecuteCommandParseEvent): void;
     onCommandHandle(event: CliExecuteCommandHandleEvent): void;
     onInvalidArguments(event: CliExecuteCommandInvalidArgumentsEvent): void;
@@ -44,7 +39,7 @@ export declare class CommandDescriber {
     readonly nl: this;
     write(text: string): this;
     line(text?: string): this;
-    protected columns(data: any, options?: OutputColumnsOptions): this;
+    protected columns(data: any, options?: ColumnsOptions): this;
     usage(): this;
     arguments(): this;
     commands(): this;

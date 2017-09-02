@@ -1,5 +1,5 @@
-import { InputHelper } from "../../src/helpers/helper.input";
-import { OutputHelper } from "../../src/helpers/helper.output";
+import { InputHelper } from "radical-console";
+import { OutputHelper } from "@output";
 export default class InputsCmd {
     ask: InputHelper;
     out: OutputHelper;
