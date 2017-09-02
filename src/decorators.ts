@@ -1,12 +1,13 @@
 import "reflect-metadata";
 import { kindOf, KindOf } from "@radic/util";
 import { merge } from "lodash";
-import { CommandConfig, HelperOptions, OptionConfig } from "./interfaces";
+import { CommandConfig, HelperOptions, HelpersOptionsConfig, OptionConfig } from "./interfaces";
 import { Cli, container } from "./core";
 import { CommandConfigFunction, OptionConfigFunction, PrepareArgumentsFunction } from "./utils";
 import { decorate, injectable } from "inversify";
 import { defaults } from "./defaults";
 import { HelperOptionsConfig } from "./interfaces";
+
 const callsites = require('callsites');
 
 const get = Reflect.getMetadata;
@@ -22,13 +23,13 @@ export function command(name: string, description?: string | CommandConfig, conf
             config      = <CommandConfig> description;
             description = '';
         }
-        config = {
+        config             = {
             ...defaults.command(cls),
             ...config || {},
             name
         }
         config.description = description ? description.toString().toLowerCase() : config.description || ''
-        config = container.get<PrepareArgumentsFunction>('cli.fn.arguments.prepare')(config);
+        config             = container.get<PrepareArgumentsFunction>('cli.fn.arguments.prepare')(config);
 
         config.filePath  = callsites().filter(site => site.getFunctionName() == '__decorate').map(site => site.getFileName()).shift()
         config.enabled   = kindOf(config.enabled) === 'function' ? (<Function>config.enabled).apply(config, [ container ]) : config.enabled;
@@ -40,6 +41,7 @@ export function command(name: string, description?: string | CommandConfig, conf
         set('command', config, cls);
     }
 }
+
 // export function command(cls: Function)
 // export function command(config: CommandConfig): ClassDecorator
 // export function command(name: string, config?: CommandConfig): ClassDecorator
@@ -67,8 +69,8 @@ export function command(name: string, description?: string | CommandConfig, conf
 // }
 
 
-export function alwaysRun():MethodDecorator {
-    return <T extends any>(cls:Object, propertyKey:string, descriptor: TypedPropertyDescriptor<T>) => {
+export function alwaysRun(): MethodDecorator {
+    return <T extends any>(cls: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>) => {
         set('alwaysRun', propertyKey, cls.constructor);
     }
 }
@@ -102,9 +104,10 @@ function makeNodeConfig<T extends HelperOptions>(cls: any, args: any[]): T {
     if ( len > 0 && argt[ len - 1 ] === 'object' ) merge(config, args[ len - 1 ]);
     return config;
 }
+
 export function helper(name: string): ClassDecorator;
 export function helper<T extends HelperOptionsConfig>(options: HelperOptions<HelperOptionsConfig>): ClassDecorator;
-export function helper<K extends keyof HelperOptionsConfig>(name: K, options: HelperOptions<HelperOptionsConfig[K]>): ClassDecorator;
+export function helper<K extends keyof HelpersOptionsConfig>(name: K, options: HelperOptions<HelpersOptionsConfig[K]>): ClassDecorator;
 export function helper(...args: any[]): ClassDecorator {
     return (cls) => {
         container.get<Cli>('cli').helpers.add(makeNodeConfig(cls, args));

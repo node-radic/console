@@ -6,29 +6,35 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "sourceMap": true,
+        "inlineSourceMap": true,
+        "declarationDir": "./types/radical-console/src",
+        "declaration": true,
         "module": "commonjs",
         "skipLibCheck": true,
         "moduleResolution": "node",
         "target": "es5",
         "lib": ["es2017", "es2017.object"],
         "noResolve": false,
-        "types": [
-            "ora"
-        ],
+        "baseUrl": "./",
+        "paths": {
+            "radical-console": ["src/"],
+            "modules": ["modules/"],
+            "modules/*": ["modules/*/"]
+        },
+
         "typeRoots": [
             "./node_modules/@types",
             "./types"
         ]
     },
     "include": [
-        "./node_modules/@types",
-        "./src",
-        "./examples",
-        "./types"
+        "./src/**/*",
+        "./modules/**/*",
+        "./gulpfile.ts"
     ],
     "exclude": [
-        "./gulpfile.ts",
         "./plugins",
         "./plugins/**/*.ts"
-    ]
+    ],
+    "compileOnSave": true
 }

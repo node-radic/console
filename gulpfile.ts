@@ -10,13 +10,26 @@ import * as rename from 'gulp-rename';
 import * as buffer from "vinyl-buffer";
 import * as source from "vinyl-source-stream";
 import * as ghPages from "gulp-gh-pages";
+import { config } from 'dotenv'
+import { Client, ClientGenerateOptionsFieldType } from 'mockaroo'
+import { resolve } from "path";
+import { existsSync, removeSync } from "fs-extra";
+import { writeFileSync } from "fs";
+import { kindOf } from "@radic/util";
+import { execSync } from "child_process";
 
-const rollup = require('gulp-rollup'),
-      clean  = require('gulp-clean');
+config()
+console.dir(process.env)
+const mockaroo = new Client({
+    apiKey: process.env.MOCKAROO_API_KEY
+})
+const rollup   = require('gulp-rollup'),
+      clean    = require('gulp-clean');
 
 const c = {
     src          : [
         'src/**/*.ts',
+        'src/**/*.d.ts',
         "!src/**/*.spec.ts",
         "types/**/*.d.ts"
     ],
@@ -36,7 +49,7 @@ gulp.task('clean', [ 'clean:src:js', 'clean:build', 'clean:docs' ], () => pump(g
 gulp.task('clean:docs', () => pump(gulp.src([ 'docs', '.publish' ]), clean()))
 gulp.task('clean:build', () => pump(gulp.src([ 'lib', 'es', 'dts', 'coverage', '.publish', 'docs' ]), clean()));
 gulp.task('clean:watch', () => pump(gulp.src([ 'lib', 'dts' ]), clean()));
-gulp.task('clean:src:js', () => pump(gulp.src([ '{src,examples}/*.{js,js.map}', '*.{js,js.map}' ]), clean()));
+gulp.task('clean:src:js', () => pump(gulp.src([ '{src,examples}/*/**.{js,js.map}', '*.{js,js.map}' ]), clean()));
 gulp.task('clean:test:js', () => pump(gulp.src([ '{tests}/*.{js,js.map}', '*.{js,js.map}' ]), clean()));
 gulp.task('clean:dts:js', () => pump(gulp.src([ 'dts/**/*.js' ]), clean()))
 
@@ -66,3 +79,24 @@ gulp.task("default", [ 'build' ]); //(cb) => sequence("build", cb))
 gulp.task('ghpages', () => pump([ gulp.src('./docs/**/*'), ghPages({
     remoteUrl: 'github.com:node-radic/console'
 }) ]));
+
+gulp.task('mockaroo:generate', async () => {
+    let filePath = resolve(__dirname, 'examples/data.json')
+    execSync(`curl "http://api.mockaroo.com/api/e4dc0940?count=20&key=c5700090" > "${filePath}"`)
+    //
+    // const data = await mockaroo.generate({
+    //     count : 20,
+    //     fields: [
+    //         { name: 'first_name', type: "NameFirst" },
+    //         { name: 'last_name', type: "NameLast" },
+    //         { name: 'email', type:  },
+    //         { name: 'gender', type: "NameGenderGender" },
+    //         { name: 'ip', type: "v4IP" }
+    //     ]
+    // })
+    // if(existsSync(filePath)){
+    //     removeSync(filePath)
+    // }
+    // writeFileSync(filePath, kindOf(data) === 'string' ? data : JSON.stringify(data, null, 4), 'utf-8')
+    return Promise.resolve();
+})

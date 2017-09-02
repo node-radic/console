@@ -1,6 +1,6 @@
 import { kindOf } from "@radic/util";
 import { container, injectable, lazyInject } from "./Container";
-import { BasePluginConfig, CliConfig, CommandConfig, HelperOptionsConfig, OptionConfig, Plugin, PluginConstructor, HelpersOptionsConfig } from "../interfaces";
+import { BasePluginConfig, CliConfig, CommandConfig, HelperOptionsConfig, OptionConfig, Plugin, PluginConstructor } from "../interfaces";
 // import { YargsParserArgv } from "../../types/yargs-parser";
 import { CliExecuteCommandEvent, CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent, CliPluginRegisterEvent, CliStartEvent, CliPluginRegisteredEvent } from "./events";
 import { Log } from "./Log";
@@ -15,6 +15,7 @@ import * as parser from "yargs-parser";
 import Context = interfaces.Context;
 import BindingWhenOnSyntax = interfaces.BindingWhenOnSyntax;
 import Factory = interfaces.Factory;
+import { HelpersOptionsConfig } from "radical-console";
 // import { YargsParserArgv } from "../../types/yargs-parser";
 // const parser = require('yargs-parser')
 const get = Reflect.getMetadata

@@ -159,15 +159,47 @@ export interface ParserConfiguration {
     'flatten-duplicate-arrays'?: boolean
 }
 
+export interface HelpersOptionsConfig {
+    help: HelpHelperOptionsConfig
+    verbose: VerboseHelperOptionsConfig
+    input: InputHelperOptionsConfig
+    output: OutputHelperOptionsConfig
+}
 
 export interface HelperOptionsConfig {
     [name: string]: any
 }
 
 export interface HelperOptionsConfigOption {
-    enabled: boolean,
-    key: string,
-    name: string
+    enabled?: boolean,
+    key?: string,
+    name?: string
+}
+
+
+export interface OutputHelperOptionsConfigTableStyles {
+    [name:string]:OutputHelperOptionsConfigTableStyle
+    FAT?:OutputHelperOptionsConfigTableStyle
+    SLIM?:OutputHelperOptionsConfigTableStyle
+    NONE?:OutputHelperOptionsConfigTableStyle
+}
+export interface OutputHelperOptionsConfigTableStyle {
+    [name: string]: string,
+    'top'         ?: string,
+    'top-mid'     ?: string,
+    'top-left'    ?: string,
+    'top-right'   ?: string,
+    'bottom'      ?: string,
+    'bottom-mid'  ?: string,
+    'bottom-left' ?: string,
+    'bottom-right'?: string,
+    'left'        ?: string,
+    'left-mid'    ?: string,
+    'mid'         ?: string,
+    'mid-mid'     ?: string,
+    'right'       ?: string,
+    'right-mid'   ?: string,
+    'middle'      ?: string,
 }
 
 export interface OutputHelperOptionsConfig extends HelperOptionsConfig {
@@ -179,7 +211,7 @@ export interface OutputHelperOptionsConfig extends HelperOptionsConfig {
     },
     resetOnNewline?: boolean,
     styles?: { [name: string]: string },
-    tableStyle?: { [name: string]: { [name: string]: string } }
+    tableStyle?: OutputHelperOptionsConfigTableStyles
 }
 
 export type HelpHelperOverrideType = (command: CommandConfig, describer: CommandDescriber, helper: HelpHelper) => string
@@ -197,15 +229,18 @@ export interface HelpHelperOptionsConfig extends HelperOptionsConfig {
     style?: {}
     order?: string[]
     overrides?: {
+        [name: string]: HelpHelperOverrideType
         arguments?: HelpHelperOverrideType
         title?: HelpHelperOverrideType
         options?: HelpHelperOverrideType
         description?: HelpHelperOverrideType
         explanation?: HelpHelperOverrideType
+        groups?: HelpHelperOverrideType
         usage?: HelpHelperOverrideType
         example?: HelpHelperOverrideType
     }
     display?: {
+        [name: string]: boolean
         title?: boolean
         titleLines?: boolean
         description?: boolean
@@ -246,7 +281,7 @@ export interface VerboseHelperOptionsConfig extends HelperOptionsConfig {
  * @interface
  * @see helper The helper decorator function
  */
-export interface HelperOptions<T extends HelperOptionsConfig=HelperOptionsConfig>{
+export interface HelperOptions<T extends HelperOptionsConfig=HelperOptionsConfig> {
     singleton?: boolean
     /** set by the decorator */
     name?: string
@@ -272,12 +307,6 @@ export interface HelperOptions<T extends HelperOptionsConfig=HelperOptionsConfig
     bindings?: { [key: string]: string }
 }
 
-export interface HelpersOptionsConfig {
-    help: HelpHelperOptionsConfig
-    output: OutputHelperOptionsConfig
-    verbose: VerboseHelperOptionsConfig
-    input: InputHelperOptionsConfig
-}
 
 export interface OutputColumnsOptions {
     columns?: string[]
@@ -342,4 +371,64 @@ export interface InlineCommand extends Object {
     _config: CommandConfig
     _options: OptionConfig[]
 
+}
+
+
+export interface Figures {
+    tick: string
+    cross: string
+    star: string
+    square: string
+    squareSmall: string
+    squareSmallFilled: string
+    play: string
+    circle: string
+    circleFilled: string
+    circleDotted: string
+    circleDouble: string
+    circleCircle: string
+    circleCross: string
+    circlePipe: string
+    circleQuestionMark: string
+    bullet: string
+    dot: string
+    line: string
+    ellipsis: string
+    pointer: string
+    pointerSmall: string
+    info: string
+    warning: string
+    hamburger: string
+    smiley: string
+    mustache: string
+    heart: string
+    arrowUp: string
+    arrowDown: string
+    arrowLeft: string
+    arrowRight: string
+    radioOn: string
+    radioOff: string
+    checkboxOn: string
+    checkboxOff: string
+    checkboxCircleOn: string
+    checkboxCircleOff: string
+    questionMarkPrefix: string
+    oneHalf: string
+    oneThird: string
+    oneQuarter: string
+    oneFifth: string
+    oneSixth: string
+    oneSeventh: string
+    oneEighth: string
+    oneNinth: string
+    oneTenth: string
+    twoThirds: string
+    twoFifths: string
+    threeQuarters: string
+    threeFifths: string
+    threeEighths: string
+    fourFifths: string
+    fiveSixths: string
+    fiveEighths: string
+    sevenEighths: string
 }

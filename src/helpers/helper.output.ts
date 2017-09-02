@@ -13,6 +13,7 @@ import * as Table from 'cli-table2';
 import { TableConstructorOptions } from 'cli-table2'
 
 
+
 @helper('output', {
     singleton: true,
     config   : {
@@ -42,12 +43,23 @@ import { TableConstructorOptions } from 'cli-table2'
         },
         tableStyle    : {
             FAT : {
-                'top'     : '═', 'top-mid': '╤', 'top-left': '╔', 'top-right': '╗'
-                , 'bottom': '═', 'bottom-mid': '╧', 'bottom-left': '╚', 'bottom-right': '╝'
-                , 'left'  : '║', 'left-mid': '╟', 'mid': '─', 'mid-mid': '┼'
-                , 'right' : '║', 'right-mid': '╢', 'middle': '│'
+                'top'         : '═',
+                'top-mid'     : '╤',
+                'top-left'    : '╔',
+                'top-right'   : '╗',
+                'bottom'      : '═',
+                'bottom-mid'  : '╧',
+                'bottom-left' : '╚',
+                'bottom-right': '╝',
+                'left'        : '║',
+                'left-mid'    : '╟',
+                'mid'         : '─',
+                'mid-mid'     : '┼',
+                'right'       : '║',
+                'right-mid'   : '╢',
+                'middle'      : '│'
             },
-            SLIM: { chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' } },
+            SLIM: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' },
             NONE: {
                 'top'     : '', 'top-mid': '', 'top-left': '', 'top-right': ''
                 , 'bottom': '', 'bottom-mid': '', 'bottom-left': '', 'bottom-right': ''
@@ -146,17 +158,19 @@ export class OutputHelper {
      */
     protected modifyTablePush() {
         if ( this.modifiedTable ) return;
-        const _push          = Table.prototype.push;
-        Table.prototype.push = (...items: any[]): number => {
-            items.map(item => {
-                if ( kindOf(item) === 'string' ) {
-                    item = this.parse(item)
-                }
-                return item;
-            })
-            return _push.apply(this, items);
+        const _push                 = Table.prototype.push;
+        let self                    = this;
+        Table.prototype[ 'addRow' ] = function (row: any[]) {
+            this.push(
+                row.map(col => {
+                    if ( kindOf(col) === 'string' ) {
+                        col = self.parse(col)
+                    }
+                    return col;
+                })
+            )
         }
-        this.modifiedTable   = true;
+        this.modifiedTable          = true;
     }
 
     /**

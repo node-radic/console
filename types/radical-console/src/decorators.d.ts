@@ -1,0 +1,16 @@
+import "reflect-metadata";
+import { KindOf } from "@radic/util";
+import { CommandConfig, HelperOptions, HelpersOptionsConfig, OptionConfig } from "./interfaces";
+import { HelperOptionsConfig } from "./interfaces";
+export declare function command(name: string, config?: CommandConfig): ClassDecorator;
+export declare function command(name: string, description?: string, config?: CommandConfig): ClassDecorator;
+export declare function alwaysRun(): MethodDecorator;
+export declare function option(opt: any): any;
+export declare function option(config: OptionConfig): PropertyDecorator;
+export declare function option(type: KindOf, config?: OptionConfig): PropertyDecorator;
+export declare function option(key: string, type: KindOf, config?: OptionConfig): PropertyDecorator;
+export declare function option(key: string, description: string, config?: OptionConfig): PropertyDecorator;
+export declare function option(key: string, description: string, type?: KindOf, config?: OptionConfig): PropertyDecorator;
+export declare function helper(name: string): ClassDecorator;
+export declare function helper<T extends HelperOptionsConfig>(options: HelperOptions<HelperOptionsConfig>): ClassDecorator;
+export declare function helper<K extends keyof HelpersOptionsConfig>(name: K, options: HelperOptions<HelpersOptionsConfig[K]>): ClassDecorator;

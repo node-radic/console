@@ -1,14 +1,23 @@
 import "reflect-metadata";
-import { CommandConfig } from "./interfaces";
-export {LoggerInstance} from 'winston'
-// import {} from './utils'
+import { resolve } from "path";
+import { config } from 'dotenv'
+
+config({
+    path: resolve(__dirname, '../.env')
+})
+
+import './utils'
+import './core'
+
+export { LoggerInstance } from 'winston'
 export * from './interfaces'
-export * from './core/index'
-require('./utils') // ensures utils are bound into container.. @todo fix properly
+export * from './errors'
+export * from './core'
 export * from './utils'
 export * from './decorators'
-export * from './helpers/index'
+export * from './helpers'
 export * from './defaults'
-export * from './commands/index'
-
-
+export * from './commands'
+export * from './utils/figures'
+export * from './utils/require'
+export * from './utils/require'

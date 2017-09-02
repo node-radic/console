@@ -1,0 +1,25 @@
+{
+    "authors": "vvakame <https://github.com/vvakame/>",
+    "definitionFilename": "index.d.ts",
+    "libraryDependencies": [],
+    "moduleDependencies": [],
+    "libraryMajorVersion": "0",
+    "libraryMinorVersion": "0",
+    "libraryName": "archy",
+    "typingsPackageName": "radical-console",
+    "projectName": "https://github.com/substack/node-archy",
+    "sourceRepoURL": "https://www.github.com/DefinitelyTyped/DefinitelyTyped",
+    "sourceBranch": "types-2.0",
+    "kind": "ProperModule",
+    "globals": [
+        "radical-console"
+    ],
+    "declaredModules": [
+        "radical-console"
+    ],
+    "files": [
+        "index.d.ts"
+    ],
+    "hasPackageJson": false,
+    "contentHash": "a78d208744b329c82609ffef0dbf2881c6f81b9bff108705e0239ac824ffb579"
+}
