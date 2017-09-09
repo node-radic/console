@@ -1,8 +1,7 @@
-import { Config } from "../core/config";
-import { OutputHelper } from "../helpers/helper.output";
+import { Config, Cli } from "../core";
 import { SubCommandsGetFunction } from "../utils";
-import { Cli } from "../core/Cli";
 import { CommandConfig } from "../interfaces";
+import { OutputHelper } from "../modules/output/OutputHelper";
 export declare class TreeCmd {
     out: OutputHelper;
     cli: Cli;

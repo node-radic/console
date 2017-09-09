@@ -1,16 +1,11 @@
 /// <reference types="inquirer" />
-/// <reference types="winston" />
 import { KindOf } from "@radic/util";
 import { interfaces } from "inversify";
 import { Container } from "./core/Container";
 import BindingInWhenOnSyntax = interfaces.BindingInWhenOnSyntax;
-import { Cli } from "./core/Cli";
-import { Config } from "./core/config";
-import { Dispatcher } from "./core/Dispatcher";
-import { Helpers } from "./core/Helpers";
-import { LoggerInstance } from "winston";
 import { CommandDescriber, HelpHelper } from "./helpers/helper.help";
 import * as inquirer from "inquirer";
+import { OutputHelperOptionsConfig } from "./modules/output/interfaces";
 export interface CommandArguments {
     [name: string]: any;
 }
@@ -145,23 +140,6 @@ export interface HelperOptionsConfigOption {
     key?: string;
     name?: string;
 }
-export interface OutputHelperOptionsConfig extends HelperOptionsConfig {
-    quiet?: boolean;
-    colors?: boolean;
-    options?: {
-        quiet?: HelperOptionsConfigOption;
-        colors?: HelperOptionsConfigOption;
-    };
-    resetOnNewline?: boolean;
-    styles?: {
-        [name: string]: string;
-    };
-    tableStyle?: {
-        [name: string]: {
-            [name: string]: string;
-        };
-    };
-}
 export declare type HelpHelperOverrideType = (command: CommandConfig, describer: CommandDescriber, helper: HelpHelper) => string;
 export interface HelpHelperOptionsConfig extends HelperOptionsConfig {
     app?: {
@@ -177,15 +155,18 @@ export interface HelpHelperOptionsConfig extends HelperOptionsConfig {
     style?: {};
     order?: string[];
     overrides?: {
+        [name: string]: HelpHelperOverrideType;
         arguments?: HelpHelperOverrideType;
         title?: HelpHelperOverrideType;
         options?: HelpHelperOverrideType;
         description?: HelpHelperOverrideType;
         explanation?: HelpHelperOverrideType;
+        groups?: HelpHelperOverrideType;
         usage?: HelpHelperOverrideType;
         example?: HelpHelperOverrideType;
     };
     display?: {
+        [name: string]: boolean;
         title?: boolean;
         titleLines?: boolean;
         description?: boolean;
@@ -250,25 +231,6 @@ export interface HelperOptions<T extends HelperOptionsConfig = HelperOptionsConf
         [key: string]: string;
     };
 }
-export interface OutputColumnsOptions {
-    columns?: string[];
-    minWidth?: number;
-    maxWidth?: number;
-    align?: 'left' | 'right' | 'center';
-    paddingChr?: string;
-    columnSplitter?: string;
-    preserveNewLines?: boolean;
-    showHeaders?: boolean;
-    dataTransform?: (data) => string;
-    truncate?: boolean;
-    truncateMarker?: string;
-    widths?: {
-        [name: string]: OutputColumnsOptions;
-    };
-    config?: {
-        [name: string]: OutputColumnsOptions;
-    };
-}
 export interface Dictionary<T> {
     [index: string]: T;
 }
@@ -278,26 +240,6 @@ export interface NumericDictionary<T> {
 export interface StringRepresentable {
     toString(): string;
 }
-export interface PluginRegisterHelper {
-    cli: Cli;
-    config: Config;
-    container: Container;
-    events: Dispatcher;
-    helpers: Helpers;
-    log: LoggerInstance;
-}
-export interface BasePluginConfig {
-    [key: string]: any;
-}
-export interface Plugin<T extends BasePluginConfig> {
-    name: string;
-    depends?: string[];
-    config?: T;
-    register(config: T, helper: PluginRegisterHelper): void;
-}
-export declare type PluginConstructor<T extends BasePluginConfig> = {
-    new (): Plugin<T>;
-};
 export interface InlineCommand extends Object {
     [key: string]: any;
     action(args: CommandArguments): any;

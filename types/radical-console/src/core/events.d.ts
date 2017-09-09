@@ -1,7 +1,7 @@
 /// <reference types="yargs-parser" />
 /// <reference types="node" />
 import { Cli } from "./Cli";
-import { BasePluginConfig, CommandConfig, OptionConfig, ParsedCommandArguments, Plugin } from "../interfaces";
+import { CommandConfig, HelperOptions, OptionConfig, ParsedCommandArguments } from "../interfaces";
 import { YargsParserArgv } from "yargs-parser";
 import { ChildProcess } from "child_process";
 import { Helpers } from "./Helpers";
@@ -93,15 +93,6 @@ export declare class CliExecuteCommandHandledEvent<T = any> extends ExitEvent {
     options: OptionConfig[];
     constructor(result: any, instance: T, argv: YargsParserArgv, config: CommandConfig, options: OptionConfig[]);
 }
-export declare class CliPluginRegisterEvent<T extends BasePluginConfig = BasePluginConfig> extends CancelEvent {
-    plugin: Plugin<T>;
-    config: T;
-    constructor(plugin: Plugin<T>, config: T);
-}
-export declare class CliPluginRegisteredEvent<T extends BasePluginConfig = BasePluginConfig> extends Event {
-    plugin: Plugin<T>;
-    constructor(plugin: Plugin<T>);
-}
 export declare class HelpersStartingEvent extends CancelEvent {
     helpers: Helpers;
     enabledHelpers: string[];
@@ -121,4 +112,36 @@ export declare class HelpersStartedEvent extends Event {
     helpers: Helpers;
     startedHelpers: string[];
     constructor(helpers: Helpers, startedHelpers: string[]);
+}
+/**
+ * Fires when a helper is getting started but a dependency is missing.
+ *
+ * If `options.enableDepends === false` then a `HelperDependencyMissingError` will be thrown.
+ * This can be countered by canceling, which will make it so that the depended helper will **NOT** start, but the program  **WILL** continue.
+ *
+ * Refer to the `Helpers.startHelper()` method if you want to know more.
+ */
+export declare class HelperDependencyMissingEvent extends CancelEvent {
+    helperName: string;
+    dependencyName: string;
+    helperOptions: HelperOptions;
+    constructor(helperName: string, dependencyName: string, helperOptions: HelperOptions);
+}
+/**
+ * Fires when a helper class is resolved from the container.
+ * This is actually Inversify's binding onActivation being used, which is responsible for setting the configuration on the helper instance.
+ * This event is fired AFTER the configuration has been set on the helper instance
+ *
+ * It is possible to listen to all helpers triggering this event using the event wildcard:
+ * `helper:resolved:*`
+ *
+ * It is also possible to listen for a specific helper triggering this event:
+ * `helper:resolved:<name>`
+ * For example, the verbose helper:
+ * `helper:resolved:verbose`
+ */
+export declare class HelperContainerResolvedEvent<T = any> extends Event {
+    helper: T;
+    options: HelperOptions;
+    constructor(helper: T, options: HelperOptions);
 }

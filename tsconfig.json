@@ -7,19 +7,14 @@
         "emitDecoratorMetadata": true,
         "sourceMap": true,
         "inlineSourceMap": true,
-        "declarationDir": "./types/radical-console/src",
+        "declarationDir": "./types/radical-console",
         "declaration": true,
-        "module": "commonjs",
+        "module": "umd",
         "skipLibCheck": true,
         "moduleResolution": "node",
         "target": "es5",
         "lib": ["es2017", "es2017.object"],
         "noResolve": false,
-        "baseUrl": "./",
-        "paths": {
-            "@log": ["modules/log/"],
-            "@output": ["modules/output/"]
-        },
         "typeRoots": [
             "./node_modules/@types",
             "./types"
@@ -27,12 +22,8 @@
     },
     "include": [
         "./src/**/*",
-        "./modules/**/*",
+        "./types/**/*.d.ts",
         "./gulpfile.ts"
-    ],
-    "exclude": [
-        "./plugins",
-        "./plugins/**/*.ts"
     ],
     "compileOnSave": true
 }

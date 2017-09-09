@@ -6,12 +6,13 @@
       <sourceFolder url="file://$MODULE_DIR$/examples" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/modules" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/dts" />
       <excludeFolder url="file://$MODULE_DIR$/es" />
       <excludeFolder url="file://$MODULE_DIR$/lib" />
       <excludeFolder url="file://$MODULE_DIR$/lib-es6" />
+      <excludeFolder url="file://$MODULE_DIR$/out" />
       <excludeFolder url="file://$MODULE_DIR$/types/radical-console" />
+      <excludeFolder url="file://$MODULE_DIR$/types/radical-console2" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

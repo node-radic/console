@@ -9,7 +9,7 @@ const getDirectories = source => readdirSync(source).map(name => join(source, na
 
 @singleton('cli.modules')
 export class Modules {
-    basePath: string = resolve(__dirname, '../../modules')
+    basePath: string = resolve(__dirname, '../modules')
     protected _keys:string[]
 
     path(to?: string): string {

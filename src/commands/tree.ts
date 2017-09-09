@@ -1,7 +1,7 @@
 import { container, inject, injectable ,Config,Cli } from "../core";
-import { OutputHelper } from "@output";
 import { SubCommandsGetFunction } from "../utils";
 import { CommandConfig } from "../interfaces";
+import { OutputHelper } from "../modules/output/OutputHelper";
 
 @injectable()
 export class TreeCmd {

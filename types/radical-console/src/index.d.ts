@@ -1,9 +1,15 @@
+import "module-alias/register.js";
 import "reflect-metadata";
+import './utils';
+import './core';
 export { LoggerInstance } from 'winston';
 export * from './interfaces';
-export * from './core/index';
+export * from './errors';
+export * from './core';
 export * from './utils';
 export * from './decorators';
-export * from './helpers/index';
+export * from './helpers';
 export * from './defaults';
-export * from './commands/index';
+export * from './commands';
+export * from './modules/log';
+export * from './modules/output';

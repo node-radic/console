@@ -9,6 +9,7 @@ import { Helpers } from "./core/Helpers";
 import { LoggerInstance } from "winston";
 import { CommandDescriber, HelpHelper } from "./helpers/helper.help";
 import * as inquirer from "inquirer";
+import { OutputHelperOptionsConfig } from "./modules/output/interfaces";
 
 
 export interface CommandArguments {
@@ -177,43 +178,6 @@ export interface HelperOptionsConfigOption {
 }
 
 
-export interface OutputHelperOptionsConfigTableStyles {
-    [name:string]:OutputHelperOptionsConfigTableStyle
-    FAT?:OutputHelperOptionsConfigTableStyle
-    SLIM?:OutputHelperOptionsConfigTableStyle
-    NONE?:OutputHelperOptionsConfigTableStyle
-}
-export interface OutputHelperOptionsConfigTableStyle {
-    [name: string]: string,
-    'top'         ?: string,
-    'top-mid'     ?: string,
-    'top-left'    ?: string,
-    'top-right'   ?: string,
-    'bottom'      ?: string,
-    'bottom-mid'  ?: string,
-    'bottom-left' ?: string,
-    'bottom-right'?: string,
-    'left'        ?: string,
-    'left-mid'    ?: string,
-    'mid'         ?: string,
-    'mid-mid'     ?: string,
-    'right'       ?: string,
-    'right-mid'   ?: string,
-    'middle'      ?: string,
-}
-
-export interface OutputHelperOptionsConfig extends HelperOptionsConfig {
-    quiet?: boolean,
-    colors?: boolean,
-    options?: {
-        quiet?: HelperOptionsConfigOption,
-        colors?: HelperOptionsConfigOption
-    },
-    resetOnNewline?: boolean,
-    styles?: { [name: string]: string },
-    tableStyle?: OutputHelperOptionsConfigTableStyles
-}
-
 export type HelpHelperOverrideType = (command: CommandConfig, describer: CommandDescriber, helper: HelpHelper) => string
 
 export interface HelpHelperOptionsConfig extends HelperOptionsConfig {
@@ -308,7 +272,6 @@ export interface HelperOptions<T extends HelperOptionsConfig=HelperOptionsConfig
 }
 
 
-
 export interface Dictionary<T> {
     [index: string]: T;
 }
@@ -320,7 +283,6 @@ export interface NumericDictionary<T> {
 export interface StringRepresentable {
     toString(): string;
 }
-
 
 
 export interface InlineCommand extends Object {

@@ -4,7 +4,7 @@ import { Parser } from "@radic/console-colors";
 import { kindOf } from "@radic/util";
 import * as util from "util";
 import { Helpers } from "./Helpers";
-import { OutputHelper } from "../helpers/helper.output";
+import { OutputHelper } from "../modules/output/OutputHelper";
 
 export interface Log extends LoggerInstance {}
 

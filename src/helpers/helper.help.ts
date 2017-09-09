@@ -6,14 +6,14 @@ import { HelpHelperOnInvalidArgumentsShowHelpEvent, HelpHelperShowHelpEvent } fr
 
 import { helper } from "../decorators";
 import { SubCommandsGetFunction } from "../utils";
-import { OutputHelper } from "@output";
 
 import {
     CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParseEvent,
     bindTo, container, inject,
     Log, Cli, Dispatcher
 } from "../core";
-import { ColumnsOptions } from "@output";
+import { OutputHelper } from "../modules/output/OutputHelper";
+import { ColumnsOptions } from "../modules/output/interfaces";
 
 @helper('help', {
     config   : {

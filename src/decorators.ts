@@ -1,14 +1,17 @@
 import "reflect-metadata";
 import { kindOf, KindOf } from "@radic/util";
 import { merge } from "lodash";
-import { CommandConfig, HelperOptions, HelpersOptionsConfig, OptionConfig } from "./interfaces";
+import { CommandConfig, HelperOptionsConfig, HelperOptions, HelpersOptionsConfig, OptionConfig } from "./interfaces";
 import { Cli, container } from "./core";
 import { CommandConfigFunction, OptionConfigFunction, PrepareArgumentsFunction } from "./utils";
 import { decorate, injectable } from "inversify";
 import { defaults } from "./defaults";
-import { HelperOptionsConfig } from "./interfaces";
 
 const callsites = require('callsites');
+
+interface A {}
+
+interface A {}
 
 const get = Reflect.getMetadata;
 const set = Reflect.defineMetadata;
@@ -42,33 +45,6 @@ export function command(name: string, description?: string | CommandConfig, conf
     }
 }
 
-// export function command(cls: Function)
-// export function command(config: CommandConfig): ClassDecorator
-// export function command(name: string, config?: CommandConfig): ClassDecorator
-// export function command(name: string, description?: string, config?: CommandConfig): ClassDecorator
-// export function command(name: string, description?: string, subCommands?: string[], config?: CommandConfig): ClassDecorator
-// export function command(...args: any[]) {
-//     const handle = (cls) => {
-//         let config = container.get<CommandConfigFunction>('cli.fn.command.config')<CommandConfig>(cls, args)
-//         set('command', config, cls);
-//         if(kindOf(get('alwaysRun', cls) === 'string')){
-//             config.alwaysRun = get('alwaysRun', cls)
-//         }
-//
-//         if ( ! config.enabled ) return;
-//         // container.get<Cli>('cli').parse(config);
-//     }
-//
-//     if ( kindOf(args[ 0 ]) === 'function' ) {
-//         return handle(args[ 0 ]);
-//     }
-//     return (cls) => {
-//         decorate(injectable(), cls);
-//         return handle(cls);
-//     }
-// }
-
-
 export function alwaysRun(): MethodDecorator {
     return <T extends any>(cls: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>) => {
         set('alwaysRun', propertyKey, cls.constructor);
@@ -94,22 +70,20 @@ export function option(...args: any[]): PropertyDecorator {
 }
 
 
-function makeNodeConfig<T extends HelperOptions>(cls: any, args: any[]): T {
-    let len       = args.length
-    let argt      = args.map(arg => kindOf(arg));
-    let config: T = <any> { cls };
-    if ( len > 0 && argt[ 0 ] === 'string' ) config.name = args[ 0 ];
-
-    // config is ALWAYS last parameter, so we can do it like this
-    if ( len > 0 && argt[ len - 1 ] === 'object' ) merge(config, args[ len - 1 ]);
-    return config;
-}
-
 export function helper(name: string): ClassDecorator;
 export function helper<T extends HelperOptionsConfig>(options: HelperOptions<HelperOptionsConfig>): ClassDecorator;
 export function helper<K extends keyof HelpersOptionsConfig>(name: K, options: HelperOptions<HelpersOptionsConfig[K]>): ClassDecorator;
 export function helper(...args: any[]): ClassDecorator {
     return (cls) => {
-        container.get<Cli>('cli').helpers.add(makeNodeConfig(cls, args));
+
+        let len    = args.length
+        let argt   = args.map(arg => kindOf(arg));
+        let config = <any> { cls };
+        if ( len > 0 && argt[ 0 ] === 'string' ) config.name = args[ 0 ];
+
+        // config is ALWAYS last parameter, so we can do it like this
+        if ( len > 0 && argt[ len - 1 ] === 'object' ) merge(config, args[ len - 1 ]);
+
+        container.get<Cli>('cli').helpers.add(config);
     }
 }

@@ -2,11 +2,11 @@
 /// <reference types="ora" />
 /// <reference types="cli-table2" />
 import { OutputOptions, TreeData, TreeOptions, ColumnsOptions } from "./interfaces";
-import { Diff } from "radical-console";
 import { OutputUtil } from './OutputUtil';
 import * as Table from "cli-table2";
 import { TableConstructorOptions } from "cli-table2";
 import { Colors, Parser } from "@radic/console-colors";
+import { Diff } from "../../utils/diff";
 export declare class Output {
     protected _parser: Parser;
     protected macros: {

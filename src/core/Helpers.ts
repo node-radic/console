@@ -11,6 +11,7 @@ import { Modules } from "./Modules";
 import { HelperOptions, HelperOptionsConfig } from "../interfaces";
 import { defaults } from "../defaults";
 import { container, inject, lazyInject, singleton } from "./Container";
+import { HelperDependencyMissingError } from "../errors";
 
 
 @singleton('cli.helpers')

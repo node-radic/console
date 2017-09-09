@@ -1,10 +1,9 @@
 import { Cli } from "./Cli";
 import { container, injectable } from "./Container";
-import { CommandConfig, Dictionary, HelperOptionsConfig, OptionConfig, ParsedCommandArguments } from "../interfaces";
+import { CommandConfig, Dictionary, HelperOptions, HelperOptionsConfig, OptionConfig, ParsedCommandArguments } from "../interfaces";
 import { YargsParserArgv } from "yargs-parser";
 import { ChildProcess } from "child_process";
 import { Helpers } from "./Helpers";
-import { HelperOptions } from "radical-console";
 
 @injectable()
 export abstract class Event {

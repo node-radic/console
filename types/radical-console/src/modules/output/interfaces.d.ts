@@ -1,6 +1,6 @@
 /// <reference types="node" />
-import { HelperOptionsConfig, HelperOptionsConfigOption } from "radical-console";
 import { InspectOptions } from "util";
+import { HelperOptionsConfig, HelperOptionsConfigOption } from "../../interfaces";
 export declare type TruncateFunction = (input: string, columns: number, options?: TruncateOptions) => string;
 export declare type WrapFunction = (input: string, columns: number, options?: WrapOptions) => string;
 export declare type SliceFunction = (inputu: string, beginSlice: number, endSlice?: number) => string;
@@ -64,8 +64,29 @@ export interface OutputOptions {
     colors?: boolean;
     inspect?: InspectOptions;
 }
-export interface HelpersOptionsConfig {
-    output: OutputHelperOptionsConfig;
+export interface OutputHelperOptionsConfigTableStyles {
+    [name: string]: OutputHelperOptionsConfigTableStyle;
+    FAT?: OutputHelperOptionsConfigTableStyle;
+    SLIM?: OutputHelperOptionsConfigTableStyle;
+    NONE?: OutputHelperOptionsConfigTableStyle;
+}
+export interface OutputHelperOptionsConfigTableStyle {
+    [name: string]: string;
+    'top'?: string;
+    'top-mid'?: string;
+    'top-left'?: string;
+    'top-right'?: string;
+    'bottom'?: string;
+    'bottom-mid'?: string;
+    'bottom-left'?: string;
+    'bottom-right'?: string;
+    'left'?: string;
+    'left-mid'?: string;
+    'mid'?: string;
+    'mid-mid'?: string;
+    'right'?: string;
+    'right-mid'?: string;
+    'middle'?: string;
 }
 export interface OutputHelperOptionsConfig extends HelperOptionsConfig {
     quiet?: boolean;
@@ -78,11 +99,7 @@ export interface OutputHelperOptionsConfig extends HelperOptionsConfig {
     styles?: {
         [name: string]: string;
     };
-    tableStyle?: {
-        [name: string]: {
-            [name: string]: string;
-        };
-    };
+    tableStyle?: OutputHelperOptionsConfigTableStyles;
 }
 export interface Figures {
     tick: string;

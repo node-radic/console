@@ -1,7 +1,6 @@
 import "reflect-metadata";
 import { KindOf } from "@radic/util";
-import { CommandConfig, HelperOptions, HelpersOptionsConfig, OptionConfig } from "./interfaces";
-import { HelperOptionsConfig } from "./interfaces";
+import { CommandConfig, HelperOptionsConfig, HelperOptions, HelpersOptionsConfig, OptionConfig } from "./interfaces";
 export declare function command(name: string, config?: CommandConfig): ClassDecorator;
 export declare function command(name: string, description?: string, config?: CommandConfig): ClassDecorator;
 export declare function alwaysRun(): MethodDecorator;

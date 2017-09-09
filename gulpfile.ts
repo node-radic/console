@@ -83,20 +83,5 @@ gulp.task('ghpages', () => pump([ gulp.src('./docs/**/*'), ghPages({
 gulp.task('mockaroo:generate', async () => {
     let filePath = resolve(__dirname, 'examples/data.json')
     execSync(`curl "http://api.mockaroo.com/api/e4dc0940?count=20&key=c5700090" > "${filePath}"`)
-    //
-    // const data = await mockaroo.generate({
-    //     count : 20,
-    //     fields: [
-    //         { name: 'first_name', type: "NameFirst" },
-    //         { name: 'last_name', type: "NameLast" },
-    //         { name: 'email', type:  },
-    //         { name: 'gender', type: "NameGenderGender" },
-    //         { name: 'ip', type: "v4IP" }
-    //     ]
-    // })
-    // if(existsSync(filePath)){
-    //     removeSync(filePath)
-    // }
-    // writeFileSync(filePath, kindOf(data) === 'string' ? data : JSON.stringify(data, null, 4), 'utf-8')
     return Promise.resolve();
 })

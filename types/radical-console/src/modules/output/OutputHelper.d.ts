@@ -1,5 +1,6 @@
-import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, OutputHelperOptionsConfig } from "radical-console";
+import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent } from "../../";
 import { Output } from "./Output";
+import { OutputHelperOptionsConfig } from "./interfaces";
 export declare class OutputHelper extends Output {
     config: OutputHelperOptionsConfig;
     output: Output;
