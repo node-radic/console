@@ -1,12 +1,12 @@
-import { helper } from "../";
+import { helper } from "../../";
 import * as inquirer from "inquirer";
 import { ChoiceType, Question,MessageType,QuestionType, SourceType,DateType,TimeType } from "inquirer";
-import { inject } from "../core/Container";
-import { Config } from "../core/config";
+import { inject } from "../../core/Container";
+import { Config } from "../../core/config";
 import * as _ from "lodash";
 import { kindOf } from "@radic/util";
-import { CliExecuteCommandParseEvent } from "../core/events";
-import { HelperOptionsConfig, InputHelperOptionsConfig } from "../interfaces";
+import { CliExecuteCommandParseEvent } from "../../core/events";
+import { HelperOptionsConfig, InputHelperOptionsConfig } from "../../interfaces";
 export interface CheckListItem extends inquirer.objects.ChoiceOption {
     name?: string
     disabled?: string

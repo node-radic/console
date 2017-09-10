@@ -7,7 +7,7 @@ import { Config } from "./core/config";
 import { Dispatcher } from "./core/Dispatcher";
 import { Helpers } from "./core/Helpers";
 import { LoggerInstance } from "winston";
-import { CommandDescriber, HelpHelper } from "./helpers/helper.help";
+import { CommandDescriber, HelpHelper } from "./modules/help/helper.help";
 import * as inquirer from "inquirer";
 import { OutputHelperOptionsConfig } from "./modules/output/interfaces";
 

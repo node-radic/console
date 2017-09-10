@@ -1,9 +1,9 @@
-import { helper } from "../decorators";
-import { HelperOptionsConfig, VerboseHelperOptionsConfig } from "../interfaces";
-import { inject } from "../core/Container";
+import { helper } from "../../decorators";
+import { HelperOptionsConfig, VerboseHelperOptionsConfig } from "../../interfaces";
+import { inject } from "../../core/Container";
 import { LoggerInstance } from "winston";
-import { logLevels, setVerbosity } from "../core/Log";
-import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent } from "../core/events";
+import { logLevels, setVerbosity } from "../../core/Log";
+import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent } from "../../core/events";
 import { kindOf } from "@radic/util";
 
 @helper('verbose', {
