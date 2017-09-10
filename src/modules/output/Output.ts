@@ -1,14 +1,18 @@
 import { merge } from 'lodash'
-import { OutputOptions, TreeData, TreeOptions, ColumnsOptions } from "./interfaces";
-import { inspect, InspectOptions } from 'util';
+import { ColumnsOptions, OutputOptions, TreeData, TreeOptions } from './interfaces';
+import { inspect } from 'util';
 import { OutputUtil } from './OutputUtil'
-import * as Table from "cli-table2";
-import { TableConstructorOptions } from "cli-table2";
-import { kindOf } from "@radic/util";
-import { Colors, Parser } from "@radic/console-colors";
-import { singleton } from "../../core/Container";
-import { Diff } from "../../utils/diff";
-import requirePeer from "../../utils/require";
+import * as Table from 'cli-table2';
+import { TableConstructorOptions } from 'cli-table2';
+import { kindOf } from '@radic/util';
+import { Colors, Parser } from '@radic/console-colors';
+import { singleton } from '../../core/Container';
+import { Diff } from '../../utils/diff';
+import requirePeer from '../../utils/require';
+import { NodeNotifier, Notification, NotificationCallback } from 'node-notifier'
+import { Options as SparklyOptions } from 'sparkly'
+import { HighlightOptions } from 'cli-highlight'
+import { Multispinner, MultispinnerOptions, MultispinnerSpinners } from 'multispinner'
 
 @singleton('cli.output')
 export class Output {
@@ -145,5 +149,25 @@ export class Output {
         let res = requirePeer('columnify')(data, merge({}, defaults, options));
         if ( ret ) return res;
         this.writeln(res);
+    }
+
+    notify(options: Notification, cb?: NotificationCallback): NodeNotifier {
+        const notifier = requirePeer('node-notifier')
+        return notifier.notify(options, cb)
+    }
+
+    sparkly(numbers: Array<number | ''>, options?: SparklyOptions, ret: boolean = false): string | this {
+        let s = requirePeer('sparkly')(numbers, options)
+        return ret ? s : this.writeln(s)
+    }
+
+    highlight(code: string, options?: HighlightOptions, ret: boolean = false): string | this {
+        let h = requirePeer('cli-highlight').highlight(code, options)
+        return ret ? h : this.writeln(h)
+    }
+
+    multispinner(spinners: MultispinnerSpinners, opts?: MultispinnerOptions): Multispinner {
+        let MultiSpinner = requirePeer('multispinner')
+        return new MultiSpinner(spinners, opts)
     }
 }

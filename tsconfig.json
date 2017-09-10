@@ -22,6 +22,7 @@
     },
     "include": [
         "./src/**/*",
+        "./test/**/*",
         "./types/**/*.d.ts",
         "./gulpfile.ts"
     ],

@@ -7,8 +7,8 @@ import { objectLoop } from "@radic/util";
 export function bootstrap(helpers: Dictionary<HelperOptionsConfig>, config: CliConfig = {}): Cli {
     cli.config.merge(config)
 
-    objectLoop(helpers, (name, config) => {
-        cli.helper(name, config)
+    objectLoop(helpers, (name , config) => {
+        cli.helper(name as any, config)
     })
 
     return cli;

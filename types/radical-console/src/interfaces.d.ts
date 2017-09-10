@@ -3,7 +3,7 @@ import { KindOf } from "@radic/util";
 import { interfaces } from "inversify";
 import { Container } from "./core/Container";
 import BindingInWhenOnSyntax = interfaces.BindingInWhenOnSyntax;
-import { CommandDescriber, HelpHelper } from "./helpers/helper.help";
+import { CommandDescriber, HelpHelper } from "./modules/help/helper.help";
 import * as inquirer from "inquirer";
 import { OutputHelperOptionsConfig } from "./modules/output/interfaces";
 export interface CommandArguments {

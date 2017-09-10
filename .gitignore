@@ -27,3 +27,5 @@ src/**/*.js.map
 /laradock
 /link-to-docker-console-pipeline-local
 /plugins
+/.gtm/
+/radical
