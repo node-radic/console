@@ -5,7 +5,7 @@
     "main": "src/index.js",
     "author": "Robin Radic",
     "license": "MIT",
-    "types": "types/radical-console",
+    "types": "types/radical-console/src",
     "homepage": "https://node-radic.github.io/console",
     "repository": "https://bitbucket.org/robin-radic/console",
     "private": false,
@@ -77,9 +77,7 @@
         "widest-line": "^1.0.0",
         "winston": "^2.3.1",
         "wrap-ansi": "^3.0.1",
-        "yargs-parser": "^5.0.0"
-    },
-    "peerDependencies": {
+        "yargs-parser": "^5.0.0",
         "archy": "^1.0.0",
         "beeper": "^1.1.1",
         "cli-highlight": "^1.1.4",
