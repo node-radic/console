@@ -3,10 +3,6 @@ import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, Dispatcher, 
 import { Output } from "./Output";
 import { OutputHelperOptionsConfig } from "./interfaces";
 
-Dispatcher.instance.on('helper:resolved:output', (event: HelperContainerResolvedEvent<OutputHelper>) => {
-    event.helper.output.options.colors  = event.helper.config.colors
-    event.helper.output.options.enabled = event.helper.config.quiet !== true
-})
 
 @helper('output', {
     singleton: true,
@@ -70,9 +66,6 @@ Dispatcher.instance.on('helper:resolved:output', (event: HelperContainerResolved
 export class OutputHelper extends Output {
     config: OutputHelperOptionsConfig;
 
-    @inject('cli.output')
-    output: Output
-
 
     styles(styles: any) {
         this.config.styles = _.merge({}, this.config.styles, styles);
@@ -97,10 +90,12 @@ export class OutputHelper extends Output {
 
     public onExecuteCommandParsed(event: CliExecuteCommandParsedEvent) {
         if ( this.config.options.quiet.enabled && event.argv[ this.config.options.quiet.key ] ) {
+            this.options.enabled = false;
             this.config.quiet = true
         }
         if ( this.config.options.colors.enabled && event.argv[ this.config.options.colors.key ] ) {
             this.config.colors = false;
+            this.options.colors = false;
         }
     }
 

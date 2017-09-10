@@ -1,10 +1,10 @@
 import { Logger, addColors, config, transports as wtransports,  ConsoleTransportOptions, LoggerInstance, TransportInstance } from "winston";
-import { container } from "./Container";
+import { container } from "../../core/Container";
 import { Parser } from "@radic/console-colors";
 import { kindOf } from "@radic/util";
 import * as util from "util";
-import { Helpers } from "./Helpers";
-import { OutputHelper } from "../modules/output/OutputHelper";
+import { Helpers } from "../../core/Helpers";
+import { OutputHelper } from "../output/OutputHelper";
 
 export interface Log extends LoggerInstance {}
 
@@ -91,8 +91,8 @@ export const transports: TransportInstance[] = [
 ];
 
 
-export type LogLevel = 'error' | 'warn' | 'alert' | 'notice' | 'help' | 'info' | 'verbose' | 'data' | 'debug' | 'silly' | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-export const logLevels: string[] = [ 'error', 'warn', 'alert', 'notice', 'help', 'info', 'verbose', 'data', 'debug', 'silly' ]
+export type LogLevel = 'error' | 'warn' | 'alert' | 'notice' | 'help' | 'info' | 'verbose' | 'data' | 'debug' | 'silly' | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | string | number
+export const logLevels: LogLevel[] = [ 'error', 'warn', 'alert', 'notice', 'help', 'info', 'verbose', 'data', 'debug', 'silly' ]
 
 export let levels = {};
 export let colors = {};
