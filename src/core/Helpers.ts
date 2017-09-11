@@ -3,7 +3,7 @@ import { kindOf } from "@radic/util";
 import * as _ from "lodash";
 
 import { Config } from "./config";
-import { Log } from "./Log";
+import { Log } from "../modules/log";
 import { Dispatcher } from "./Dispatcher";
 import { HelperContainerResolvedEvent,  HelperDependencyMissingEvent ,HelpersStartedEvent, HelpersStartingEvent, HelperStartedEvent, HelperStartingEvent } from "./events";
 import Context = interfaces.Context;

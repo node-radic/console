@@ -9,6 +9,7 @@ config({
 
 import './utils'
 import './core'
+import './modules/log'
 
 export { LoggerInstance } from 'winston'
 export * from './interfaces'

@@ -7,8 +7,8 @@ npm-debug.log
 /.idea/misc.xml
 /.idea/dataSource*
 /.idea/sonar*
-src/*.js
-src/*.js.map
+*.js
+*.js.map
 src/**/*.js
 src/**/*.js.map
 /lib

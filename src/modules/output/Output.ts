@@ -18,7 +18,7 @@ import { Multispinner, MultispinnerOptions, MultispinnerSpinners } from 'multisp
 export class Output {
     protected _parser: Parser
     protected macros: { [name: string]: (...args: any[]) => string }
-    protected _options: OutputOptions = {
+    public options: OutputOptions = {
         enabled: true,
         colors : true,
         inspect: { showHidden: true, depth: 10 }
@@ -31,7 +31,7 @@ export class Output {
 
     get colors(): Colors { return this._parser.colors; }
 
-    get options(): OutputOptions { return this._options}
+    // get options(): OutputOptions { return this.options}
 
     get nl(): this { return this.write('\n') }
 
@@ -59,8 +59,8 @@ export class Output {
     line(text: string = ''): this { return this.write(text + '\n')}
 
     dump(...args: any[]): this {
-        this._options.inspect.colors = this._options.colors
-        args.forEach(arg => this.line(inspect(arg, this._options.inspect)));
+        this.options.inspect.colors = this.options.colors
+        args.forEach(arg => this.line(inspect(arg, this.options.inspect)));
         return this
     }
 

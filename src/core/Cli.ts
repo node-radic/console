@@ -1,10 +1,10 @@
 import { kindOf } from "@radic/util";
-import { container, injectable, lazyInject } from "./Container";
+import { container, inject, injectable, lazyInject } from './Container';
 import {  HelpersOptionsConfig,CliConfig, CommandConfig, HelperOptionsConfig, OptionConfig } from "../interfaces";
 // import { YargsParserArgv } from "../../types/yargs-parser";
 import { CliExecuteCommandEvent, CliExecuteCommandHandledEvent, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent,
     CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent, CliParsedEvent, CliParseEvent, CliStartEvent } from "./events";
-import { Log } from "./Log";
+import { Log } from "../modules/log";
 import { Config } from "./config";
 import { ParseArgumentsFunction, SubCommandsGetFunction, TransformOptionsFunction } from "../utils";
 import { resolve } from "path";
@@ -50,6 +50,7 @@ export class Cli {
 
     @lazyInject('cli.config')
     public config: Config;
+
 
     public get transformOptions(): TransformOptionsFunction { return container.get<TransformOptionsFunction>('cli.fn.options.transform') }
 

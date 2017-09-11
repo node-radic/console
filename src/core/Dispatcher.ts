@@ -1,7 +1,7 @@
 import { EventAndListener, EventEmitter2, eventNS, Listener } from "eventemitter2";
 import { container, inject, singleton } from "./Container";
 import { defined } from "@radic/util";
-import { Log } from "./Log";
+import { Log } from "../modules/log";
 import { defaults } from "../defaults";
 import { ExitEvent, Event, CancelEvent } from "./events";
 

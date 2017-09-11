@@ -2,7 +2,7 @@ import { helper } from "../../decorators";
 import { HelperOptionsConfig, VerboseHelperOptionsConfig } from "../../interfaces";
 import { inject } from "../../core/Container";
 import { LoggerInstance } from "winston";
-import { logLevels, setVerbosity } from "../../core/Log";
+import { logLevels, setVerbosity } from "../log";
 import { CliExecuteCommandParsedEvent, CliExecuteCommandParseEvent } from "../../core/events";
 import { kindOf } from "@radic/util";
 
@@ -44,7 +44,7 @@ export class VerbosityHelper {
             if ( level > logLevels.length - 1 ) {
                 level = logLevels.length - 1;
             }
-            let levelName:string = logLevels[level]
+            let levelName:string = logLevels[level] as string
             this.log.level = levelName;
 
             this.log.verbose(`Verbosity set (${level} : ${levelName} : ${this.log.level})`)
