@@ -1,7 +1,7 @@
-import { container, inject, injectable ,Config,Cli } from "../core";
-import { SubCommandsGetFunction } from "../utils";
-import { CommandConfig } from "../interfaces";
-import { OutputHelper } from "../modules/output/OutputHelper";
+import { Cli, Config, container, inject, injectable } from '../core';
+import { SubCommandsGetFunction } from '../utils';
+import { CommandConfig } from '../interfaces';
+import { OutputHelper } from '../modules/output/OutputHelper';
 
 @injectable()
 export class TreeCmd {
@@ -19,11 +19,15 @@ export class TreeCmd {
 
     opts: boolean = false
 
+    aliases: boolean = false
+
     all: boolean = false
 
     colors = {
         group           : 'darkcyan bold',
+        groupAlias      : 'grey',
         command         : 'steelblue',
+        commandAlias    : 'grey',
         description     : 'darkslategray',
         argument        : 'green',
         requiredArgument: 'yellow',
@@ -35,7 +39,7 @@ export class TreeCmd {
 
     protected printTree(label: string, config: CommandConfig) {
         if ( this.all ) {
-            this.desc = this.opts = true;
+            this.desc = this.opts = this.aliases = true;
         }
         this.out.tree({ label, nodes: this.getChildren(config) })
     }
@@ -47,6 +51,9 @@ export class TreeCmd {
             .map(command => {
                 if ( command.isGroup ) {
                     let label = `{${this.colors.group}}${command.name}{reset}`;
+                    if ( command.alias && this.aliases ) {
+                        label += ` {${this.colors.groupAlias}}(${command.alias}){reset}`;
+                    }
                     if ( this.desc && command.description.length > 0 ) {
                         label += ` : {${this.colors.description}}${command.description}{reset}`
                     }
@@ -67,9 +74,6 @@ export class TreeCmd {
             let output = [];
             let name   = arg.name;
             output.push(arg.required ? `<{${this.colors.requiredArgument}}${arg.name}{reset}` : `[{${this.colors.argument}}${arg.name}{reset}`);
-            // if(arg.type && types[arg.type] ){
-            //     output.push(`({${types[arg.type]}}${arg.type}{/${types[arg.type]}})`);
-            // }
             if ( this.desc && this.desc ) {
                 output.push(`:{${this.colors.description}}${arg.description}{reset}`)
             }
@@ -78,7 +82,13 @@ export class TreeCmd {
 
         }).join(' ');
         let name  = `{${this.colors.command}}${config.name}{reset}`
-        let opts  = '';
+
+        if ( config.alias && this.aliases ) {
+            name += ` {${this.colors.commandAlias}}(${config.alias}){reset}`;
+        }
+
+        let opts = '';
+
         if ( this.opts && config.options && config.options.length > 0 ) {
             opts = config.options.map(opt => '--' + opt.name).join(' ')
         }
