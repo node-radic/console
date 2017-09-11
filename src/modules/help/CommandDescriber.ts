@@ -1,4 +1,3 @@
-
 import { bindTo, container, inject } from '../../core/Container';
 import { CommandConfig, HelpHelperOptionsConfig, OptionConfig } from '../../interfaces';
 import { HelpHelper } from './HelpHelper';
@@ -47,25 +46,32 @@ export class CommandDescriber {
         return this;
     }
 
-    protected columns(data: any, options: ColumnsOptions  = {}): this {
+    protected columns(data: any, options: ColumnsOptions = {}): this {
         return this.write(this.out.columns(data, options, true))
     }
 
-    usage(): this {
+    usage(cmdName?: string): this {
         if ( ! this.display.usage ) return this;
         let config = this.command,
             usage  = config.usage || '',
             name   = config.name
+
         if ( usage.length === 0 && config.arguments.length > 0 ) {
             usage = this.help.cli.parsedCommands.map(cmd => cmd.name).join(' ');
+            if ( config.alias ) {
+                usage += ' {grey}(' + config.alias + '){/grey}'
+            }
             usage += ' '
             usage += config.arguments.map(arg => {
                 name = arg.name + (arg.alias ? '|' + arg.alias : '')
                 return arg.required ? '<' + name + '>' : '[' + name + ']'
             }).join(' ')
         }
-        usage += ' [...options]'
-        return this.write(this.config.headers.usage).write(usage).nl.nl
+        if ( config.options.length > 0 ) {
+            usage += ' [...options]'
+        }
+
+        return this.write(this.config.headers.usage).write(usage).nl.nl;
     }
 
     arguments(): this {
@@ -77,7 +83,7 @@ export class CommandDescriber {
                 arg.required ? '<' : '[',
                 arg.name,
                 arg.alias ? '|' + arg.alias : '',
-                arg.required ? '>' : ']',
+                arg.required ? '>' : ']'
             ].join('');
             row.push(name)
 

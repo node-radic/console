@@ -21,9 +21,9 @@
         ]
     },
     "include": [
-        "./src/**/*",
-        "./test/**/*",
-        "./types/**/*.d.ts",
+        "./src",
+        "./test",
+        "./types",
         "./gulpfile.ts"
     ],
     "compileOnSave": true

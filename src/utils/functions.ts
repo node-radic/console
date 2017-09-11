@@ -1,24 +1,25 @@
-import { YargsParserOptions } from "yargs-parser";
-import { CommandArgumentConfig, CommandConfig, Dictionary, OptionConfig, ParsedCommandArguments } from "../interfaces";
-import { statSync } from "fs";
-import { basename, dirname, join, sep } from "path";
-import { defaults } from "../defaults";
-import * as globule from "globule";
-import { Log,Cli,container, ServiceIdentifier } from "../core";
-import { kindOf } from "@radic/util";
-import { kebabCase, merge } from "lodash";
-import { interfaces } from "inversify";
-import Factory = interfaces.Factory;
+import { YargsParserOptions } from 'yargs-parser';
+import { CommandArgumentConfig, CommandConfig, Dictionary, OptionConfig, ParsedCommandArguments } from '../interfaces';
+import { statSync } from 'fs';
+import { basename, dirname, join, sep } from 'path';
+import { defaults } from '../defaults';
+import * as globule from 'globule';
+import { Cli, container, Log, ServiceIdentifier } from '../core';
+import { kindOf } from '@radic/util';
+import { kebabCase, merge } from 'lodash';
+import { interfaces } from 'inversify';
+
 const callsites = require('callsites');
 
 
-function bindFn<T>(id:ServiceIdentifier,fn){
+function bindFn<T>(id: ServiceIdentifier, fn) {
     container.bind<T>(id).toFunction(fn);
     container.bind(id.toString().replace('fn', 'factory')).toAutoFactory(id);
 }
 
 /** */
 export type CommandConfigFunction = <T extends CommandConfig>(cls: Function, args?: any[]) => T
+
 function getCommandConfig<T extends CommandConfig>(cls: Function, args: any[] = []): T {
     let argt                         = args.map(kindOf),
         len = args.length, config: T = defaults.command<T>(cls);
@@ -32,7 +33,7 @@ function getCommandConfig<T extends CommandConfig>(cls: Function, args: any[] = 
     }
 
     // convert args into config
-    if ( argt[ 0 ] === "string" ) config.name = args[ 0 ]
+    if ( argt[ 0 ] === 'string' ) config.name = args[ 0 ]
     if ( len > 1 && argt[ 1 ] === 'string' ) config.description = args[ 1 ]
     if ( len > 2 && argt[ 2 ] === 'array' ) config.subCommands = args[ 2 ]
     if ( argt[ len - 1 ] === 'object' ) merge(config, args[ len - 1 ])
@@ -46,10 +47,12 @@ function getCommandConfig<T extends CommandConfig>(cls: Function, args: any[] = 
 
     return config;
 }
-bindFn<CommandConfigFunction>('cli.fn.command.config',getCommandConfig);
+
+bindFn<CommandConfigFunction>('cli.fn.command.config', getCommandConfig);
 
 /** */
-export type OptionConfigFunction = (cls:Object, key:string, args: any[]) => OptionConfig;
+export type OptionConfigFunction = (cls: Object, key: string, args: any[]) => OptionConfig;
+
 function getOptionConfig(cls: Object, key: string, args: any[]): OptionConfig {
     let argt                 = args.map(kindOf),
         len                  = args.length,
@@ -71,13 +74,13 @@ function getOptionConfig(cls: Object, key: string, args: any[]): OptionConfig {
         config.array = true;
         type         = config.type
     }
-    try{
+    try {
         let ins = new (<any> cls.constructor)
-        let def = ins[key]
-        if(def && kindOf(def) === type){
+        let def = ins[ key ]
+        if ( def && kindOf(def) === type ) {
             config.default = def;
         }
-    } catch (e){
+    } catch ( e ) {
 
     }
 
@@ -85,14 +88,15 @@ function getOptionConfig(cls: Object, key: string, args: any[]): OptionConfig {
     config.type = type;
     return config;
 }
-bindFn<OptionConfigFunction>('cli.fn.options.config',getOptionConfig);
+
+bindFn<OptionConfigFunction>('cli.fn.options.config', getOptionConfig);
 
 
 /** called in decorator, transforms config.name with all arguments to a proper structure */
-export type PrepareArgumentsFunction = <T extends CommandConfig=CommandConfig>(config:T) => T
-function prepareArguments<T extends CommandConfig = CommandConfig>(config: T): T {
-//https://regex101.com/r/vSqbuK/1
+export type PrepareArgumentsFunction = <T extends CommandConfig=CommandConfig>(config: T) => T
 
+function prepareArguments<T extends CommandConfig = CommandConfig>(config: T): T {
+    //https://regex101.com/r/vSqbuK/1
     let name            = config.name.replace(/\[\]/g, '__')
     let argumentPattern = /[{\[](.*)[}\]]/gm
     if ( argumentPattern.test(name) ) {
@@ -108,7 +112,12 @@ function prepareArguments<T extends CommandConfig = CommandConfig>(config: T): T
         matches.forEach((match, index) => {
             let arg              = defaults.argument(index);
             let original: string = match[ 1 ]
+            // required is encapsulated with {} instead of []
             arg.required         = match[ 0 ].startsWith('{');
+
+            // build up a regular expression based on found characters in the argument string line
+            // first check if the characters are present
+            // then build up the 'exp' expression variable
             let exp              = '^(.*?)',
                 hasAlias         = original.includes('/'),
                 hasType          = original.includes(':'),
@@ -134,23 +143,35 @@ function prepareArguments<T extends CommandConfig = CommandConfig>(config: T): T
             if ( hasDesc ) arg.description = res[ $ ++ ]
             if ( isArray ) arg.variadic = true;
 
-            if(hasDefault){
+            if ( hasDefault ) {
                 // console.dir({name, matches,original,exp,arg})
                 arg.default = JSON.parse(arg.default);
             }
 
             args.push(arg);
         })
+
         config.arguments = args;
-        config.name      = config.name.split(/\s|\n/)[ 0 ];
-        if ( config.name.includes('|') ) {
-            config.name  = config.name.split('|')[ 0 ]
-            config.alias = config.name.split('|')[ 1 ]
-        }
     }
+    config.name = config.name.split(/\s|\n/)[ 0 ];
+    if ( config.name.includes('|') ) {
+        let name       = config.name.split('\|')[ 0 ]
+        let alias: any = config.name.split('\|')[ 1 ];
+        // if alias is a number, the alias will be the starting letter(s) (depending on number value) of name
+        if ( isFinite(alias) ) {
+            alias = name.substring(0, parseInt(alias))
+        }
+        // prevent alias named same as name (makes no sense)
+        if ( alias !== name ) {
+            config.alias = alias
+        }
+        config.name = name;
+    }
+
     return config;
 }
-bindFn<PrepareArgumentsFunction>('cli.fn.arguments.prepare',prepareArguments);
+
+bindFn<PrepareArgumentsFunction>('cli.fn.arguments.prepare', prepareArguments);
 
 
 /**
@@ -160,6 +181,7 @@ bindFn<PrepareArgumentsFunction>('cli.fn.arguments.prepare',prepareArguments);
  * @see {Cli)
  */
 export type TransformOptionsFunction = (configs: OptionConfig[]) => YargsParserOptions
+
 function transformOptions(configs: OptionConfig[]): YargsParserOptions {
     let options: YargsParserOptions = {
         array        : [],
@@ -180,7 +202,7 @@ function transformOptions(configs: OptionConfig[]): YargsParserOptions {
             'parse-numbers'            : true,
             'boolean-negation'         : true,
             'duplicate-arguments-array': true,
-            'flatten-duplicate-arrays' : true,
+            'flatten-duplicate-arrays' : true
         }
     };
     configs.forEach((config: OptionConfig, iconfig: number) => {
@@ -207,7 +229,8 @@ function transformOptions(configs: OptionConfig[]): YargsParserOptions {
     })
     return options;
 }
-bindFn<TransformOptionsFunction>('cli.fn.options.transform',transformOptions);
+
+bindFn<TransformOptionsFunction>('cli.fn.options.transform', transformOptions);
 
 
 /**
@@ -217,7 +240,8 @@ bindFn<TransformOptionsFunction>('cli.fn.options.transform',transformOptions);
  * @param args
  * @returns {{arguments: {}, missing: Array, valid: boolean}}
  */
-export type ParseArgumentsFunction = (argv_: string[], args?: CommandArgumentConfig[] ) => ParsedCommandArguments
+export type ParseArgumentsFunction = (argv_: string[], args?: CommandArgumentConfig[]) => ParsedCommandArguments
+
 function parseArguments(argv_: string[], args: CommandArgumentConfig[] = []): ParsedCommandArguments {
 
     let invalid = [];
@@ -231,13 +255,13 @@ function parseArguments(argv_: string[], args: CommandArgumentConfig[] = []): Pa
 
         if ( arg.variadic ) {
             val = argv_.slice(arg.position, argv_.length);
-            if(arg.default && val.length === 0){
+            if ( arg.default && val.length === 0 ) {
                 val = JSON.parse(arg.default);
             }
         }
 
 
-        if(!val && arg.default){
+        if ( ! val && arg.default ) {
             val = JSON.parse(arg.default)
         }
 
@@ -249,10 +273,12 @@ function parseArguments(argv_: string[], args: CommandArgumentConfig[] = []): Pa
     })
     return { arguments: res, missing: invalid, valid: invalid.length === 0 };
 }
-bindFn<ParseArgumentsFunction>('cli.fn.arguments.parse',parseArguments);
+
+bindFn<ParseArgumentsFunction>('cli.fn.arguments.parse', parseArguments);
 
 /** */
 export type TransformArgumentFunction = <T extends any = any>(val: any, arg: CommandArgumentConfig) => T | T[]
+
 function transformArgumentType<T extends any = any>(val: any, arg: CommandArgumentConfig): T | T[] {
     const transformers = {
         boolean(val: any): boolean {
@@ -279,13 +305,14 @@ function transformArgumentType<T extends any = any>(val: any, arg: CommandArgume
     }
     return val;
 }
-transformArgumentType[ 'transformers' ] = {
-}
-bindFn<TransformArgumentFunction>('cli.fn.arguments.transform',transformArgumentType);
+
+transformArgumentType[ 'transformers' ] = {}
+bindFn<TransformArgumentFunction>('cli.fn.arguments.transform', transformArgumentType);
 
 /** */
-export type SubCommandsFindFunction =(filePath:string) => string[]
-function findSubCommandsPaths(filePath:string): string[] {
+export type SubCommandsFindFunction = (filePath: string) => string[]
+
+function findSubCommandsPaths(filePath: string): string[] {
 
     let dirName  = dirname(filePath);
     let baseName = basename(filePath, '.js');
@@ -312,10 +339,12 @@ function findSubCommandsPaths(filePath:string): string[] {
     });
     return paths;
 }
-bindFn<SubCommandsFindFunction>('cli.fn.commands.find',findSubCommandsPaths);
+
+bindFn<SubCommandsFindFunction>('cli.fn.commands.find', findSubCommandsPaths);
 
 /** */
-export type SubCommandsGetFunction = <T extends Dictionary<CommandConfig> | CommandConfig[]>(filePath: string, recursive?: boolean, asArray?: boolean ) =>  T
+export type SubCommandsGetFunction = <T extends Dictionary<CommandConfig> | CommandConfig[]>(filePath: string, recursive?: boolean, asArray?: boolean) => T
+
 function getSubCommands<T extends Dictionary<CommandConfig> | CommandConfig[]>(filePath: string, recursive: boolean = false, asArray: boolean = false): T {
     let subCommands: any = {}
     if ( asArray ) {
@@ -349,7 +378,5 @@ function getSubCommands<T extends Dictionary<CommandConfig> | CommandConfig[]>(f
     cli.parseCommands = true
     return subCommands
 }
-bindFn<SubCommandsGetFunction>('cli.fn.commands.get',getSubCommands);
 
-
-
+bindFn<SubCommandsGetFunction>('cli.fn.commands.get', getSubCommands);

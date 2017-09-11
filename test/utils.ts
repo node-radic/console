@@ -1,9 +1,11 @@
-import { suite, test } from "mocha-typescript";
-import { container, Cli, CliConfig, CommandArgumentConfig, CommandConfig, defaults, ParseArgumentsFunction, PrepareArgumentsFunction } from "../src";
-import { bootstrap } from "./_support/bootstrap";
+import { suite, test } from 'mocha-typescript';
+import { Cli, CliConfig, CommandArgumentConfig, CommandConfig, container, defaults, ParseArgumentsFunction, PrepareArgumentsFunction } from '../src';
+import { bootstrap } from './_support/bootstrap';
+import { assert } from 'chai'
 
 const parseArguments   = container.get<ParseArgumentsFunction>('cli.fn.arguments.parse');
 const prepareArguments = container.get<PrepareArgumentsFunction>('cli.fn.arguments.prepare');
+
 
 @suite
 class CommandArguments {
@@ -37,16 +39,46 @@ class CommandArguments {
         this.config = defaults.command(Cmd);
     }
 
-    protected prepare(argDef: string): CommandConfig {
+    protected prepare(argDef: string, cmdName: string = 'testcmd'): CommandConfig {
         let config = prepareArguments<CommandConfig>({
             ...this.config,
-            name: `testcmd\n${argDef}`
+            name: `${cmdName}\n${argDef}`
         });
         return config;
     }
 
-    @test testPrepareArgumentVariations() {
+    @test
+    testPrepareNameAndAlias() {
+        const { name, alias } = this.prepare('', 'foobar|foo')
+        name.should.eq('foobar');
+        alias.should.eq('foo')
+    }
+    @test
+    testPrepareNameAndSameAlias() {
+        const { name, alias } = this.prepare('', 'foobar|foobar')
+        name.should.eq('foobar');
+        alias.should.eq(null)
+    }
+
+    @test
+    testPrepareNameAndNumberLen3Alias() {
+        const { name, alias } = this.prepare('', 'foobar|3')
+        name.should.eq('foobar');
+        alias.should.eq('foo')
+    }
+
+    @test
+    testPrepareNameAndNumberLen1Alias() {
+        const { name, alias } = this.prepare('', 'foobar|1')
+        name.should.eq('foobar');
+        alias.should.eq('f')
+    }
+
+
+    @test
+    testPrepareArgumentVariations() {
         let a: CommandArgumentConfig[];
+
         a = this.prepare(`[name:string]`).arguments;
         a[ 0 ].name.should.eq('name')
         a[ 0 ].type.should.eq('string')
@@ -63,7 +95,8 @@ class CommandArguments {
         a[ 0 ].description.should.eq('the name')
     }
 
-    @test prepareArguments() {
+    @test
+    testPrepareMultiArgumentVariations() {
         let a = this.prepare(`
 [name:string="asdfrr"@the string for this]
 [projects:string[]=["asdf","ffd"]@project key or keys]
@@ -80,7 +113,7 @@ class CommandArguments {
         a[ 1 ].name.should.eq('projects')
         a[ 1 ].type.should.eq('string')
         a[ 1 ].variadic.should.be.true;
-        a[ 1 ].default.should.contain.ordered.members([ "asdf", "ffd" ])
+        a[ 1 ].default.should.contain.ordered.members([ 'asdf', 'ffd' ])
         a[ 1 ].description.should.eq('project key or keys')
 
         a[ 2 ].name.should.eq('num')
@@ -95,7 +128,8 @@ class CommandArguments {
         a[ 3 ].description.should.eq('array of numbers')
     }
 
-    @test testParseArgumentsDefaults() {
+    @test
+    testPrepareArgumentsDefaults() {
         let a = this.prepare(`
 [name:string="asdfrr"@the string for this]
 [projects:string[]=["asdf","ffd"]@project key or keys]
