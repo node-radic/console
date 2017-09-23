@@ -194,6 +194,47 @@ export default class GitFetchCmd {
 }
 ```
 
+###### Decorator options
+```typescript
+@command(name: string, config?: CommandConfig)
+@command(name: string, description?: string, config?: CommandConfig)
+@command(name: string, description?: string | CommandConfig, config?: CommandConfig) 
+```
+**name**
+- The `name` string will be parsed by the [PrepareArgumentsFunction](#) (binding: `cli.fn.arguments.prepare')
+- arguments will be passed to the `handle(args)` method
+
+_name/alias declaration_
+```typescript
+@command(`stringify`) // name will be "stringify", no alias
+@command(`stringify|alias-name`) // alias will be "alias-name"
+@command(`stringify|3`) // alias will be "str"
+@command(`stringify|1`) // alias wil be "s"
+```
+_argument declaration_
+```typescript
+@command(`stringify|1
+{requiredArg}
+[optionalArg]`) // arguments will be passed to the handle(args) function
+
+@command(`stringify|1
+{name:string}
+{names:string[]}
+{foos:string[]@this is the foos description}
+{foos2:string[]=['default']@this foos2 has a default value}
+{foo:string="foobar"}
+{foo:number=2}
+{foo:number[]=[1,2]}
+{bool:boolean=false}
+{bools:boolean[]=[true,false]`)
+```
+
+**CommandConfig**
+
+**API**: [CommandConfig](interfaces/command-config.html)
+
+
+
 Core API & Bindings
 -------------------
 ### Cli
@@ -251,6 +292,99 @@ This is the preferred way of firing events within the application
 
 Helpers
 -------
+
+### output
+- **Binding**: `cli.helpers.output`
+- **API**: [OutputHelper](classes/output-helper.html)
+
+##### examples
+There's more available then shown in the example, check the declaration files
+```typescript
+class MyCmd {
+    @inject('cli.helpers.output');
+    out:OutputHelper
+    handle(){
+        // access config (readonly)
+        this.out.config.colors = true || false // enable / disable coloring
+        this.out.config.quiet = true || false // enable / disable writing to stdout
+        this.out.config.resetOnNewline = true || false // {reset} after every nl, writeln(), line() etc
+        // many more configs available
+        
+        this.out
+        .write('hello').nl
+        .writeln('hello')
+        .line('hello')
+        .beep()
+        .line('{blue.bold}all{/blue} methods with string input accept {limegreen}color{/limegreen} codes{reset}')
+        
+        // all strings are parsed using @radic/console-colors
+        console.log(this.out.parse(`
+        {bold.red.underline}This is bold, red and underlined.{/red} But we dropped the red.{reset} And just resetted the rest.
+        {green.bgBlue.bold}We can also mix openers and closers{/bgBlue.bgYellow./bold./green.blue}And make it really silly.
+        {f(#333)}If support for 256 colors is present, you can use the RGB 0 - 6  values. Also, you can provide a fallback{f(#eee).bold.underline}
+        
+        Fairly advanced things are possible
+        {b(green).f(red).bold.underline}Some text{/f.green./underline}greeen stuff{reset}    
+        `))
+        
+        
+        let coloredString = '古\n\u001b[1m@\u001b[22m'
+        let u = this.out.util
+        // get actual string width
+        u.width(coloredString)
+        // slice, keeps colors correct
+        u.slice(coloredString, 2, 5)
+        // truncate, keeps colors correct
+        u.truncate(coloredString,10)
+        // get widest line 
+        u.widest(coloredString) //=> 2
+               
+        this.out
+        .line(u.figures.tick)
+        .line(u.figures.hamburger)
+        .line(u.figures.hamburger)
+        .line(u.figures.smiley) // etc
+        
+        // inspect output
+        this.out.dump(this) 
+        
+        // syntax highlight output (cli-highlight)
+        this.out.highlight(readFileSync(__filename, 'utf-8'), 'typescript')
+        
+        // columns output (columnify)
+        this.out.columns({} || [], {
+            // columns?: string[],
+            // minWidth?: number,
+            // maxWidth?: number,
+            // align?: 'left' | 'right' | 'center',
+            // paddingChr?: string,
+            // columnSplitter?: string,
+            // preserveNewLines?: boolean,
+            // showHeaders?: boolean,
+            // dataTransform?: (data) => string,
+            // truncate?: boolean,
+            // truncateMarker?: string,
+            // widths?: { [name: string]: ColumnsOptions },
+            // config?: { [name: string]: ColumnsOptions },
+        })
+        
+        // table output (cli-table2)
+        let options = {}
+        let data = {}
+        let rows = []
+        this.out.table(data || options || rows) 
+        
+        // tree output (archy)
+        this.out.tree({} as TreeData, {} as TreeOptions, true || false)
+               
+        // spinner output (ora)
+        this.out.spinner()
+        
+        // multispinner output (multispinner)
+        this.out.multispinner()
+    }
+}
+```
 
 
 Plugins

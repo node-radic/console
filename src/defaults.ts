@@ -1,22 +1,24 @@
-import { CliConfig, CommandArgumentConfig, CommandConfig, HelperOptions, HelperOptionsConfig, OptionConfig } from "./interfaces";
-import { ConstructorOptions as EventsConstructorOptions } from "eventemitter2";
-import { cloneDeep, merge } from "lodash";
-import { container } from "./core/Container";
-import { Config } from "./core/config";
+import { CliConfig, CommandArgumentConfig, CommandConfig, HelperOptions, HelperOptionsConfig, OptionConfig } from './interfaces';
+import { ConstructorOptions as EventsConstructorOptions } from 'eventemitter2';
+import { cloneDeep } from 'lodash';
+import { container } from './core/Container';
+import { Config } from './core/config';
+
 export const defaults = {
     config(): CliConfig {
         return <CliConfig> cloneDeep({
-            mode          : "require",
+            mode          : 'require',
             autoExecute   : true,
             prettyErrors  : true,
             commands      : {
                 onMissingArgument: 'fail'
             },
             log           : {
-                level      : 'debug',
-                colorize   : true,
-                prettyPrint: true,
-                showLevel  : true
+                useLevelIcons: false,
+                level        : 'debug',
+                colorize     : true,
+                prettyPrint  : true,
+                showLevel    : true
             },
             globalOptions : [],
             enabledHelpers: [],
@@ -64,7 +66,7 @@ export const defaults = {
             cls
         });
     },
-    option(cls: Object, key: string): OptionConfig{
+    option(cls: Object, key: string): OptionConfig {
         return <OptionConfig> cloneDeep({
             key      : '',
             name     : '',
@@ -73,24 +75,24 @@ export const defaults = {
             cls
         });
     },
-    events(): EventsConstructorOptions{
+    events(): EventsConstructorOptions {
         return <EventsConstructorOptions> cloneDeep({
             wildcard    : true,
             delimiter   : ':',
             newListener : true,
-            maxListeners: 200,
+            maxListeners: 200
         })
     },
-    argument(index: number): CommandArgumentConfig{
+    argument(index: number): CommandArgumentConfig {
         return <CommandArgumentConfig> cloneDeep({
-            position: index,
-            name    : null,
-            description    : '',
-            alias   : null,
-            type: 'string',
-            required: false,
-            variadic: false,
-            default: null
+            position   : index,
+            name       : null,
+            description: '',
+            alias      : null,
+            type       : 'string',
+            required   : false,
+            variadic   : false,
+            default    : null
         });
     },
     helper<T extends HelperOptionsConfig>(): HelperOptions<T> {

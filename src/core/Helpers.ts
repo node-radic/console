@@ -49,6 +49,12 @@ export class Helpers {
     }
 
     public enable(name: string, customConfig: HelperOptionsConfig = {}) {
+
+        // check if the helper is contained in a module and load it if so
+        if ( this.modules.exists(name) ) {
+            this.modules.get(name);
+        }
+
         // enable the helper so it'll start when needed
         this._helpers[ name ].enabled = true;
         let a                         = this.config.get<string[]>('enabledHelpers', [])
@@ -124,6 +130,9 @@ export class Helpers {
         // applies the configuration on activation
         options.binding.onActivation((ctx: Context, helperClass: Function): any => {
             helperClass[ options.configKey ] = this.config('helpers.' + options.name);
+            if(kindOf(helperClass['onActivation']) === 'function'){
+                helperClass['onActivation']();
+            }
             this.events.fire(new HelperContainerResolvedEvent(helperClass, options))
             return helperClass
         });

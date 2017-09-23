@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="r --compbash --compgen 2 bar &quot;r bar --&quot; " type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" path-to-js-file="examples/r.js" application-parameters="--compbash --compgen 2 bar &quot;r bar --&quot; " working-dir="$PROJECT_DIR$">
+    <method />
+  </configuration>
+</component>

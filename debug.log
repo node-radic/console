@@ -1,0 +1,58 @@
+{
+    "connect": {
+        "add": [
+            "--quiet",
+            "--no-colors",
+            "--help",
+            "--verbose",
+            "-q",
+            "-C",
+            "-h",
+            "-v",
+            "--pass",
+            "--port",
+            "--local-path",
+            "-P",
+            "-p",
+            "-l"
+        ]
+    },
+    "inputs": [
+        "--quiet",
+        "--no-colors",
+        "--help",
+        "--verbose",
+        "-q",
+        "-C",
+        "-h",
+        "-v"
+    ],
+    "modules": [
+        "--quiet",
+        "--no-colors",
+        "--help",
+        "--verbose",
+        "-q",
+        "-C",
+        "-h",
+        "-v"
+    ],
+    "tree": [
+        "--quiet",
+        "--no-colors",
+        "--help",
+        "--verbose",
+        "-q",
+        "-C",
+        "-h",
+        "-v",
+        "--desc",
+        "--opts",
+        "--all",
+        "--aliases",
+        "-d",
+        "-o",
+        "-a",
+        "-A"
+    ]
+}

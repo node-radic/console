@@ -1,0 +1,15 @@
+{
+    "name": "@types/tabtab",
+    "version": "0.0.30",
+    "description": "TypeScript definitions for tabtab",
+    "license": "MIT",
+    "main": "",
+    "repository": {
+        "type": "git",
+        "url": "https://www.github.com/DefinitelyTyped/DefinitelyTyped.git"
+    },
+    "scripts": {},
+    "dependencies": {},
+    "typings": "index.d.ts",
+    "typesPublisherContentHash": "a78d208744b329c82609ffef0dbf2881c6f81b9bff108705e0239ac824ffb579"
+}

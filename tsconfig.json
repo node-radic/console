@@ -18,7 +18,12 @@
         "typeRoots": [
             "./node_modules/@types",
             "./types"
-        ]
+        ],
+        "baseUrl": "./",
+        "paths": {
+            "*": ["*"],
+            "omelette": ["./types/omelette/index.d.ts"]
+        }
     },
     "include": [
         "./src",

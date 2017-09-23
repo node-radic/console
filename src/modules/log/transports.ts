@@ -4,6 +4,8 @@ import * as util from 'util';
 import { Helpers } from '../../core/Helpers';
 import { OutputHelper } from '../output/OutputHelper';
 import { container } from '../../core/Container';
+import { figures } from '../output/figures';
+import { Cli } from '../../core/Cli';
 
 export function logConsoleTransportFormatter(options: ConsoleTransportOptions) {
     let meta   = options[ 'meta' ];
@@ -50,6 +52,19 @@ export function logConsoleTransportFormatter(options: ConsoleTransportOptions) {
 
 }
 
+//[ 'error', 'warn', 'alert', 'notice', 'help', 'info', 'verbose', 'data', 'debug', 'silly' ]
+let levelIcons                                  = {
+    error  : figures.circleCross,
+    warn   : figures.warning,
+    alert  : figures.circlePipe,
+    notice : '{bold}!{/bold}',
+    help   : figures.circleQuestionMark,
+    info   : figures.info,
+    verbose: figures.info.repeat(2),
+    data   : figures.info.repeat(3),
+    debug  : figures.hamburger,
+    silly  : figures.smiley
+}
 let parser: Parser                              = new Parser;
 export const logTransports: TransportInstance[] = [
     new (wtransports.Console)({
@@ -60,6 +75,7 @@ export const logTransports: TransportInstance[] = [
         // timestamp  : true,
         showLevel: true,
         formatter: function (options: ConsoleTransportOptions) {
+            let cli = container.get<Cli>('cli')
             if ( container.get<Helpers>('cli.helpers').isEnabled('output') ) {
                 const out        = container.get<OutputHelper>('cli.helpers.output')
                 options.colorize = out.config.colors
@@ -69,6 +85,9 @@ export const logTransports: TransportInstance[] = [
             let message = options[ 'message' ] ? options[ 'message' ] : ''
             let color   = config.syslog.colors[ options.level ] || config.cli.colors[ options.level ]
             let level   = options.level;
+            if( cli.config('log.useLevelIcons') && options.level in levelIcons){
+                level = levelIcons[options.level] + ' ' + level
+            }
             if ( options.colorize ) {
                 message = parser.parse(message);
                 level   = parser.parse(`{${color}}${level}{/${color}}`)

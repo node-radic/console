@@ -8,7 +8,7 @@ import { kindOf } from '@radic/util'
 container.constant<TransportInstance[]>('cli.log.transports', logTransports)
 container.constant<LogLevel[]>('cli.log.levels', logLevels)
 addColors(logColors);
-container.bind<Log>('cli.log').toDynamicValue((ctx) => {
+container.bind<Log>('cli.log').toConstantValue((() => {
     return new Logger(<any>{
         level      : 'info',
         rewriters  : [ (level, msg, meta) => {
@@ -19,7 +19,7 @@ container.bind<Log>('cli.log').toDynamicValue((ctx) => {
         transports : logTransports
         // exitOnError: false
     });
-});
+})());
 
 function setLogLevel(level: LogLevel) {
     if ( kindOf(level) === 'number' ) {
@@ -36,4 +36,4 @@ function setVerbosity(verbosity: number) {
     setLogLevel(<LogLevel> level);
 }
 
-export { Log, LogLevel, logColors, setLogLevel, setVerbosity,logLevels }
+export { Log, LogLevel, logColors, setLogLevel, setVerbosity, logLevels }

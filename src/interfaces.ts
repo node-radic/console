@@ -1,15 +1,11 @@
-import { KindOf } from "@radic/util";
-import { interfaces } from "inversify";
-import { Container } from "./core/Container";
+import { KindOf } from '@radic/util';
+import { interfaces } from 'inversify';
+import { Container } from './core/Container';
+import { HelpHelper } from './modules/help/HelpHelper';
+import * as inquirer from 'inquirer';
+import { OutputHelperOptionsConfig } from './modules/output/interfaces';
 import BindingInWhenOnSyntax = interfaces.BindingInWhenOnSyntax;
-import { Cli } from "./core/Cli";
-import { Config } from "./core/config";
-import { Dispatcher } from "./core/Dispatcher";
-import { Helpers } from "./core/Helpers";
-import { LoggerInstance } from "winston";
-import { CommandDescriber, HelpHelper } from "./modules/help/helper.help";
-import * as inquirer from "inquirer";
-import { OutputHelperOptionsConfig } from "./modules/output/interfaces";
+import { CommandDescriber } from './modules/help/CommandDescriber';
 
 
 export interface CommandArguments {
@@ -139,14 +135,26 @@ export interface OptionConfig {
 
 /**  */
 export interface CliConfig {
-    /** arguments config **/
+    [key: string]: any
     parser?: {
         yargs?: ParserConfiguration,
         arguments?: {
             nullUndefined?: boolean
             undefinedBooleanIsFalse?: boolean
-        }
-    }
+        },
+        options?: any
+    },
+    commands?: { [key: string]: any },
+    log?: {
+        useLevelIcons: boolean,
+        level?: string,
+        colorize?: boolean,
+        prettyPrint?: boolean,
+        showLevel?: boolean
+    },
+    globalOptions?: any[],
+    enabledHelpers?: any[],
+    helpers?: HelpersOptionsConfig | {}
 }
 
 /** yargs-parser configuration */
@@ -161,6 +169,8 @@ export interface ParserConfiguration {
 }
 
 export interface HelpersOptionsConfig {
+    [name: string]: any
+
     help: HelpHelperOptionsConfig
     verbose: VerboseHelperOptionsConfig
     input: InputHelperOptionsConfig

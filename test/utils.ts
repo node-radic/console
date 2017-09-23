@@ -1,7 +1,7 @@
 import { suite, test } from 'mocha-typescript';
 import { Cli, CliConfig, CommandArgumentConfig, CommandConfig, container, defaults, ParseArgumentsFunction, PrepareArgumentsFunction } from '../src';
 import { bootstrap } from './_support/bootstrap';
-import { assert } from 'chai'
+import { assert, should } from 'chai'
 
 const parseArguments   = container.get<ParseArgumentsFunction>('cli.fn.arguments.parse');
 const prepareArguments = container.get<PrepareArgumentsFunction>('cli.fn.arguments.prepare');
@@ -53,11 +53,12 @@ class CommandArguments {
         name.should.eq('foobar');
         alias.should.eq('foo')
     }
+
     @test
     testPrepareNameAndSameAlias() {
         const { name, alias } = this.prepare('', 'foobar|foobar')
         name.should.eq('foobar');
-        alias.should.eq(null)
+        should().equal(alias, null)
     }
 
     @test

@@ -74,17 +74,27 @@ export class Cli {
     }
 
     public async start(requirePath: string) {
+        this.log.data(`cli.start('${requirePath}')`)
+
         process
             .on('unhandledRejection', (reason, p) => {
-                console.error(reason, 'Unhandled sdfRejection at Promise', p);
+                try {
+                    this.log.error(`unhandledRejection (reason: ${reason}) at Promise`, p);
+                } catch(e){
+                    console.error(e)
+                }
             })
             .on('uncaughtException', err => {
-                console.error(err, 'Uncaught Exceptifon thrown');
+                try{
+                this.log.error('uncaughtException thrown', err);
+                } catch(e){
+                    console.error(e)
+                }
                 process.exit(1);
             });
         requirePath = resolve(requirePath);
+        this.helpers.startHelpers();
         this.events.fire(new CliStartEvent(requirePath)).proceed(() => {
-            this.helpers.startHelpers();
             let mod      = require(requirePath)
             let command  = <CommandConfig> Reflect.getMetadata('command', mod.default);
             command.argv = this.argv;
@@ -95,8 +105,11 @@ export class Cli {
     }
 
     public async parse(config: CommandConfig) {
+        this.log.data(`cli.parse`, config)
+
         if ( kindOf(config.action) === 'function' ) {
             config.argv = this.argv;
+            this.log.data(`in cli.parse: config.action is function`)
             return this.executeCommand(config);
         }
         if ( ! this.parseCommands ) {
@@ -104,6 +117,7 @@ export class Cli {
         }
         let isRootCommand: boolean = ! this._rootCommand
         if ( isRootCommand ) {
+            this.log.data(`in cli.parse: setting to root command `)
             this._rootCommand = config;
         }
 
@@ -116,6 +130,7 @@ export class Cli {
         this._parsedCommands.push(config);
 
         if ( config.alwaysRun ) {
+            this.log.data(`in cli.parse: always run`)
             this.events.fire(new CliExecuteCommandEvent(config, config.alwaysRun)).proceed(() => {
                 let instance = container.resolve(<any> config.cls);
                 if ( kindOf(instance[ config.alwaysRun ]) === 'function' ) {
@@ -126,6 +141,7 @@ export class Cli {
         }
 
         if ( ! this._runningCommand && result._.length > 0 && config.isGroup ) {
+            this.log.data(`in cli.parse: is group`)
             const subCommands = this.getSubCommands(config.filePath)
             if ( subCommands[ result._[ 0 ] ] ) {
                 const command: CommandConfig = subCommands[ result._[ 0 ] ];
@@ -138,8 +154,10 @@ export class Cli {
         if ( ! this._runningCommand ) {
             this._runningCommand = config;
             if ( ! this.events.fire(new CliExecuteCommandEvent(config, config.alwaysRun)).isCanceled() ) {
+                this.log.data(`in cli.parse: execute`)
                 return this.executeCommand(config)
             }
+            this.log.data(`in cli.parse: execute canceled by event`)
         }
 
         return Promise.resolve();
@@ -147,7 +165,7 @@ export class Cli {
 
 
     protected async executeCommand(config: CommandConfig) {
-
+        this.log.data(`cli.executeCommand`, config)
 
         // let optionConfigs: OptionConfig[] = get('options', config.cls.prototype) || [];
         let optionConfigs: OptionConfig[] = config.options
@@ -184,6 +202,7 @@ export class Cli {
 
         // if any missing, execute the way we should handle the arguments.
         if ( ! parsed.valid ) {
+            this.log.data(`in cli.executeCommand: ! parsed.valid. should now ${config.onMissingArgument}`)
             this.events.fire(new CliExecuteCommandInvalidArgumentsEvent(instance, parsed, config, optionConfigs)).stopIfExit();
             if ( config.onMissingArgument === "fail" ) {
                 this.fail(`Missing required argument [${parsed.missing.shift()}]`);
@@ -221,7 +240,9 @@ export class Cli {
             }
         }
 
+        this.log.data(`in cli.executeCommand: call handle with`, parsed)
         let result = instance[ 'handle' ].apply(instance, [ parsed.arguments, argv ]);
+        this.log.data(`in cli.executeCommand: called handle. got: `, result)
 
         this.events.fire(new CliExecuteCommandHandledEvent(result, instance, argv, config, optionConfigs)).stopIfExit()
 

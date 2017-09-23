@@ -28,16 +28,18 @@ export class VerbosityHelper {
     log: LoggerInstance;
 
     public onExecuteCommandParse(event: CliExecuteCommandParseEvent) {
-        event.cli.global(this.config.option.key,{
-            name       : this.config.option.name,
-            count      : true,
-            // tyhpe
-            description: 'increase verbosity (1:verbose|2:data|3:debug|4:silly)'
-        })
+        if(this.config.option.enabled) {
+            event.cli.global(this.config.option.key, {
+                name       : this.config.option.name,
+                count      : true,
+                // tyhpe
+                description: 'increase verbosity (1:verbose|2:data|3:debug|4:silly)'
+            })
+        }
     }
 
     public onExecuteCommandParsed(event: CliExecuteCommandParsedEvent) {
-        if ( event.argv[ this.config.option.key ] ) {
+        if ( this.config.option.enabled && event.argv[ this.config.option.key ] ) {
             let level: number = parseInt(event.argv[ this.config.option.key ]);
 
             level = logLevels.indexOf('info') + level;

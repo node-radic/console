@@ -106,8 +106,11 @@ export const lazyInject = getDecorators(container).lazyInject;
 export const provide    = makeProvideDecorator(container);
 const fprovide  = makeFluentProvideDecorator(container);
 
-export const singleton = (identifier: ServiceIdentifier) => {
-    return fprovide(identifier).inSingletonScope().done()
+export function singleton (identifier: ServiceIdentifier) : ClassDecorator {
+    return (cls:any) => {
+        container.ensureInjectable(cls);
+        container.bind(identifier).to(cls).inSingletonScope();
+    }
 };
 
 export const inject = (id: ServiceIdentifier) => {

@@ -52,19 +52,19 @@ export class InputHelper {
     }
 
     async list(msg:MessageType, choices: ChoiceType[] | Array<inquirer.objects.ChoiceOption>, validate?: (answer) => boolean): Promise<string> {
-        return this.multiple(msg, 'list', choices, validate);
+        return this.multiple<string>(msg, 'list', choices, validate);
     }
 
     async rawlist(msg:MessageType, choices: ChoiceType[] | Array<inquirer.objects.ChoiceOption>, validate?: (answer) => boolean): Promise<string> {
-        return this.multiple(msg, 'rawlist', choices, validate);
+        return this.multiple<string>(msg, 'rawlist', choices, validate);
     }
 
     async expand(msg:MessageType, choices: ChoiceType[] | Array<inquirer.objects.ChoiceOption>, validate?: (answer) => boolean): Promise<string> {
-        return this.multiple(msg, 'expand', choices, validate);
+        return this.multiple<string>(msg, 'expand', choices, validate);
     }
 
-    async checkbox(msg:MessageType, choices: ChoiceType[] | Array<inquirer.objects.ChoiceOption>, validate?: (answer) => boolean): Promise<string> {
-        return this.multiple(msg, 'checkbox', choices, validate);
+    async checkbox(msg:MessageType, choices: ChoiceType[] | Array<inquirer.objects.ChoiceOption>, validate?: (answer) => boolean): Promise<string[]> {
+        return this.multiple<string[]>(msg, 'checkbox', choices, validate);
     }
 
     async password(message: MessageType, def?: string, validate?: (answer) => boolean): Promise<string> {
@@ -96,12 +96,12 @@ export class InputHelper {
 
     }
 
-    async multiple(message: MessageType, type: QuestionType, choices: ChoiceType[] | Array<inquirer.objects.ChoiceOption>, validate?: (answer) => boolean): Promise<string> {
+    async multiple<T>(message: MessageType, type: QuestionType, choices: ChoiceType[] | Array<inquirer.objects.ChoiceOption>, validate?: (answer) => boolean): Promise<T> {
         let prompt = { type, message, choices }
         if ( validate ) {
             prompt[ 'validate' ] = validate;
         }
-        return this.prompt<string>(prompt)
+        return this.prompt<T>(prompt)
     }
 
     async prompts(questions: inquirer.Questions): Promise<inquirer.Answers> {

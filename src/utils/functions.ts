@@ -4,13 +4,13 @@ import { statSync } from 'fs';
 import { basename, dirname, join, sep } from 'path';
 import { defaults } from '../defaults';
 import * as globule from 'globule';
-import { Cli, container, Log, ServiceIdentifier } from '../core';
+import { Cli, container, ServiceIdentifier } from '../core';
 import { kindOf } from '@radic/util';
 import { kebabCase, merge } from 'lodash';
 import { interfaces } from 'inversify';
+import { Log } from '../modules/log/interfaces';
 
 const callsites = require('callsites');
-
 
 function bindFn<T>(id: ServiceIdentifier, fn) {
     container.bind<T>(id).toFunction(fn);
