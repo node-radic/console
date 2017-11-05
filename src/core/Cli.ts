@@ -123,9 +123,9 @@ export class Cli {
 
         if ( this.events.fire(new CliParseEvent(config, this.globalOptions, isRootCommand)).stopIfExit().isCanceled() ) return
 
-        let transformedOptions           = this.transformOptions(this.globalOptions);
-        transformedOptions.configuration = this.config('parser.yargs')
-        let result                       = parser(config.argv, transformedOptions) as YargsParserArgv;
+        let transformedOptions        :any   = this.transformOptions(this.globalOptions);
+        transformedOptions.configuration = this.config.get<any>('parser.yargs') as any
+        let result                     :any  = parser(config.argv, transformedOptions) ;
         this.events.fire(new CliParsedEvent(config, this.globalOptions, isRootCommand, result)).stopIfExit()
         this._parsedCommands.push(config);
 
@@ -173,9 +173,9 @@ export class Cli {
         // Parse
         this.events.fire(new CliExecuteCommandParseEvent(config, optionConfigs))
 
-        let transformedOptions           = this.transformOptions(this.globalOptions.concat(optionConfigs));
+        let transformedOptions :any          = this.transformOptions(this.globalOptions.concat(optionConfigs));
         transformedOptions.configuration = this.config('parser.yargs')
-        let argv                         = parser(config.argv, transformedOptions) as YargsParserArgv;
+        let argv                   :any      = parser(config.argv, transformedOptions) as YargsParserArgv;
 
         this.events.fire(new CliExecuteCommandParsedEvent(argv, config, optionConfigs))
 

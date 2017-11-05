@@ -36,4 +36,4 @@ function setVerbosity(verbosity: number) {
     setLogLevel(<LogLevel> level);
 }
 
-export { Log, LogLevel, logColors, setLogLevel, setVerbosity, logLevels }
+export { Log, LogLevel, logColors, setLogLevel, setVerbosity, logLevels,logLevel,logTransports }

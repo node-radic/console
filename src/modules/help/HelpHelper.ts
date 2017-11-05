@@ -7,9 +7,10 @@ import { HelpHelperOnInvalidArgumentsShowHelpEvent, HelpHelperShowHelpEvent } fr
 import { helper } from '../../decorators';
 import { SubCommandsGetFunction } from '../../utils';
 
-import { Cli, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParseEvent, container, Dispatcher, inject, Log } from '../../core';
+import { Cli, CliExecuteCommandHandleEvent, CliExecuteCommandInvalidArgumentsEvent, CliExecuteCommandParseEvent, container, Dispatcher, inject } from '../../core';
 import { OutputHelper } from '../output/OutputHelper';
 import { CommandDescriber } from './CommandDescriber';
+import { Log } from '../../modules/log';
 
 
 @helper('help', {

@@ -42,6 +42,9 @@ interface YargsParser {
     detailed(args?: string | string[], opts?: YargsParserOptions): YargsParserDetailed
 }
 
+declare module "yargs-parser" {
+    export  = parser
+}
 declare namespace parser {
 
     interface YargsParserOptionsConfiguration {
@@ -88,6 +91,3 @@ declare namespace parser {
     }
 }
 declare var parser : YargsParser
-declare module "yargs-parser" {
-    export  = parser
-}

@@ -100,6 +100,9 @@ export class CompletionHelper {
             } else {
                 tree[ command.name ] = this.getCommand(command)
             }
+            if(command.alias){
+                tree[ command.alias ] = tree[ command.name ]
+            }
         });
         if(config.isGroup){
             // this.getCommand(config).forEach(opt => tree[ opt ] = {})
